@@ -1,0 +1,12 @@
+# 404 page
+[page_not_found]
+other = "Die Seite wurde nicht gefunden!"
+
+[page_does_not_exist]
+other = "Entschuldigung, die Seite wurde nicht gefunden"
+
+[head_back]
+other = "Hier geht es zurück zur <a href=\"{{ . }}\">Startseite</a>."
+
+[projektemacher]
+other = "ist ein <a href=\"https://projektemacher.org/en/\">Projektemacher</a> Blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"

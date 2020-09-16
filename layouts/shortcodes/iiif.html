@@ -1,0 +1,54 @@
+{{/*
+Hugo Shortcode for IIIF Image API interation
+Make sure to integrate the CSS styles of Leaflet and leaflet.fullscreen.
+
+Parameters:
+* src - The url to the 'info.json' file
+* divId - The ID of the viewer <div> (optional - default 'iiif-image-' plus a random number)
+* jsId - The variable name of the viewer <div> (optional - default 'map')
+* includeSources - Include JavaScript sources (optional - default 'false')
+* pageURL - Link to page (optional, will be used to generate link)
+* share - Add share links (optional)
+*/}}
+
+{{- if not (.Get "includeSources") -}}
+    {{/* JavaScript */}}
+    {{- $defines := dict "process.env.NODE_ENV" `"development"` -}}
+    {{- $opts := dict "targetPath" "js/main.js" "defines" $defines -}}
+    {{- $iiifViewer := resources.Get "js/iiif-viewer.js" | js.Build $opts -}}
+    {{- $js := slice $iiifViewer | resources.Concat "js/iiif-ol.js" | minify | fingerprint -}}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{ end }}
+
+{{- $src := .Get "src" -}}
+{{- $id := printf "iiif-image-%s" (delimit (shuffle (seq 1 9)) "") -}}
+{{- if .Get "divId" -}}
+    {{- $id = .divId -}}
+{{- end -}}
+{{- $var := "map" -}}
+{{- if .Get "id" -}}
+    {{- $var = .jsId -}}
+{{- end -}}
+
+<a name="{{ $id }}"></a>
+<div id="{{ $id }}" class="viewer"></div>
+{{ $rotation := 0 }}
+{{ if (.Get "rotate") }}
+    {{ $rotation =  .Get "rotate" }}
+{{ end }}
+<script type="text/javascript">
+    var {{ $var | safeJS }} = addMap(document.getElementById("{{ $id }}"), "{{ $src }}", {{ $rotation }}, "{{ path.Dir $src }}");
+    {{ $var | safeJS }}.updateSize();
+</script>
+{{ if (.Get "share") }}
+    <div class="share">
+        {{ if (.Get "downloadURL") }}
+            <a href="{{- (.Get "downloadURL") -}}" class="image-download">Volle Auflösung herunterladen</a> | 
+        {{ end }}
+        <a href="{{ $src }}" class="iiif-link">IIIF Manifest</a>
+        {{- if (.Get "pageURL") -}}
+            {{- $pageURL := .Get "pageURL" }}
+            | <a href="{{ $pageURL }}#{{ .Name }}" class="image-link">Link zu diesem Bild</a>
+        {{- end -}}
+    </div>
+{{ end }}

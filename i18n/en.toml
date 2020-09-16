@@ -1,0 +1,12 @@
+# 404 page
+[page_not_found]
+other = "Page Not Found"
+
+[page_does_not_exist]
+other = "Sorry, this page does not exist."
+
+[head_back]
+other = "You can head back to <a href=\"{{ . }}\">homepage</a>."
+
+[projektemacher]
+other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"

@@ -1,0 +1,24 @@
+{{ $pageURL := .Permalink }}
+{{ with .Page.Resources.Match "iiif-manifest-*" }}
+  {{ range . }}
+    <a name="{{ .Name }}"></a>
+    <div id="{{ .Name }}" class="viewer"></div>
+    {{ $mapName := replace .Name "-" "_" }}
+    {{ $rotation := 0 }}
+    {{ if .Params.rotate }}
+        {{ $rotation = .Params.rotate }}
+    {{ end }}
+    <script type="text/javascript">
+        {{ $mapName | safeJS }}_Div = document.getElementById("{{ .Name }}");
+        {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ .RelPermalink }}", {{ $rotation }});
+    </script>
+    <div class="share">
+        {{ $downloadURL := printf "/images/%s.jpg" (path.Base (path.Dir .RelPermalink)) }}
+        {{ if (fileExists (printf "static%s" $downloadURL)) }}
+            <a href="/{{- $downloadURL -}}" class="image-download">Volle Auflösung herunterladen</a> | 
+        {{ end }}
+        <a href="{{ .RelPermalink }}" class="iiif-link">IIIF Manifest</a> |
+        <a href="{{ $pageURL }}#{{ .Name }}" class="image-link">Link zu diesem Bild</a>
+    </div>
+  {{ end }}
+{{ end }}

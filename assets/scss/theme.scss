@@ -1,0 +1,13 @@
+body {
+  font-family: $font-body-font;
+
+  &.about {
+    background-position: 95% 7em;
+    background-image: url("/images/cm.svg");
+    background-repeat: no-repeat;
+  }
+
+  &.error404 {
+
+  }
+}

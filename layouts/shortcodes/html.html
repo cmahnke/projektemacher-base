@@ -1,0 +1,16 @@
+{{ $filename := "" }}
+{{ $content := "" }}
+{{ if (.Get "file") }}
+  {{ $filename = (.Get "file") }}
+{{ end }}
+{{ if $filename }}
+    {{ $content = readFile $filename }}
+{{ end }}
+
+<div class="included-html">
+  {{ if $content }}
+    {{ $content | safeHTML }}
+  {{ else }}
+    <div class="include-error">Couldn't load {{ $filename }}</div>
+  {{ end }}
+</div>
