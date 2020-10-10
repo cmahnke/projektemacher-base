@@ -1,3 +1,17 @@
+# Pagination
+[next_page]
+other = "Vor"
+
+[previous_page]
+other = "Zurück"
+
+# Languages
+[en]
+other = "Englisch"
+
+[de]
+other = "Deutsch"
+
 # 404 page
 [page_not_found]
 other = "Die Seite wurde nicht gefunden!"

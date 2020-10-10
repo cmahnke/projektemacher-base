@@ -1,3 +1,17 @@
+# Pagination
+[next_page]
+other = "Next"
+
+[previous_page]
+other = "Back"
+
+# Languages
+[en]
+other = "English"
+
+[de]
+other = "German"
+
 # 404 page
 [page_not_found]
 other = "Page Not Found"
