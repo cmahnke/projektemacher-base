@@ -1,0 +1,63 @@
+<meta charset="utf-8">
+
+{{ with .Title }} <title>{{ . }} {{if $.IsHome}}- {{ $.Site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
+{{ end }}
+
+{{- if .Description -}}
+    <meta name="description" content="{{ .Description }}" />
+{{- else -}}
+    <meta name="description" content="{{ .Site.Params.description }}" />
+{{- end -}}
+
+{{ if hasPrefix .Page.Name "404" }}
+    <meta http-equiv="refresh" content="15; URL={{ .Site.BaseURL }}">
+{{- end }}
+
+{{ hugo.Generator }}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+{{/* JavaScript */}}
+{{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+{{- $mainOpts := dict "targetPath" "js/main.js" "defines" $defines "minify" true -}}
+{{- $main := resources.Get "js/main.js" | js.Build $mainOpts -}}
+
+{{- $mainJs := "" -}}
+{{- if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/image/") -}}
+    {{- $iiifOpts := dict "targetPath" "js/iiif-image-viewer.js" "defines" $defines "minify" true -}}
+    {{- $iiif := resources.Get "js/iiif-image-viewer.js" | js.Build $iiifOpts -}}
+    {{- $mainJs = slice $main $iiif | resources.Concat "js/main-iiif-i.js" | minify | fingerprint -}}
+{{- else if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/presentation/") -}}
+    {{- $iiifOpts := dict "targetPath" "js/iiif-presentation-viewer.js" "defines" $defines "minify" true -}}
+    {{- $iiif := resources.Get "js/iiif-presentation-viewer.js" | js.Build $iiifOpts -}}
+    {{- $mainJs = slice $main $iiif | resources.Concat "js/main-iiif-p.js" | minify | fingerprint -}}
+{{- else -}}
+    {{- $mainJs = slice $main | resources.Concat "js/main.js" | minify | fingerprint -}}
+{{- end -}}
+ <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity }}"></script>
+
+{{/* External Styles - Fonts etc */}}
+{{- range .Site.Params.stylesheets -}}
+    <link href="{{ . }}" rel="stylesheet">
+{{- end }}
+
+{{- $options := (dict "targetPath" "base.css" "outputStyle" "compressed" "includePaths" (slice "node_modules/ol" "static/css" "node_modules/normalize.css")) -}}
+{{- $ourTemplate := resources.Get "scss/base.scss" -}}
+{{- $ourStyle := $ourTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
+{{- $style := slice $ourStyle | resources.Concat "css/concated.css" | minify | fingerprint -}}
+<link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">
+
+<link rel="icon" type="image/png" href="{{ .Site.Params.favicon_32 | default "/images/favicon-32.png" | absURL }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ .Site.Params.favicon_16 | default "/images/favicon-16.png" | absURL }}" sizes="16x16">
+{{ if .Site.Params.favicon_svg }}
+    <link rel="icon" type="image/svg+xml" href="{{ .Site.Params.favicon_svg }}">
+{{ end }}
+
+<link rel="shortcut icon" href="{{ "img/favicon.ico" | absURL }}" type="image/x-icon">
+<link rel="icon" href="{{ "img/favicon.ico" | absURL }}" type="image/x-icon">
+
+{{ with .OutputFormats.Get "RSS" }}
+    <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
+    <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
+{{ end }}

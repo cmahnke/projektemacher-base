@@ -1,0 +1,120 @@
+diff --git a/node_modules/mirador/src/lib/CanvasGroupings.js b/node_modules/mirador/src/lib/CanvasGroupings.js
+index 9939e86..677a829 100644
+--- a/node_modules/mirador/src/lib/CanvasGroupings.js
++++ b/node_modules/mirador/src/lib/CanvasGroupings.js
+@@ -7,15 +7,18 @@ export default class CanvasGroupings {
+   constructor(canvases, viewType = 'single') {
+     this.canvases = canvases;
+     this.viewType = viewType;
+-    this._groupings = null; // eslint-disable-line no-underscore-dangle
++    this._groupings = null;
++    this._canvasGroupingMap = null;
+   }
+ 
+   /**
+    */
+   getCanvases(index) {
+     switch (this.viewType) {
++      case 'scroll':
++        return this.groupings()[0];
+       case 'book':
+-        return this.groupings()[Math.ceil(index / 2)];
++        return this.groupings()[this._canvasGroupingMap[index]];
+       default:
+         return this.groupings()[index];
+     }
+@@ -26,30 +29,55 @@ export default class CanvasGroupings {
+    * of canvases, while book view creates pairs.
+    */
+   groupings() {
+-    if (this._groupings) { // eslint-disable-line no-underscore-dangle
+-      return this._groupings; // eslint-disable-line no-underscore-dangle
+-    }
+-    if (this.viewType === 'scroll') {
+-      return [this.canvases];
++    if (this._groupings) {
++      return this._groupings;
+     }
+     if (this.viewType !== 'book') {
+       return this.canvases.map(canvas => [canvas]);
+     }
+     const groupings = [];
++    const canvasGroupingMap = [];
++    let groupIndex = 0;
+     this.canvases.forEach((canvas, i) => {
++      if (!groupings[groupIndex]) {
++        groupings[groupIndex] = [];
++      }
++
++      canvasGroupingMap[i] = groupIndex;
++
+       if (i === 0) {
+-        groupings.push([canvas]);
++        canvasGroupingMap[i] = groupIndex;
++        groupings[groupIndex].push(canvas);
++        groupIndex += 1;
++        return;
++      }
++
++      const hint = canvas && (
++        (canvas.getBehavior && canvas.getBehavior())
++        || (canvas.getViewingHint && canvas.getViewingHint())
++      );
++
++      if (hint === 'facing-pages' || hint === 'non-paged') {
++        if (groupings[groupIndex].length > 0) {
++          groupIndex += 1;
++          canvasGroupingMap[i] = groupIndex;
++        }
++
++        groupings[groupIndex] = [canvas];
++        groupIndex += 1;
+         return;
+       }
+-      // Odd page
+-      if (i % 2 !== 0) {
+-        groupings.push([canvas]);
+-      } else {
+-        // Even page
+-        groupings[Math.ceil(i / 2)].push(canvas);
++
++      if (groupings[groupIndex].length < 2) {
++        groupings[groupIndex].push(canvas);
++      }
++
++      if (groupings[groupIndex].length === 2) {
++        groupIndex += 1;
+       }
+     });
+-    this._groupings = groupings; // eslint-disable-line no-underscore-dangle
++    this._groupings = groupings;
++    this._canvasGroupingMap = canvasGroupingMap;
+     return groupings;
+   }
+ }
+diff --git a/node_modules/mirador/src/lib/ThumbnailFactory.js b/node_modules/mirador/src/lib/ThumbnailFactory.js
+index 7cbacef..9d988fe 100644
+--- a/node_modules/mirador/src/lib/ThumbnailFactory.js
++++ b/node_modules/mirador/src/lib/ThumbnailFactory.js
+@@ -190,7 +190,7 @@ class ThumbnailFactory {
+     const thumb = resource.getThumbnail();
+     if (thumb && iiifImageService(thumb)) return this.iiifThumbnailUrl(thumb);
+ 
+-    if (requireIiif) return undefined;
++//    if (requireIiif) return undefined;
+     if (thumb && typeof thumb.__jsonld !== 'string') return ThumbnailFactory.staticImageUrl(thumb);
+ 
+     if (!quirksMode) return undefined;
+diff --git a/node_modules/mirador/src/state/sagas/iiif.js b/node_modules/mirador/src/state/sagas/iiif.js
+index f0ce4c5..0333f58 100644
+--- a/node_modules/mirador/src/state/sagas/iiif.js
++++ b/node_modules/mirador/src/state/sagas/iiif.js
+@@ -1,7 +1,7 @@
+ import {
+   all, call, put, select, takeEvery,
+ } from 'redux-saga/effects';
+-import fetch from 'isomorphic-unfetch';
++//import fetch from 'isomorphic-unfetch';
+ import { Utils } from 'manifesto.js/dist-esmodule/Utils';
+ import normalizeUrl from 'normalize-url';
+ import ActionTypes from '../actions/action-types';

@@ -6,10 +6,12 @@
           {{ .Content }}
       </div>
      </div>
-    <div class="meta">
-      <div class="date">
-          <a href="{{ .RelPermalink }}">{{- partial "date.html" (dict "date" .Date "language" $.Page.Language "months" $.Site.Data.months) -}}</a>
-      </div>
-      {{ partial "meta/tags.html" . }}
-    </div>
+    {{- if not .Params.metaPage -}}
+        <div class="meta">
+          <div class="date">
+              <a href="{{ .RelPermalink }}">{{- partial "date.html" (dict "date" .Date "language" $.Page.Language "months" $.Site.Data.months) -}}</a>
+          </div>
+          {{ partial "meta/tags.html" . }}
+        </div>
+    {{ end }}
 </div>
