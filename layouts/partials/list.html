@@ -7,7 +7,7 @@
     {{ $pages = where $pages "Params.metaPage" "!=" true -}}
     {{ $paginator := .Paginate (where $pages "Params.displayinlist" "!=" false) -}}
     {{- range $paginator.Pages -}}
-        {{ partial "page.html" . }}
+        {{ partial "li.html" . }}
     {{ end }}
     </div>
 </div>
