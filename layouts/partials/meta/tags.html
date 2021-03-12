@@ -1,7 +1,9 @@
-{{ if isset .Params "tags" }}
+{{- if and (isset .Params "tags") (len .Params.tags) -}}
   <div class="tags">
-      {{ range $tag := .Params.tags }}
-          <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ i18n $tag }}</a><br />
-      {{ end }}
+      {{- range $tag := .Params.tags -}}
+          {{- if ne $tag "" -}}
+            <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ i18n $tag }}</a><br />
+          {{- end -}}
+      {{- end -}}
   </div>
-{{ end }}
+{{- end -}}
