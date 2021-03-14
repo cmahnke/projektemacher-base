@@ -1,0 +1,36 @@
+{{/*
+Hugo Shortcode for IIIF Presentation API integration using Mirador
+Make sure to integrate the JS and CSS files for Mirador
+
+Parameters:
+* manifestUrl - The url to the 'info.json' file
+*/}}
+
+{{- $manifestUrl := .Get "manifestUrl" -}}
+
+{{- $urlBase := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
+{{- $manifestUrl = printf "%s%s" $urlBase $manifestUrl -}}
+
+
+{{- $orientation := "portrait" -}}
+{{/* This is needed to make sure that landscape or portrait orientation is display properly - not supported yet
+    {{- $previewImg := (.Resources.ByType "image").GetMatch "front" -}}
+    {{- $context := path.Dir .File.Path -}}
+
+    {{- $orientation := "" -}}
+    {{- if eq $previewImg nil -}}
+        {{- errorf "Can't find image 'front' for %s" $context -}}
+    {{- end -}}
+    {{ if lt $previewImg.Width $previewImg.Height }}
+        {{- $orientation = "portrait" -}}
+    {{- else -}}
+        {{- $orientation = "landscape" -}}
+    {{- end -}}
+*/}}
+
+<div class="iiif">
+    <div id="iiif-presentation" class="viewer presentation-api {{ $orientation }}"></div>
+    <script type="text/javascript">
+        var viewer = addMirador('iiif-presentation', '{{ $manifestUrl }}');
+    </script>
+</div>
