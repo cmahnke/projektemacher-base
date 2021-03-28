@@ -24,3 +24,14 @@ other = "You can head back to <a href=\"{{ . }}\">homepage</a>."
 
 [projektemacher]
 other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"
+
+# IIIF images
+
+[fullResolution]
+other = "Download full resolution"
+
+[iiifManifest]
+other = "IIIF manifest"
+
+[imageLink]
+other = "Link to this image"
