@@ -45,9 +45,11 @@
 
 <div class="iiif-image {{ $class | safeHTML }} {{ $orientation | safeHTML }}">
     <a name="{{ $mapName }}"></a>
+    {{/*
     {{- if .heading -}}
         <span class="image-heading">{{ .heading }}</span>
     {{- end -}}
+    */}}
     <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}"></div>
 
     {{ $rotation := 0 }}
