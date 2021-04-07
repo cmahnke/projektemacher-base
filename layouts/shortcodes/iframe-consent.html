@@ -1,0 +1,38 @@
+{{/* See https://stackoverflow.com/questions/57841380/gdpr-jquery-iframe-consent */}}
+
+{{- $iframe := .Inner | safeHTML -}}
+{{- $host := replaceRE ".*src=\".*?//(.*?)/.*" "$1" $iframe -}}
+{{- $cookie := printf "%s-consent" (replaceRE "[.]" "-" (replaceRE "\n" "" $host)) -}}
+
+<div class="iframe-wrapper">
+    <div class="iframe">
+        <div class="opt-in">
+            <div class="opt-in-overlay">
+                <h3 class="opt-in-header">{{ i18n "externalContent" }}</h3>
+                <p class="opt-in-text">{{ i18n "externalContentDescription" }}</p>
+                {{/* See https://www.w3schools.com/howto/howto_css_switch.asp */}}
+
+            </div>
+        </div>
+        <div class="switch-wrapper">
+            <label class="opt-in-switch">
+                <input type="checkbox">
+                <span class="opt-in-slider"></span>
+            </label>
+            <span class="opt-in-confirm">{{ i18n "accept" }}</span>
+        </div>
+
+    </div>
+
+    <script>
+        var context = $('script').last();
+        var expire = 30 * 24 * 60 * 60;
+        var overlay = context.parent().find('.opt-in');
+        var toggle = overlay.parent().find('.opt-in-switch input');
+
+        $(document).ready(function() {
+            addConsent(toggle, overlay, '{{ $cookie }}', '{{ $iframe }}');
+        });
+    </script>
+
+</div>

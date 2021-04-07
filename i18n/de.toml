@@ -35,3 +35,13 @@ other = "IIIF Manifest"
 
 [imageLink]
 other = "Link zu diesem Bild"
+
+# external Content
+[externalContent]
+other = "Externer Inhalt"
+
+[externalContentDescription]
+other = "An dieser Stelle wird ein externer Inhalt eingebunden. Damit können personenbezogene Daten an Drittplattformen übermittelt werden."
+
+[accept]
+other = "Externe Inhalte zulassen"

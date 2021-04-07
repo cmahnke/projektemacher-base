@@ -35,3 +35,13 @@ other = "IIIF manifest"
 
 [imageLink]
 other = "Link to this image"
+
+# external Content
+[externalContent]
+other = "External Content"
+
+[externalContentDescription]
+other = "External content is included at this point. Personal data might be transmitted to third-party platforms."
+
+[accept]
+other = "Allow external content"
