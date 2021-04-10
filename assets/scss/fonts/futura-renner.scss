@@ -1,0 +1,10 @@
+/* See https://fontlibrary.org/en/font/futura-renner */
+@font-face {
+  font-family: 'FuturaRennerRegular';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/FuturaRenner-Regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('/fonts/FuturaRenner-Regular.woff') format('woff'), /* Modern Browsers */
+       url('/fonts/FuturaRenner-Regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('/fonts/FuturaRenner-Regular.svg#futurarennerregular') format('svg'); /* Legacy iOS */
+}
