@@ -1,0 +1,19 @@
+/* lora-regular - latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/lora-v16-latin-regular.woff2') format('woff2'),
+       url('/fonts/lora-v16-latin-regular.woff') format('woff'),
+       url('/fonts/lora-v16-latin-regular.ttf') format('truetype');
+}
+
+/* lora-700 - latin */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/lora-v16-latin-700.woff2') format('woff2'),
+       url('/fonts/lora-v16-latin-700.woff') format('woff'),
+       url('/fonts/lora-v16-latin-700.ttf') format('truetype');
+}
