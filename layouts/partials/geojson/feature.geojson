@@ -1,0 +1,29 @@
+{{- $geojson := .Params.geojson -}}
+{{- $popupContent := partial "geojson/popupContent.html" . | jsonify -}}
+{{- $defaultType := "Point" -}}
+{{- $type := "" -}}
+{{- $coordinates := "" -}}
+
+{{- if ne (index $geojson "type") nil -}}
+    {{- $type = index $geojson "type" -}}
+{{- else -}}
+    {{- $type = $defaultType -}}
+{{- end -}}
+
+{{- if ne (index $geojson "coordinates") nil -}}
+    {{- $coordinates = index $geojson "coordinates" -}}
+{{- else -}}
+    {{- errorf "No coordinates for %s" .File.Path -}}
+{{- end -}}
+
+{
+  "type": "Feature",
+  "properties": {
+      "name": "{{ .Title }}",
+      "popupContent": {{ $popupContent }}
+  },
+  "geometry": {
+    "type": "{{ $type }}",
+    "coordinates": {{ $coordinates | jsonify }}
+  }
+}

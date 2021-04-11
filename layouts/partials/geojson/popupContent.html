@@ -1,0 +1,18 @@
+{{ $content := .RawContent }}
+{{/*
+{{ $content := replaceRE "(?s){{[<%]\\s+.*{{[<%]\\s+/[\\w\\s-]*[>%]}}" "" $content }}
+{{ $content := replaceRE "<!--more-->" "" $content }}
+{{ $content := replaceRE "{{[<%]\\s+.*?[>%]}}" "" $content }}
+*/}}
+{{- $content = partial "macros/remove-shortcodes.txt" $content -}}
+<div class="geojsonPopup">
+    <div class="title">
+        {{ .Title }}
+    </div>
+    <div class="content">
+        {{ $content | markdownify }}
+    </div>
+    <div class="link">
+        <a href="{{ .RelPermalink }}">{{ i18n "readmore" }}</a>
+    </div>
+</div>

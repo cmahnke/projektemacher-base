@@ -1,0 +1,12 @@
+{{- $features := . -}}
+{
+  "type": "FeatureCollection",
+  "features": [
+    {{- range $i, $res := $features -}}
+        {{- partial "geojson/feature.geojson" $res -}}
+        {{- if ne $i (sub (len $features) 1) -}}
+            ,
+        {{- end -}}
+    {{- end -}}
+  ]
+}

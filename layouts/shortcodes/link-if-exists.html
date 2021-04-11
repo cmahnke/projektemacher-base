@@ -1,0 +1,23 @@
+{{- $filename := "" -}}
+{{- $content := "" -}}
+{{- if (.Get "file") -}}
+  {{- $filename = (.Get "file") -}}
+{{- end -}}
+{{- if (.Get "content") -}}
+  {{- $content = (.Get "content") -}}
+{{- else -}}
+  {{- $content = $filename -}}
+{{- end -}}
+
+{{- $base := substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
+{{- $filename = printf "%s%s" $base $filename -}}
+
+{{- if (fileExists $filename) -}}
+    <div class="download-link">
+      {{ if $content }}
+        <a class="link" href="{{ $filename }}" >{{ $content | safeHTML }}</a>
+      {{ end }}
+    </div>
+{{- else -}}
+    {{- warnf "File %s doesn't exist!" $filename -}}
+{{- end -}}

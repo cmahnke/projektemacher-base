@@ -1,0 +1,5 @@
+{{- $content := . -}}
+{{- $content := replaceRE "(?s){{[<%]\\s+.*{{[<%]\\s+/[\\w\\s-]*[>%]}}" "" $content -}}
+{{- $content := replaceRE "<!--more-->" "" $content -}}
+{{- $content := replaceRE "{{[<%]\\s+.*?[>%]}}" "" $content -}}
+{{- $content -}}
