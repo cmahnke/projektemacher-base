@@ -42,6 +42,9 @@ other = "Mehr lesen..."
 [publishedOn]
 other = "Veröffentlicht am"
 
+[posts]
+other = "Beiträge"
+
 # 404 page
 [page_not_found]
 other = "Die Seite wurde nicht gefunden!"
@@ -57,7 +60,6 @@ other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0
 
 [projektemacher]
 other = "ist ein <a href=\"https://projektemacher.org/\">Projektemacher</a> Blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem; vertical-align: middle;\">"
-
 
 # IIIF images
 
