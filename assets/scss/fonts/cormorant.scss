@@ -1,0 +1,36 @@
+/* cormorant-regular - latin - Body font */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/cormorant-v10-latin-regular.woff2') format('woff2'),
+       url('/fonts/cormorant-v10-latin-regular.woff') format('woff'),
+       url('/fonts/cormorant-v10-latin-regular.ttf') format('truetype');
+}
+/* cormorant-italic - latin */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/fonts/cormorant-v10-latin-italic.woff2') format('woff2'),
+       url('/fonts/cormorant-v10-latin-italic.woff') format('woff'),
+       url('/fonts/cormorant-v10-latin-italic.ttf') format('truetype');
+}
+/* cormorant-700 - latin */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/cormorant-v10-latin-700.woff2') format('woff2'),
+       url('/fonts/cormorant-v10-latin-700.woff') format('woff'),
+       url('/fonts/cormorant-v10-latin-700.ttf') format('truetype');
+}
+/* cormorant-700italic - latin */
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 700;
+  src: url('/fonts/cormorant-v10-latin-700italic.woff2') format('woff2'),
+       url('/fonts/cormorant-v10-latin-700italic.woff') format('woff'),
+       url('/fonts/cormorant-v10-latin-700italic.ttf') format('truetype');
+}
