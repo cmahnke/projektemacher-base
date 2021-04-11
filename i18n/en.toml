@@ -1,9 +1,19 @@
-# Pagination
-[next_page]
-other = "Next"
+# Post relations
+[sectionParent]
+other = "This page is part of the following collection"
 
-[previous_page]
-other = "Back"
+[sectionContentsList]
+other = "This collection contains the following pages"
+
+#Book parts
+[cover]
+other = "Dust jacket"
+
+[front]
+other = "Front cover"
+
+[title]
+other = "Title page"
 
 # Languages
 [en]
@@ -11,6 +21,26 @@ other = "English"
 
 [de]
 other = "German"
+
+# Pagination
+[next_page]
+other = "Next"
+
+[previous_page]
+other = "Back"
+
+#Other
+[preview]
+other = "Preview"
+
+[readPost]
+other = "View the post"
+
+[readmore]
+other = "Read More..."
+
+[publishedOn]
+other = "published on"
 
 # 404 page
 [page_not_found]
@@ -22,8 +52,12 @@ other = "Sorry, this page does not exist."
 [head_back]
 other = "You can head back to <a href=\"{{ . }}\">homepage</a>."
 
+[cc]
+other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Attribution-ShareAlike 4.0 International License</a>."
+
 [projektemacher]
-other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"
+other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem; vertical-align: middle;\">"
+
 
 # IIIF images
 

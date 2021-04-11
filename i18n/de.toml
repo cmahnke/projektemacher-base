@@ -1,9 +1,19 @@
-# Pagination
-[next_page]
-other = "Vor"
+# Post relations
+[sectionParent]
+other = "Diese Seite ist Teil der Sammlung"
 
-[previous_page]
-other = "Zurück"
+[sectionContentsList]
+other = "Diese Sammlung enthält die folgenden Seiten"
+
+#Book parts
+[cover]
+other = "Umschlag"
+
+[front]
+other = "Buchdeckel"
+
+[title]
+other = "Titelseite"
 
 # Languages
 [en]
@@ -11,6 +21,26 @@ other = "Englisch"
 
 [de]
 other = "Deutsch"
+
+# Pagination
+[next_page]
+other = "Vor"
+
+[previous_page]
+other = "Zurück"
+
+#Other
+[preview]
+other = "Vorschau"
+
+[readPost]
+other = "Beitrag ansehen"
+
+[readmore]
+other = "Mehr lesen..."
+
+[publishedOn]
+other = "Veröffentlicht am"
 
 # 404 page
 [page_not_found]
@@ -22,8 +52,12 @@ other = "Entschuldigung, die Seite wurde nicht gefunden"
 [head_back]
 other = "Hier geht es zurück zur <a href=\"{{ . }}\">Startseite</a>."
 
+[cc]
+other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons Lizenzvertrag\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />Dieses Werk ist lizenziert unter einer <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>."
+
 [projektemacher]
-other = "ist ein <a href=\"https://projektemacher.org/en/\">Projektemacher</a> Blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"
+other = "ist ein <a href=\"https://projektemacher.org/\">Projektemacher</a> Blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem; vertical-align: middle;\">"
+
 
 # IIIF images
 
