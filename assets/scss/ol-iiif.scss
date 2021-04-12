@@ -17,7 +17,7 @@ $left: "data:image/svg+xml;utf8,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' vie
 }
 
 .rotate-left {
-    left: 0.5em;
+    left: .5em;
     top: 4em;
 
     .icon-left:after {
@@ -33,7 +33,7 @@ $left: "data:image/svg+xml;utf8,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' vie
 }
 
 .rotate-right {
-    left: 0.5em;
+    left: .5em;
     top: 6em;
 
     .icon-right:after {
@@ -47,101 +47,3 @@ $left: "data:image/svg+xml;utf8,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' vie
         background-position: center;
     }
 }
-/*
-.iiif {
-    .viewer {
-        width: 100%;
-        display: block;
-
-        &.portrait {
-
-            width: 100%;
-            height: calc(60vw * 1.6);
-            @media (max-width: 37.5em) {
-                width: 90vw;
-                height: calc(90vw * 1.5);
-            }
-        }
-
-        &.landscape {
-
-            width: 100%;
-            height: calc(60vw / 1.5);
-            @media (max-width: 37.5em) {
-                width: 90vw;
-                height: calc(90vw / 1.5);
-            }
-        }
-
-        &.presentation-api {
-            height: 95vh;
-            position: relative;
-        }
-    }
-
-    .iiif-image {
-        width: 100%;
-        padding: 0.3em;
-    }
-
-    .iiif-image.cover {
-        display: inline-block;
-    }
-
-    .iiif-image.cover {
-        order: 1;
-    }
-
-    .iiif-image.front {
-        order: 2;
-    }
-
-    .iiif-image.title {
-        order: 3;
-    }
-
-    .lanscape {
-        width: 100%;
-    }
-
-    .iiif-image.order-1 {
-        order: 11;
-        width: 100%;
-    }
-
-    .iiif-image.order-2 {
-        order: 12;
-        width: 100%;
-    }
-
-    .iiif-image.order-3 {
-        order: 13;
-        width: 100%;
-    }
-
-    .iiif-image.order-4 {
-        order: 14;
-        width: 100%;
-    }
-
-    .iiif-image.order-5 {
-        order: 15;
-        width: 100%;
-    }
-
-    .iiif-image.order-6 {
-        order: 16;
-        width: 100%;
-    }
-
-    .iiif-image.order-7 {
-        order: 17;
-        width: 100%;
-    }
-
-    .iiif-image.order-8 {
-        order: 18;
-        width: 100%;
-    }
-}
-*/
