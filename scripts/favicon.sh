@@ -4,7 +4,8 @@
 echo "Generating favicons from $SOURCE"
 
 # See https://gist.github.com/pfig/1808188
-convert "$SOURCE" static/images/favicon.png
+CMD="convert \"$SOURCE\" $OPTIONS static/images/favicon.png"
+eval $CMD
 convert static/images/favicon.png -resize 256x256 -transparent white static/images/favicon-256.png
 convert static/images/favicon-256.png -resize 16x16 static/images/favicon-16.png
 convert static/images/favicon-256.png -resize 32x32 static/images/favicon-32.png
