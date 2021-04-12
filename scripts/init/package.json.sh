@@ -11,16 +11,13 @@ if ! git diff --name-only --exit-code package.json ; then
     git checkout package.json
 fi
 
-#if test -f package.json ; then
-#    rm package.json
-#fi
-
 THEME_PACKAGE_FILES="$(find . -name package.hugo.json)"
 SITE_PACKAGE_FILE="$(find . -name package.json -depth 1 -size +0c)"
-PACKAGE_FILES=`echo $THEME_PACKAGE_FILES $SITE_PACKAGE_FILE | tr '\n' ' '`
+PACKAGE_FILES=$(echo $THEME_PACKAGE_FILES $SITE_PACKAGE_FILE | tr '\n' ' ')
 echo "Merging $PACKAGE_FILES"
 
-jq -s 'reduce .[] as $d ({}; . *= $d)' $PACKAGE_FILES > package.json
+PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
+echo "$PACKAGE" > package.json
 if ! yarn install ; then
     ERR=$?
     cat package.json | jq -C .
