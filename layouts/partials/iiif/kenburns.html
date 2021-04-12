@@ -1,0 +1,89 @@
+{{- $iiif := newScratch -}}
+{{- $contextPath := path.Dir .File.Path -}}
+
+{{- range .Params.resources -}}
+    {{- if .params.featured -}}
+        {{- $imgLocation := path.Join $contextPath .src -}}
+        {{- if .name -}}
+            {{- $iiif.Set "previewImg" ($.Resources.GetMatch .name) -}}
+        {{ else }}
+            {{- $iiif.Set "previewImg" ($.Resources.GetMatch .src) -}}
+        {{- end -}}
+
+        {{- if eq ($iiif.Get "previewImg") nil -}}
+            {{- warnf "Can't find image %s" $imgLocation -}}
+        {{- end -}}
+
+        {{- $iiif.Set "post" $.File.ContentBaseName -}}
+        {{- $iiif.Set "imgLocation" $imgLocation -}}
+        {{- $iiif.Set "manifest" .params.iiif -}}
+        {{- $iiif.Set "baseURL" (printf "/%s/%s/" $contextPath (path.Dir .params.iiif)) -}}
+        {{- if .params.animation -}}
+            {{- $iiif.Set "animation" .params.animation -}}
+        {{- end -}}
+        {{- if .params.rotate -}}
+            {{- $iiif.Set "rotate" .params.rotate -}}
+        {{- end -}}
+        {{- if .params.initialzoom -}}
+            {{- $iiif.Set "initialZoom" .params.initialzoom -}}
+        {{- end -}}
+        {{- if .params.initialcenter -}}
+            {{- $iiif.Set "initialCenter" .params.initialcenter -}}
+        {{- end -}}
+        {{- $iiif.Set "id" (replace (replace (replace ($iiif.Get "baseURL") "/" "") "." "") "-" "_") -}}
+
+    {{- end -}}
+{{- end -}}
+
+{{- $infoJson := "" -}}
+{{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+    {{- $infoJson = printf "/%s" (path.Join $contextPath ($iiif.Get "manifest")) -}}
+{{- else -}}
+    {{- $infoJson = printf "%s%s" .Site.Params.productionIIIFURLPrefix (path.Join $contextPath ($iiif.Get "manifest")) -}}
+    {{- $iiif.Set "baseURL" "" -}}
+{{- end -}}
+
+{{- $animation := "''" -}}
+{{- $initialZoom := 0 -}}
+{{- $rotation := 0 -}}
+{{- $initialCenter := "''" -}}
+{{- if ne ($iiif.Get "animation") nil }}
+    {{- $animation = $iiif.Get "animation" -}}
+{{- end }}
+{{- if ne ($iiif.Get "rotate") nil -}}
+    {{- $rotation = ($iiif.Get "rotate") -}}
+{{- end }}
+{{- if ne ($iiif.Get "initialZoom") nil -}}
+    {{ $initialZoom = ($iiif.Get "initialZoom") -}}
+{{- end -}}
+{{- if ne ($iiif.Get "initialCenter") nil -}}
+    {{- $initialCenter = ($iiif.Get "initialCenter") -}}
+{{- end -}}
+
+<div class="iiif-preview">
+    <div id="{{ $iiif.Get "id" }}" class="previewer"></div>
+
+    <script type="text/javascript">
+        var animation = {{ $animation | safeJS }};
+        {{ ($iiif.Get "id") | safeJS }}_Div = document.getElementById("{{ $iiif.Get "id" }}");
+        {{/* This line makes this not very portable, but passing this as a parameter would complicatze the whole patial... */}}
+        {{ ($iiif.Get "id") | safeJS }}_mo = document.getElementById("{{ $iiif.Get "id" }}").parentElement.parentElement.parentElement;
+        var {{ ($iiif.Get "id") | safeJS }} = animatedMap({{ ($iiif.Get "id") | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $iiif.Get "baseURL" }}, {{ $initialZoom }}, animation, {{ ($iiif.Get "id") | safeJS }}_mo, {{ $initialCenter | safeJS }});
+
+        if (window.iiifAnimations === undefined) {
+            window.iiifAnimations = [{{ ($iiif.Get "id") | safeJS }}];
+        } else {
+             window.iiifAnimations.push({{ ($iiif.Get "id") | safeJS }});
+        }
+
+/*
+        if (animation !== undefined && animation !== '') {
+            {{ ($iiif.Get "id") | safeJS }}.once('rendercomplete', function() {
+                console.log('Starting animation');
+                {{ ($iiif.Get "id") | safeJS }}.getView().animate(animation);
+            });
+        }
+*/
+        /* {{ ($iiif.Get "id") | safeJS }}.updateSize(); */
+    </script>
+  </div>

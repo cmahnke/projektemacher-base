@@ -1,0 +1,6 @@
+{{- $comment := .Inner | safeHTML -}}
+{{- if (.Get "comment") -}}
+  {{- $div = (.Get "comment") -}}
+{{- end -}}
+
+{{ (printf "<!-- %s -->" $comment) | safeHTML }}

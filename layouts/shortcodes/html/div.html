@@ -1,0 +1,12 @@
+{{- $div := .Inner | safeHTML -}}
+{{- if (.Get "content") -}}
+  {{- $div = (.Get "content") -}}
+{{- end -}}
+{{- $class := "" -}}
+{{- if (.Get "class") -}}
+  {{- $class = (.Get "class") -}}
+{{- end -}}
+
+<div class="{{ $class }}">
+    {{- $div -}}
+</div>
