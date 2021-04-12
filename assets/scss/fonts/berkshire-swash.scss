@@ -1,0 +1,9 @@
+/* berkshire-swash-regular - latin */
+@font-face {
+  font-family: 'Berkshire Swash';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/berkshire-swash-v9-latin-regular.woff2') format('woff2'),
+       url('/fonts/berkshire-swash-v9-latin-regular.woff') format('woff'),
+       url('/fonts/berkshire-swash-v9-latin-regular.ttf') format('truetype');
+}
