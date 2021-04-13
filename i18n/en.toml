@@ -1,3 +1,10 @@
+# Descriptions
+[aboutTheNeu]
+other = "About the"
+
+[aboutTheFem]
+other = "About the"
+
 # Post relations
 [sectionParent]
 other = "This page is part of the following collection"
@@ -55,6 +62,7 @@ other = "Sorry, this page does not exist."
 [head_back]
 other = "You can head back to <a href=\"{{ . }}\">homepage</a>."
 
+#Footer
 [cc]
 other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Attribution-ShareAlike 4.0 International License</a>."
 
@@ -62,7 +70,6 @@ other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0
 other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem; vertical-align: middle;\">"
 
 # IIIF images
-
 [fullResolution]
 other = "Download full resolution"
 
@@ -81,3 +88,7 @@ other = "External content is included at this point. Personal data might be tran
 
 [accept]
 other = "Allow external content"
+
+#Tags
+[allTags]
+other = "View all posts tagged"
