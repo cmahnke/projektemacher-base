@@ -1,0 +1,3 @@
+{{ if hasPrefix .Page.Name "404" }}
+    <meta http-equiv="refresh" content="15; URL={{ .Site.BaseURL }}">
+{{- end }}
