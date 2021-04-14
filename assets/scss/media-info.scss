@@ -1,0 +1,9 @@
+a.worldcat {
+    text-decoration: none;
+
+    &:after {
+        display: inline-block;
+        width: 1em;
+        content: url($link-light);
+    }
+}

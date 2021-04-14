@@ -203,6 +203,7 @@ window.addMap = function(element, url, rotation, baseURL) {
     // Languages
     var lang = 'en';
     if (document.documentElement.lang !== undefined) {
+        /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
         lang = document.documentElement.lang;
     }
     var toolTips = { 'de': {'zoomIn': 'Vergrößern', 'zoomOut': 'Verkleinern', 'fullscreen': 'Vollbildansicht', 'rotate': 'Rotation zurücksetzen', 'rotateLeft': '90° nach links drehen', 'rotateRight': '90° nach rechst drehen'},

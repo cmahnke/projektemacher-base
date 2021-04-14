@@ -64,7 +64,7 @@
     <div class="share">
         {{ $downloadURL := printf "%s" .context.src }}
         <a href="{{ $downloadURL }}" class="image-download">{{ i18n "fullResolution" }}</a> |
-        <a href="{{ $infoJson }}" class="iiif-link">{{ i18n "iiifManifest" }}</a> |
+        <a href="{{ $infoJson }}" class="iiif-link"><span class="iiif-iiif">{{ i18n "iiif" }}</span> <span class="iiif-manifest">{{ i18n "manifest" }}</span></a> |
         <a href="{{ $pageURL }}#{{ $mapName }}" class="image-link">{{ i18n "imageLink" }}</a>
     </div>
   </div>

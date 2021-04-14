@@ -1,0 +1,15 @@
+# IIIF images
+[fullResolution]
+other = "Download full resolution"
+
+[iiifManifest]
+other = "IIIF manifest"
+
+[imageLink]
+other = "Link to this image"
+
+[iiif]
+other = "IIIF"
+
+[manifest]
+other = "manifest"
