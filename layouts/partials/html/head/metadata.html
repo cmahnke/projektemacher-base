@@ -1,3 +1,4 @@
 {{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
 <meta name="description" content="{{ .Description | default (.Summary | default .Site.Params.description ) }}">
 <meta name="keywords" content="{{ (delimit .Keywords ",") | default .Site.Params.keywords }}">
+<meta http-equiv="Content-Language" content="{{ .Site.Language.Lang }}">
