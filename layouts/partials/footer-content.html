@@ -3,10 +3,12 @@
         {{ .Sites.First.Title }} {{ i18n "projektemacher" | safeHTML }}
     </p>
 
-	{{- if .Sites.First.Params.copyright -}}
-	    <p class="copyright">{{- . | markdownify -}}</p>
-	{{- else if .Sites.First.Params.copyrightYears -}}
-	    <p class="copyright">&copy; {{ .Sites.First.Params.copyrightYears }} {{ .Sites.First.Title }}</p>
+    {{- if and .Sites.First.Copyright (eq .Sites.First.Copyright false) -}}
+
+    {{- else if .Sites.First.Params.copyrightYears -}}
+	    <p class="copyright">&copy; {{ .Sites.First.Params.copyrightYears }} {{ .Sites.First.Copyright | safeHTML }}</p>
+	{{- else if .Sites.First.Params.copyright -}}
+	    <p class="copyright">{{- . | safeHTML -}}</p>
     {{- else -}}
         <p class="copyright">&copy; {{ .Sites.First.LastChange.Year }} {{ .Sites.First.Title }}</p>
     {{- end -}}
