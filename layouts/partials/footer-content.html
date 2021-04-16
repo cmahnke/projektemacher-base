@@ -1,0 +1,20 @@
+<div class="footer-container">
+    <p class="projektemacher">
+        {{ .Sites.First.Title }} {{ i18n "projektemacher" | safeHTML }}
+    </p>
+
+	{{- if .Sites.First.Params.copyright -}}
+	    <p class="copyright">{{- . | markdownify -}}</p>
+	{{- else if .Sites.First.Params.copyrightYears -}}
+	    <p class="copyright">&copy; {{ .Sites.First.Params.copyrightYears }} {{ .Sites.First.Title }}</p>
+    {{- else -}}
+        <p class="copyright">&copy; {{ .Sites.First.LastChange.Year }} {{ .Sites.First.Title }}</p>
+    {{- end -}}
+    {{- if and .Sites.First.Params.cc (eq .Sites.First.Params.cc true) -}}
+        <p class="cc">{{ i18n "cc" | safeHTML }}</p>
+	{{- end -}}
+    {{- if isset . "content" -}}
+        {{- .content | safeHTML -}}
+    {{- end -}}
+
+</div>
