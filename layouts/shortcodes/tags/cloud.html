@@ -3,11 +3,11 @@
 {{- $tag := "tag" -}}
 {{/*
 {{- if ne (.Scratch.Get "tag") nil -}}
-    {{- $tag = .Scratch.Get "tag" -}}
+    {{- $tag = printf "tag-%s (.Scratch.Get "tag") -}}
 {{- end -}}
 */}}
 {{- if .Get "tag" -}}
-    {{- $tag = .Get "tag" -}}
+    {{- $tag = printf "tag-%s" (.Get "tag") -}}
 {{- end -}}
 
 {{- $tags := $.Site.Taxonomies.tags.ByCount -}}
@@ -36,7 +36,7 @@
                 {{- $fontSize := add $min (mul (sub $max $min) $fontStep) -}}
                 {{- $fontSize = math.Floor $fontSize -}}
                 <a href="{{ $tagURL }}" class="btn btn-default cloud-tag" role="button" style="font-size: {{ $fontSize }}px;">
-                    {{ partial (printf "tagcloud/tag-%s.html" $tag) . }} <span class="badge">({{ .Count }})</span>
+                    {{ partial (printf "tagcloud/%s.html" $tag) . }} <span class="badge">({{ .Count }})</span>
                 </a>
             {{- end -}}
         {{- end -}}
