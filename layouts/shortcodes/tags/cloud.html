@@ -1,5 +1,15 @@
 {{/* Inspired by https://github.com/gohugoio/hugoThemesSite/blob/ff2c51f118fe932525715002895eda1f036877d7/layouts/partials/tag-cloud.html */}}
 
+{{- $tag := "tag" -}}
+{{/*
+{{- if ne (.Scratch.Get "tag") nil -}}
+    {{- $tag = .Scratch.Get "tag" -}}
+{{- end -}}
+*/}}
+{{- if .Get "tag" -}}
+    {{- $tag = .Get "tag" -}}
+{{- end -}}
+
 {{- $tags := $.Site.Taxonomies.tags.ByCount -}}
 {{- $filtered := where $tags "Count" ">=" 3 -}}
 {{- $filtered = where $filtered "Term" "not in" (slice "hugo" "tags" "rss") -}}
@@ -26,7 +36,7 @@
                 {{- $fontSize := add $min (mul (sub $max $min) $fontStep) -}}
                 {{- $fontSize = math.Floor $fontSize -}}
                 <a href="{{ $tagURL }}" class="btn btn-default cloud-tag" role="button" style="font-size: {{ $fontSize }}px;">
-                    {{ partial "tagcloud/tag.html" . }} <span class="badge">({{ .Count }})</span>
+                    {{ partial (printf "tagcloud/tag-%s.html" $tag) . }} <span class="badge">({{ .Count }})</span>
                 </a>
             {{- end -}}
         {{- end -}}
