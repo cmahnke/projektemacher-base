@@ -82,3 +82,10 @@ other = "Allow external content"
 #Tags
 [allTags]
 other = "View all posts tagged"
+
+#Feature status
+[thisFeature]
+other = "This feature"
+
+[underConstruction]
+other = "is currently under construction"

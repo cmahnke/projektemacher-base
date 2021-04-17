@@ -82,3 +82,10 @@ other = "Externe Inhalte zulassen"
 #Tags
 [allTags]
 other = "Alle Beiträge mit dem Tag"
+
+#Feature status
+[thisFeature]
+other = "Diese Funktionalität ist"
+
+[underConstruction]
+other = "derzeit in der Entwicklung"
