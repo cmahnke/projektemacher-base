@@ -1,13 +1,24 @@
 {{/*
 {{- $imageIdSuffix := "/full/full/0/default.jpg" -}}
 */}}
+{{/* This is a hack to get the default content language - this is a missing Hugo feature */}}
+{{- $defaultContentLanguage := (index $.Sites.First.Languages 0) -}}
 {{- $imageIdSuffix := "" -}}
 {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
 {
     {{- $contextPath := path.Dir .File.Path -}}
     {{- $urlBase := "" -}}
     {{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
-        {{- $urlBase = printf "%s/" (substr .Permalink 0 (sub (len .Permalink) 1)) -}}
+        {{- $pl := .Permalink -}}
+        {{- if ne $.Site.Language.Lang $defaultContentLanguage -}}
+            {{/* Just using replace will break if such a string is part of the path */}}
+            {{- range .AllTranslations -}}
+                {{- if eq .Language $defaultContentLanguage -}}
+                    {{- $pl = .Permalink -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- $urlBase = printf "%s/" (substr $pl 0 (sub (len $pl) 1)) -}}
     {{- else -}}
         {{- $localPath := (substr .RelPermalink 1 (sub (len .RelPermalink) 1)) -}}
         {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
