@@ -1,0 +1,1 @@
+{{- return (index $.Sites.First.Languages 0).Lang -}}

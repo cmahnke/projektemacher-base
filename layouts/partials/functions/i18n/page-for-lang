@@ -1,0 +1,4 @@
+{{/* See https://discourse.gohugo.io/t/how-to-get-a-specific-translation/32433/5 */}}
+{{- $context := .context -}}
+{{- $lang := .lang -}}
+{{- return index (where $context.AllTranslations "Language.Lang" $lang) 0 -}}
