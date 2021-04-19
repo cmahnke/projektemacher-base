@@ -1,1 +1,4 @@
 <meta name="projektemacher.org:build-date" content="{{ now }}">
+{{- if ne .GitInfo nil -}}
+    <meta name="projektemacher.org:git-commit" content="{{ .GitInfo.AbbreviatedHash }}">
+{{- end -}}
