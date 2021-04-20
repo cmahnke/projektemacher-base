@@ -30,8 +30,8 @@
   "patch": "yarn run patch-package",
   "postinstall": "yarn run prepatch \u0026\u0026 yarn run patch \u0026\u0026 yarn run postinstall-mirador",
   "postinstall-mirador": "cd node_modules/mirador \u0026\u0026 yarn install \u0026\u0026 yarn run build",
-  "validate-iiif": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run jsonlint",
-  "validate-json": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run jsonlint",
+  "validate-iiif": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run jsonlint -c",
+  "validate-json": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run jsonlint -c",
   "validate": "yarn run validate-iiif \u0026\u0026 yarn run validate-json"
  }
 }
