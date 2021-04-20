@@ -29,12 +29,15 @@
     "viewingDirection":"left-to-right",
     "viewingHint":"paged",
 
-    "label":"{{ .Title | jsonify }}",
+    "label": {{ .Title | jsonify }},
     {{- if isset .Params "iiifMetadata" -}}
-        {{- jsonify .Params.iiifMetadata -}}
+        {{- jsonify .Params.iiifmetadata -}}
+    {{- end -}}
+    {{- if isset .Params "iiif.metadata" -}}
+        {{- jsonify .Params.iiif.metadata -}}
     {{- end -}}
     {{- if .Description -}}
-        "description": "{{ .Description | jsonify }}",
+        "description": {{ .Description | jsonify }},
     {{- end -}}
 
     {{- $firstCanvasId := "" -}}
