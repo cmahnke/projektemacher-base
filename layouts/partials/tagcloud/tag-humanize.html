@@ -1,1 +1,5 @@
-{{ .Term | humanize}}
+{{- $term := . -}}
+{{- if in . "Term" -}}
+    {{- $term = .Term -}}
+{{- end -}}
+{{- $term | humanize -}}

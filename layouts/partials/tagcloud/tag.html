@@ -1,1 +1,5 @@
-{{- .Term -}}
+{{- $term := . -}}
+{{- if in . "Term" -}}
+    {{- $term = .Term -}}
+{{- end -}}
+{{- $term -}}
