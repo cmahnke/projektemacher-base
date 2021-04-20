@@ -30,8 +30,12 @@
   "patch": "yarn run patch-package",
   "postinstall": "yarn run prepatch \u0026\u0026 yarn run patch \u0026\u0026 yarn run postinstall-mirador",
   "postinstall-mirador": "cd node_modules/mirador \u0026\u0026 yarn install \u0026\u0026 yarn run build",
-  "validate-iiif": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run jsonlint -c",
-  "validate-json": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run jsonlint -c",
-  "validate": "yarn run validate-iiif \u0026\u0026 yarn run validate-json"
+  "validate-iiif-gnu": "find docs -name manifest.json -print0 | xargs -r -0 -n1 yarn run jsonlint -c -q",
+  "validate-gjson-gnu": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -r -0 -n1 yarn run jsonlint -c -q",
+  "validate-iiif-bsd": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run jsonlint -c -q",
+  "validate-gjson-bsd": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run jsonlint -c -q",
+  "validate-iiif": "case $OSTYPE in darwin*) yarn run validate-iiif-bsd ;; linux*) yarn run validate-iiif-gnu ;; bsd*) yarn run validate-iiif-bsd ;; *)  exit 100 ;; esac",
+  "validate-gjson": "case $OSTYPE in darwin*) yarn run validate-gjson-bsd ;; linux*) yarn run validate-gjson-gnu ;; bsd*) yarn run validate-gjson-bsd ;; *)  exit 100 ;; esac",
+  "validate": "yarn run validate-iiif \u0026\u0026 yarn run validate-gjson"
  }
 }
