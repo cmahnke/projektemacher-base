@@ -1,5 +1,7 @@
 {{- $term := . -}}
 {{- if in . "Term" -}}
     {{- $term = .Term -}}
+{{- else if in . "Name" -}}
+    {{- $term = .Name -}}
 {{- end -}}
 {{- replace $term  "-" " " -}}
