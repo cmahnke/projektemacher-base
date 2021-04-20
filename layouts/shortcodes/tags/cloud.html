@@ -1,11 +1,6 @@
 {{/* Inspired by https://github.com/gohugoio/hugoThemesSite/blob/ff2c51f118fe932525715002895eda1f036877d7/layouts/partials/tag-cloud.html */}}
 
 {{- $tag := "tag" -}}
-{{/*
-{{- if ne (.Scratch.Get "tag") nil -}}
-    {{- $tag = printf "tag-%s (.Scratch.Get "tag") -}}
-{{- end -}}
-*/}}
 {{- if .Get "tag" -}}
     {{- $tag = printf "tag-%s" (.Get "tag") -}}
 {{- end -}}

@@ -1,1 +1,5 @@
-{ .Term | i18n }}
+{{- $term := . -}}
+{{- if in . "Term" -}}
+    {{- $term = .Term -}}
+{{- end -}}
+{{- $term | i18n -}}

@@ -1,2 +1,5 @@
-{{- $tag := .Term -}}
-{{- replace $tag  "-" " " -}}
+{{- $term := . -}}
+{{- if in . "Term" -}}
+    {{- $term = .Term -}}
+{{- end -}}
+{{- replace $term  "-" " " -}}
