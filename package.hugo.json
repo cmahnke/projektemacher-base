@@ -29,6 +29,9 @@
   "prepatch": "cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD",
   "patch": "yarn run patch-package",
   "postinstall": "yarn run prepatch \u0026\u0026 yarn run patch \u0026\u0026 yarn run postinstall-mirador",
-  "postinstall-mirador": "cd node_modules/mirador \u0026\u0026 yarn install \u0026\u0026 yarn run build"
+  "postinstall-mirador": "cd node_modules/mirador \u0026\u0026 yarn install \u0026\u0026 yarn run build",
+  "validate-iiif": "for file in `find docs -name manifest.json`; do yarn run jsonlint $file; if [ $? != 0 ]; then exit $?; fi ; done",
+  "validate-json": "for file in `ls docs/*/*/*.json`; do yarn run jsonlint $file; if [ $? != 0 ]; then exit $?; fi ; done",
+  "validate": "yarn run validate-iiif \u0026\u0026 yarn run validate-json"
  }
 }
