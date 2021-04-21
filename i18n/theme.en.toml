@@ -22,13 +22,6 @@ other = "Front cover"
 [title]
 other = "Title page"
 
-# Languages
-[en]
-other = "English"
-
-[de]
-other = "German"
-
 # Pagination
 [next_page]
 other = "Next"

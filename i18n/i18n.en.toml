@@ -1,0 +1,15 @@
+# Languages
+[en]
+other = "English"
+
+[de]
+other = "German"
+
+[en_adj]
+other = "English"
+
+[de_adj]
+other = "German"
+
+[translationNotAvailable]
+other = "A {{ . }} translation is not available for this post."
