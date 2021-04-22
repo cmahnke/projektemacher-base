@@ -1,5 +1,2 @@
-{{- $term := . -}}
-{{- if in . "Term" -}}
-    {{- $term = .Term -}}
-{{- end -}}
+{{- $term := partial "functions/tags/tag2str" . -}}
 {{- $term | i18n -}}
