@@ -1,0 +1,22 @@
+{{- $page := .Page -}}
+{{- $context := path.Dir .File.Path -}}
+
+<div class="book-description book description">
+    <h1 class="description-heading">{{ i18n "aboutTheNeu" }} {{ i18n "book" }}</h1>
+    <h2 class="book-title">{{ .Params.bookTitle }}</h2>
+
+    <div class="description-body">
+        {{- if .Params.itemDescription -}}
+            {{- .Params.itemDescription | markdownify -}}
+        {{- else if .Params.description -}}
+            {{- .Params.description | markdownify -}}
+        {{- end -}}
+    </div>
+    <div class="description-images">
+      {{- range .Params.resources -}}
+        {{- if or (or (eq .name "front") (eq .name "title")) (eq .name "cover") -}}
+          {{ partial "iiif/iiif-image.html" (dict "context" . "contextPath" $context "pageURL" .Permalink "pageContext" $page  "site" $.Site) }}
+        {{- end -}}
+      {{- end -}}
+    </div>
+</div>
