@@ -3,7 +3,7 @@ import Mirador from 'mirador/dist/mirador.min.js';
 import unfetch from 'unfetch';
 const fetch = unfetch;
 
-window.addMirador = function (id, uri) {
+window.addMirador = function(id, uri) {
     // Languages
     var lang = 'en';
     if (document.documentElement.lang !== undefined) {
@@ -15,8 +15,8 @@ window.addMirador = function (id, uri) {
         // See https://github.com/ProjectMirador/mirador/blob/master/src/config/settings.js
         language: lang,
         availableLanguages: {
-          de: 'Deutsch',
-          en: 'English',
+            de: 'Deutsch',
+            en: 'English',
         },
         windows: [{
             "loadedManifest": uri,
@@ -27,8 +27,8 @@ window.addMirador = function (id, uri) {
             allowMaximize: false,
             allowClose: false,
             allowTopMenuButton: true, //false
-      	    defaultSideBarPanel: 'info',
-      	    sideBarOpenByDefault: false,
+            defaultSideBarPanel: 'info',
+            sideBarOpenByDefault: false,
             defaultView: 'single',
             hideWindowTitle: true,
             panels: {
@@ -38,19 +38,24 @@ window.addMirador = function (id, uri) {
                 annotations: false,
                 search: false
             },
-            views: [
-                { key: 'single', behaviors: ['individuals'] },
-                { key: 'book', behaviors: ['paged'] }
+            views: [{
+                    key: 'single',
+                    behaviors: ['individuals']
+                },
+                {
+                    key: 'book',
+                    behaviors: ['paged']
+                }
             ]
         },
         workspace: {
-             draggingEnabled: false,
-             allowNewWindows: false,
-      	     showZoomControls: true,
-             type: 'mosaic'
+            draggingEnabled: false,
+            allowNewWindows: false,
+            showZoomControls: true,
+            type: 'mosaic'
         },
         workspaceControlPanel: {
-          enabled: false,
+            enabled: false,
         }
     });
     return mirador;

@@ -17,6 +17,7 @@ function setConsent(cookie, consent, expire) {
 }
 
 export function addConsent(toggle, overlay, cookie, iframe) {
+    var expire = { expires: 7, path: '' };
     toggle.change(function() {
       if(this.checked) {
           console.log('Setting conset cookie for ' + cookie + ' to true');

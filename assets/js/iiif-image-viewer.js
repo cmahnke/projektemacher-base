@@ -35,7 +35,7 @@ var AnimatedView = /*@__PURE__*/ (function(View) {
 
     // This is the callback, when one animation has finished
     AnimatedView.prototype.nextAnimation_ = function (completed) {
-        if (completed === undefined || completed) {
+        if (completed === undefined || completed) {
             var context = this;
             var nextAnimation = this.getPauseableAnimation_();
             this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
