@@ -4,8 +4,7 @@
   "js-cookie": "^2.2.1",
   "mirador": "ProjectMirador/mirador",
   "normalize.css": "^8.0.1",
-  "ol": "^6.4.3",
-  "svgo": "^1.3.2"
+  "ol": "^6.4.3"
  },
  "devDependencies": {
   "eslint": "~7.21.0",
@@ -16,7 +15,8 @@
   "markdownlint-cli": "~0.27.1",
   "patch-package": "^6.2.2",
   "postcss": "^8.2.13",
-  "postcss-import": "^14.0.1",  
+  "postcss-cli": "^8.3.1",
+  "postcss-import": "^14.0.1",
   "prettier": "^2.2.1",
   "react": "^17.0.1",
   "react-dom": "^17.0.1",
@@ -30,7 +30,7 @@
   "svgo": "^1.3.2"
  },
  "scripts": {
-  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc.json docs/css/style.css",
+  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.json docs/css/style.css",
   "lint-scss": "stylelint 'assets/scss/*'",
   "lint-js": "eslint 'assets/js/*'",
   "lint": "yarn run lint-scss && yarn run lint-js",
