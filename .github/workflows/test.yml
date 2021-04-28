@@ -21,8 +21,6 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependendies.sh
-# Python dependencies
-          ./themes/projektemacher-base/scripts/github/python-dependendies.sh
 
       - name: Install Node dependencies
         run: |
