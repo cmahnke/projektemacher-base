@@ -1,13 +1,16 @@
+
+$font-body-font: '#000' !default;
+
 body {
-  font-family: $font-body-font;
+    font-family: $font-body-font;
 
-  &.about {
-    background-position: 95% 7em;
-    background-image: url("/images/cm.svg");
-    background-repeat: no-repeat;
-  }
+    &.about {
+        background-position: 95% 7em;
+        background-image: url("/images/cm.svg");
+        background-repeat: no-repeat;
+    }
 
-  &.error404 {
+    &.error404 {
 
-  }
+    }
 }
