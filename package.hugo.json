@@ -27,11 +27,11 @@
   "markdownlint-cli": "~0.27.1"
 },
  "scripts": {
-  "config-stylelint": "cp $INIT_CWD/themes/projektemacher-base/.stylelintrc.json $INIT_CWD",
-  "check-generated-css": "yarn run config-stylelint \u0026\u0026 yarn run stylelint docs/css/style.css",
-  "lint-scss": "yarn run stylelint 'assets/scss/*'",
-  "lint-js": "",
+  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc.json docs/css/style.css",
+  "lint-scss": "stylelint 'assets/scss/*'",
+  "lint-js": "eslint 'assets/js/*'",
   "lint": "yarn run lint-scss \u0026\u0026 yarn run lint-js",
+  "postbuild-lint": "yarn run check-generated-css",
   "prepatch": "cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD",
   "patch": "yarn run patch-package",
   "postinstall": "yarn run prepatch \u0026\u0026 yarn run patch \u0026\u0026 yarn run postinstall-mirador",
