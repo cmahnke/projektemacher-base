@@ -45,6 +45,9 @@ other = "published on"
 [posts]
 other = "Posts"
 
+[newPosts]
+other = "Recent Posts"
+
 # 404 page
 [page_not_found]
 other = "Page Not Found"
