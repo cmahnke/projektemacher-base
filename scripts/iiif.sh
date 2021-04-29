@@ -8,9 +8,6 @@ IMAGE_PREFIX=content
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl "
 CMD_PREFIX=""
 
-# This only works if there are no generated IIIF directories, otherwise these will be processed as well
-#shopt -s globstar
-
 if [ -z "$SKIP_IIIF" ] ; then
 
     if [ -z "$IMAGES" ] ; then
@@ -52,7 +49,7 @@ if [ -z "$SKIP_IIIF" ] ; then
 
     echo "Processing files"
     # IIFF
-    for IMAGE in $FILES
+    for IMAGE in $IMAGES
     do
 
         IMAGE_SUFFIX=$(echo $IMAGE |awk -F . '{print $NF}')
