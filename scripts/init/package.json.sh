@@ -11,9 +11,14 @@ if ! git diff --name-only --exit-code package.json ; then
     git checkout package.json
 fi
 
-THEME_PACKAGE_FILES="$(find . -name package.hugo.json)"
+CTX_PATH="$(dirname $(realpath $0))"
+THEME_PATH=$(realpath --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
+
+# The order matters here - first all themes, then the file from this theme and then the one from the site itself
+THEMES_PACKAGE_FILES="$(find themes -name package.hugo.json)"
+THEME_PACKAGE_FILE="$(find $THEME_PATH -name package.json -not -path '*/node_modules/*')"
 SITE_PACKAGE_FILE="$(find .  -maxdepth 1 -name package.json -type f -size +0c)"
-PACKAGE_FILES=$(echo $THEME_PACKAGE_FILES $SITE_PACKAGE_FILE | tr '\n' ' ')
+PACKAGE_FILES=$(echo $THEMES_PACKAGE_FILES $THEME_PACKAGE_FILE $SITE_PACKAGE_FILE | tr '\n' ' ')
 echo "Merging $PACKAGE_FILES"
 
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))

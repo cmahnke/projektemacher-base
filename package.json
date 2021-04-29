@@ -1,1 +1,50 @@
-package.hugo.json
+{
+ "dependencies": {
+  "jquery": "^3.6.0",
+  "js-cookie": "^2.2.1",
+  "mirador": "ProjectMirador/mirador",
+  "normalize.css": "^8.0.1",
+  "ol": "^6.4.3"
+ },
+ "devDependencies": {
+  "eslint": "~7.21.0",
+  "eslint-config-prettier": "~8.1.0",
+  "eslint-plugin-compat": "~3.9.0",
+  "eslint-plugin-prettier": "~3.3.1",
+  "jsonlint": "^1.6.3",
+  "markdownlint-cli": "~0.27.1",
+  "patch-package": "^6.2.2",
+  "postcss": "^8.2.13",
+  "postcss-cli": "^8.3.1",
+  "postcss-import": "^14.0.1",
+  "prettier": "^2.2.1",
+  "react": "^17.0.1",
+  "react-dom": "^17.0.1",
+  "stylelint": "^13.12.0",
+  "stylelint-config-prettier": "^8.0.2",
+  "stylelint-config-sass-guidelines": "^8.0.0",
+  "stylelint-config-standard": "^22.0.0",
+  "stylelint-no-unsupported-browser-features": "^4.1.4",
+  "stylelint-prettier": "^1.2.0",
+  "stylelint-scss": "^3.19.0",
+  "svgo": "^1.3.2"
+ },
+ "scripts": {
+  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.json docs/css/style.css",
+  "lint-scss": "stylelint 'assets/scss/*'",
+  "lint-js": "eslint 'assets/js/*'",
+  "lint": "yarn run lint-scss && yarn run lint-js",
+  "postbuild-lint": "yarn run check-generated-css",
+  "prepatch": "cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD",
+  "patch": "yarn run patch-package",
+  "postinstall": "yarn run prepatch && yarn run patch && yarn run postinstall-mirador",
+  "postinstall-mirador": "cd node_modules/mirador && yarn install && yarn run build",
+  "validate-iiif-gnu": "find docs -name manifest.json -print0 | xargs -r -0 -n1 yarn run jsonlint -c -q",
+  "validate-gjson-gnu": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -r -0 -n1 yarn run jsonlint -c -q",
+  "validate-iiif-bsd": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run jsonlint -c -q",
+  "validate-gjson-bsd": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run jsonlint -c -q",
+  "validate-iiif": "case $OSTYPE in darwin*) yarn run validate-iiif-bsd ;; linux*) yarn run validate-iiif-gnu ;; bsd*) yarn run validate-iiif-bsd ;; *)  exit 100 ;; esac",
+  "validate-gjson": "case $OSTYPE in darwin*) yarn run validate-gjson-bsd ;; linux*) yarn run validate-gjson-gnu ;; bsd*) yarn run validate-gjson-bsd ;; *)  exit 100 ;; esac",
+  "validate": "yarn run validate-iiif && yarn run validate-gjson"
+ }
+}

@@ -14,3 +14,9 @@ body {
 
     }
 }
+
+code {
+    @media (max-width: 56em) {
+            word-break: break-all;
+    }
+}

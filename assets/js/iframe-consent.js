@@ -9,10 +9,11 @@ function getConsent(cookie) {
 }
 
 function setConsent(cookie, consent, expire) {
+    var expire = { expires: 7, path: '' };
     if (consent == true) {
-        Cookies.set(cookie, '1', { expires: expire });
+        Cookies.set(cookie, true, expire);
     } else {
-        Cookies.set(cookie, '0', { expires: expire });
+        Cookies.set(cookie, false, expire);
     }
 }
 
@@ -20,12 +21,12 @@ export function addConsent(toggle, overlay, cookie, iframe) {
     var expire = { expires: 7, path: '' };
     toggle.change(function() {
       if(this.checked) {
-          console.log('Setting conset cookie for ' + cookie + ' to true');
+          console.log('Setting conset cookie for ' + cookie + ' to true, expire: ' + expire);
           setConsent(cookie, true, expire)
           overlay.hide();
           overlay.after(iframe);
       } else {
-          console.log('Setting conset cookie for ' + cookie + ' to false');
+          console.log('Setting conset cookie for ' + cookie + ' to false, expire: ' + expire);
           setConsent(cookie, false, expire)
           overlay.show();
           overlay.next().remove();
