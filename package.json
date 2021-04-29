@@ -27,7 +27,7 @@
   "stylelint-no-unsupported-browser-features": "^4.1.4",
   "stylelint-prettier": "^1.2.0",
   "stylelint-scss": "^3.19.0",
-  "svgo": "^1.3.2"
+  "svgo": "^2.3.0"
  },
  "scripts": {
   "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.json 'docs/css/*.css'",
