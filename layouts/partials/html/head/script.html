@@ -1,4 +1,9 @@
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+
+{{- if .Site.IsServer -}}
+    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+{{- end -}}
+
 {{- $externals := slice "domain" -}}
 {{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
 {{- $main := resources.Get "js/main.js" | js.Build $mainOpts -}}
@@ -6,7 +11,9 @@
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
 {{- if not .Params -}}
-    {{- if (in . "js") -}}
+{{/* TODO: find a way that works without argument or named ones - Hugo isn't really made for such use cases */}}
+{{/* Was  {{- if (in . "js") -}} */}}
+    {{- if .js -}}
         {{- if reflect.IsSlice .js -}}
             {{- $js = .js -}}
         {{- else if ne .js "" -}}
@@ -31,6 +38,8 @@
 {{- end -}}
 
 {{- $jsResources = union (slice $main) $jsResources -}}
+
+{{ warnf "%s %s" $jsResources (in . "js")  }}
 
 {{- $fileName := "" -}}
 {{- range $file := $jsResources -}}
