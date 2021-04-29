@@ -9,7 +9,6 @@ function getConsent(cookie) {
 }
 
 function setConsent(cookie, consent, expire) {
-    var expire = { expires: 7, path: '' };
     if (consent == true) {
         Cookies.set(cookie, true, expire);
     } else {

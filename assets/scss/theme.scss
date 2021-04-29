@@ -1,4 +1,3 @@
-
 $font-body-font: '#000' !default;
 
 body {
@@ -10,13 +9,11 @@ body {
         background-repeat: no-repeat;
     }
 
-    &.error404 {
-
-    }
+    &.error404 {}
 }
 
 code {
     @media (max-width: 56em) {
-            word-break: break-all;
+        word-break: break-all;
     }
 }
