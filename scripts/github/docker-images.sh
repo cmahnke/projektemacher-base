@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Format ["TAG"]="GLOBAL NAME"
-declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest"]="ghcr.io/cmahnke/iiif-action:latest-uploader" )
+declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest"]="ghcr.io/cmahnke/iiif-action:latest-jxl-uploader" )
 
 
 for IMAGE in "${!DOCKER_IMAGES[@]}"
