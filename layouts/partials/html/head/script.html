@@ -5,25 +5,29 @@
 
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
-{{- if .js -}}
-    {{- if reflect.IsSlice .js -}}
-        {{- $js = .js -}}
-    {{- else -}}
-        {{- $js = slice .js -}}
-    {{- end -}}
-    {{- range $file := $js -}}
-        {{- if eq (printf "%T" $file) "string" -}}
-            {{- if ne (resources.Get $file) nil -}}
-                {{- $jsResources = $jsResources | append (resources.Get $file) -}}
+{{- if not .Params -}}
+    {{- if (in . "js") -}}
+        {{- if reflect.IsSlice .js -}}
+            {{- $js = .js -}}
+        {{- else if ne .js "" -}}
+            {{- $js = slice .js -}}
+        {{- end -}}
+        {{- range $file := $js -}}
+            {{- if eq (printf "%T" $file) "string" -}}
+                {{- if ne (resources.Get $file) nil -}}
+                    {{- $jsResources = $jsResources | append (resources.Get $file) -}}
+                {{- else -}}
+                    {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
+                {{- end -}}
+            {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
+                {{ $jsResources = $jsResources | append $file -}}
             {{- else -}}
-                {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
+                {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
             {{- end -}}
-        {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
-            {{ $jsResources = $jsResources | append $file -}}
-        {{- else -}}
-            {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
         {{- end -}}
     {{- end -}}
+{{- else -}}
+    {{- warnf "Called html/head/script.html without params - just using js/main.js" -}}
 {{- end -}}
 
 {{- $jsResources = union (slice $main) $jsResources -}}
