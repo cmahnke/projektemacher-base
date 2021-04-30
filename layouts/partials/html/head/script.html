@@ -39,8 +39,6 @@
 
 {{- $jsResources = union (slice $main) $jsResources -}}
 
-{{ warnf "%s %s" $jsResources (in . "js")  }}
-
 {{- $fileName := "" -}}
 {{- range $file := $jsResources -}}
     {{- $fileName = printf "%s%s" $fileName $file.Name -}}

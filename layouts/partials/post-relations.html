@@ -1,0 +1,21 @@
+{{- if eq .Kind "section" -}}
+      <div class="section-contents-list">
+          {{- i18n "sectionContentsList" -}}:
+      </div>
+      <div class="section-posts">
+          <ul>
+              {{- range .CurrentSection.Pages.Reverse -}}
+                  <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+              {{- end -}}
+          <ul>
+      </div>
+{{- else if ne .CurrentSection.Dir "" -}}
+      {{- if not .Params.metaPage -}}
+          <div class="section-parent">
+              {{- i18n "sectionParent" -}}:
+          </div>
+          <ul>
+              <li><a href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.Title }}</a></li>
+          </ul>
+      {{- end -}}
+{{- end -}}

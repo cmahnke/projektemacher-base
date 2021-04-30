@@ -1,8 +1,7 @@
 {{- $page := .Page -}}
 {{- $context := path.Dir .File.Path -}}
-
-<div class="postcard-description postcard description">
-    <h1 class="description-heading">{{ i18n "aboutTheNeu" }} {{ i18n "postcard" }}</h1>
+<div class="work-description work description">
+    <h1 class="description-heading">{{ i18n "aboutTheNeu" }} {{ i18n "work" }}</h1>
     <div class="description-body">
         {{- if .Params.itemDescription -}}
             {{- .Params.itemDescription | markdownify -}}
