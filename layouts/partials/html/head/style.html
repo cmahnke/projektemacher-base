@@ -34,7 +34,7 @@
     {{- end -}}
 {{- end -}}
 
-{{- $scssStyle = union (slice $scssStyle) $cssResources -}}
+{{- $scssStyle = union $cssResources (slice $scssStyle) -}}
 
 {{- $fileName := "" -}}
 {{- range $file := $scssStyle -}}
