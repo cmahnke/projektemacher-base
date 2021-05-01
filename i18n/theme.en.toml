@@ -22,13 +22,6 @@ other = "Front cover"
 [title]
 other = "Title page"
 
-# Languages
-[en]
-other = "English"
-
-[de]
-other = "German"
-
 # Pagination
 [next_page]
 other = "Next"
@@ -51,6 +44,9 @@ other = "published on"
 
 [posts]
 other = "Posts"
+
+[newPosts]
+other = "Recent Posts"
 
 # 404 page
 [page_not_found]

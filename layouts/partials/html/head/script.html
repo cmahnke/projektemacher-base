@@ -1,0 +1,55 @@
+{{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+
+{{- if .Site.IsServer -}}
+    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+{{- end -}}
+
+{{- $externals := slice "domain" -}}
+{{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
+{{- $main := resources.Get "js/main.js" | js.Build $mainOpts -}}
+
+{{- $jsResources := slice -}}
+{{- $js := slice -}}
+{{- if not .Params -}}
+{{/* TODO: find a way that works without argument or named ones - Hugo isn't really made for such use cases */}}
+{{/* Was  {{- if (in . "js") -}} */}}
+    {{- if .js -}}
+        {{- if reflect.IsSlice .js -}}
+            {{- $js = .js -}}
+        {{- else if ne .js "" -}}
+            {{- $js = slice .js -}}
+        {{- end -}}
+        {{- range $file := $js -}}
+            {{- if eq (printf "%T" $file) "string" -}}
+                {{- if ne (resources.Get $file) nil -}}
+                    {{- $jsResources = $jsResources | append (resources.Get $file) -}}
+                {{- else -}}
+                    {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
+                {{- end -}}
+            {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
+                {{ $jsResources = $jsResources | append $file -}}
+            {{- else -}}
+                {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- warnf "Called html/head/script.html without params - just using js/main.js" -}}
+{{- end -}}
+
+{{- $jsResources = union (slice $main) $jsResources -}}
+
+{{- $fileName := "" -}}
+{{- range $file := $jsResources -}}
+    {{- $fileName = printf "%s%s" $fileName $file.Name -}}
+{{- end -}}
+{{- $fileName = md5 $fileName -}}
+
+{{- $mainJs := "" -}}
+{{- if not .Site.IsServer -}}
+    {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | minify | fingerprint -}}
+{{- else -}}
+    {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | fingerprint -}}
+{{- end -}}
+
+<script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>

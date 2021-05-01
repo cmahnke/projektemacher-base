@@ -2,10 +2,12 @@
 {{- if isset .Params "render" -}}
     {{- $render = printf "tag-%s" (.Params.render) -}}
 {{- end -}}
-{{ if isset .Params "tags" }}
+{{- if isset .Params "tags" -}}
   <div class="tags">
-      {{ range $tag := .Params.tags }}
-          <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ partial (printf "tagcloud/%s.html" $render) $tag }}</a><br />
-      {{ end }}
+      {{- range $tag := .Params.tags -}}
+          {{- if ne $tag "" -}}
+              <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ partial (printf "tagcloud/%s.html" $render) $tag }}</a><br />
+          {{- end -}}
+      {{- end -}}
   </div>
-{{ end }}
+{{- end -}}

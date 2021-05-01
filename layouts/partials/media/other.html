@@ -1,0 +1,13 @@
+{{- $page := .Page -}}
+{{- $context := path.Dir .File.Path -}}
+<div class="other-description other description">
+    {{- errorf "media/other.html isnt finished yet!" -}}
+    <h1 class="description-heading">{{ i18n "aboutTheNeu" }} {{ i18n "other" }}</h1>
+    <div class="description-body">
+        {{- if .Params.itemDescription -}}
+            {{- .Params.itemDescription | markdownify -}}
+        {{- else if .Params.description -}}
+            {{- .Params.description | markdownify -}}
+        {{- end -}}
+    </div>
+</div>

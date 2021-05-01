@@ -1,8 +1,8 @@
-{{/*
-{{- $imageIdSuffix := "/full/full/0/default.jpg" -}}
-*/}}
+{{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 {{/* This is a hack to get the default content language - this is a missing Hugo feature */}}
-{{- $defaultContentLanguage := (index $.Sites.First.Languages 0) -}}
+{{- $defaultContentLanguage := partialCached "functions/i18n/default-lang" . -}}
+{{- $defaultContentPage := partial "functions/i18n/page-for-lang" (dict "context" . "lang" $defaultContentLanguage) -}}
+
 {{- $imageIdSuffix := "" -}}
 {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
 {
@@ -11,12 +11,7 @@
     {{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
         {{- $pl := .Permalink -}}
         {{- if ne $.Site.Language.Lang $defaultContentLanguage -}}
-            {{/* Just using replace will break if such a string is part of the path */}}
-            {{- range .AllTranslations -}}
-                {{- if eq .Language $defaultContentLanguage -}}
-                    {{- $pl = .Permalink -}}
-                {{- end -}}
-            {{- end -}}
+            {{- $pl = $defaultContentPage.Permalink -}}
         {{- end -}}
         {{- $urlBase = printf "%s/" (substr $pl 0 (sub (len $pl) 1)) -}}
     {{- else -}}
@@ -29,7 +24,7 @@
     "viewingDirection":"left-to-right",
     "viewingHint":"paged",
 
-    "label": {{ .Title | jsonify }},
+    "label":{{ .Title | jsonify }},
     {{- if isset .Params "iiifMetadata" -}}
         {{- jsonify .Params.iiifmetadata -}}
     {{- end -}}
@@ -59,10 +54,15 @@
              {{- range $i, $res := .Params.resources -}}
 
                  {{- $image := newScratch -}}
+                 {{- $manifestDir := path.Dir .params.iiif -}}
+
                  {{- if .name -}}
                     {{- $image.Set "previewImg" ($.Resources.GetMatch .name) -}}
                  {{ else }}
                     {{- $image.Set "previewImg" ($.Resources.GetMatch .src) -}}
+                 {{- end -}}
+                 {{- if strings.HasSuffix ($image.Get "previewImg").Name "jxl" -}}
+                    {{- $image.Set "previewImg" ($defaultContentPage.Resources.GetMatch (printf "%s%s" $manifestDir $fullResImgSuffix)) -}}
                  {{- end -}}
                  {{- if eq ($image.Get "previewImg") nil -}}
                     {{- warnf "Can't find image %s" ($image.Get "previewLoc") -}}
@@ -75,7 +75,7 @@
                      {{- $canvas = path.Dir .params.iiif -}}
                  {{- end -}}
                  {{- $canvasId := printf "%scanvas/%s" $.Permalink $canvas -}}
-                 {{- $manifestDir := path.Dir .params.iiif -}}
+
                  {
                    "@id":"{{ $canvasId }}",
                    "@type":"sc:Canvas",
