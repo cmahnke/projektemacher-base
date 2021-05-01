@@ -7,6 +7,11 @@
 {{- end -}}
 
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+
+{{- if .Site.IsServer -}}
+    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+{{- end -}}
+
 {{- $minify := false -}}
 {{- $iiifJs := slice -}}
 
