@@ -195,6 +195,12 @@ var RotateRightControl = /*@__PURE__*/ (function(Control) {
     return RotateRightControl;
 }(Control));
 
+/* TODO: Rename these functiontions if real maps are added. The following files needs to be changed aas well:
+        * projektemacher-base/layouts/shortcodes/iiif/iiif.html
+        * projektemacher-base/layouts/partials/iiif/iiif-image.html
+        * projektemacher-base/layouts/partials/iiif/kenburns.html
+ */
+
 window.addMap = function(element, url, rotation, baseURL) {
     var initialRotation = 0;
     if (rotation !== undefined && rotation != 0) {
