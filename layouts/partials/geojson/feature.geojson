@@ -12,6 +12,7 @@
 
 {{- if ne (index $geojson "coordinates") nil -}}
     {{- $coordinates = index $geojson "coordinates" -}}
+    {{- $coordinates = apply $coordinates "partial" "format-coords" "." -}}
 {{- else -}}
     {{- errorf "No coordinates for %s" .File.Path -}}
 {{- end -}}
@@ -27,3 +28,8 @@
     "coordinates": {{ $coordinates | jsonify }}
   }
 }
+
+{{ define "partials/format-coords" }}
+    {{ $value := . }}
+    {{ return (printf "%.6f"  $value) }}
+{{ end }}
