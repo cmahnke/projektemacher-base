@@ -75,6 +75,7 @@ if [ -z "$SKIP_IIIF" ] ; then
             if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
                 echo "Running Docker for JPEG XL"
                 $CMD_PREFIX vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
+                mkdir -p  $TARGET/full/full/0/
                 $CMD_PREFIX vips copy $IMAGE $TARGET/full/full/0/default.jpg
             else
                 vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
