@@ -1,3 +1,10 @@
 <h1>404</h1>
 <h2>{{ i18n "page_not_found" }}</h2>
-<p>{{ i18n "page_does_not_exist" }}<br />{{ i18n "head_back" .Site.BaseURL | safeHTML }}</p>
+<div class="error404-msg">
+    <p>{{ i18n "page_does_not_exist" }}<br />{{ i18n "head_back" .Site.BaseURL | safeHTML }}</p>
+</div>
+{{ if .Site.Params.errorimg -}}
+    <div class="errorImg">
+        <img class="error404-img" src="{{ .Site.Params.logo | absURL }}" alt="{{ i18n "page_does_not_exist" }}"/>
+    </div>
+{{- end }}

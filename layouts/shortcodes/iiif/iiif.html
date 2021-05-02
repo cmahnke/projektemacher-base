@@ -26,6 +26,7 @@ Parameters:
     {{- $id = .divId -}}
 {{- end -}}
 {{- $var := "map" -}}
+{{/* TODO: This looks like a bug - the wrong parameter is checked */}}
 {{- if .Get "id" -}}
     {{- $var = .jsId -}}
 {{- end -}}

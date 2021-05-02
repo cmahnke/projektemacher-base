@@ -34,7 +34,11 @@
     {{- end -}}
 {{- end -}}
 
-{{- $scssStyle = union (slice $scssStyle) $cssResources -}}
+{{- if gt (len $cssResources) 0  -}}
+    {{- $scssStyle = union $cssResources (slice $scssStyle) -}}
+{{- else -}}
+    {{- $scssStyle = slice $scssStyle -}}
+{{- end -}}
 
 {{- $fileName := "" -}}
 {{- range $file := $scssStyle -}}
