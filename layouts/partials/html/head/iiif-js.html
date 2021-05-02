@@ -1,9 +1,23 @@
 {{- $prefix := "" -}}
 {{- $name := "" -}}
+{{- $context := "" -}}
+
+{{- if in . "context" -}}
+    {{- if .context -}}
+        {{ $context = .context }}
+    {{- end -}}
+{{- end -}}
+
 {{- if .Page.Params.iiifcontext -}}
     {{- $prefix = .Page.Params.iiifcontext -}}
 {{- else if .Page.Params.iiif.context -}}
     $prefix = .Page.Params.iiif.context -}}
+{{- else if ne (.Scratch.Get "iiifPrefix") nil -}}
+    {{- $prefix = .Scratch.Get "iiifPrefix" -}}
+{{- else if ne $context "" -}}
+    {{- if ne ($context.Scratch.Get "iiifPrefix") nil -}}
+        {{- $prefix = $context.Scratch.Get "iiifPrefix" -}}
+    {{- end -}}
 {{- end -}}
 
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
