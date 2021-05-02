@@ -65,6 +65,9 @@ other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0
 [projektemacher]
 other = "is a <a href=\"https://projektemacher.org/en/\">Projektemacher</a> blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"
 
+[powered_by]
+other = "Powered by"
+
 # external Content
 [externalContent]
 other = "External Content"
