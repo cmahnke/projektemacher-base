@@ -1,5 +1,12 @@
 {{- $geojson := .Params.geojson -}}
 {{- $popupContent := partial "geojson/popupContent.html" . | jsonify -}}
+
+{{- if in . "Scratch" -}}
+    {{- if $.Scatch.Get "popupContent" -}}
+        {{- $popupContent = partial (printf "geojson/popupContent-%s.html" $.Scatch.Get "popupContent") . | jsonify -}}
+    {{- end -}}
+{{- end -}}
+
 {{- $defaultType := "Point" -}}
 {{- $type := "" -}}
 {{- $coordinates := "" -}}
@@ -33,3 +40,5 @@
     {{ $value := . }}
     {{ return (printf "%.6f"  $value) }}
 {{ end }}
+
+{{/* Use https://geojson.tools/ for debugging */}}
