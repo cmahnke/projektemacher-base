@@ -1,8 +1,11 @@
 {{/* See https://stackoverflow.com/questions/57841380/gdpr-jquery-iframe-consent */}}
 
 {{- $iframe := .Inner | safeHTML -}}
+{{/*
 {{- $host := replaceRE ".*src=\".*?//(.*?)/.*" "$1" $iframe -}}
 {{- $cookie := printf "%s-consent" (replaceRE "[.]" "-" (replaceRE "\n" "" $host)) -}}
+*/}}
+{{- $cookie := md5 $iframe -}}
 
 <div class="iframe-wrapper">
     <div class="iframe">
