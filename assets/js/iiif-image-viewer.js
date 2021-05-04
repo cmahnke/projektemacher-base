@@ -35,7 +35,7 @@ var AnimatedView = /*@__PURE__*/ (function(View) {
 
     // This is the callback, when one animation has finished
     AnimatedView.prototype.nextAnimation_ = function (completed) {
-        if (completed === undefined || completed) {
+        if (completed === undefined || completed) {
             var context = this;
             var nextAnimation = this.getPauseableAnimation_();
             this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
@@ -194,6 +194,12 @@ var RotateRightControl = /*@__PURE__*/ (function(Control) {
 
     return RotateRightControl;
 }(Control));
+
+/* TODO: Rename these functiontions if real maps are added. The following files needs to be changed aas well:
+        * projektemacher-base/layouts/shortcodes/iiif/iiif.html
+        * projektemacher-base/layouts/partials/iiif/iiif-image.html
+        * projektemacher-base/layouts/partials/iiif/kenburns.html
+ */
 
 window.addMap = function(element, url, rotation, baseURL) {
     var initialRotation = 0;

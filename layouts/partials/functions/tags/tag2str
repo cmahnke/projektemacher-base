@@ -1,0 +1,8 @@
+{{- $term := . -}}
+{{/* TODO: Check if this can fail if the given type is wrong */}}
+{{- if in . "Term" -}}
+    {{- $term = .Term -}}
+{{- else if eq (printf "%T" .) "hugolib.OrderedTaxonomyEntry" -}}
+    {{- $term = .Name -}}
+{{- end -}}
+{{- return $term -}}

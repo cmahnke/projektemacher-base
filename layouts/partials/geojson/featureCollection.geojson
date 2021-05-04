@@ -1,3 +1,5 @@
+{{/* TODO Enable parameters */}}
+
 {{- $features := . -}}
 {
   "type": "FeatureCollection",

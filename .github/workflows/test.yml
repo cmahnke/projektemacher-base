@@ -1,0 +1,31 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 10.22.0
+
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
+
+      - name: Install Node dependencies
+        run: |
+          yarn install --ignore-scripts
+
+      - name: run linters
+        run: |
+          yarn run lint

@@ -13,14 +13,5 @@
         </div>
     </div>
 
-   <div class="credit">
-        <p class="projektemacher">
-            {{ .Site.Title }} {{ i18n "projektemacher" | safeHTML }}
-        </p>
-		{{- range .Site.Params.copyright -}}
-		      <p>{{- . | markdownify -}}</p>
-		{{- else -}}
-            <p class="cc">{{ i18n "cc" | safeHTML }}</p>
-		{{- end -}}
-	</div>
+   {{- partialCached "footer-content.html" . -}}
 </footer>

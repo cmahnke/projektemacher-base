@@ -1,0 +1,42 @@
+{{- $prefix := "" -}}
+{{- $name := "" -}}
+{{- $context := "" -}}
+
+{{- if in . "context" -}}
+    {{- if .context -}}
+        {{ $context = .context }}
+    {{- end -}}
+{{- end -}}
+
+{{- if .Page.Params.iiifcontext -}}
+    {{- $prefix = .Page.Params.iiifcontext -}}
+{{- else if .Page.Params.iiif.context -}}
+    $prefix = .Page.Params.iiif.context -}}
+{{- else if ne (.Scratch.Get "iiifPrefix") nil -}}
+    {{- $prefix = .Scratch.Get "iiifPrefix" -}}
+{{- else if ne $context "" -}}
+    {{- if ne ($context.Scratch.Get "iiifPrefix") nil -}}
+        {{- $prefix = $context.Scratch.Get "iiifPrefix" -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+
+{{- if .Site.IsServer -}}
+    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+{{- end -}}
+
+{{- $minify := false -}}
+{{- $iiifJs := slice -}}
+
+{{- if (hasPrefix $prefix "http://iiif.io/api/image/") -}}
+  {{- $iiifOpts := dict "targetPath" "js/iiif-image-viewer.js" "defines" $defines "minify" $minify -}}
+  {{- $iiifJs = $iiifJs | append (resources.Get "js/iiif-image-viewer.js" | js.Build $iiifOpts) -}}
+{{- end -}}
+
+{{- if (hasPrefix $prefix "http://iiif.io/api/presentation/") -}}
+  {{- $iiifOpts := dict "targetPath" "js/iiif-presentation-viewer.js" "defines" $defines "minify" $minify -}}
+  {{- $iiifJs = $iiifJs | append (resources.Get "js/iiif-presentation-viewer.js" | js.Build $iiifOpts) -}}
+{{- end -}}
+
+{{- return $iiifJs -}}

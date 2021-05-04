@@ -1,1 +1,2 @@
-{{ .Term | humanize}}
+{{- $term := partial "functions/tags/tag2str" . -}}
+{{- $term | humanize -}}

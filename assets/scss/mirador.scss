@@ -10,6 +10,7 @@
         &.portrait {
             width: 60vw;
             height: calc(60vw * 1.6);
+
             @media (max-width: 37.5em) {
                 width: 90vw;
                 height: calc(90vw * 1.5);
@@ -19,6 +20,7 @@
         &.landscape {
             width: 60vw;
             height: calc(60vw / 1.5);
+
             @media (max-width: 37.5em) {
                 width: 90vw;
                 height: calc(90vw / 1.5);
@@ -33,9 +35,6 @@
 
     .iiif-image.cover {
         display: inline-block;
-    }
-
-    .iiif-image.cover {
         order: 1;
     }
 
