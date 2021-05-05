@@ -1,4 +1,7 @@
+{{/*
 {{- $content := .RawContent -}}
+*/}}
+{{- $content := replaceRE "(?sm)^---$.*?^---$(.*)" "$1" .RawContent -}}
 {{- $content = replaceRE "(?s)(.*)<!--more-->.*" "$1" $content -}}
 {{/* Remove shortcodes */}}
 {{- $content = replaceRE "(.*)\\{\\{.*?\\}\\}" "$1" $content -}}
