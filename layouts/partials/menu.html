@@ -5,7 +5,11 @@
         <ul class="navigation-list">
             {{ with .Site.Menus.main}}
                 {{ range sort . }}
-                    <li class="navigation-item"><a class="navigation-link" href="{{ .URL | absLangURL }}">{{ .Name }}</a></li>
+                    {{- $class := path.Base .URL -}}
+                    {{- if eq $class "/" -}}
+                        {{- $class = "" -}}
+                    {{- end -}}
+                    <li class="navigation-item {{ $class }}"><a class="navigation-link" href="{{ .URL | absLangURL }}">{{ .Name }}</a></li>
                 {{ end }}
             {{ end }}
             {{ if .Site.IsMultiLingual }}

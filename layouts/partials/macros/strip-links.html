@@ -1,6 +1,6 @@
 {{/*
 {{- $content := .RawContent -}}
-*/}}
 {{- $content := replaceRE "(?sm)^---$.*?^---$(.*)" "$1" .RawContent -}}
-
+*/}}
+{{- $content := .Content -}}
 {{ return (plainify $content | safeHTML) }}
