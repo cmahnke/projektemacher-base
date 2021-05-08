@@ -11,6 +11,8 @@ Parameters:
 * share - Add share links (optional)
 */}}
 
+{{/* TODO: The logic of this is flawed */}}
+
 {{- if not (.Get "includeSources") -}}
     {{/* JavaScript */}}
     {{- $defines := dict "process.env.NODE_ENV" `"development"` -}}
@@ -31,25 +33,29 @@ Parameters:
     {{- $var = .jsId -}}
 {{- end -}}
 
-<a name="{{ $id }}"></a>
-<div id="{{ $id }}" class="viewer"></div>
-{{ $rotation := 0 }}
-{{ if (.Get "rotate") }}
-    {{ $rotation =  .Get "rotate" }}
-{{ end }}
-<script type="text/javascript">
-    var {{ $var | safeJS }} = addMap(document.getElementById("{{ $id }}"), "{{ $src }}", {{ $rotation }}, "{{ path.Dir $src }}");
-    {{ $var | safeJS }}.updateSize();
-</script>
-{{ if (.Get "share") }}
-    <div class="share">
-        {{ if (.Get "downloadURL") }}
-            <a href="{{- (.Get "downloadURL") -}}" class="image-download">Volle Auflösung herunterladen</a> | 
-        {{ end }}
-        <a href="{{ $src }}" class="iiif-link">IIIF Manifest</a>
-        {{- if (.Get "pageURL") -}}
-            {{- $pageURL := .Get "pageURL" }}
-            | <a href="{{ $pageURL }}#{{ .Name }}" class="image-link">Link zu diesem Bild</a>
-        {{- end -}}
-    </div>
-{{ end }}
+
+{{/* TODO: Reuse the existing partial here */}}
+<div class="iiif">
+    <a name="{{ $id }}"></a>
+    <div id="{{ $id }}" class="viewer"></div>
+    {{ $rotation := 0 }}
+    {{ if (.Get "rotate") }}
+        {{ $rotation =  .Get "rotate" }}
+    {{ end }}
+    <script type="text/javascript">
+        var {{ $var | safeJS }} = addMap(document.getElementById("{{ $id }}"), "{{ $src }}", {{ $rotation }}, "{{ path.Dir $src }}");
+        {{ $var | safeJS }}.updateSize();
+    </script>
+    {{ if (.Get "share") }}
+        <div class="share">
+            {{ if (.Get "downloadURL") }}
+                <a href="{{- (.Get "downloadURL") -}}" class="image-download">Volle Auflösung herunterladen</a> | 
+            {{ end }}
+            <a href="{{ $src }}" class="iiif-link">IIIF Manifest</a>
+            {{- if (.Get "pageURL") -}}
+                {{- $pageURL := .Get "pageURL" }}
+                | <a href="{{ $pageURL }}#{{ .Name }}" class="image-link">Link zu diesem Bild</a>
+            {{- end -}}
+        </div>
+    {{ end }}
+</div>
