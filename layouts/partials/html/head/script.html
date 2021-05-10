@@ -10,10 +10,8 @@
 
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
-{{- if not .Params -}}
-{{/* TODO: find a way that works without argument or named ones - Hugo isn't really made for such use cases */}}
-{{/* Was  {{- if (in . "js") -}} */}}
-    {{- if .js -}}
+{{- if ne (printf "%T" .) "*hugolib.pageState" -}}
+    {{- if (in . "js") -}}
         {{- if reflect.IsSlice .js -}}
             {{- $js = .js -}}
         {{- else if ne .js "" -}}
