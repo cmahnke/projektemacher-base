@@ -7,6 +7,4 @@
 {{- if and .Title (ne .Title "") -}}
     <meta property="og:title" content="{{ .Title }}" />
 {{- end -}}
-{{/*
-{{- partial "html/meta/og-image.html" -}}
-*/}}
+{{- partial "html/head/og-image.html" . -}}
