@@ -5,7 +5,10 @@
         <ul class="navigation-list">
             {{ with .Site.Menus.main}}
                 {{ range sort . }}
-                    <li class="navigation-item"><a class="navigation-link" href="{{ .URL | absLangURL }}">{{ .Name }}</a></li>
+                    {{- $class := path.Base .URL -}}
+                    {{- $class = replaceRE "^/$" "root" $class -}}
+                    {{- $class = printf "navto-%s" $class -}}
+                    <li class="navigation-item {{ $class }}"><a class="navigation-link" href="{{ .URL | absLangURL }}">{{ .Name }}</a></li>
                 {{ end }}
             {{ end }}
             {{ if .Site.IsMultiLingual }}

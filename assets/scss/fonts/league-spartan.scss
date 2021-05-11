@@ -1,0 +1,18 @@
+/* https://www.theleagueofmoveabletype.com/league-spartan */
+@font-face {
+  font-family: 'League Spartan';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/LeagueSpartan-SemiBold.woff2') format('woff2'),
+       url('/fonts/LeagueSpartan-SemiBold.woff') format('woff'),
+       url('/fonts/LeagueSpartan-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'League Spartan';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/LeagueSpartan-Bold.woff2') format('woff2'),
+       url('/fonts/LeagueSpartan-Bold.woff') format('woff'),
+       url('/fonts/LeagueSpartan-Bold.ttf') format('truetype');
+}

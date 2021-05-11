@@ -20,7 +20,7 @@ jobs:
 
       - name: Install required dependencies
         run: |
-          ./scripts/github/setup-dependendies.sh
+          ./scripts/github/setup-dependencies.sh
 
       - name: Install Node dependencies
         run: |
