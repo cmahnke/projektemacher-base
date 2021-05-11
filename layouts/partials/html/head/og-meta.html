@@ -1,0 +1,12 @@
+{{- if not .IsHome -}}
+    <meta property="og:type" content="article" />
+{{- else -}}
+    <meta property="og:type" content="blog" />
+{{- end -}}
+<meta property="og:url" content="{{ .Permalink }}" />
+{{- if and .Title (ne .Title "") -}}
+    <meta property="og:title" content="{{ .Title }}" />
+{{- end -}}
+{{/*
+{{- partial "html/meta/og-image.html" -}}
+*/}}
