@@ -6,10 +6,10 @@
 {{ $ogWidth := 1200 }}
 {{ $ogType := "jpeg" }}
 
-{{- if (templates.Exists "partials/preview-images.html") -}}
-    {{- $previewImg := partial "preview-images.html" (dict "context" . "height" $ogHeight "width" $ogWidth "type" $ogType) -}}
+{{- if (templates.Exists "partials/preview-image.html") -}}
+    {{- $previewImg := partial "preview-image.html" (dict "context" . "height" $ogHeight "width" $ogWidth "type" $ogType) -}}
     {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
-        <meta property="og:image" content="{{ $previewImg.RelPermalink }}" />
+        <meta property="og:image" content="{{ $previewImg.Permalink }}" />
         <meta property="og:image:type" content="image/{{ $ogType }}" />
         <meta property="og:image:width" content="{{ $ogWidth }}" />
         <meta property="og:image:height" content="{{ $ogHeight }}" />
