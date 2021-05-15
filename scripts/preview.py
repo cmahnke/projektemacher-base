@@ -52,7 +52,7 @@ def drawSVG(title, previewImg, outFile, config):
     svgTree = ET.parse(template)
 
     # Set paths relative to output dir
-    for styleElem in svgTree.findall("//svg:style", namespaces):
+    for styleElem in svgTree.findall(".//svg:style", namespaces):
         style = styleElem.text
         for urlMatch, url in re.findall(r'(url\s*?\([\'\"]?(.*?)[\'\"]?\))', style, re.S | re.M):
             relLocation = os.path.normpath(os.path.join(templateBase, os.path.dirname(url)))
@@ -61,7 +61,7 @@ def drawSVG(title, previewImg, outFile, config):
             style = style.replace(urlMatch, "url('" + newLocation + "')")
         styleElem.text = style
 
-    for linkElem in svgTree.findall("//*[@xlink:href]", namespaces):
+    for linkElem in svgTree.findall(".//*[@xlink:href]", namespaces):
         link = linkElem.get(xlinkAttr)
         relLocation = os.path.normpath(os.path.join(templateBase, os.path.dirname(link)))
         targetPath = os.path.relpath(relLocation, os.path.dirname(outFile))
@@ -70,19 +70,23 @@ def drawSVG(title, previewImg, outFile, config):
 
     # Update image
     previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
-    previewElem = svgTree.findall("//*[@id = 'hanger']", namespaces)[0]
+    previewElem = svgTree.findall(".//*[@id = 'hanger']", namespaces)[0]
     previewElem.set(xlinkAttr, previewImg)
 
     #TODO: This currently only scales to width
     #TODO: This currenly only centres
-    scale = int(previewElem.get("height")) / imgHeight
-    scaleWidth = imgWidth * scale
-    scaleX = int(previewElem.get("x")) + (int(previewElem.get("width")) - scaleWidth) / 2
-    previewElem.set("x", str(scaleX))
-    previewElem.set("width", str(scaleWidth))
+    if "scale" in config["svg"]:
+        if  config["svg"]["scale"] == "width":
+            scale = int(previewElem.get("height")) / imgHeight
+            scaleWidth = imgWidth * scale
+            scaleX = int(previewElem.get("x")) + (int(previewElem.get("width")) - scaleWidth) / 2
+            previewElem.set("x", str(scaleX))
+            previewElem.set("width", str(scaleWidth))
+        elif config["svg"]["scale"] == "height":
+            raise NotImplementedError
 
     # Update text
-    svgTree.findall("//*[@id = 'text-container']", namespaces)[0].text = title
+    svgTree.findall(".//*[@id = 'text-container']", namespaces)[0].text = title
 
     cprint("Writing {}".format(outFile), 'green')
     svgTree.write(outFile)
