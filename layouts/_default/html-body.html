@@ -1,0 +1,21 @@
+{{- partial "header.html" . -}}
+
+<div class="container include">
+    <main role="main" class="article include">
+        <button id="fullscreen-button" type="button" class="fullscreen-button">
+            <i class="fullscreen-icon"></i>
+        </button>
+        <div id="fullscreen-context" class="include-wrapper">
+            {{ partial "html/html-body.html" . }}
+        </div>
+    </main>
+    {{- if .Content -}}
+        <div class="container">
+            <main role="main" class="article">
+                {{ partial "article.html" . }}
+            </main>
+        </div>
+    {{- end -}}
+</div>
+
+{{- partial "footer.html" . -}}
