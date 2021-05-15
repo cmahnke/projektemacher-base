@@ -46,6 +46,9 @@ def drawSVG(title, previewImg, outFile, config):
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
 
+    img = Image.open(previewImg)
+    imgWidth, imgHeight = img.size
+
     svgTree = ET.parse(template)
 
     # Set paths relative to output dir
@@ -67,10 +70,18 @@ def drawSVG(title, previewImg, outFile, config):
 
     # Update image
     previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
-    svgTree.findall("//*[@id = 'hanger']", namespaces)[0].set(xlinkAttr, previewImg)
+    previewElem = svgTree.findall("//*[@id = 'hanger']", namespaces)[0]
+    previewElem.set(xlinkAttr, previewImg)
+
+    #TODO: This currently only scales to width
+    #TODO: This currenly only centres
+    scale = int(previewElem.get("height")) / imgHeight
+    scaleWidth = imgWidth * scale
+    scaleX = int(previewElem.get("x")) + (int(previewElem.get("width")) - scaleWidth) / 2
+    previewElem.set("x", str(scaleX))
+    previewElem.set("width", str(scaleWidth))
 
     # Update text
-    # /svg:tspan
     svgTree.findall("//*[@id = 'text-container']", namespaces)[0].text = title
 
     cprint("Writing {}".format(outFile), 'green')
