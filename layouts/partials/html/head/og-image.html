@@ -14,8 +14,8 @@
 {{- end -}}
 
 {{- $previewImg := "" -}}
-{{- if (templates.Exists "partials/preview-image.html") -}}
-    {{- $previewImg = partial "preview-image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
+{{- if (templates.Exists "partials/preview/image.html") -}}
+    {{- $previewImg = partial "preview/image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
 {{- else -}}
     {{- $previewImg = partial "preview/prerendered.html" (dict "context" .) -}}
 {{- end -}}
