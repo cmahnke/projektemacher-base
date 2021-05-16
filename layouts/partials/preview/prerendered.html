@@ -8,14 +8,6 @@
         {{- $previewImgPrefix = printf "%s%s" $previewImgPrefix .context.Site.Params.preview.outputSuffix -}}
     {{- end -}}
 
-    {{- $contentImg := (.context.Resources.ByType "image").GetMatch $previewImgPrefix -}}
-
-    {{- return $contentImg -}}
-    {{/*
-    {{- if ne $contentImg nil -}}
-        {{- $previewFilePattern := printf "%s%s" .context.Site.Params.preview.outputPrefix .context.Site.Params.preview.outputSuffix -}}
-        {{- $previewFile = .context.Resources.GetMatch $previewFilePattern -}}
-        {{- return $previewFile -}}
-    {{- end -}}
-    */}}
+    {{- $previewFile = (.context.Resources.ByType "image").GetMatch $previewImgPrefix -}}
 {{- end -}}
+{{- return $previewFile -}}
