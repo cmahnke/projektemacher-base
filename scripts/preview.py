@@ -78,7 +78,7 @@ def drawSVG(title, contentFile, outFile, config):
     # Update image
     if previewImg != "":
         previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
-        if vgTree.findall(".//*[@id = 'preview-image']", namespaces):
+        if svgTree.findall(".//*[@id = 'preview-image']", namespaces):
             previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
             previewElem.set(xlinkAttr, previewImg)
 
