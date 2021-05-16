@@ -5,8 +5,7 @@ echo "Installing fonts"
 BASEDIR=$(dirname "$0")
 sudo cp $BASEDIR/../../static/fonts/*.ttf /usr/local/share/fonts
 fc-cache -f -v
-
-fc-list -v
+fc-list
 
 echo "Installing Inkscape"
 
