@@ -73,7 +73,7 @@ def drawSVG(title, previewImg, outFile, config):
 
     # Update image
     previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
-    previewElem = svgTree.findall(".//*[@id = 'hanger']", namespaces)[0]
+    previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
     previewElem.set(xlinkAttr, previewImg)
 
     #TODO: This currently only scales to width
@@ -107,16 +107,22 @@ def getPreviewImg(config, contentFile):
 
 config = loadConfig(open(configFile, 'r'))
 
+cFilePAttern = re.compile(filePattern)
 for subdir, dirs, files in os.walk(contentPath):
     for file in files:
-        if re.match(filePattern, file):
+        fileMatch = cFilePAttern.match(file)
+        if fileMatch:
             cprint("Processing " + os.path.join(subdir, file), 'green')
+            lang = fileMatch.group(2)
             contentFile = os.path.join(subdir, file)
             metadata = readMetadata(contentFile)
-
             previewImg = getPreviewImg(config, contentFile)
+            outputFileSuffix = config["outputPrefix"]
+            if lang:
+                outputFileSuffix += lang
             if config["format"] == "svg":
-                output = os.path.join(subdir, config["outputPrefix"] + ".svg")
+                output = os.path.join(subdir, outputFileSuffix + ".svg")
                 drawSVG(metadata["title"], previewImg, output, config)
-            #elif config["format"] == "png":
-            #    drawPNG(metadata["title"], output, config)
+            elif config["format"] == "png":
+                output = os.path.join(subdir, outputFileSuffix + ".png")
+                drawPNG(metadata["title"], output, config)

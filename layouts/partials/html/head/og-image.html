@@ -3,23 +3,28 @@
     Open Graph sizees: https://iamturns.com/open-graph-image-size/
     */}}
 {{- $ogHeight := 630 -}}
-{{- if $.Site.Params.preview.size.height -}}
-    {{- $ogHeight = $.Site.Params.preview.size.height -}}
-{{- end -}}
-
 {{- $ogWidth := 1200 -}}
-{{- if $.Site.Params.preview.size.width -}}
-    {{- $ogWidth = $.Site.Params.preview.size.width -}}
+{{- if isset $.Site.Params "preview" -}}
+    {{- if $.Site.Params.preview.size.height -}}
+        {{- $ogHeight = $.Site.Params.preview.size.height -}}
+    {{- end -}}
+    {{- if $.Site.Params.preview.size.width -}}
+        {{- $ogWidth = $.Site.Params.preview.size.width -}}
+    {{- end -}}
 {{- end -}}
 
+{{- $previewImg := "" -}}
 {{- if (templates.Exists "partials/preview-image.html") -}}
-    {{- $previewImg := partial "preview-image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
-    {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
-        <meta property="og:image" content="{{ $previewImg.Permalink }}" />
-        <meta property="og:image:type" content="{{$previewImg.MediaType }}" />
-        <meta property="og:image:width" content="{{ $ogWidth }}" />
-        <meta property="og:image:height" content="{{ $ogHeight }}" />
-    {{- else -}}
-        {{- warnf "Can't generate preview for %s" .File.Path }}
-    {{- end -}}
+    {{- $previewImg = partial "preview-image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
+{{- else -}}
+    {{- $previewImg = partial "preview/prerendered.html" (dict "context" .) -}}
+{{- end -}}
+
+{{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
+    <meta property="og:image" content="{{ $previewImg.Permalink }}" />
+    <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
+    <meta property="og:image:width" content="{{ $previewImg.Width }}" />
+    <meta property="og:image:height" content="{{ $previewImg.Height }}" />
+{{- else -}}
+    {{- warnf "Can't generate preview for %s" .File.Path }}
 {{- end -}}

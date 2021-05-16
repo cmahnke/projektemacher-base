@@ -1,0 +1,15 @@
+{{- $previewFile := "" -}}
+{{- if isset .context.Site.Params "preview" -}}
+    {{- $previewImgPrefix := .context.Site.Params.preview.image -}}
+
+    {{- if ne .context.Sites.First .context.Site -}}
+        {{- $previewImgPrefix = printf "%s.%s" $previewImgPrefix .context.Site.Language.Lang -}}
+    {{- end -}}
+
+    {{- $contentImg := .context.Resources.Match $previewImgPrefix -}}
+    {{- if ne $contentImg nil -}}
+        {{- $previewFilePattern := printf "%s%s" .context.Site.Params.preview.outputPrefix .context.Site.Params.preview.outputSuffix -}}
+        {{- $previewFile = .context.Resources.GetMatch $previewFilePattern -}}
+        {{- return $previewFile -}}
+    {{- end -}}
+{{- end -}}
