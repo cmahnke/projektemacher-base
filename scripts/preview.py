@@ -39,18 +39,22 @@ def drawTitle(title, file, config):
     draw.text((15,15), title, fill=config["font"]["color"], font=font)
     img.save(file)
 
-def drawSVG(title, previewImg, outFile, config):
+def drawSVG(title, contentFile, outFile, config):
     global namespaces
     template = config["svg"]["template"]
     templateBase = os.path.dirname(template)
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
+    previewImg = getPreviewImg(config, contentFile)
 
-    if not os.path.isfile(previewImg):
+    cprint("Rendering '{}' from '{}'".format(outFile, template), "yellow")
+
+    if previewImg is False:
         return
-
-    img = Image.open(previewImg)
-    imgWidth, imgHeight = img.size
+    elif previewImg != "":
+        if not os.path.isfile(previewImg):
+            cprint("Image '{}' dosn't exit, ignoring".format(previewImg), "red")
+            return
 
     svgTree = ET.parse(template)
 
@@ -72,13 +76,18 @@ def drawSVG(title, previewImg, outFile, config):
         linkElem.set(xlinkAttr, newLocation)
 
     # Update image
-    previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
-    previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
-    previewElem.set(xlinkAttr, previewImg)
+    if previewImg != "":
+        previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
+        if vgTree.findall(".//*[@id = 'preview-image']", namespaces):
+            previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
+            previewElem.set(xlinkAttr, previewImg)
 
     #TODO: This currently only scales to width
     #TODO: This currenly only centres
-    if "scale" in config["svg"]:
+    if previewImg != "" and "scale" in config["svg"]:
+        img = Image.open(previewImg)
+        imgWidth, imgHeight = img.size
+
         if  config["svg"]["scale"] == "width":
             scale = int(previewElem.get("height")) / imgHeight
             scaleWidth = imgWidth * scale
@@ -101,9 +110,13 @@ def getPreviewImg(config, contentFile):
     if config["source"] == "file":
         path = os.path.dirname(contentFile)
         return os.path.join(path, config["image"])
+    elif config["source"] == "overlay":
+        return ""
     elif config["source"] == "post":
         metadata = readMetadata(contentFile)
         raise NotImplementedError
+    else:
+        return False
 
 config = loadConfig(open(configFile, 'r'))
 
@@ -116,13 +129,14 @@ for subdir, dirs, files in os.walk(contentPath):
             lang = fileMatch.group(2)
             contentFile = os.path.join(subdir, file)
             metadata = readMetadata(contentFile)
-            previewImg = getPreviewImg(config, contentFile)
             outputFileSuffix = config["outputPrefix"]
             if lang:
                 outputFileSuffix += lang
             if config["format"] == "svg":
                 output = os.path.join(subdir, outputFileSuffix + ".svg")
-                drawSVG(metadata["title"], previewImg, output, config)
+                drawSVG(metadata["title"], contentFile, output, config)
             elif config["format"] == "png":
                 output = os.path.join(subdir, outputFileSuffix + ".png")
                 drawPNG(metadata["title"], output, config)
+            else:
+                cprint("Can' process " + os.path.join(subdir, file) + ", no format set", 'red')
