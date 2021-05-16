@@ -46,6 +46,9 @@ def drawSVG(title, previewImg, outFile, config):
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
 
+    if not os.path.isfile(previewImg):
+        return
+
     img = Image.open(previewImg)
     imgWidth, imgHeight = img.size
 
