@@ -78,6 +78,7 @@ def drawSVG(title, contentFile, outFile, config):
     # Update image
     if previewImg != "":
         previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
+        cprint("Setting @id='preview-image' to '{}'".format(previewImg ), "yellow")
         if svgTree.findall(".//*[@id = 'preview-image']", namespaces):
             previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
             previewElem.set(xlinkAttr, previewImg)
@@ -107,7 +108,7 @@ def drawPNG(title, file, config):
     drawTitle(title, output, config)
 
 def getPreviewImg(config, contentFile):
-    if config["source"] == "file":
+    if config["source"] == "file" or config["source"] == "image":
         path = os.path.dirname(contentFile)
         return os.path.join(path, config["image"])
     elif config["source"] == "overlay":
@@ -116,6 +117,7 @@ def getPreviewImg(config, contentFile):
         metadata = readMetadata(contentFile)
         raise NotImplementedError
     else:
+        cprint("Unknown source type: '{}'".format(config["source"]), "red")
         return False
 
 config = loadConfig(open(configFile, 'r'))
