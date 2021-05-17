@@ -5,14 +5,16 @@
     font-style: normal;
     font-weight: 400;
     src: url(/fonts/Inconsolata_400_normal.woff2) format('woff2'),
-         url(/fonts/Inconsolata_400_normal.woff) format('woff');
+         url(/fonts/Inconsolata_400_normal.woff) format('woff'),
+         url(/fonts/Inconsolata_400_normal.ttf) format('ttf');
 }
 @font-face {
     font-family: 'Inconsolata';
     font-style: normal;
     font-weight: 700;
     src: url(/fonts/Inconsolata_700_normal.woff2) format('woff2'),
-         url(/fonts/Inconsolata_700_normal.woff) format('woff');
+         url(/fonts/Inconsolata_700_normal.woff) format('woff'),
+         url(/fonts/Inconsolata_700_normal.ttf) format('ttf');
 
 }
 @font-face {
@@ -20,5 +22,6 @@
     font-style: normal;
     font-weight: 900;
     src: url(/fonts/Inconsolata_900_normal.woff2) format('woff2'),
-        url(/fonts/Inconsolata_900_normal.woff) format('woff');
+         url(/fonts/Inconsolata_900_normal.woff) format('woff'),
+         url(/fonts/Inconsolata_900_normal.ttf) format('ttf')
 }
