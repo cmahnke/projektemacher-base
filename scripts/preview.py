@@ -46,15 +46,7 @@ def drawSVG(title, contentFile, outFile, config):
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
     previewImg = getPreviewImg(config, contentFile)
-
     cprint("Rendering '{}' from '{}'".format(outFile, template), "yellow")
-
-    if previewImg is False:
-        return
-    elif previewImg != "":
-        if not os.path.isfile(previewImg):
-            cprint("Image '{}' dosn't exit, ignoring".format(previewImg), "red")
-            return
 
     svgTree = ET.parse(template)
 
@@ -76,12 +68,23 @@ def drawSVG(title, contentFile, outFile, config):
         linkElem.set(xlinkAttr, newLocation)
 
     # Update image
-    if previewImg != "":
+    imageXPath = ".//*[@id = 'preview-image']"
+    if previewImg is False:
+        return
+    elif previewImg != "" and os.path.isfile(previewImg):
         previewImg = os.path.join(os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)), os.path.basename(previewImg))
         cprint("Setting @id='preview-image' to '{}'".format(previewImg ), "yellow")
-        if svgTree.findall(".//*[@id = 'preview-image']", namespaces):
-            previewElem = svgTree.findall(".//*[@id = 'preview-image']", namespaces)[0]
+        if svgTree.findall(imageXPath, namespaces):
+            previewElem = svgTree.findall(imageXPath, namespaces)[0]
             previewElem.set(xlinkAttr, previewImg)
+    elif "removeMissing" in config["svg"]:
+        if config["svg"]["removeMissing"] == True:
+            parent = svgTree.findall(imageXPath + "/..", namespaces)[0]
+            previewElem = svgTree.findall(imageXPath, namespaces)[0]
+            parent.remove(previewElem)
+            cprint("Removd reference to missing image", "yellow")
+    else:
+        cprint("Image '{}' dosn't exit, ignoring".format(previewImg), "red")
 
     #TODO: This currently only scales to width
     #TODO: This currenly only centres
@@ -89,7 +92,7 @@ def drawSVG(title, contentFile, outFile, config):
         img = Image.open(previewImg)
         imgWidth, imgHeight = img.size
 
-        if  config["svg"]["scale"] == "width":
+        if config["svg"]["scale"] == "width":
             scale = int(previewElem.get("height")) / imgHeight
             scaleWidth = imgWidth * scale
             scaleX = int(previewElem.get("x")) + (int(previewElem.get("width")) - scaleWidth) / 2
