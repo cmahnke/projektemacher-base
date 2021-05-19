@@ -1,0 +1,24 @@
+{{- $entries := .entries -}}
+<div id="timeline" class="timeline timeline-horizontal">
+</div>
+<script type="text/javascript">
+
+    if ($(window).width() < 1024) {
+        $('#vertical-tab').tab('show')
+    }
+
+    var issues = [
+        {{- range $entries -}}
+                {{- $year := .Params.issueYear -}}
+                {{- $month := 1 -}}
+                {{- if isset .Params "issueMonth" -}}
+                    {{- $month = .Params.issueMonth -}}
+                {{- end -}}
+                {{- $content := printf "<a href=\"%s\">%s</a>" .RelPermalink .Title -}}
+                {"content": "{{ $content }}", "start": new Date({{- $year -}}, {{- $month -}}, 1), "url": {{ .RelPermalink | jsonify }}},
+
+        {{- end -}}
+    ];
+    var options = {};
+    var timeline = addTimeline('timeline', issues, options);
+</script>

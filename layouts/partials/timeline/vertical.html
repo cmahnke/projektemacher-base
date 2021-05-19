@@ -1,0 +1,63 @@
+{{- $entries := .entries -}}
+<div class="timeline timeline-vertical">
+    {{- $first := index (first 1 $entries) 0 -}}
+    {{- $last := index (last 1 $entries) 0 -}}
+
+    {{- range $index, $entry := $entries -}}
+        {{- $year := .Params.issueYear -}}
+        {{- $month := 1 -}}
+        {{- if isset .Params "issueMonth" -}}
+            {{- $month = .Params.issueMonth -}}
+        {{- end -}}
+
+        {{- $context := path.Dir .File.Path -}}
+        {{- $images := newScratch -}}
+        {{- $entry := . -}}
+
+        {{- range .Params.resources -}}
+            {{- if eq ($images.Get "preview") nil -}}
+                {{- if or (eq .name "front") (eq .name "cover") -}}
+                    {{- $images.Set "previewLoc" (path.Join $context .src) -}}
+                    {{- $images.Set "preview" (($entry.Resources.ByType "image").GetMatch .name) -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+
+        {{- $imgLocation := $images.Get "previewLoc" -}}
+        {{- $previewImg := $images.Get "preview" -}}
+        {{- if eq $previewImg nil -}}
+            {{- warnf "Can't find image %s for post %s" $imgLocation $context -}}
+        {{- end -}}
+        {{- $previewImg = $previewImg.Resize "370x"  -}}
+
+        {{- $class := "" -}}
+        {{- if eq (mod $index 2) 0 -}}
+            {{- $class = "even" -}}
+        {{- else -}}
+            {{- $class = "odd" -}}
+        {{- end -}}
+
+        <div class="timeline-item {{ $class }}">
+            <div class="preview-img-container">
+                <a href="{{ .RelPermalink }}">
+                    <img class="list preview-img" src="{{ $previewImg.RelPermalink }}" alt="Cover">
+                    <div class="year">{{- $year -}}</div>
+                </a>
+            </div>
+            <div class="preview-text-container">
+                <a href="{{ .RelPermalink }}">
+
+                    {{- $title := "" -}}
+                    {{ if isset .Params "subtitle" -}}
+                      {{- $title = printf "%s: %s" .Title .Params.subTitle -}}
+                    {{- else -}}
+                      {{- $title = .Title -}}
+                    {{- end -}}
+                    <div class="preview-title">{{ $title }}</div>
+                    <p>{{ .Summary }}</p>
+                </a>
+{{/* (, {{- $month -}}, 1), "url": {{ .RelPermalink | jsonify }}}, */}}
+            </div>
+        </div>
+    {{- end -}}
+</div>
