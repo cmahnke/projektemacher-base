@@ -1,3 +1,4 @@
+{{/* Merge this into script.html */}}
 {{- if .Params.js -}}
     {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
     {{- if .Site.IsServer -}}

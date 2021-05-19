@@ -10,8 +10,22 @@
 
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
+
+{{/*
+{{- with .context -}}
+    {{ if .Params.js }}
+        {{- warnf "Including %s for post %s" (.Params.js) (.File.Path) -}}
+        {{- if reflect.IsSlice .Params.js -}}
+            {{- $js = .Params.js -}}
+        {{- else if ne .js "" -}}
+            {{- $js = .Params.js -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+*/}}
+
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
-    {{- if (in . "js") -}}
+    {{- if (isset . "js") -}}
         {{- if reflect.IsSlice .js -}}
             {{- $js = .js -}}
         {{- else if ne .js "" -}}
@@ -25,6 +39,8 @@
                     {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
                 {{- end -}}
             {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
+                {{ $jsResources = $jsResources | append $file -}}
+            {{- else if eq (printf "%T" $file) "resource.Resources" -}}
                 {{ $jsResources = $jsResources | append $file -}}
             {{- else -}}
                 {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
