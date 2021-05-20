@@ -9,10 +9,10 @@
 
     var issues = [
         {{- range $entries -}}
-                {{- $year := .Params.issueYear -}}
+                {{- $year := .Params.year -}}
                 {{- $month := 1 -}}
-                {{- if isset .Params "issueMonth" -}}
-                    {{- $month = .Params.issueMonth -}}
+                {{- if isset .Params "month" -}}
+                    {{- $month = .Params.month -}}
                 {{- end -}}
                 {{- $content := printf "<a href=\"%s\">%s</a>" .RelPermalink .Title -}}
                 {"content": "{{ $content }}", "start": new Date({{- $year -}}, {{- $month -}}, 1), "url": {{ .RelPermalink | jsonify }}},

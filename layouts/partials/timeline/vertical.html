@@ -4,10 +4,10 @@
     {{- $last := index (last 1 $entries) 0 -}}
 
     {{- range $index, $entry := $entries -}}
-        {{- $year := .Params.issueYear -}}
+        {{- $year := .Params.year -}}
         {{- $month := 1 -}}
-        {{- if isset .Params "issueMonth" -}}
-            {{- $month = .Params.issueMonth -}}
+        {{- if isset .Params "month" -}}
+            {{- $month = .Params.month -}}
         {{- end -}}
 
         {{- $context := path.Dir .File.Path -}}
