@@ -1,0 +1,117 @@
+.timeline-vertical {
+    padding-top: 3em;
+    scroll-snap-type: mandatory;
+    scroll-snap-points-y: repeat(3rem);
+    scroll-snap-type: y mandatory;
+}
+
+.timeline-item {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 2.4em;
+    scroll-snap-align: start;
+
+    &.even {
+        .preview-img-container {
+            order: -1;
+            text-align: end;
+            padding-right: 1.6em;
+        }
+
+        .preview-text-container {
+            order: 1;
+            border-left: 1px solid #dee2e6;
+            padding-left: 1.6em;
+        }
+
+        .year {
+            border-right: 1px solid #dee2e6;
+            padding-right: 1em;
+            right: -1px;
+
+            &:after {
+                content: '';
+                height: 0.6em;
+                border-right: 2px solid #4382a4;
+                border-top: 2px solid #4a97b9;
+                padding-right: 0.5em;
+                position: absolute;
+                top: 0.35em;
+                right: -1px;
+            }
+        }
+    }
+
+    &.odd {
+        .preview-img-container {
+            order: 1;
+            padding-left: 1.6em;
+            border-left: 1px solid #dee2e6;
+        }
+
+        .preview-text-container {
+            order: -1;
+            text-align: end;
+            padding-right: 1.6em;
+        }
+
+        .year {
+            border-left: 1px solid #dee2e6;
+            padding-left: 1em;
+            left: -1px;
+
+            &:before {
+                content: '';
+                height: 0.6em;
+                border-left: 2px solid #4382a4;
+                border-top: 2px solid #4a97b9;
+                padding-left: 0.5em;
+                position: absolute;
+                top: 0.35em;
+                left: -1px;
+            }
+        }
+    }
+
+    .preview-img {
+        margin-bottom: 1.5rem;
+        height: auto;
+    }
+
+    .year {
+        font-size: 2.4em;
+        font-weight: 300;
+        position: absolute;
+        top: -1em;
+        text-shadow: 0 0 0.4em white, 0 0 0.4em white, 0 0 0.4em white, 0 0 0.4em white, 0 0 0.5em white;
+    }
+
+    .preview-img-container {
+        width: calc(50% - 1em);
+        position: relative;
+
+        img {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, .4);
+            width: 300px;
+            max-width: 85%;
+        }
+    }
+
+    .preview-title {
+        font-size: larger;
+        font-weight: bold;
+    }
+
+    .preview-text-container {
+        width: calc(50% - 1em);
+        font-family: open sans,sans-serif;
+    }
+
+    a,
+    a:active,
+    a:focus,
+    a:hover,
+    a:visited {
+        color: darken(#007bff, 30%);
+    }
+}
