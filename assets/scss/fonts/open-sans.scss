@@ -13,5 +13,33 @@
     font-style: normal;
     font-weight: 600;
     src: url("/fonts/open-sans-v18-latin-600.woff2") format('woff2'),
-         url("/fonts/open-sans-v18-latin-600.woff") format('woff'), url("/fonts/open-sans-v18-latin-600.ttf") format('truetype');
+         url("/fonts/open-sans-v18-latin-600.woff") format('woff'),
+         url("/fonts/open-sans-v18-latin-600.ttf") format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: url('../fonts/open-sans-v20-latin-ext_latin-600italic.woff2') format('woff2'),
+       url('../fonts/open-sans-v20-latin-ext_latin-600italic.woff') format('woff'),
+       url('../fonts/open-sans-v20-latin-ext_latin-600italic.ttf') format('truetype');
+}
+
+/* open-sans-700 - latin-ext_latin */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/open-sans-v20-latin-ext_latin-700.woff2') format('woff2'),
+       url('../fonts/open-sans-v20-latin-ext_latin-700.woff') format('woff'),
+       url('../fonts/open-sans-v20-latin-ext_latin-700.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../fonts/open-sans-v20-latin-ext_latin-800.woff2') format('woff2'),
+       url('../fonts/open-sans-v20-latin-ext_latin-800.woff') format('woff'),
+       url('../fonts/open-sans-v20-latin-ext_latin-800.ttf') format('truetype');
 }
