@@ -6,8 +6,10 @@
 {{- $cookie := printf "%s-consent" (replaceRE "[.]" "-" (replaceRE "\n" "" $host)) -}}
 */}}
 {{- $cookie := md5 $iframe -}}
+{{- $id := printf "_iframe-%s" (md5 $iframe) -}}
 
-<div class="iframe-wrapper">
+
+<div class="iframe-wrapper" id="{{ $id }}">
     <div class="iframe">
         <div class="opt-in">
             <div class="opt-in-overlay">
@@ -28,12 +30,10 @@
     </div>
 
     <script>
-        var context = $('script').last();
-        var expire = 30 * 24 * 60 * 60;
-        var overlay = context.parent().find('.opt-in');
-        var toggle = overlay.parent().find('.opt-in-switch input');
-
         $(document).ready(function() {
+            var expire = 30 * 24 * 60 * 60;
+            var overlay = $('#{{ $id | safeJS }}').find('.opt-in');
+            var toggle = $('#{{ $id | safeJS }}').find('.opt-in-switch input');
             addConsent(toggle, overlay, '{{ $cookie }}', '{{ $iframe }}');
         });
     </script>
