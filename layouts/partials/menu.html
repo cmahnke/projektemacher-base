@@ -8,14 +8,14 @@
                     {{- $class := path.Base .URL -}}
                     {{- $class = replaceRE "^/$" "root" $class -}}
                     {{- $class = printf "navto-%s" $class -}}
-                    <li class="navigation-item {{ $class }}"><a class="navigation-link" href="{{ .URL | absLangURL }}">{{ .Name }}</a></li>
+                    <li class="navigation-item {{ $class }}"><a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}</a></li>
                 {{ end }}
             {{ end }}
             {{ if .Site.IsMultiLingual }}
                 {{ range (default .Site.Home.AllTranslations .Translations) }}
                     {{ if ne $.Site.Language .Language }}
                         <li class="navigation-item lang">
-                            <a href="{{ .Permalink }}">{{ .Language.LanguageName }}</a>
+                            <a href="{{ .Permalink }}" title="{{ .Language.LanguageName }}">{{ .Language.LanguageName }}</a>
                         </li>
                     {{ end }}
                 {{ end }}
