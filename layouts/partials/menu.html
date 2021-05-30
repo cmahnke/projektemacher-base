@@ -1,5 +1,6 @@
 {{ if or .Site.Menus.main .Site.IsMultiLingual }}
     {{- $basePath := trim (.File.Dir) "/" -}}
+    {{- $basePath = replaceRE "^(.*)/.*$" "$1" $basePath -}}
     <nav class="top top-menu">
         <input type="checkbox" id="menu-toggle" />
         <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon"></i></label>
