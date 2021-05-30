@@ -1,10 +1,12 @@
 {{/* See https://stackoverflow.com/questions/57841380/gdpr-jquery-iframe-consent */}}
 
 {{- $iframe := .Inner | safeHTML -}}
-{{/*
-{{- $host := replaceRE ".*src=\".*?//(.*?)/.*" "$1" $iframe -}}
-{{- $cookie := printf "%s-consent" (replaceRE "[.]" "-" (replaceRE "\n" "" $host)) -}}
-*/}}
+
+{{- $preview := "" -}}
+{{- with .Get "preview" -}}
+    {{- $preview = . -}}
+{{- end -}}
+
 {{- $cookie := md5 $iframe -}}
 {{- $id := printf "_iframe-%s" (md5 $iframe) -}}
 
@@ -13,10 +15,12 @@
     <div class="iframe">
         <div class="opt-in">
             <div class="opt-in-overlay">
-                <h3 class="opt-in-header">{{ i18n "externalContent" }}</h3>
-                <p class="opt-in-text">{{ i18n "externalContentDescription" }}</p>
+                {{ $preview | safeHTML }}
+                <div class="opt-in-overlay-content">
+                    <h3 class="opt-in-header">{{ i18n "externalContent" }}</h3>
+                    <p class="opt-in-text">{{ i18n "externalContentDescription" }}</p>
+                </div>
                 {{/* See https://www.w3schools.com/howto/howto_css_switch.asp */}}
-
             </div>
         </div>
         <div class="switch-wrapper">

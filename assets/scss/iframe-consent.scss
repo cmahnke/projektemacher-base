@@ -4,7 +4,12 @@
     .opt-in-overlay {
         margin: 0.4rem;
         padding: 1rem;
-        background-color: lightgray;
+
+
+        .opt-in-overlay-content {
+            background-color: lightgray;
+            padding: 1rem;
+        }
 
         .opt-in-header {}
 
