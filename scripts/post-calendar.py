@@ -25,9 +25,10 @@ cal.add('prodid', '-//Projektemacher Calendar//projektemacher.org//')
 cal.add('version', '2.0')
 
 for post in posts:
-    if "displayInList" in posts:
-        if post["displayInList"] == False:
-            continue
+    if "displayInList" in posts and post["displayInList"] == False:
+        continue
+    if "draft" in posts and post["draft"] == True:
+        continue
     if "date" in post and post["date"] != None:
         event = Event()
         blog = blogName(post)
