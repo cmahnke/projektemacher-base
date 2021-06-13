@@ -1,5 +1,5 @@
 #!/bin/sh
-PYTHON_DEPENDENCIES="pillow termcolor pyyaml toml"
+PYTHON_DEPENDENCIES="pillow termcolor pyyaml toml icalendar"
 
 echo "Installing Python modules $PYTHON_DEPENDENCIES"
 
