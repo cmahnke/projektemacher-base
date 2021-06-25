@@ -2,3 +2,5 @@ patches/mirador*
 node_modules/
 yarn-error.log
 yarn.lock
+scripts/*/__pycache__/*
+*.pyc
