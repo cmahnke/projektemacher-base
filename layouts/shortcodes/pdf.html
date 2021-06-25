@@ -1,0 +1,13 @@
+{{ $pdf := .Get "file" }}
+{{/* Include PDF viewer */}}
+
+{{ $divId := printf "pdf-viewer-%s" (md5 $pdf) }}
+<div class="pdf-viewer">
+    <div id="{{- $divId | safeHTML -}}"></div>
+    <script type="text/javascript">
+        addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf | safeJS }}')
+    </script>
+</div>
+<div class="share">
+    <a href="{{ $pdf }}" class="pdf-link">PDF Download</a>
+</div>
