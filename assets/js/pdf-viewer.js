@@ -11,7 +11,7 @@ window.addPDFViewer = function (elemId, url, options) {
                 view: "FitH"
             },
             //forcePDFJS: true,
-            PDFJS_URL: "/js/pdfjs/web/viewer.html"
+            PDFJS_URL: "/pdfjs/web/viewer.html"
         }
     }
 
