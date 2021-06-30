@@ -1,13 +1,17 @@
-{{ $pdf := .Get "file" }}
+{{- $pdf := .Get "file" -}}
+{{/* Check for relative link (starting with a dot) */}}
+{{- $permalink_prefix := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
+{{- $pdf_permalink := printf "%s%s" $permalink_prefix $pdf -}}
+
 {{/* Include PDF viewer */}}
 
-{{ $divId := printf "pdf-viewer-%s" (md5 $pdf) }}
+{{ $divId := printf "pdf-viewer-%s" (md5 $pdf_permalink) }}
 <div class="pdf-viewer">
     <div id="{{- $divId | safeHTML -}}"></div>
     <script type="text/javascript">
-        addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf | safeJS }}')
+        addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf_permalink | safeJS }}')
     </script>
 </div>
 <div class="share">
-    <a href="{{ $pdf }}" class="pdf-link">PDF Download</a>
+    <a href="{{ $pdf_permalink }}" class="pdf-link">PDF Download</a>
 </div>
