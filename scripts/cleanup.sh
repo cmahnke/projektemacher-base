@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+PDFJS_STATIC_DIR=static/pdfjs
+rm -rf $PDFJS_STATIC_DIR
+
 find content/post/ -name info.json -exec dirname {} \; | xargs rm -r
 rm -rf docs/* node_modules resources/_gen
 rm -rf static/images/favicon*
