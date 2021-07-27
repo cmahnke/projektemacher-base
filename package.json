@@ -1,7 +1,7 @@
 {
  "dependencies": {
   "jquery": "^3.6.0",
-  "js-cookie": "^2.2.1",
+  "js-cookie": "^3.0.0",
   "mirador": "ProjectMirador/mirador",
   "normalize.css": "^8.0.1",
   "ol": "^6.4.3",
