@@ -24,7 +24,7 @@
   "react-dom": "^17.0.1",
   "stylelint": "^14.2.0",
   "stylelint-config-prettier": "^8.0.2",
-  "stylelint-config-sass-guidelines": "^8.0.0",
+  "stylelint-config-sass-guidelines": "^9.0.1",
   "stylelint-config-standard": "^24.0.0",
   "stylelint-no-unsupported-browser-features": "^4.1.4",
   "stylelint-prettier": "^1.2.0",
