@@ -4,7 +4,7 @@
   "js-cookie": "^3.0.0",
   "mirador": "ProjectMirador/mirador",
   "normalize.css": "^8.0.1",
-  "ol": "^6.4.3",
+  "ol": "^7.0.0",
   "pdfjs-dist": "^2.5.207",
   "pdfobject": "^2.1.1"
  },
