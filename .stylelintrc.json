@@ -12,6 +12,8 @@
     "max-line-length": [null, {"severity": "warning"}],
     "scss/dollar-variable-empty-line-before": [null, {"severity": "warning"}],
     "block-no-empty": [null, {"severity": "warning"}],
-    "comment-empty-line-before": [null, {"severity": "warning"}]
+    "comment-empty-line-before": [null, {"severity": "warning"}],
+    "color-function-notation": "legacy",
+    "alpha-value-notation": "number"
   }
 }
