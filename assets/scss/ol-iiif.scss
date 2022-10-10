@@ -22,7 +22,7 @@ $left: "data:image/svg+xml;utf8,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' vie
     top: 4em;
 
     .icon-left::after {
-        content: ' ';
+        content: " ";
         display: block;
         background-image: url($left);
         background-size: 80% 80%;
@@ -39,7 +39,7 @@ $left: "data:image/svg+xml;utf8,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' vie
     top: 6em;
 
     .icon-right::after {
-        content: ' ';
+        content: " ";
         display: block;
         background-image: url($right);
         background-size: 80% 80%;

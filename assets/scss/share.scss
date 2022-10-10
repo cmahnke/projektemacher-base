@@ -11,11 +11,11 @@
 
     .iiif-link {
         .iiif-iiif {
-            background-image: url(/images/iiif-logo.svg);
+            background-image: url("/images/iiif-logo.svg");
             background-repeat: no-repeat;
             background-size: contain;
-            content: 'IIIF';
-            color: rgba(0, 0, 0, 0);
+            content: "IIIF";
+            color: rgba(0 0 0 0%);
             vertical-align: middle;
         }
     }

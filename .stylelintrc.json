@@ -1,5 +1,5 @@
 {
-  "extends": ["stylelint-config-standard"],
+  "extends": ["stylelint-config-standard-scss"],
   "plugins": [
     "stylelint-scss"
   ],
@@ -8,7 +8,10 @@
     "scss/at-rule-no-unknown": true,
     "indentation": [4, {"baseIndentLevel": 1}],
     "number-leading-zero": ["always", {"severity": "warning"}],
-    "block-no-empty": [true, {"severity": "warning"}],
-    "max-empty-lines": [1, {"severity": "warning"}]
+    "max-empty-lines": [1, {"severity": "warning"}],
+    "max-line-length": [null, {"severity": "warning"}],
+    "scss/dollar-variable-empty-line-before": [null, {"severity": "warning"}],
+    "block-no-empty": [null, {"severity": "warning"}],
+    "comment-empty-line-before": [null, {"severity": "warning"}]
   }
 }

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .timeline-vertical {
     padding-top: 3em;
     scroll-snap-points-y: repeat(3rem);
@@ -20,7 +22,7 @@
 
     .preview-text-container {
         width: calc(50% - 1em);
-        font-family: open sans, sans-serif;
+        font-family: "open sans", sans-serif;
     }
 
     .preview-img-container {
@@ -28,7 +30,7 @@
         position: relative;
 
         img {
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 15px rgba(0 0 0 40%);
             width: 300px;
             max-width: 85%;
         }
@@ -53,7 +55,7 @@
             right: -1px;
 
             &::after {
-                content: '';
+                content: "";
                 height: 0.6em;
                 border-right: 2px solid #4382a4;
                 border-top: 2px solid #4a97b9;
@@ -84,7 +86,7 @@
             left: -1px;
 
             &::before {
-                content: '';
+                content: "";
                 height: 0.6em;
                 border-left: 2px solid #4382a4;
                 border-top: 2px solid #4a97b9;
@@ -113,6 +115,7 @@
     a:focus,
     a:hover,
     a:visited {
-        color: darken(#007bff, 30%);
+        color: color.scale(#007bff, $lightness: -30%);
+        /* color: darken(#007bff, 30%); */
     }
 }
