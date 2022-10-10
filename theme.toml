@@ -1,0 +1,6 @@
+name = "Projektemacher Base"
+min_version = 0.85
+
+[author]
+  name = "Christian Mahnke"
+  homepage = "//christianmahnke.de"

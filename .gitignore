@@ -4,3 +4,5 @@ yarn-error.log
 yarn.lock
 scripts/*/__pycache__/*
 *.pyc
+i18n/de.toml
+i18n/en.toml
