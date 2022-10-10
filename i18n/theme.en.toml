@@ -12,7 +12,7 @@ other = "This page is part of the following collection"
 [sectionContentsList]
 other = "This collection contains the following pages"
 
-#Book parts
+# Book parts
 [cover]
 other = "Dust jacket"
 
@@ -29,7 +29,7 @@ other = "Next"
 [previous_page]
 other = "Back"
 
-#Other
+# Other
 [preview]
 other = "Preview"
 
@@ -58,7 +58,7 @@ other = "Sorry, this page does not exist."
 [head_back]
 other = "You can head back to <a href=\"{{ . }}\">homepage</a>."
 
-#Footer
+# Footer
 [cc]
 other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Attribution-ShareAlike 4.0 International License</a>."
 
@@ -78,11 +78,11 @@ other = "External content is included at this point. Personal data might be tran
 [accept]
 other = "Allow external content"
 
-#Tags
+# Tags
 [allTags]
 other = "View all posts tagged"
 
-#Feature status
+# Feature status
 [thisFeature]
 other = "This feature"
 

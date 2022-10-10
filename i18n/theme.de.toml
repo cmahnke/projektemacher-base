@@ -12,7 +12,7 @@ other = "Diese Seite ist Teil der Sammlung"
 [sectionContentsList]
 other = "Diese Sammlung enthält die folgenden Seiten"
 
-#Book parts
+# Book parts
 [cover]
 other = "Umschlag"
 
@@ -29,7 +29,7 @@ other = "Vor"
 [previous_page]
 other = "Zurück"
 
-#Other
+# Other
 [preview]
 other = "Vorschau"
 
@@ -58,7 +58,7 @@ other = "Entschuldigung, die Seite wurde nicht gefunden"
 [head_back]
 other = "Hier geht es zurück zur <a href=\"{{ . }}\">Startseite</a>."
 
-#Footer
+# Footer
 [cc]
 other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons Lizenzvertrag\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />Dieses Werk ist lizenziert unter einer <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>."
 
@@ -78,11 +78,11 @@ other = "An dieser Stelle wird ein externer Inhalt eingebunden. Damit können pe
 [accept]
 other = "Externe Inhalte zulassen"
 
-#Tags
+# Tags
 [allTags]
 other = "Alle Beiträge mit dem Tag"
 
-#Feature status
+# Feature status
 [thisFeature]
 other = "Diese Funktionalität ist"
 
