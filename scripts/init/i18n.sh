@@ -1,8 +1,25 @@
 #!/usr/bin/env bash
 
-LANG_DIR=$1
+echo "Merging language files"
 
-LANGS=`ls -1 $LANG_DIR/*.*.toml | gsed -E 's/.*?\.(.*?)\.toml/\1/g'|sort|uniq`
+CTX_PATH="$(dirname $(realpath $0))"
+THEME_PATH=$(realpath --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
+
+if [ -z "$1" ] ; then
+  LANG_DIR=$THEME_PATH/i18n
+else
+  LANG_DIR=$1
+fi
+
+case "$OSTYPE" in
+
+  darwin*)
+    SED=gsed ;;
+  linux*)
+    SED=sed ;;
+esac
+
+LANGS=`ls -1 $LANG_DIR/*.*.toml | $SED -E 's/.*?\.(.*?)\.toml/\1/g'|sort|uniq`
 
 for LANG in $LANGS
 do
