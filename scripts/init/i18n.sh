@@ -11,6 +11,7 @@ else
   LANG_DIR=$1
 fi
 
+SED=sed
 OS="`uname`"
 case "$OSTYPE" in
   'Darwin')
@@ -20,6 +21,7 @@ case "$OSTYPE" in
     SED=sed
     ;;
 esac
+echo "OS is '$OS', sed is '$SED'"
 
 LANGS=`ls -1 $LANG_DIR/*.*.toml | $SED -E 's/.*?\.(.*?)\.toml/\1/g'|sort|uniq`
 
