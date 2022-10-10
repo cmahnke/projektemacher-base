@@ -23,9 +23,14 @@ echo "Merging $PACKAGE_FILES"
 
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
 echo "$PACKAGE" > package.json
-if ! yarn install ; then
-    ERR=$?
+
+yarn install
+ERR=$?
+if [ $ERR -ne 0 ] ; then
+    echo "yarn install failed with $ERR"
     cat package.json | jq -C .
-    cat yarn-error.log
+    if [ -r yarn-error.log ] ; then
+        cat yarn-error.log
+    fi
     exit $ERR
 fi
