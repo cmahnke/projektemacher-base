@@ -11,12 +11,14 @@ else
   LANG_DIR=$1
 fi
 
+OS="`uname`"
 case "$OSTYPE" in
-
-  darwin*)
-    SED=gsed ;;
-  linux*)
-    SED=sed ;;
+  'Darwin')
+    SED=gsed
+    ;;
+  'Linux')
+    SED=sed
+    ;;
 esac
 
 LANGS=`ls -1 $LANG_DIR/*.*.toml | $SED -E 's/.*?\.(.*?)\.toml/\1/g'|sort|uniq`
