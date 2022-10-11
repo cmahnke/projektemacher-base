@@ -129,71 +129,68 @@ var AnimatedView = /*@__PURE__*/ (function(View) {
     return AnimatedView;
 }(View));
 
-var RotateLeftControl = /*@__PURE__*/ (function(Control) {
-    function RotateLeftControl(opt_options) {
-        var options = opt_options || {};
-        const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° left';
+class RotateLeftControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
+    const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° left';
 
-        var button = document.createElement('button');
-        button.innerHTML = '<i class="icon-left"></i>';
-        button.title = tipLabel;
+    const button = document.createElement('button');
+    button.innerHTML = '<i class="icon-left"></i>';
+    button.title = tipLabel;
 
-        var element = document.createElement('div');
-        element.className = 'rotate-left ol-unselectable ol-control';
-        element.appendChild(button);
+    const element = document.createElement('div');
+    element.className = 'rotate-left ol-unselectable ol-control';
+    element.appendChild(button);
 
-        Control.call(this, {
-            element: element,
-            target: options.target,
-        });
+    super({
+      element: element,
+      target: options.target,
+    });
 
-        button.addEventListener('click', this.handleRotateLeft.bind(this), false);
-    }
+    button.addEventListener('click', this.handleRotateLeft.bind(this), false);
+  }
 
-    if (Control) RotateLeftControl.__proto__ = Control;
-    RotateLeftControl.prototype = Object.create(Control && Control.prototype);
-    RotateLeftControl.prototype.constructor = RotateLeftControl;
+  handleRotateLeft() {
+      var startRotation = this.getMap().getView().getRotation();
+      this.getMap().getView().setRotation(startRotation + (-90 * Math.PI / 180));
+  };
 
-    RotateLeftControl.prototype.handleRotateLeft = function handleRotateLeft() {
-        var startRotation = this.getMap().getView().getRotation();
-        this.getMap().getView().setRotation(startRotation + (-90 * Math.PI / 180));
-    };
+}
 
-    return RotateLeftControl;
-}(Control));
+class RotateRightControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
+    const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° right';
 
-var RotateRightControl = /*@__PURE__*/ (function(Control) {
-    function RotateRightControl(opt_options) {
-        var options = opt_options || {};
-        const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° right';
+    const button = document.createElement('button');
+    button.innerHTML = '<i class="icon-right"></i>';
+    button.title = tipLabel;
 
-        var button = document.createElement('button');
-        button.innerHTML = '<i class="icon-right"></i>';
-        button.title = tipLabel;
+    const element = document.createElement('div');
+    element.className = 'rotate-right ol-unselectable ol-control';
+    element.appendChild(button);
 
-        var element = document.createElement('div');
-        element.className = 'rotate-right ol-unselectable ol-control';
-        element.appendChild(button);
+    super({
+      element: element,
+      target: options.target,
+    });
 
-        Control.call(this, {
-            element: element,
-            target: options.target,
-        });
+    button.addEventListener('click', this.handleRotateRight.bind(this), false);
+  }
 
-        button.addEventListener('click', this.handleRotateRight.bind(this), false);
-    }
+  handleRotateRight() {
+      var startRotation = this.getMap().getView().getRotation();
+      this.getMap().getView().setRotation(startRotation + (90 * Math.PI / 180));
+  };
 
-    if (Control) RotateRightControl.__proto__ = Control;
-    RotateRightControl.prototype = Object.create(Control && Control.prototype);
-    RotateRightControl.prototype.constructor = RotateRightControl;
+}
 
-    RotateRightControl.prototype.handleRotateRight = function handleRotateRight() {
-        var startRotation = this.getMap().getView().getRotation();
-        this.getMap().getView().setRotation(startRotation + (90 * Math.PI / 180));
-    };
-
-    return RotateRightControl;
-}(Control));
 
 /* TODO: Rename these functiontions if real maps are added. The following files needs to be changed aas well:
         * projektemacher-base/layouts/shortcodes/iiif/iiif.html
