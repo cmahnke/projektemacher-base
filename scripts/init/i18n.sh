@@ -32,6 +32,7 @@ do
     echo "'$LANG.toml' already exists, skipping"
   else
     cat $LANG_DIR/*.$LANG.toml >> $LANG_DIR/$LANG.toml
+    echo "Deleting "`ls $LANG_DIR/*.$LANG.toml`
     rm $LANG_DIR/*.$LANG.toml
   fi
 done
