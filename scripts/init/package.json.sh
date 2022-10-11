@@ -24,6 +24,10 @@ echo "Merging $PACKAGE_FILES"
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
 echo "$PACKAGE" > package.json
 
+if [ -d patches ] ; then
+    rm -rf patches
+fi
+
 yarn install
 ERR=$?
 if [ $ERR -ne 0 ] ; then
