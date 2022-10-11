@@ -156,7 +156,7 @@ class RotateLeftControl extends Control {
   handleRotateLeft() {
       var startRotation = this.getMap().getView().getRotation();
       this.getMap().getView().setRotation(startRotation + (-90 * Math.PI / 180));
-  };
+  }
 
 }
 
@@ -187,7 +187,7 @@ class RotateRightControl extends Control {
   handleRotateRight() {
       var startRotation = this.getMap().getView().getRotation();
       this.getMap().getView().setRotation(startRotation + (90 * Math.PI / 180));
-  };
+  }
 
 }
 
