@@ -209,8 +209,9 @@ window.addMap = function(element, url, rotation, baseURL) {
     // Languages
     var lang = 'en';
     if (document.documentElement.lang !== undefined) {
-        /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-        lang = document.documentElement.lang;
+        /* See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/language */
+        const locale = new Intl.Locale(document.documentElement.lang);
+        lang = locale.language;
     }
     var toolTips = { 'de': {'zoomIn': 'Vergrößern', 'zoomOut': 'Verkleinern', 'fullscreen': 'Vollbildansicht', 'rotate': 'Rotation zurücksetzen', 'rotateLeft': '90° nach links drehen', 'rotateRight': '90° nach rechst drehen'},
                      'en': {'zoomIn': 'Zoom in', 'zoomOut': 'Zoom out', 'fullscreen': 'Toggle full-screen', 'rotate': 'Reset rotation', 'rotateLeft': 'Rotate 90° left', 'rotateRight': 'Rotate 90° right'}};
