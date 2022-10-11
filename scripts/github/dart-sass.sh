@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 echo "Trying to set up Dart Sass"
 
@@ -13,7 +13,7 @@ curl -LJO https://github.com/sass/dart-sass-embedded/releases/download/${DARTSAS
 
 tar -xvf sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
 
-mv sass_embedded/dart-sass-embedded $BIN_DIR
+sudo mv sass_embedded/dart-sass-embedded $BIN_DIR
 
 rm -rf sass_embedded*;
 
