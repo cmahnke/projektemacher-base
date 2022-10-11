@@ -11,4 +11,5 @@ find content/ -name ogPreview*.png | xargs rm
 find content/ -name ogPreview*.jpg | xargs rm
 
 rm -rf node_modules
-git checkout package.json yarn.lock 
+git checkout package.json yarn.lock
+git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base clean -f i18n
