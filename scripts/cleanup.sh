@@ -9,3 +9,6 @@ rm -rf static/images/favicon*
 find content/ -name ogPreview*.svg | xargs rm
 find content/ -name ogPreview*.png | xargs rm
 find content/ -name ogPreview*.jpg | xargs rm
+
+rm -rf node_modules
+git checkout package.json yarn.lock 
