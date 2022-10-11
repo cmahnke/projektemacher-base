@@ -24,6 +24,15 @@ echo "Merging $PACKAGE_FILES"
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
 echo "$PACKAGE" > package.json
 
+OS="`uname`"
+ARCH="`uname -m`"
+if [ "$OS" = 'Darwin' ] ; then
+    if [ "$ARCH" = 'arm64' ] ; then
+        echo "OS is '$OS', Architecture is '$ARCH'"
+        export PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=true
+    fi
+fi
+
 if [ -d patches ] ; then
     rm -rf patches
 fi

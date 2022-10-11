@@ -13,7 +13,7 @@ fi
 
 SED=sed
 OS="`uname`"
-case "$OSTYPE" in
+case "$OS" in
   'Darwin')
     SED=gsed
     ;;
