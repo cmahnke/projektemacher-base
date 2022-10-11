@@ -6,10 +6,11 @@ DARTSASS_VERSION=1.55.0
 OS="`uname | tr '[:upper:]' '[:lower:]'`"
 ARCH="`uname -m`"
 BIN_DIR=/usr/local/bin
+DARTSASS_URL="https://github.com/sass/dart-sass-embedded/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
 
-mkdir -p $BIN_DIR
+echo "Downloading ${DARTSASS_URL}"
 
-curl -LJO https://github.com/sass/dart-sass-embedded/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz;
+curl -LJO "${DARTSASS_URL}"
 
 tar -xvf sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
 
