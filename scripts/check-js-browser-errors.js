@@ -2,10 +2,14 @@ const puppeteer = require ('puppeteer')
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const cors = require('cors')
+const app = express();
 
 const urlsFile = 'test-urls.txt';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
+const localPort = 3000;
+const remotePrefix = 'http://localhost:' + localPort;
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -21,10 +25,14 @@ if (fs.existsSync(urlsFile)) {
 }
 
 (async () => {
+    app.use(cors());
+    app.use(express.static(path.join(__dirname, contentDir)));
+    app.listen(localPort)
+
     const browser = await puppeteer.launch ({
         headless: true,
-        devtools: false,
-        ignoreHTTPSErrors: true
+        devtools: false
+        /* , ignoreHTTPSErrors: true */
     })
     const page = await browser.newPage();
 
