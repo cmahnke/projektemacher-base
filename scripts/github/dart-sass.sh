@@ -14,8 +14,9 @@ case "`uname`" in
     ;;
 esac
 
+ARCH="x64"
 case "`uname -m`" in
-  'x86-64')
+  'x86_64')
     ARCH=x64
     ;;
   'arm64')
