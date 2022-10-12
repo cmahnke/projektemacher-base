@@ -1,8 +1,9 @@
 const puppeteer = require ('puppeteer')
 const fs = require('fs');
+const path = require('path');
 const urlsFile = 'test-urls.txt';
 const contentDir = 'docs'
-const localFilePrefix = 'file:./' + contentDir + '/';
+const localFilePrefix = 'file:./';
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -27,9 +28,9 @@ if (fs.existsSync(urlsFile)) {
     for (var i in urls) {
         var localFile;
         if (urls[i] == '/') {
-          localFile = localFilePrefix + 'index.html';
+          localFile = path.join(process.cwd(),  contentDir, 'index.html');
         } else {
-          localFile = localFilePrefix + urls[i];
+          localFile = path.join(process.cwd(),  contentDir, urls[i]);
         }
 
         if (!fs.existsSync(localFile)) {
@@ -37,11 +38,15 @@ if (fs.existsSync(urlsFile)) {
             continue;
         }
 
+        page.on('console', msg => console.log('PAGE LOG:', msg.text))
+            .on('pageerror', error => {
+              console.log(error.message);
+              process.exit(123);
+            });
 
         console.log('Opening file %s', localFile);
-        const open = await page.goto(localFile, { waitUntil: 'networkidle2', timeout: 0 });
+        const open = await page.goto(localFilePrefix + localFile, { waitUntil: 'networkidle2', timeout: 0 });
 
-        const html = await page.content();
 
     }
     await browser.close();
