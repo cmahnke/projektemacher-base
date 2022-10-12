@@ -14,6 +14,7 @@
     "block-no-empty": [null, {"severity": "warning"}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
     "color-function-notation": "legacy",
-    "alpha-value-notation": "number"
+    "alpha-value-notation": "number",
+    "scss/no-global-function-names": [null, {"severity": "warning"}]
   }
 }

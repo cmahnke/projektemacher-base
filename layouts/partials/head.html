@@ -42,7 +42,8 @@
     <link href="{{ . }}" rel="stylesheet">
 {{- end }}
 
-{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "includePaths" (slice "node_modules/ol" "static/css" "node_modules/normalize.css")) -}}
+{{/* This needs Dart SASS, which currently produces more error then it solves:  "transpiler" "dartsass" */}}
+{{- $options := (dict "targetPath" "base.css" "outputStyle" "compressed" "includePaths" (slice "node_modules/ol" "static/css" "node_modules/normalize.css")) -}}
 {{- $ourTemplate := resources.Get "scss/base.scss" -}}
 {{- $ourStyle := $ourTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
 {{- $style := slice $ourStyle | resources.Concat "css/concated.css" | minify | fingerprint -}}

@@ -115,7 +115,8 @@
     a:focus,
     a:hover,
     a:visited {
-        color: color.scale(#007bff, $lightness: -30%);
-        /* color: darken(#007bff, 30%); */
+        /* This needs Dart SASS, which currently produces more error then it solves
+        color: color.scale(#007bff, $lightness: -30%); */
+        color: darken(#007bff, 30%);
     }
 }

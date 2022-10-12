@@ -7,7 +7,8 @@
     {{- $includes = $buildinIncludes -}}
 {{- end -}}
 
-{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "includePaths" $includes) -}}
+{{/* This needs Dart SASS, which currently produces more error then it solves:  "transpiler" "dartsass" */}}
+{{- $options := (dict "targetPath" "base.css" "outputStyle" "compressed" "includePaths" $includes) -}}
 {{- $scssTemplate := resources.Get "scss/base.scss" -}}
 {{- $scssStyle := $scssTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
 
