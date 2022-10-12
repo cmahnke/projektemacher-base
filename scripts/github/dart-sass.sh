@@ -35,9 +35,5 @@ echo "Downloading ${DARTSASS_URL}"
 curl -LJO "${DARTSASS_URL}"
 
 tar -xvf sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
-
 sudo mv sass_embedded/dart-sass-embedded $BIN_DIR
-
 rm -rf sass_embedded*;
-
-dart-sass-embedded --vers
