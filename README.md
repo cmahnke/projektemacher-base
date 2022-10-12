@@ -26,3 +26,15 @@ for SCRIPT in $PWD/themes/projektemacher-base/scripts/init/*.sh ; do
     bash "$SCRIPT"
 done
 ```
+
+# Development dependencies
+
+## Dart SASS on Mac OS
+
+Download the binary from https://github.com/sass/dart-sass-embedded/releases and install it to `/usr/local/bin/`.
+
+To use Dart SASS on the command line also install it from brew
+
+```
+brew install sass/sass/sass
+```
