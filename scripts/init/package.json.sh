@@ -47,3 +47,12 @@ if [ $ERR -ne 0 ] ; then
     fi
     exit $ERR
 fi
+
+if [ -z "$(ls -A ./node_modules/puppeteer-core/.local-chromium/)" ]; then
+    echo "Chrome dependency seems to be missing, downloading again!"
+    if [ grep puppeteer package.json ] ; then
+        cd node_modules/puppeteer
+        node install.js
+        cd ../..
+    fi
+fi
