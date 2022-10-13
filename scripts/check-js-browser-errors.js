@@ -2,10 +2,14 @@ const puppeteer = require ('puppeteer')
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
+const url = require('url');
+const proxy = require('express-http-proxy');
+const toml = require('toml');
 const app = express();
 
 const urlsFile = 'test-urls.txt';
+const configFile = 'config.toml';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
@@ -24,6 +28,8 @@ if (fs.existsSync(urlsFile)) {
   urls = ['/'];
 }
 
+var hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
+
 (async () => {
 
     app.use(cors());
@@ -33,7 +39,8 @@ if (fs.existsSync(urlsFile)) {
 
     const browser = await puppeteer.launch ({
         headless: true,
-        devtools: false
+        devtools: false,
+        args: [ '--proxy-server=127.0.0.1:9876' ]
         /* , ignoreHTTPSErrors: true */
     })
     const page = await browser.newPage();
