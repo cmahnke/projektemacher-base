@@ -12,6 +12,8 @@ const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
 
+const ignore404 = ['favicon.ico'];
+
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
     process.exit(1);
@@ -48,22 +50,23 @@ console.log('Base URL is %s', baseURL);
     });
 
     const browser = await puppeteer.launch ({
-        userDataDir: path.resolve(__dirname, './puppeteerTmp'),
-        //headless: true,
-        devtools: false,
-        args: ['--disable-web-security']
-        /* , ignoreHTTPSErrors: true */
+        /*userDataDir: path.resolve(__dirname, './puppeteerTmp'),*/
+        headless: true,
+        devtools: false /*,
+        args: ['--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
     await page.setRequestInterception(true);
 
     page.on('request', request => {
-        var newRequestUrl
+        const headers = request.headers();
+        var newRequestUrl;
         if (request.url().startsWith(baseURL)) {
             newRequestUrl = request.url().replace(baseURL, remotePrefix)
             console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
             request.continue({
-                url: newRequestUrl
+                url: newRequestUrl,
+                headers : headers
             });
             return;
         }
@@ -89,11 +92,17 @@ console.log('Base URL is %s', baseURL);
         page.on('console', msg => console.log('Browser console:', msg.text()))
             .on('pageerror', error => {
               console.log(error.message);
-              //process.exit(123);
+              process.exit(123);
             })
             .on('requestfailed', request => {
-              console.log(`${request.failure().errorText} ${request.url()}`);
-              //process.exit(124);
+              console.log('Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
+              if (request.resourceType() == 'media') {
+                  console.log('Ignoring failed media request for %s', request.url());
+              } else if (ignore404.includes(request.url().split('/')[-1])) {
+                  console.log('Ignoring request for %s', request.url());
+              } else {
+                  process.exit(124);
+              }
             });
 
         checkURL = baseURL + localFile;
