@@ -20,6 +20,11 @@ if (!fs.existsSync(contentDir)) {
     process.exit(1);
 }
 
+if (!fs.existsSync(configFile)) {
+    console.log('Hugo configuration %s doesn\'t exist in current directory (%s), are you sure, it\'s containig a Hugo site?', configFile, process.cwd());
+    process.exit(1);
+}
+
 var urls
 if (fs.existsSync(urlsFile)) {
     urls = fs.readFileSync(urlsFile).toString().split("\n");
@@ -28,19 +33,23 @@ if (fs.existsSync(urlsFile)) {
   urls = ['/'];
 }
 
-var hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
+const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
+const baseURL = hugoConfig.baseURL;
+console.log('Base URL is %s', baseURL);
 
 (async () => {
 
     app.use(cors());
     app.use(express.static(path.join(__dirname, contentDir)));
-    app.listen(localPort);
+    var server = app.listen(localPort, function () {
+        console.log('Webserver started');
+    });
 
 
     const browser = await puppeteer.launch ({
         headless: true,
         devtools: false,
-        args: [ '--proxy-server=127.0.0.1:9876' ]
+        args: [ '--proxy-server=127.0.0.1:${localPort}' ]
         /* , ignoreHTTPSErrors: true */
     })
     const page = await browser.newPage();
@@ -74,4 +83,5 @@ var hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 
     }
     await browser.close();
+    await server.close();
 })();
