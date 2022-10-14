@@ -3,8 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const url = require('url');
-const proxy = require('express-http-proxy');
 const toml = require('toml');
 const app = express();
 
@@ -13,7 +11,6 @@ const configFile = 'config.toml';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
-const remotePrefix = 'http://localhost:' + localPort;
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -22,7 +19,7 @@ if (!fs.existsSync(contentDir)) {
 
 if (!fs.existsSync(configFile)) {
     console.log('Hugo configuration %s doesn\'t exist in current directory (%s), are you sure, it\'s containig a Hugo site?', configFile, process.cwd());
-    process.exit(1);
+    process.exit(2);
 }
 
 var urls
@@ -34,7 +31,11 @@ if (fs.existsSync(urlsFile)) {
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
-const baseURL = hugoConfig.baseURL;
+var baseURL = hugoConfig.baseURL;
+const remotePrefix = 'http://localhost:' + localPort + '/';
+if (baseURL == '') {
+    baseURL = 'http://localhost:' + localPort + '/';
+}
 console.log('Base URL is %s', baseURL);
 
 (async () => {
@@ -45,24 +46,40 @@ console.log('Base URL is %s', baseURL);
         console.log('Webserver started');
     });
 
-
     const browser = await puppeteer.launch ({
         headless: true,
         devtools: false,
-        args: [ '--proxy-server=127.0.0.1:${localPort}' ]
+        args: ['--disable-web-security']
         /* , ignoreHTTPSErrors: true */
     })
     const page = await browser.newPage();
+    await page.setRequestInterception(true);
+
+    page.on('request', request => {
+        var newRequestUrl
+        if (request.url().startsWith(baseURL)) {
+            newRequestUrl = request.url().replace(baseURL, remotePrefix)
+            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
+            request.continue({
+                url: newRequestUrl
+            });
+            return;
+        }
+        request.continue();
+        })
+        .on('response', response => {
+            console.log('Got response for %s', response.url())
+        });
 
     for (var i in urls) {
         var localFile;
         if (urls[i] == '/') {
-          localFile = path.join(process.cwd(),  contentDir, 'index.html');
+          localFile = 'index.html';
         } else {
-          localFile = path.join(process.cwd(),  contentDir, urls[i]);
+          localFile = urls[i];
         }
 
-        if (!fs.existsSync(localFile)) {
+        if (!fs.existsSync(path.join(process.cwd(),  contentDir, localFile))) {
             console.log('Local file %s doesn\'t exist, skipping!', localFile);
             continue;
         }
@@ -77,9 +94,9 @@ console.log('Base URL is %s', baseURL);
               process.exit(124);
             });
 
-        console.log('Opening file %s', localFile);
-        const open = await page.goto(localFilePrefix + localFile, { waitUntil: 'networkidle2', timeout: 0 });
-
+        checkURL = baseURL + localFile;
+        console.log('Opening file %s', checkURL);
+        const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
 
     }
     await browser.close();
