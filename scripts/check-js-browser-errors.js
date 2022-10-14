@@ -34,20 +34,22 @@ const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 var baseURL = hugoConfig.baseURL;
 const remotePrefix = 'http://localhost:' + localPort + '/';
 if (baseURL == '') {
-    baseURL = 'http://localhost:' + localPort + '/';
+    baseURL = remotePrefix
 }
 console.log('Base URL is %s', baseURL);
 
 (async () => {
 
     app.use(cors());
-    app.use(express.static(path.join(__dirname, contentDir)));
+    const webRoot = path.join(process.cwd(), contentDir, '/');
+    app.use(express.static(webRoot));
     var server = app.listen(localPort, function () {
-        console.log('Webserver started');
+        console.log('Webserver started, serving \'%s\'', webRoot);
     });
 
     const browser = await puppeteer.launch ({
-        headless: true,
+        userDataDir: path.resolve(__dirname, './puppeteerTmp'),
+        //headless: true,
         devtools: false,
         args: ['--disable-web-security']
         /* , ignoreHTTPSErrors: true */
@@ -87,11 +89,11 @@ console.log('Base URL is %s', baseURL);
         page.on('console', msg => console.log('Browser console:', msg.text()))
             .on('pageerror', error => {
               console.log(error.message);
-              process.exit(123);
+              //process.exit(123);
             })
             .on('requestfailed', request => {
               console.log(`${request.failure().errorText} ${request.url()}`);
-              process.exit(124);
+              //process.exit(124);
             });
 
         checkURL = baseURL + localFile;
