@@ -1,18 +1,27 @@
 const puppeteer = require ('puppeteer')
 const fs = require('fs');
 const path = require('path');
+const toml = require('toml');
+const yargs = require('yargs');
 const express = require('express');
 const cors = require('cors');
-const toml = require('toml');
 const app = express();
 
+/* Settings */
 const urlsFile = 'test-urls.txt';
 const configFile = 'config.toml';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
-
 const ignore404 = ['favicon.ico'];
+
+const argv = yargs.option('force', {
+    alias: 'f',
+    description: 'Don\'t ignore mising files',
+    type: 'boolean'
+  })
+  .help()
+  .alias('help', 'h').argv;
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -27,9 +36,12 @@ if (!fs.existsSync(configFile)) {
 var urls
 if (fs.existsSync(urlsFile)) {
     urls = fs.readFileSync(urlsFile).toString().split("\n");
+} else if (argv.force) {
+    console.log('URL file %s doesn\'t exist, exiting!', urlsFile);
+    process.exit(3);
 } else {
-  console.log('File %s not found!', urlsFile);
-  urls = ['/'];
+    console.log('File %s not found!', urlsFile);
+    urls = ['/'];
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
@@ -84,13 +96,16 @@ console.log('Base URL is %s', baseURL);
             localFile = urls[i];
         }
         localFile = localFile.replace(baseURL, '/')
-        if (!urls[i].startsWith('/')) {
-            localFile = '/' + localFile;
+        if (urls[i].startsWith('/')) {
+            localFile = localFile.substring(1);
         }
 
-        if (!fs.existsSync(path.join(process.cwd(),  contentDir, localFile))) {
+        if (!argv.force && !fs.existsSync(path.join(process.cwd(),  contentDir, localFile))) {
             console.log('Local file %s doesn\'t exist, skipping!', localFile);
             continue;
+        } else {
+            console.log('Local file %s doesn\'t exist, exiting!', localFile);
+            process.exit(3);
         }
 
         page.on('console', msg => console.log('Browser console:', msg.text()))
