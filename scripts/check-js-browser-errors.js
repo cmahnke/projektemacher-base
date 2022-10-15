@@ -64,8 +64,9 @@ console.log('Base URL is %s', baseURL);
     const browser = await puppeteer.launch ({
         /*userDataDir: path.resolve(__dirname, './puppeteerTmp'),*/
         headless: true,
-        devtools: false /*,
-        args: ['--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
+        devtools: false,
+        args:['--use-gl=egl']
+         /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
     await page.setRequestInterception(true);
@@ -100,11 +101,12 @@ console.log('Base URL is %s', baseURL);
             localFile = localFile.substring(1);
         }
 
-        if (!argv.force && !fs.existsSync(path.join(process.cwd(),  contentDir, localFile))) {
-            console.log('Local file %s doesn\'t exist, skipping!', localFile);
+        var checkFile = path.join(process.cwd(),  contentDir, localFile)
+        if (!argv.force && !fs.existsSync(checkFile)) {
+            console.log('Local file %s doesn\'t exist, skipping!', checkFile);
             continue;
-        } else {
-            console.log('Local file %s doesn\'t exist, exiting!', localFile);
+        } else if (argv.force && !fs.existsSync(checkFile)) {
+            console.log('Local file %s doesn\'t exist, exiting!', checkFile);
             process.exit(3);
         }
 
