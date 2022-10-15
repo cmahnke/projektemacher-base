@@ -142,10 +142,23 @@ console.log('Base URL is %s', baseURL);
         if ('selector' in tests[i] && 'property' in tests[i] && 'value' in tests[i]) {
             page.evaluate(() => {
                 const element = document.querySelector(tests[i]['selector']);
-                const style = getComputedStyle(element);
-                const actualValue = style.getPropertyValue(tests[i]['property'])
-                console.log('Checking poperty %s of %s, expected value is \'%s\', actual value is \'%s\'', tests[i]['property'], tests[i]['selector'], tests[i]['value'], actualValue);
-                return actualValue == tests[i]['value'];
+                if (element !== null) {
+                    var style;
+                    if ('pseudo' in tests[i]) {
+                        style = getComputedStyle(element, tests[i]['pseudo'])
+                    } else {
+                        style = getComputedStyle(element);
+                        tests[i]['pseudo'] = '';
+                    }
+                    const actualValue = style.getPropertyValue(tests[i]['property'])
+                    if (actualValue == tests[i]['value']) {
+                        console.log('Checking poperty \'%s\' of %s%s, expected value is \'%s\', actual value is \'%s\'', tests[i]['property'], tests[i]['selector'], tests[i]['pseudo'], tests[i]['value'], actualValue);
+                        process.exit(125);
+                    }
+                  } else {
+                    console.log('Element for selector \'%s\' not found!', tests[i]['selector'])
+                    process.exit(126);
+                  }
             });
         }
 
