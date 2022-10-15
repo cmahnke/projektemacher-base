@@ -79,9 +79,13 @@ console.log('Base URL is %s', baseURL);
     for (var i in urls) {
         var localFile;
         if (urls[i] == '/') {
-          localFile = 'index.html';
+            localFile = 'index.html';
         } else {
-          localFile = urls[i];
+            localFile = urls[i];
+        }
+        localFile = localFile.replace(baseURL, '/')
+        if (!urls[i].startsWith('/')) {
+            localFile = '/' + localFile;
         }
 
         if (!fs.existsSync(path.join(process.cwd(),  contentDir, localFile))) {
