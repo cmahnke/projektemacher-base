@@ -9,6 +9,7 @@ const app = express();
 
 /* Settings */
 const urlsFile = 'test-urls.txt';
+const testFile = 'test-urls.json';
 const configFile = 'config.toml';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
@@ -33,9 +34,14 @@ if (!fs.existsSync(configFile)) {
     process.exit(2);
 }
 
-var urls
-if (fs.existsSync(urlsFile)) {
-    urls = fs.readFileSync(urlsFile).toString().split("\n");
+var tests = [];
+if (fs.existsSync(testFile)) {
+    tests = JSON.parse(fs.readFileSync(testFile, 'utf8'));
+} else if (fs.existsSync(urlsFile)) {
+    var urls = fs.readFileSync(urlsFile).toString().split("\n");
+    for (var i in urls) {
+        tests.push({'url': urls[i]});
+    }
 } else if (argv.force) {
     console.log('URL file %s doesn\'t exist, exiting!', urlsFile);
     process.exit(3);
@@ -89,15 +95,18 @@ console.log('Base URL is %s', baseURL);
             console.log('Got response for %s', response.url())
         });
 
-    for (var i in urls) {
+    for (var i in tests) {
+
+//console.log('-->' + tests[i]['url']);
+
         var localFile;
-        if (urls[i] == '/') {
+        if (tests[i]['url'] == '/') {
             localFile = 'index.html';
         } else {
-            localFile = urls[i];
+            localFile = tests[i]['url'];
         }
         localFile = localFile.replace(baseURL, '/')
-        if (urls[i].startsWith('/')) {
+        if (tests[i]['url'].startsWith('/')) {
             localFile = localFile.substring(1);
         }
 
@@ -129,6 +138,16 @@ console.log('Base URL is %s', baseURL);
         checkURL = baseURL + localFile;
         console.log('Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
+
+        if ('selector' in tests[i] && 'property' in tests[i] && 'value' in tests[i]) {
+            page.evaluate(() => {
+                const element = document.querySelector(tests[i]['selector']);
+                const style = getComputedStyle(element);
+                const actualValue = style.getPropertyValue(tests[i]['property'])
+                console.log('Checking poperty %s of %s, expected value is \'%s\', actual value is \'%s\'', tests[i]['property'], tests[i]['selector'], tests[i]['value'], actualValue);
+                return actualValue == tests[i]['value'];
+            });
+        }
 
     }
     await browser.close();
