@@ -104,7 +104,7 @@ class AnimatedView extends View {
       this.pauseableAnimations_ = args;
   }
 
-  getPauseableAnimation = function () {
+  getPauseableAnimation () {
       return this.pauseableAnimations_;
   }
 
