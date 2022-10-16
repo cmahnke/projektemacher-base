@@ -14,7 +14,8 @@ const configFile = 'config.toml';
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
-const ignore404 = ['favicon.ico'];
+const ignore404Exact = ['favicon.ico'];
+const ignore404Contains =['https://www.youtube.com'];
 
 const argv = yargs.option('force', {
     alias: 'f',
@@ -97,8 +98,6 @@ console.log('Base URL is %s', baseURL);
 
     for (var i in tests) {
 
-//console.log('-->' + tests[i]['url']);
-
         var localFile;
         if (tests[i]['url'] == '/') {
             localFile = 'index.html';
@@ -106,6 +105,7 @@ console.log('Base URL is %s', baseURL);
             localFile = tests[i]['url'];
         }
         localFile = localFile.replace(baseURL, '/')
+        localFile = localFile.split("?")[0].split("#")[0]
         if (tests[i]['url'].startsWith('/')) {
             localFile = localFile.substring(1);
         }
@@ -128,7 +128,7 @@ console.log('Base URL is %s', baseURL);
               console.log('Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
               if (request.resourceType() == 'media') {
                   console.log('Ignoring failed media request for %s', request.url());
-              } else if (ignore404.includes(request.url().split('/')[-1])) {
+              } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
                   console.log('Ignoring request for %s', request.url());
               } else {
                   process.exit(124);
