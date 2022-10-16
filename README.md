@@ -38,3 +38,15 @@ To use Dart SASS on the command line also install it from brew
 ```
 brew install sass/sass/sass
 ```
+
+# Installation
+
+Checking out as submodule
+
+```
+cd themes
+git submodule add https://github.com/cmahnke/projektemacher-base.git
+git commit
+```
+
+Don't forget to add `projektemacher-base` to `config.toml`
