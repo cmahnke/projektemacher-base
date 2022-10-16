@@ -8,126 +8,127 @@ import View from 'ol/View';
 import {Control, FullScreen, Rotate, Zoom} from 'ol/control';
 import { fromUserCoordinate, fromUserExtent } from 'ol/proj.js';
 
-var AnimatedView = /*@__PURE__*/ (function(View) {
+class AnimatedView extends View {
+  /**
+   * @param {Object} [opt_options] View options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
 
-    function AnimatedView(opt_options) {
-        View.call(this, opt_options);
-        this.pauseableAnimations_ = [];
-        this.animationsPointer_ = -1;
-        this.lastAnimation_ = {};
-        this.initalCenter = this.getCenter();
-    }
+    super(opt_options);
 
-    if (View) AnimatedView.__proto__ = View;
-    AnimatedView.prototype = Object.create(View && View.prototype);
-    AnimatedView.prototype.constructor = AnimatedView;
+    this.pauseableAnimations_ = [];
+    this.animationsPointer_ = -1;
+    this.lastAnimation_ = {};
+    this.initalCenter = this.getCenter();
+  }
 
-    // Emulate a ring data structure
-    AnimatedView.prototype.getPauseableAnimation_ = function () {
-        if (this.pauseableAnimations_.length - 1 > this.animationsPointer_ ) {
-            this.animationsPointer_++;
-            return this.pauseableAnimations_[this.animationsPointer_]
-        } else {
-            this.animationsPointer_ = 0;
-            return this.pauseableAnimations_[this.animationsPointer_];
+  // Emulate a ring data structure
+  getPauseableAnimation_() {
+      if (this.pauseableAnimations_.length - 1 > this.animationsPointer_ ) {
+          this.animationsPointer_++;
+          return this.pauseableAnimations_[this.animationsPointer_]
+      } else {
+          this.animationsPointer_ = 0;
+          return this.pauseableAnimations_[this.animationsPointer_];
+      }
+  }
+
+  // This is the callback, when one animation has finished
+  nextAnimation_(completed) {
+      if (completed === undefined || completed) {
+          var context = this;
+          var nextAnimation = this.getPauseableAnimation_();
+          this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
+      }
+  }
+
+  pauseAnimation() {
+      if (!this.getAnimating()) {
+        return;
+      }
+      var animation = this.animations_[0][0];
+      //Safe state
+      var now = Date.now();
+      var elapsed = now - animation.start;
+      let stopState = {
+          center: animation.center,
+          zoom: animation.zoom,
+          rotation: animation.rotation,
+          duration: animation.duration - elapsed
+      };
+      this.lastAnimation_ = stopState;
+      // Stop running animation
+      this.cancelAnimations();
+  }
+
+  startAnimation_() {
+      if (this.getAnimating()) {
+        return;
+      }
+      // Check if we stopped, if yes, reset
+      if (Object.keys(this.lastAnimation_).length !== 0) {
+          this.lastAnimation_ = {};
+      }
+      // Get first animation,pass it to animation method and add a callback
+      var context = this;
+      this.animate(this.getPauseableAnimation_, function (state) {context.nextAnimation_(state)});
+  }
+
+  resumeAnimation() {
+      if (this.getAnimating()) {
+        return;
+      }
+      // Check if we stopped
+      if (Object.keys(this.lastAnimation_).length === 0) {
+          this.startAnimation_();
+      } else {
+          // Start stopped animation
+          var context = this;
+          this.animate(this.lastAnimation_, function (state) {context.nextAnimation_(state)});
+      }
+  }
+
+  setPauseableAnimation(var_args) {
+      var args = new Array(arguments.length);
+      for (let i = 0; i < args.length; ++i) {
+        var options = arguments[i];
+        /*
+        if (!('center' in options)) {
+            options.center = this.initalCenter;
         }
-    }
+        */
+        args[i] = options;
+      }
+      this.animationsPointer_ = -1
+      this.pauseableAnimations_ = args;
+  }
 
-    // This is the callback, when one animation has finished
-    AnimatedView.prototype.nextAnimation_ = function (completed) {
-        if (completed === undefined || completed) {
-            var context = this;
-            var nextAnimation = this.getPauseableAnimation_();
-            this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
-        }
-    }
+  getPauseableAnimation = function () {
+      return this.pauseableAnimations_;
+  }
 
-    AnimatedView.prototype.pauseAnimation = function () {
-        if (!this.getAnimating()) {
-          return;
-        }
-        var animation = this.animations_[0][0];
-        //Safe state
-        var now = Date.now();
-        var elapsed = now - animation.start;
-        let stopState = {
-            center: animation.center,
-            zoom: animation.zoom,
-            rotation: animation.rotation,
-            duration: animation.duration - elapsed
-        };
-        this.lastAnimation_ = stopState;
-        // Stop running animation
-        this.cancelAnimations();
-    }
+  setCenter(center) {
+      this.initalCenter = center;
+      this.setCenterInternal(fromUserCoordinate(center, this.getProjection()));
+  }
 
-    AnimatedView.prototype.startAnimation_ = function () {
-        if (this.getAnimating()) {
-          return;
-        }
-        // Check if we stopped, if yes, reset
-        if (Object.keys(this.lastAnimation_).length !== 0) {
-            this.lastAnimation_ = {};
-        }
-        // Get first animation,pass it to animation method and add a callback
-        var context = this;
-        this.animate(this.getPauseableAnimation_, function (state) {context.nextAnimation_(state)});
-    }
+  isNoopAnimation(animation) {
+      return false;
+  }
 
-    AnimatedView.prototype.resumeAnimation = function () {
-        if (this.getAnimating()) {
-          return;
-        }
-        // Check if we stopped
-        if (Object.keys(this.lastAnimation_).length === 0) {
-            this.startAnimation_();
-        } else {
-            // Start stopped animation
-            var context = this;
-            this.animate(this.lastAnimation_, function (state) {context.nextAnimation_(state)});
-        }
-    }
+  //Even though the OL API is quite good there are some beginners mistakes, like missing symetry
+  setResolutions(resolutions) {
+      this.resolutions_ = resolutions;
+  }
 
-    AnimatedView.prototype.setPauseableAnimation = function (var_args) {
-        var args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-          var options = arguments[i];
-          /*
-          if (!('center' in options)) {
-              options.center = this.initalCenter;
-          }
-          */
-          args[i] = options;
-        }
-        this.animationsPointer_ = -1
-        this.pauseableAnimations_ = args;
-    }
+  setExtent(extent) {
+      var options = {};
+      options.extent = fromUserExtent(extent, this.projection_);
+      this.applyOptions_(options);
+  }
 
-    AnimatedView.prototype.getPauseableAnimation = function () {
-        return this.pauseableAnimations_;
-    }
-
-    AnimatedView.prototype.setCenter = function (center) {
-        this.initalCenter = center;
-        this.setCenterInternal(fromUserCoordinate(center, this.getProjection()));
-    }
-
-    AnimatedView.prototype.isNoopAnimation = function (animation) {
-        return false;
-    }
-
-    //Even though the OL API is quite good there are some beginners mistakes, like missing symetry
-    AnimatedView.prototype.setResolutions = function (resolutions) {
-        this.resolutions_ = resolutions;
-    }
-    AnimatedView.prototype.setExtent = function (extent) {
-        var options = {};
-        options.extent = fromUserExtent(extent, this.projection_);
-        this.applyOptions_(options);
-    }
-
-    return AnimatedView;
-}(View));
+}
 
 class RotateLeftControl extends Control {
   /**
