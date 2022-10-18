@@ -139,6 +139,15 @@ console.log('Base URL is %s', baseURL);
         console.log('Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
 
+        if ('click' in tests[i]) {
+            for (j in tests[i]['click']) {
+                const [response] = await Promise.all([
+                    page.waitForNavigation(),
+                    page.click(tests[i]['click'][j]),
+                ]);
+            }
+        }
+
         if ('selector' in tests[i] && 'property' in tests[i] && 'value' in tests[i]) {
             page.evaluate(() => {
                 const element = document.querySelector(tests[i]['selector']);
