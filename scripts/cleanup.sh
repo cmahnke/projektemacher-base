@@ -9,3 +9,13 @@ rm -rf static/images/favicon*
 find content/ -name ogPreview*.svg | xargs rm
 find content/ -name ogPreview*.png | xargs rm
 find content/ -name ogPreview*.jpg | xargs rm
+
+rm -rf node_modules
+
+if [ -d themes/projektemacher-base/node_modules ] ; then
+    echo "The directory contains 'node_modules' directory, you certainly are using this tree for theme development, this can have side effects, deleting!"
+    rm -rf themes/projektemacher-base/node_modules
+fi
+
+git checkout package.json yarn.lock
+git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base clean -x -f i18n

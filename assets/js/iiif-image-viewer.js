@@ -8,192 +8,190 @@ import View from 'ol/View';
 import {Control, FullScreen, Rotate, Zoom} from 'ol/control';
 import { fromUserCoordinate, fromUserExtent } from 'ol/proj.js';
 
-var AnimatedView = /*@__PURE__*/ (function(View) {
+class AnimatedView extends View {
+  /**
+   * @param {Object} [opt_options] View options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
 
-    function AnimatedView(opt_options) {
-        View.call(this, opt_options);
-        this.pauseableAnimations_ = [];
-        this.animationsPointer_ = -1;
-        this.lastAnimation_ = {};
-        this.initalCenter = this.getCenter();
-    }
+    super(opt_options);
 
-    if (View) AnimatedView.__proto__ = View;
-    AnimatedView.prototype = Object.create(View && View.prototype);
-    AnimatedView.prototype.constructor = AnimatedView;
+    this.pauseableAnimations_ = [];
+    this.animationsPointer_ = -1;
+    this.lastAnimation_ = {};
+    this.initalCenter = this.getCenter();
+  }
 
-    // Emulate a ring data structure
-    AnimatedView.prototype.getPauseableAnimation_ = function () {
-        if (this.pauseableAnimations_.length - 1 > this.animationsPointer_ ) {
-            this.animationsPointer_++;
-            return this.pauseableAnimations_[this.animationsPointer_]
-        } else {
-            this.animationsPointer_ = 0;
-            return this.pauseableAnimations_[this.animationsPointer_];
+  // Emulate a ring data structure
+  getPauseableAnimation_() {
+      if (this.pauseableAnimations_.length - 1 > this.animationsPointer_ ) {
+          this.animationsPointer_++;
+          return this.pauseableAnimations_[this.animationsPointer_]
+      } else {
+          this.animationsPointer_ = 0;
+          return this.pauseableAnimations_[this.animationsPointer_];
+      }
+  }
+
+  // This is the callback, when one animation has finished
+  nextAnimation_(completed) {
+      if (completed === undefined || completed) {
+          var context = this;
+          var nextAnimation = this.getPauseableAnimation_();
+          this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
+      }
+  }
+
+  pauseAnimation() {
+      if (!this.getAnimating()) {
+        return;
+      }
+      var animation = this.animations_[0][0];
+      //Safe state
+      var now = Date.now();
+      var elapsed = now - animation.start;
+      let stopState = {
+          center: animation.center,
+          zoom: animation.zoom,
+          rotation: animation.rotation,
+          duration: animation.duration - elapsed
+      };
+      this.lastAnimation_ = stopState;
+      // Stop running animation
+      this.cancelAnimations();
+  }
+
+  startAnimation_() {
+      if (this.getAnimating()) {
+        return;
+      }
+      // Check if we stopped, if yes, reset
+      if (Object.keys(this.lastAnimation_).length !== 0) {
+          this.lastAnimation_ = {};
+      }
+      // Get first animation,pass it to animation method and add a callback
+      var context = this;
+      this.animate(this.getPauseableAnimation_, function (state) {context.nextAnimation_(state)});
+  }
+
+  resumeAnimation() {
+      if (this.getAnimating()) {
+        return;
+      }
+      // Check if we stopped
+      if (Object.keys(this.lastAnimation_).length === 0) {
+          this.startAnimation_();
+      } else {
+          // Start stopped animation
+          var context = this;
+          this.animate(this.lastAnimation_, function (state) {context.nextAnimation_(state)});
+      }
+  }
+
+  setPauseableAnimation(var_args) {
+      var args = new Array(arguments.length);
+      for (let i = 0; i < args.length; ++i) {
+        var options = arguments[i];
+        /*
+        if (!('center' in options)) {
+            options.center = this.initalCenter;
         }
-    }
+        */
+        args[i] = options;
+      }
+      this.animationsPointer_ = -1
+      this.pauseableAnimations_ = args;
+  }
 
-    // This is the callback, when one animation has finished
-    AnimatedView.prototype.nextAnimation_ = function (completed) {
-        if (completed === undefined || completed) {
-            var context = this;
-            var nextAnimation = this.getPauseableAnimation_();
-            this.animate(nextAnimation, function (state) {context.nextAnimation_(state)});
-        }
-    }
+  getPauseableAnimation () {
+      return this.pauseableAnimations_;
+  }
 
-    AnimatedView.prototype.pauseAnimation = function () {
-        if (!this.getAnimating()) {
-          return;
-        }
-        var animation = this.animations_[0][0];
-        //Safe state
-        var now = Date.now();
-        var elapsed = now - animation.start;
-        let stopState = {
-            center: animation.center,
-            zoom: animation.zoom,
-            rotation: animation.rotation,
-            duration: animation.duration - elapsed
-        };
-        this.lastAnimation_ = stopState;
-        // Stop running animation
-        this.cancelAnimations();
-    }
+  setCenter(center) {
+      this.initalCenter = center;
+      this.setCenterInternal(fromUserCoordinate(center, this.getProjection()));
+  }
 
-    AnimatedView.prototype.startAnimation_ = function () {
-        if (this.getAnimating()) {
-          return;
-        }
-        // Check if we stopped, if yes, reset
-        if (Object.keys(this.lastAnimation_).length !== 0) {
-            this.lastAnimation_ = {};
-        }
-        // Get first animation,pass it to animation method and add a callback
-        var context = this;
-        this.animate(this.getPauseableAnimation_, function (state) {context.nextAnimation_(state)});
-    }
+  isNoopAnimation(animation) {
+      return false;
+  }
 
-    AnimatedView.prototype.resumeAnimation = function () {
-        if (this.getAnimating()) {
-          return;
-        }
-        // Check if we stopped
-        if (Object.keys(this.lastAnimation_).length === 0) {
-            this.startAnimation_();
-        } else {
-            // Start stopped animation
-            var context = this;
-            this.animate(this.lastAnimation_, function (state) {context.nextAnimation_(state)});
-        }
-    }
+  //Even though the OL API is quite good there are some beginners mistakes, like missing symetry
+  setResolutions(resolutions) {
+      this.resolutions_ = resolutions;
+  }
 
-    AnimatedView.prototype.setPauseableAnimation = function (var_args) {
-        var args = new Array(arguments.length);
-        for (let i = 0; i < args.length; ++i) {
-          var options = arguments[i];
-          /*
-          if (!('center' in options)) {
-              options.center = this.initalCenter;
-          }
-          */
-          args[i] = options;
-        }
-        this.animationsPointer_ = -1
-        this.pauseableAnimations_ = args;
-    }
+  setExtent(extent) {
+      var options = {};
+      options.extent = fromUserExtent(extent, this.projection_);
+      this.applyOptions_(options);
+  }
 
-    AnimatedView.prototype.getPauseableAnimation = function () {
-        return this.pauseableAnimations_;
-    }
+}
 
-    AnimatedView.prototype.setCenter = function (center) {
-        this.initalCenter = center;
-        this.setCenterInternal(fromUserCoordinate(center, this.getProjection()));
-    }
+class RotateLeftControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
+    const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° left';
 
-    AnimatedView.prototype.isNoopAnimation = function (animation) {
-        return false;
-    }
+    const button = document.createElement('button');
+    button.innerHTML = '<i class="icon-left"></i>';
+    button.title = tipLabel;
 
-    //Even though the OL API is quite good there are some beginners mistakes, like missing symetry
-    AnimatedView.prototype.setResolutions = function (resolutions) {
-        this.resolutions_ = resolutions;
-    }
-    AnimatedView.prototype.setExtent = function (extent) {
-        var options = {};
-        options.extent = fromUserExtent(extent, this.projection_);
-        this.applyOptions_(options);
-    }
+    const element = document.createElement('div');
+    element.className = 'rotate-left ol-unselectable ol-control';
+    element.appendChild(button);
 
-    return AnimatedView;
-}(View));
+    super({
+      element: element,
+      target: options.target,
+    });
 
-var RotateLeftControl = /*@__PURE__*/ (function(Control) {
-    function RotateLeftControl(opt_options) {
-        var options = opt_options || {};
-        const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° left';
+    button.addEventListener('click', this.handleRotateLeft.bind(this), false);
+  }
 
-        var button = document.createElement('button');
-        button.innerHTML = '<i class="icon-left"></i>';
-        button.title = tipLabel;
+  handleRotateLeft() {
+      var startRotation = this.getMap().getView().getRotation();
+      this.getMap().getView().setRotation(startRotation + (-90 * Math.PI / 180));
+  }
 
-        var element = document.createElement('div');
-        element.className = 'rotate-left ol-unselectable ol-control';
-        element.appendChild(button);
+}
 
-        Control.call(this, {
-            element: element,
-            target: options.target,
-        });
+class RotateRightControl extends Control {
+  /**
+   * @param {Object} [opt_options] Control options.
+   */
+  constructor(opt_options) {
+    const options = opt_options || {};
+    const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° right';
 
-        button.addEventListener('click', this.handleRotateLeft.bind(this), false);
-    }
+    const button = document.createElement('button');
+    button.innerHTML = '<i class="icon-right"></i>';
+    button.title = tipLabel;
 
-    if (Control) RotateLeftControl.__proto__ = Control;
-    RotateLeftControl.prototype = Object.create(Control && Control.prototype);
-    RotateLeftControl.prototype.constructor = RotateLeftControl;
+    const element = document.createElement('div');
+    element.className = 'rotate-right ol-unselectable ol-control';
+    element.appendChild(button);
 
-    RotateLeftControl.prototype.handleRotateLeft = function handleRotateLeft() {
-        var startRotation = this.getMap().getView().getRotation();
-        this.getMap().getView().setRotation(startRotation + (-90 * Math.PI / 180));
-    };
+    super({
+      element: element,
+      target: options.target,
+    });
 
-    return RotateLeftControl;
-}(Control));
+    button.addEventListener('click', this.handleRotateRight.bind(this), false);
+  }
 
-var RotateRightControl = /*@__PURE__*/ (function(Control) {
-    function RotateRightControl(opt_options) {
-        var options = opt_options || {};
-        const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° right';
+  handleRotateRight() {
+      var startRotation = this.getMap().getView().getRotation();
+      this.getMap().getView().setRotation(startRotation + (90 * Math.PI / 180));
+  }
 
-        var button = document.createElement('button');
-        button.innerHTML = '<i class="icon-right"></i>';
-        button.title = tipLabel;
+}
 
-        var element = document.createElement('div');
-        element.className = 'rotate-right ol-unselectable ol-control';
-        element.appendChild(button);
-
-        Control.call(this, {
-            element: element,
-            target: options.target,
-        });
-
-        button.addEventListener('click', this.handleRotateRight.bind(this), false);
-    }
-
-    if (Control) RotateRightControl.__proto__ = Control;
-    RotateRightControl.prototype = Object.create(Control && Control.prototype);
-    RotateRightControl.prototype.constructor = RotateRightControl;
-
-    RotateRightControl.prototype.handleRotateRight = function handleRotateRight() {
-        var startRotation = this.getMap().getView().getRotation();
-        this.getMap().getView().setRotation(startRotation + (90 * Math.PI / 180));
-    };
-
-    return RotateRightControl;
-}(Control));
 
 /* TODO: Rename these functiontions if real maps are added. The following files needs to be changed aas well:
         * projektemacher-base/layouts/shortcodes/iiif/iiif.html
@@ -209,8 +207,9 @@ window.addMap = function(element, url, rotation, baseURL) {
     // Languages
     var lang = 'en';
     if (document.documentElement.lang !== undefined) {
-        /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-        lang = document.documentElement.lang;
+        /* See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/language */
+        const locale = new Intl.Locale(document.documentElement.lang);
+        lang = locale.language;
     }
     var toolTips = { 'de': {'zoomIn': 'Vergrößern', 'zoomOut': 'Verkleinern', 'fullscreen': 'Vollbildansicht', 'rotate': 'Rotation zurücksetzen', 'rotateLeft': '90° nach links drehen', 'rotateRight': '90° nach rechst drehen'},
                      'en': {'zoomIn': 'Zoom in', 'zoomOut': 'Zoom out', 'fullscreen': 'Toggle full-screen', 'rotate': 'Reset rotation', 'rotateLeft': 'Rotate 90° left', 'rotateRight': 'Rotate 90° right'}};

@@ -9,6 +9,7 @@ parserOptions:
   sourceType: module
 rules:
   no-unused-vars: 1
+  toml/padding-line-between-tables: 0
 overrides:
   - files: ["*.toml"]
     parser: 'toml-eslint-parser'

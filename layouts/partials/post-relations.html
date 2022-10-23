@@ -9,7 +9,8 @@
               {{- end -}}
           <ul>
       </div>
-{{- else if ne .CurrentSection.Dir "" -}}
+{{- else if ne .CurrentSection.File.Dir "" -}}
+{{/* else if ne .CurrentSection.Dir "" */}}
       {{- if not .Params.metaPage -}}
           <div class="section-parent">
               {{- i18n "sectionParent" -}}:

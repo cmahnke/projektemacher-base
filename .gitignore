@@ -6,3 +6,6 @@ scripts/*/__pycache__/*
 *.pyc
 i18n/de.toml
 i18n/en.toml
+3029.patch
+**/puppeteerTmp
+**/.DS_Store

@@ -23,9 +23,36 @@ echo "Merging $PACKAGE_FILES"
 
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
 echo "$PACKAGE" > package.json
-if ! yarn install ; then
-    ERR=$?
+
+OS="`uname`"
+ARCH="`uname -m`"
+if [ "$OS" = 'Darwin' ] ; then
+    if [ "$ARCH" = 'arm64' ] ; then
+        echo "OS is '$OS', Architecture is '$ARCH'"
+        export PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=true
+    fi
+fi
+
+if [ -d patches ] ; then
+    rm -rf patches
+fi
+
+yarn install
+ERR=$?
+if [ $ERR -ne 0 ] ; then
+    echo "yarn install failed with $ERR"
     cat package.json | jq -C .
-    cat yarn-error.log
+    if [ -r yarn-error.log ] ; then
+        cat yarn-error.log
+    fi
     exit $ERR
+fi
+
+if [ -z "$(ls -A ./node_modules/puppeteer-core/.local-chromium/)" ]; then
+    echo "Chrome dependency seems to be missing, downloading again!"
+    if [ grep puppeteer package.json ] ; then
+        cd node_modules/puppeteer
+        node install.js
+        cd ../..
+    fi
 fi

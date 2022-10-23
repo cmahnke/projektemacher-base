@@ -2,10 +2,10 @@
 <div id="timeline" class="timeline timeline-horizontal">
 </div>
 <script type="text/javascript">
-
-    if ($(window).width() < 1024) {
-        $('#vertical-tab').tab('show')
-    }
+    var triggerTabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl);
+    });
 
     var issues = [
         {{- range $entries -}}
@@ -21,4 +21,11 @@
     ];
     var options = {};
     var timeline = addTimeline('timeline', issues, options);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if ($(window).width() < 1024) {
+            bootstrap.Tab.getInstance(document.getElementById('vertical-tab')).show()
+            //$('#vertical-tab').tab('show')
+        }
+    });
 </script>

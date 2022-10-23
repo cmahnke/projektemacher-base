@@ -11,8 +11,9 @@ else
   LANG_DIR=$1
 fi
 
+SED=sed
 OS="`uname`"
-case "$OSTYPE" in
+case "$OS" in
   'Darwin')
     SED=gsed
     ;;
@@ -20,6 +21,7 @@ case "$OSTYPE" in
     SED=sed
     ;;
 esac
+echo "OS is '$OS', sed is '$SED'"
 
 LANGS=`ls -1 $LANG_DIR/*.*.toml | $SED -E 's/.*?\.(.*?)\.toml/\1/g'|sort|uniq`
 
@@ -30,6 +32,7 @@ do
     echo "'$LANG.toml' already exists, skipping"
   else
     cat $LANG_DIR/*.$LANG.toml >> $LANG_DIR/$LANG.toml
+    echo "Deleting "`ls $LANG_DIR/*.$LANG.toml`
     rm $LANG_DIR/*.$LANG.toml
   fi
 done

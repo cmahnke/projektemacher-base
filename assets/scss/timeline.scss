@@ -30,7 +30,7 @@
         position: relative;
 
         img {
-            box-shadow: 0 10px 15px rgba(0 0 0 40%);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, .4);
             width: 300px;
             max-width: 85%;
         }
@@ -115,7 +115,8 @@
     a:focus,
     a:hover,
     a:visited {
-        color: color.scale(#007bff, $lightness: -30%);
-        /* color: darken(#007bff, 30%); */
+        /* This needs Dart SASS, which currently produces more error then it solves
+        color: color.scale(#007bff, $lightness: -30%); */
+        color: darken(#007bff, 30%);
     }
 }
