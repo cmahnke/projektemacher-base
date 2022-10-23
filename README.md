@@ -3,6 +3,12 @@
 
 # Introduction
 
+# Installation
+
+```
+git submodule add https://github.com/cmahnke/projektemacher-base.git themes/projektemacher-base
+```
+
 # Site configuration
 
 ## IIIF manifests
