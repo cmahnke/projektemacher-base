@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 IMAGES=$(find content -maxdepth 4 -name '*.jxl')
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl "
