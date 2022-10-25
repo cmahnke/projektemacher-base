@@ -5,7 +5,7 @@ IIIF_STATIC_CMD=""
 OUTPUT_PREFIX=""
 DEFAULT_URL_PREFIX="."
 IMAGE_PREFIX=content
-DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl "
+DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl-uploader "
 CMD_PREFIX=""
 
 if [ -z "$SKIP_IIIF" ] ; then
