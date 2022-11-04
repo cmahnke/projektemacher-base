@@ -1,0 +1,8 @@
+{{- $color := .Get "color" -}}
+{{- $text := .Get "text" | markdownify -}}
+{{- if not $text -}}
+    {{- $text = safeHTML "&nbsp;" -}}
+{{- end -}}
+<div class="color-sample" style="background: {{- $color -}}; padding: .6rem; display: inline-block;">
+    {{- $text -}}
+</div>
