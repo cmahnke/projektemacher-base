@@ -12,7 +12,7 @@ else
 fi
 
 mkdir -p "$PDFJS_STATIC_DIR" "$TMP_DIR"
-git clone --branch "v$PDFJS_VERSION" https://github.com/mozilla/pdf.js "$TMP_DIR"
+git clone --depth 1 --branch "v$PDFJS_VERSION" https://github.com/mozilla/pdf.js "$TMP_DIR"
 
 cd "$TMP_DIR"
 yarn install --ignore-scripts
