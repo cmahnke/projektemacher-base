@@ -15,7 +15,10 @@ namespaces = {"svg": "http://www.w3.org/2000/svg", "xlink": "http://www.w3.org/1
 
 def loadConfig(configFile):
     config = toml.load(configFile)
-    return config["params"]["preview"]
+    if "preview" in config["params"]:
+        return config["params"]["preview"]
+    else:
+        return
 
 def readMetadata (file):
     post = io.open(file, mode="r", encoding="utf-8").read()
@@ -124,6 +127,9 @@ def getPreviewImg(config, contentFile):
         return False
 
 config = loadConfig(open(configFile, 'r'))
+if config is None:
+    cprint("Preview is not configured!", 'red')
+    exit(0)
 
 cFilePAttern = re.compile(filePattern)
 for subdir, dirs, files in os.walk(contentPath):
