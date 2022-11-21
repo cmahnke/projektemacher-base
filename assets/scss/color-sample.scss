@@ -1,0 +1,11 @@
+@import "fonts/source-code-pro";
+
+.color-sample {
+    padding: 0.6rem;
+    display: inline-block;
+
+    .color-sample-code {
+        font-family: source code pro,monospace;
+        padding-left: 1em;
+    }
+}
