@@ -4,3 +4,16 @@ min_version = 0.85
 [author]
   name = "Christian Mahnke"
   homepage = "//christianmahnke.de"
+
+  [mediaTypes]
+    [mediaTypes."application/x-qrcode-template"]
+      suffixes = ["json"]
+
+  [outputFormats]
+
+    [outputFormats.qrcode]
+      mediaType = "application/x-qrcode-template"
+      isPlainText = true
+      isHTML = false
+      baseName = "qrcode"
+      notAlternative = true
