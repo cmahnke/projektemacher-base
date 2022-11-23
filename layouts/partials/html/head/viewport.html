@@ -1,1 +1,9 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{{- $viewport := "width=device-width, initial-scale=1.0" -}}
+{{- if .Site.Params.disableScale -}}
+    {{- if ne .Site.Params.disableScale true -}}
+        {{- $viewport = printf "%s, %s" $viewport .Site.Params.disableScale -}}
+    {{- else -}}
+        {{- $viewport = printf "%s, %s" $viewport "user-scalable=no" -}}
+    {{- end -}}
+{{- end -}}
+<meta name="viewport" content="{{ $viewport }}">
