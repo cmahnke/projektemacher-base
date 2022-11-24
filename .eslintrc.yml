@@ -4,6 +4,7 @@ env:
 extends:
   - 'eslint:recommended'
   - 'plugin:toml/standard'
+  - 'plugin:json/recommended'
 parserOptions:
   ecmaVersion: 12
   sourceType: module
@@ -13,5 +14,8 @@ rules:
 overrides:
   - files: ["*.toml"]
     parser: 'toml-eslint-parser'
+ignorePatterns:
+  - layouts/_default/*
+
 
 #  ": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
