@@ -1,4 +1,4 @@
-{{- $viewport := "width=device-width, initial-scale=1.0" -}}
+{{- $viewport := "width=device-width, initial-scale=1.0, minimum-scale=1.0" -}}
 {{- if .Site.Params.disableScale -}}
     {{- if ne .Site.Params.disableScale true -}}
         {{- $viewport = printf "%s, %s" $viewport .Site.Params.disableScale -}}
