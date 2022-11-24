@@ -6,17 +6,16 @@
     {{- if and $.Sites.First.Copyright (eq $.Sites.First.Copyright "false") -}}
         <p class="copyright"></p>
     {{- else if $.Sites.First.Params.copyrightYears -}}
-	    <p class="copyright">&copy; {{ $.Sites.First.Params.copyrightYears }} {{ .Sites.First.Copyright | safeHTML }}</p>
-	{{- else if $.Sites.First.Params.copyright -}}
-	    <p class="copyright">{{- .Sites.First.Params.copyright | safeHTML -}}</p>
+	      <p class="copyright">&copy; {{ $.Sites.First.Params.copyrightYears }} {{ .Sites.First.Copyright | safeHTML }}</p>
+	  {{- else if $.Sites.First.Params.copyright -}}
+	      <p class="copyright">{{- .Sites.First.Params.copyright | safeHTML -}}</p>
     {{- else -}}
         <p class="copyright">&copy; {{ $.Sites.First.LastChange.Year }} {{ $.Sites.First.Title }}</p>
     {{- end -}}
     {{- if and $.Sites.First.Params.cc (eq $.Sites.First.Params.cc true) -}}
         <p class="cc">{{ i18n "cc" | safeHTML }}</p>
-	{{- end -}}
+	  {{- end -}}
     {{- if ne (.Scratch.Get "footer") nil -}}
         {{- .Scratch.Get "footer" | safeHTML -}}
     {{- end -}}
-
 </div>
