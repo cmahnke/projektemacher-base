@@ -19,6 +19,7 @@ overrides:
     extends: 'plugin:eslint-plugin-json-es/recommended'
 ignorePatterns:
   - layouts/_default/*
+  - node_modules/*
 
 
 #  ": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
