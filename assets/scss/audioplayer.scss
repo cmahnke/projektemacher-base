@@ -47,7 +47,7 @@ $pause-button-dark: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
                 height: 3em;
             }
 
-            &::hover {
+            &:hover {
                 background-color: darken(#f2f0ec, 15%);
             }
         }
