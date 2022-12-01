@@ -127,7 +127,15 @@ for subdir, dirs, files in os.walk(contentPath):
             else:
                 qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, image_factory=factory)
 
-            qr.add_data(data['url'])
+            url = data['url']
+
+            if isinstance(url, list):
+                shortes = url[0]
+                for u in url:
+                    if len(u) < len(shortest):
+                         url = u
+
+            qr.add_data(url)
             if backgroundColor:
                 img = qr.make_image(back_color=backgroundColor)
                 img._img.set('style', 'background-color: {};'.format(backgroundColor))
