@@ -20,9 +20,11 @@ factory = 'svg'
 iconScale = 0.25
 # Set this to None to get an transparent background
 backgroundColor = 'white'
+include_url = False
 
 parser = argparse.ArgumentParser(prog = 'generate-qr-codes.py', description = 'Generate QR Code')
 parser.add_argument('-i', '--include', '--icon', metavar="[include path]", type=pathlib.Path, help="Path to include icons from")
+parser.add_argument('-u', '--url', action='store_true', help="Include URL")
 parser.add_argument('-o', '--output', metavar="filename", help="Output file name, defaults to '{}'".format(defaultOutfile))
 parser.add_argument('-b', '--background', choices=['square', 'circle'], help="Background primitive for icon")
 args = parser.parse_args()
@@ -31,6 +33,9 @@ if args.output is not None:
     outfile = vars(args).output
 else:
     outfile = defaultOutfile
+
+if args.url:
+    include_url = True
 
 if (factory == 'svg'):
     factory = qrcode.image.svg.SvgPathImage
@@ -56,7 +61,6 @@ primitives['square'] = """
   <rect width="100" height="100" fill="{}" />
 </svg>
 """.format(backgroundColor)
-
 
 
 # Functions
@@ -130,7 +134,7 @@ for subdir, dirs, files in os.walk(contentPath):
             url = data['url']
 
             if isinstance(url, list):
-                shortes = url[0]
+                shortest = url[0]
                 for u in url:
                     if len(u) < len(shortest):
                          url = u
@@ -195,6 +199,8 @@ for subdir, dirs, files in os.walk(contentPath):
                 else:
                     raise ValueError("Embedding Icon as raster image isn't supported!")
                     #img = qr.make_image(image_factory=StyledPilImage, embeded_image_path=icon)
+            if include_url:
+                pass
 
             if outfile.endswith('svg'):
                 with open(os.path.join(subdir, outfile), "w") as svg_file:
