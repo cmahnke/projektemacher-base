@@ -8,7 +8,7 @@ from os.path import exists
 import qrcode.image.svg
 from qrcode.image.pil import PilImage
 from qrcode.image.styledpil import StyledPilImage
-from cairosvg import svg2png
+from cairosvg import svg2png, svg2pdf
 import xml.etree.ElementTree as ET
 from svgutils.compose import Unit
 from svgutils.transform import GroupElement, FigureElement
@@ -29,8 +29,8 @@ parser.add_argument('-o', '--output', metavar="filename", help="Output file name
 parser.add_argument('-b', '--background', choices=['square', 'circle'], help="Background primitive for icon")
 args = parser.parse_args()
 
-if args.output is not None:
-    outfile = vars(args).output
+if args.output is not None and args.output != "":
+    outfile = args.output
 else:
     outfile = defaultOutfile
 
@@ -205,6 +205,8 @@ for subdir, dirs, files in os.walk(contentPath):
             if outfile.endswith('svg'):
                 with open(os.path.join(subdir, outfile), "w") as svg_file:
                     svg_file.write(svg)
+            elif outfile.endswith('pdf'):
+                svg2pdf(bytestring=svg.encode('utf-8'), write_to=os.path.join(subdir, outfile))
             else:
                 svg2png(bytestring=svg.encode('utf-8'), write_to=os.path.join(subdir, outfile))
 
