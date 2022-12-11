@@ -7,3 +7,4 @@ pylint
 qrcode ~=7.3
 cairosvg
 svgutils
+idna
