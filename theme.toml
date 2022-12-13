@@ -6,8 +6,15 @@ min_version = 0.85
   homepage = "//christianmahnke.de"
 
   [mediaTypes]
+    [mediaTypes."application/geo+json"]
+      suffixes = ["geojson", "gjson"]
+    [mediaTypes."application/ld+json"]
+      suffixes = ["json"]
     [mediaTypes."application/x-qrcode-template"]
       suffixes = ["json"]
+  # See https://www.loc.gov/preservation/digital/formats/fdd/fdd000538.shtml
+    [mediaTypes."image/jxl"]
+      suffixes = ["jxl"]
 
   [outputFormats]
 
