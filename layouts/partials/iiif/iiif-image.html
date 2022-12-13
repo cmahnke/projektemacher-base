@@ -11,10 +11,12 @@
 {{- if .context.params.class -}}
     {{- $class = .context.params.class -}}
 {{- end -}}
+{{- $name := "" -}}
 
 {{- $previewImg := "" -}}
 {{- if .context.name -}}
     {{- $previewImg = ($page.Resources.GetMatch .context.name) -}}
+    {{- $name = .context.name -}}
 {{- else -}}
     {{- $previewImg = ($page.Resources.GetMatch .context.src) -}}
 {{- end -}}
@@ -23,7 +25,10 @@
 {{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-  {{- $previewImg = partial "iiif/preview.html" $page -}}
+  {{- if not $name -}}
+    {{- warnf "JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
+  {{- end -}}
+  {{- $previewImg = partial "iiif/preview.html" (dict "context" $page "name" $name) -}}
 {{- else -}}
   {{- if lt $previewImg.Width $previewImg.Height -}}
     {{- $orientation = "portrait" -}}
