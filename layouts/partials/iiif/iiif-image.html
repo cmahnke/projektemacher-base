@@ -70,6 +70,7 @@
     <script type="text/javascript">
         {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
         {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }});
+        {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
     </script>
     <div class="share">
         {{ $downloadURL := printf "%s" .context.src }}
