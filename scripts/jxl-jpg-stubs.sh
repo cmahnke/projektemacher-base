@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-IMAGES=$(find content -maxdepth 4 -name '*.jxl')
-DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl-uploader "
+IMAGES=$(find content -name '*.jxl')
+DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl "
 OUT_SUFFIX=".jpg"
 
 for IMAGE in $IMAGES
@@ -12,7 +12,7 @@ do
     echo "Processing $IMAGE..."
     if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
         OUTPUT_FILE="$OUTPUT_DIR/$IMAGE_NAME$OUT_SUFFIX"
-        $DOCKER_PREFIX djxl -j "$IMAGE" "$OUTPUT_FILE"
+        $CMD_PREFIX djxl -j "$IMAGE" "$OUTPUT_FILE"
         echo "Saved $OUTPUT_FILE"
     fi
 
