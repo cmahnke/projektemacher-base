@@ -1,0 +1,8 @@
+{{/* See https://discourse.gohugo.io/t/reverse-array/28753/2 */}}
+{{- $sliceOriginal := . -}}
+{{- $len := len $sliceOriginal -}}
+{{- $sliceReversed := slice -}}
+{{- range seq $len -}}
+  {{- $sliceReversed = $sliceReversed | append (index $sliceOriginal (sub $len .)) }}
+{{- end -}}
+{{- return $sliceReversed -}}
