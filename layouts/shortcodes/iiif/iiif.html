@@ -17,7 +17,7 @@ Parameters:
     {{/* JavaScript */}}
     {{- $defines := dict "process.env.NODE_ENV" `"development"` -}}
     {{- $opts := dict "targetPath" "js/main.js" "defines" $defines -}}
-    {{- $iiifViewer := resources.Get "js/iiif-viewer.js" | js.Build $opts -}}
+    {{- $iiifViewer := resources.Get "js/iiif-image-viewer.js" | js.Build $opts -}}
     {{- $js := slice $iiifViewer | resources.Concat "js/iiif-ol.js" | minify | fingerprint -}}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
