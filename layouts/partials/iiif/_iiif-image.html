@@ -19,7 +19,8 @@
 {{- if isset . "heading" -}}
   {{- $heading = .heading -}}
 {{- end -}}
-{{- $mapName := printf "iiif-image-%s" (delimit (shuffle (seq 1 9)) "") -}}
+{{- $idSuffix := replace (replace (replace $infoJson "/" "_") "." "") "-" "_" -}}
+{{- $mapName := printf "iiif_image_%s_%s" (delimit (shuffle (seq 1 9)) "") $idSuffix -}}
 {{- if isset . "mapName" -}}
   {{- $mapName = .mapName -}}
 {{- end -}}
@@ -57,7 +58,7 @@
     {{ $mapName | safeJS }}.updateSize();
     {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
   </script>
-  {{ if (.Get "share") }}
+  {{ if $share }}
     <div class="share">
       {{- if $downloadURL -}}
         <a href="{{ $downloadURL }}" class="image-download">{{ i18n "fullResolution" }}</a> |
