@@ -4,8 +4,6 @@ Make sure to integrate the CSS styles of OpenLayers
 
 Parameters:
 * src - The url to the 'info.json' file
-* divId - The ID of the viewer <div> (optional - default 'iiif-image-' plus a random number)
-* jsId - The variable name of the viewer <div> (optional - default 'map')
 * includeSources - Include JavaScript sources (optional - default 'false')
 * pageURL - Link to page (optional, will be used to generate link)
 * share - Add share links (optional)
@@ -31,10 +29,17 @@ Parameters:
 {{/* TODO: This looks like a bug - the wrong parameter is checked */}}
 {{- if .Get "id" -}}
     {{- $var = .jsId -}}
+    {{ errorf "Using id on IIIF shortcode is deprecated!" }}
 {{- end -}}
+{{- $share := false -}}
+{{ if (.Get "share") }}
+  {{- $share := (.Get "share") -}}
+{{- end -}}
+{{- $baseURL := path.Dir $src -}}
 
+{{ partial "iiif/_iiif-image.html (dict "infoJson" $src "share" $share ) "}}
 
-{{/* TODO: Reuse the existing partial here */}}
+{{/* TODO: Reuse the existing partial here
 <div class="iiif">
     <a name="{{ $id }}"></a>
     <div id="{{ $id }}" class="viewer"></div>
@@ -43,7 +48,7 @@ Parameters:
         {{ $rotation =  .Get "rotate" }}
     {{ end }}
     <script type="text/javascript">
-        var {{ $var | safeJS }} = addMap(document.getElementById("{{ $id }}"), "{{ $src }}", {{ $rotation }}, "{{ path.Dir $src }}");
+        var {{ $var | safeJS }} = addMap(document.getElementById("{{ $id }}"), "{{ $src }}", {{ $rotation }}, "{{ $baseURL }}");
         {{ $var | safeJS }}.updateSize();
     </script>
     {{ if (.Get "share") }}
@@ -59,3 +64,4 @@ Parameters:
         </div>
     {{ end }}
 </div>
+*/}}
