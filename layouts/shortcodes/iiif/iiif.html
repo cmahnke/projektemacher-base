@@ -24,5 +24,9 @@ Parameters:
 {{ if (.Get "share") }}
   {{- $share := (.Get "share") -}}
 {{- end -}}
+{{- $downloadURL := "" -}}
+{{- if .Get "downloadURL" -}}
+  {{- $downloadURL = .Get "downloadURL" -}}
+{{- end -}}
 
-{{ partial "iiif/_iiif-image.html" (dict "infoJson" $src "share" $share ) }}
+{{ partial "iiif/_iiif-image.html" (dict "infoJson" $src "share" $share "downloadURL" $downloadURL) }}
