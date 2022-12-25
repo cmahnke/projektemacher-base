@@ -55,6 +55,21 @@
   {{- $baseURL = "" -}}
 {{- end -}}
 
+{{/* TODO: Enable this:
+
+  {{- $share := false -}}
+  {{- if isset . "share" -}}
+    {{- $share = .share -}}
+  {{- end -}}
+  {{ $rotation := 0 }}
+  {{ if .context.params.rotate }}
+      {{ $rotation = .context.params.rotate }}
+  {{ end }}
+  {{ $downloadURL := printf "%s" .context.src }}
+  {{ partial "iiif/_iiif-image.html" (dict "infoJson" $infoJson "share" $share "downloadURL" $downloadURL "orientation" $orientation "heading" .heading "rotation" $rotation "baseURL" $baseURL) }}
+
+*/}}
+
 <div class="iiif-image {{ $class | safeHTML }} {{ $orientation | safeHTML }}">
     <a name="{{ $mapName }}"></a>
     {{/*
