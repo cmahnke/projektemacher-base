@@ -15,6 +15,7 @@
  "devDependencies": {
   "@fullhuman/postcss-purgecss": "^5.0.0",
   "cors": "^2.8.5",
+  "doiuse": "^4.4.1",
   "eslint": "~8.30.0",
   "eslint-config-prettier": "~8.5.0",
   "eslint-plugin-compat": "~4.0.0",
@@ -28,6 +29,8 @@
   "postcss-cli": "^10.1.0",
   "postcss-discard-duplicates": "^5.1.0",
   "postcss-import": "^15.0.0",
+  "postcss-inline-svg": "^5.0.0",
+  "postcss-utilities": "^0.8.4",
   "prettier": "^2.2.1",
   "puppeteer": "^19.0.0",
   "react": "^18.2.0",
