@@ -93,7 +93,7 @@ console.log('Base URL is %s', baseURL);
         request.continue();
         })
         .on('response', response => {
-            console.log('Got response for %s', response.url())
+            console.log('Browser: Got response for %s', response.url())
         });
 
     for (var i in tests) {
@@ -136,7 +136,7 @@ console.log('Base URL is %s', baseURL);
             });
 
         checkURL = baseURL + localFile;
-        console.log('Opening file %s', checkURL);
+        console.log('-> Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
 
         if ('click' in tests[i]) {
