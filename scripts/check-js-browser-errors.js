@@ -63,6 +63,7 @@ console.log('Base URL is %s', baseURL);
 
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
+    /* TODO: This behaves differently then GitHub, redirect to URL ending in slash on request on directories. */
     app.use(express.static(webRoot));
     var server = app.listen(localPort, function () {
         console.log('Webserver started, serving \'%s\'', webRoot);
@@ -121,15 +122,15 @@ console.log('Base URL is %s', baseURL);
 
         page.on('console', msg => console.log('Browser console:', msg.text()))
             .on('pageerror', error => {
-              console.log(error.message);
+              console.log('[pageerror] ' + error.message);
               process.exit(123);
             })
             .on('requestfailed', request => {
-              console.log('Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
+              console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
               if (request.resourceType() == 'media') {
-                  console.log('Ignoring failed media request for %s', request.url());
+                  console.log('[requestfailed] Ignoring failed media request for %s', request.url());
               } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
-                  console.log('Ignoring request for %s', request.url());
+                  console.log('[requestfailed] Ignoring request for %s', request.url());
               } else {
                   process.exit(124);
               }
