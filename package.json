@@ -46,11 +46,12 @@
   "svgo": "^3.0.2",
   "toml": "^3.0.0"
  },
- "browserlist": [
+ "browserslist": [
   "> 0.5%",
   "last 2 versions",
   "Firefox ESR",
-  "not dead"
+  "not dead",
+  "not op_mini all"
  ],
  "scripts": {
   "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.json 'docs/css/*.css'",
