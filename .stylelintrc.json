@@ -16,6 +16,8 @@
     "comment-empty-line-before": [null, {"severity": "warning"}],
     "color-function-notation": "legacy",
     "alpha-value-notation": "number",
+    "selector-class-pattern": [null, {"severity": "warning"}],
+    "value-keyword-case": ["lower", {"ignoreProperties": ["font-family"]}],
     "scss/no-global-function-names": [null, {"severity": "warning"}],
     "plugin/no-unsupported-browser-features": [true, {
       "browsers": ["> 0.5%", "last 2 versions", "Firefox ESR", "not dead", "not op_mini all"],
