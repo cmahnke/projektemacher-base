@@ -13,6 +13,7 @@
   "yargs": "^17.6.0"
  },
  "devDependencies": {
+  "@fullhuman/postcss-purgecss": "^5.0.0",
   "cors": "^2.8.5",
   "eslint": "~8.30.0",
   "eslint-config-prettier": "~8.5.0",
@@ -23,8 +24,8 @@
   "express": "^4.18.2",
   "markdownlint-cli": "~0.32.0",
   "patch-package": "^6.2.2",
-  "postcss": "^8.2.13",
-  "postcss-cli": "^10.0.0",
+  "postcss": "^8.4.20",
+  "postcss-cli": "^10.1.0",
   "postcss-discard-duplicates": "^5.1.0",
   "postcss-import": "^15.0.0",
   "prettier": "^2.2.1",
