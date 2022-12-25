@@ -18,9 +18,10 @@
     "alpha-value-notation": "number",
     "scss/no-global-function-names": [null, {"severity": "warning"}],
     "plugin/no-unsupported-browser-features": [true, {
-      "browsers": ["> 0.5%", "last 2 versions", "Firefox ESR", "not dead"],
+      "browsers": ["> 0.5%", "last 2 versions", "Firefox ESR", "not dead", "not op_mini all"],
       "ignore": ["rem"],
-      "ignorePartialSupport": true
+      "ignorePartialSupport": true,
+      "severity": "warning"
     }]
   }
 }

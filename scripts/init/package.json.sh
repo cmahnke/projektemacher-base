@@ -37,6 +37,14 @@ if [ -d patches ] ; then
     rm -rf patches
 fi
 
+if [ ! -f .stylelintrc.json ] ; then
+  cp ./themes/projektemacher-base/.stylelintrc.json .
+fi
+
+if [ ! -f browserslist ] ; then 
+  cp ./themes/projektemacher-base/browserslist .
+fi
+
 yarn install
 ERR=$?
 if [ $ERR -ne 0 ] ; then
