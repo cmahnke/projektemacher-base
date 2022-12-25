@@ -37,6 +37,18 @@ if [ -d patches ] ; then
     rm -rf patches
 fi
 
+if ! git ls-files --error-unmatch .stylelintrc.json &> /dev/null ; then
+  cp ./themes/projektemacher-base/.stylelintrc.json .
+fi
+
+if ! git ls-files --error-unmatch browserslist &> /dev/null ; then
+  cp ./themes/projektemacher-base/browserslist .
+fi
+
+if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
+  cp ./themes/projektemacher-base/purgecss.config.js .
+fi
+
 yarn install
 ERR=$?
 if [ $ERR -ne 0 ] ; then
