@@ -3,7 +3,7 @@
 # See also https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/manual_imagick7.html
 
 sudo add-apt-repository universe
-sudo apt-get install libilmbase24 libopenexr24 libtcmalloc-minimal4 libhwy-dev
+sudo apt-get install libilmbase25 libopenexr25 libtcmalloc-minimal4 libhwy-dev
 
 mkdir -p /tmp/jxl
 cd /tmp/jxl
