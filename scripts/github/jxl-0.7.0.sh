@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sudo apt-get install libilmbase24 libopenexr24 libtcmalloc-minimal4 libhwy-dev 
+
 mkdir -p /tmp/jxl
 cd /tmp/jxl
 
