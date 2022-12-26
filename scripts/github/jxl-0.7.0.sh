@@ -9,9 +9,9 @@ wget https://github.com/libjxl/libjxl/releases/download/v0.7.0/jxl-debs-amd64-ub
 tar xzf jxl-debs-amd64-ubuntu-20.04-v0.7.0.tar.gz
 
 
-sudo apt install -f libjxl_0.7_amd64.deb
-sudo apt install -f jxl_0.7_amd64.deb
-sudo apt install -f libjxl-dev_0.7_amd64.deb
+sudo apt install -f ./libjxl_0.7_amd64.deb
+sudo apt install -f ./jxl_0.7_amd64.deb
+sudo apt install -f ./libjxl-dev_0.7_amd64.deb
 
 cd ..
 rm -rf jxl
