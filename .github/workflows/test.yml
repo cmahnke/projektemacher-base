@@ -64,3 +64,14 @@ jobs:
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
           ./scripts/github/setup-inkscape.sh
+
+  test_inkscape_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
+          ./scripts/github/setup-inkscape.sh

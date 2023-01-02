@@ -1,5 +1,7 @@
 #!/bin/sh
 
+docker pull "ghcr.io/cmahnke/font-action:latest"
+
 echo "Installing fonts"
 
 BASEDIR=$(dirname "$0")
