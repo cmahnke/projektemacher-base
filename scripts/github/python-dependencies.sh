@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PACKAGE_DEPENDENCIES="py3-matplotlib py3-numpy py3-pillow py3-yaml py3-pytoml py3-termcolor py3-wheel"
+PACKAGE_DEPENDENCIES="python3-matplotlib python3-numpy python3-pillow python3-yaml python3-pytoml python3-termcolor python3-wheel"
 
 echo "Installing '$PACKAGE_DEPENDENCIES' from distro repository"
 sudo apt-get install $PACKAGE_DEPENDENCIES
