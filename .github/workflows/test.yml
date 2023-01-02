@@ -63,7 +63,6 @@ jobs:
           ./scripts/github/dart-sass.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
-          ./scripts/github/setup-inkscape.sh
 
   test_inkscape_install:
     runs-on: ubuntu-22.04
