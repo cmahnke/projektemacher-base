@@ -9,7 +9,10 @@
 {{- $imgLocation := path.Join $contextPath .context.src -}}
 {{- $class := "" -}}
 {{- $orientation := "" -}}
-{{- if .context.params.class -}}
+{{/*
+{{- if (isset .Page.Params "iiifclass") -}}
+*/}}
+{{- if (isset .context.params "class") -}}
     {{- $class = .context.params.class -}}
 {{- end -}}
 {{- $name := "" -}}
