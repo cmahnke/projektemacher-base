@@ -8,6 +8,16 @@ IMAGE_PREFIX=content
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl-uploader "
 CMD_PREFIX=""
 
+if [ -z "$CORES" ] ; then
+  # https://stackoverflow.com/a/45181694
+  if [ ! command -v getconf &> /dev/null ] ; then
+    CORES=2
+  else
+    CORES=$(getconf _NPROCESSORS_ONLN)
+  fi
+fi
+JOBFILE=$(mktemp -t 3D_JOBS)
+
 if [ -z "$SKIP_IIIF" ] ; then
 
     if [ -z "$IMAGES" ] ; then
