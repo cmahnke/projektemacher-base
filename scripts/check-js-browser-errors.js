@@ -36,8 +36,21 @@ if (!fs.existsSync(configFile)) {
 }
 
 var tests = [];
+var checkMesages = [];
 if (fs.existsSync(testFile)) {
     tests = JSON.parse(fs.readFileSync(testFile, 'utf8'));
+    //console.log(tests);
+    if (typeof tests === 'object' && tests !== null && !Array.isArray(tests)) {
+console.log(tests);
+console.log(typeof tests);
+console.log(Array.isArray(tests));
+
+        if (tests["messages"]) {
+            checkMesages = tests["messages"];
+            delete tests["messages"];
+        }
+        tests = tests["urls"]
+    }
 } else if (fs.existsSync(urlsFile)) {
     var urls = fs.readFileSync(urlsFile).toString().split("\n");
     for (var i in urls) {
@@ -50,6 +63,8 @@ if (fs.existsSync(testFile)) {
     console.log('File %s not found!', urlsFile);
     urls = ['/'];
 }
+
+console.log(tests);
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 var baseURL = hugoConfig.baseURL;
@@ -98,12 +113,14 @@ console.log('Base URL is %s', baseURL);
         });
 
     for (var i in tests) {
-
         var localFile;
-        if (tests[i]['url'] == '/') {
-            localFile = 'index.html';
-        } else {
+        if (typeof tests[i] === 'object' && tests[i] !== null) {
             localFile = tests[i]['url'];
+        } else {
+            localFile = tests[i];
+        }
+        if (localFile == '/') {
+            localFile = 'index.html';
         }
         localFile = localFile.replace(baseURL, '/')
         localFile = localFile.split("?")[0].split("#")[0]
@@ -120,7 +137,15 @@ console.log('Base URL is %s', baseURL);
             process.exit(3);
         }
 
-        page.on('console', msg => console.log('Browser console:', msg.text()))
+        page.on('console', msg => {
+              console.log('Browser console:', msg.text());
+              for (var m in checkMesages) {
+                if (msg.text().includes(m)) {
+                  console.log('[console] Failing on message %s since it includes "%s"', msg.text(), m);
+                  process.exit(122);
+                }
+              }
+            })
             .on('pageerror', error => {
               console.log('[pageerror] ' + error.message);
               process.exit(123);
