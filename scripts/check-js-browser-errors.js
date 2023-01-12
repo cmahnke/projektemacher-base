@@ -39,17 +39,23 @@ var tests = [];
 var checkMesages = [];
 if (fs.existsSync(testFile)) {
     tests = JSON.parse(fs.readFileSync(testFile, 'utf8'));
-    //console.log(tests);
     if (typeof tests === 'object' && tests !== null && !Array.isArray(tests)) {
-console.log(tests);
-console.log(typeof tests);
-console.log(Array.isArray(tests));
-
         if (tests["messages"]) {
-            checkMesages = tests["messages"];
+            if (!Array.isArray(tests["messages"])) {
+                checkMesages = [tests["messages"]];
+            } else {
+                checkMesages = tests["messages"];
+            }
             delete tests["messages"];
         }
-        tests = tests["urls"]
+        if (tests.hasOwnProperty('urls')) {
+          var tmpTests = [];
+          for (const u of tests["urls"]) {
+            tmpTests.push({"url": u});
+          }
+          delete tests["urls"];
+          tests = tmpTests;
+        }
     }
 } else if (fs.existsSync(urlsFile)) {
     var urls = fs.readFileSync(urlsFile).toString().split("\n");
@@ -63,8 +69,6 @@ console.log(Array.isArray(tests));
     console.log('File %s not found!', urlsFile);
     urls = ['/'];
 }
-
-console.log(tests);
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 var baseURL = hugoConfig.baseURL;
@@ -114,7 +118,7 @@ console.log('Base URL is %s', baseURL);
 
     for (var i in tests) {
         var localFile;
-        if (typeof tests[i] === 'object' && tests[i] !== null) {
+        if (typeof tests[i] === 'object' && tests[i] !== null && tests[i].hasOwnProperty('url')) {
             localFile = tests[i]['url'];
         } else {
             localFile = tests[i];
@@ -124,7 +128,7 @@ console.log('Base URL is %s', baseURL);
         }
         localFile = localFile.replace(baseURL, '/')
         localFile = localFile.split("?")[0].split("#")[0]
-        if (tests[i]['url'].startsWith('/')) {
+        if (localFile.startsWith('/')) {
             localFile = localFile.substring(1);
         }
 
@@ -139,10 +143,13 @@ console.log('Base URL is %s', baseURL);
 
         page.on('console', msg => {
               console.log('Browser console:', msg.text());
-              for (var m in checkMesages) {
-                if (msg.text().includes(m)) {
-                  console.log('[console] Failing on message %s since it includes "%s"', msg.text(), m);
-                  process.exit(122);
+              if (checkMesages.length) {
+                for (const m of checkMesages) {
+                  console.log('Checking for "%s"', m);
+                  if (msg.text().includes(m)) {
+                    console.log('[console] Failing on message %s since it includes "%s"', msg.text(), m);
+                    process.exit(122);
+                  }
                 }
               }
             })
