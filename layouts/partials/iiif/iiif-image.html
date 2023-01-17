@@ -25,7 +25,7 @@
     {{- $previewImg = ($page.Resources.GetMatch .context.src) -}}
 {{- end -}}
 {{- if eq $previewImg nil -}}
-    {{ errorf "Can't find image %s" $imgLocation }}
+    {{ errorf "Can't find image %s in 'iiif/iiif-image.html'" $imgLocation }}
 {{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}

@@ -20,7 +20,7 @@
 
 {{- $orientation := "" -}}
 {{- if eq $previewImg nil -}}
-    {{- errorf "Can't find image 'front' for %s" $context -}}
+    {{- errorf "Can't find image 'front' for %s in 'iiif/iiif-presentation.html'" $context -}}
 {{- end -}}
 {{ if lt $previewImg.Width $previewImg.Height }}
     {{- $orientation = "portrait" -}}
