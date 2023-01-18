@@ -80,7 +80,7 @@ if [ -z "$SKIP_IIIF" ] ; then
             echo "Setting IIIF identifier to '$IIIF_ID'"
         fi
 
-        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET)"
+        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET) using '$IIIF_STATIC_CMD'"
         if [ $IIIF_STATIC_CMD = "vips" ] ; then
             if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
                 echo "Running Docker for JPEG XL"
