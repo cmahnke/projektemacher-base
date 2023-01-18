@@ -53,7 +53,7 @@
                     {{- $image.Set "previewImg" ($.Resources.GetMatch .src) -}}
                  {{- end -}}
                  {{- if eq ($image.Get "previewImg") nil -}}
-                    {{- warnf "Can't find image %s" ($image.Get "previewLoc") -}}
+                    {{- warnf "Can't find image %s  in '_default/single.json'" ($image.Get "previewLoc") -}}
                  {{- end -}}
 
                  {{- $canvas := "" -}}
