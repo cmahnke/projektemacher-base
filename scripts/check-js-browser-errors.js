@@ -172,6 +172,10 @@ console.log('Base URL is %s', baseURL);
         console.log('-> Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
 
+        // See https://stackoverflow.com/questions/46948489/puppeteer-wait-page-load-after-form-submit
+        // On GitHub requstes seem to be aborted by the nex load.
+        await page.waitForFunction(() => document.readyState === "complete");
+
         if ('click' in tests[i]) {
             for (j in tests[i]['click']) {
                 const [response] = await Promise.all([
