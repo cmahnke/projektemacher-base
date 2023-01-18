@@ -83,8 +83,9 @@ if [ -z "$SKIP_IIIF" ] ; then
         echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET) using '$IIIF_STATIC_CMD'"
         if [ $IIIF_STATIC_CMD = "vips" ] ; then
             if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
-                echo "Running Docker for JPEG XL"
+                echo "Running Docker for JPEG XL (Prefix '$CMD_PREFIX')"
                 $CMD_PREFIX vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
+                echo "Creating full image as JPEG"
                 mkdir -p  $TARGET/full/full/0/
                 $CMD_PREFIX vips copy $IMAGE $TARGET/full/full/0/default.jpg
             else
