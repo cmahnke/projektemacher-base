@@ -170,7 +170,7 @@ console.log('Base URL is %s', baseURL);
 
         checkURL = baseURL + localFile;
         console.log('-> Opening file %s', checkURL);
-        const open = await page.goto(checkURL, { waitUntil: 'load', timeout: 0 });
+        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
 
         if ('click' in tests[i]) {
             for (j in tests[i]['click']) {
@@ -204,8 +204,9 @@ console.log('Base URL is %s', baseURL);
             });
         }
 
-        //Events doen't really wrk well, just wait :(
-        await page.waitForTimeout(10000);
+        //Events doen't really work well, just wait :(
+        await page.waitForTimeout(5000);
+        //await page.waitForNavigation();
     }
     await browser.close();
     await server.close();
