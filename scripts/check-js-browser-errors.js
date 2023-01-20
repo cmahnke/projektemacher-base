@@ -140,7 +140,7 @@ console.log('Base URL is %s', baseURL);
             console.log('Local file %s doesn\'t exist, exiting!', checkFile);
             process.exit(3);
         }
-
+        //var response;
         page.on('console', msg => {
               console.log('Browser console:', msg.text());
               if (checkMesages.length) {
@@ -170,11 +170,7 @@ console.log('Base URL is %s', baseURL);
 
         checkURL = baseURL + localFile;
         console.log('-> Opening file %s', checkURL);
-        const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
-
-        // See https://stackoverflow.com/questions/46948489/puppeteer-wait-page-load-after-form-submit
-        // On GitHub requstes seem to be aborted by the nex load.
-        await page.waitForFunction(() => document.readyState === "complete");
+        const open = await page.goto(checkURL, { waitUntil: 'load', timeout: 0 });
 
         if ('click' in tests[i]) {
             for (j in tests[i]['click']) {
@@ -208,6 +204,8 @@ console.log('Base URL is %s', baseURL);
             });
         }
 
+        //Events doen't really wrk well, just wait :(
+        await page.waitForTimeout(10000);
     }
     await browser.close();
     await server.close();
