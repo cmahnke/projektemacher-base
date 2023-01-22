@@ -1,6 +1,8 @@
 {{- $contextPath := path.Dir .File.Path -}}
 {{- $urlBase := printf "%s%s" .Site.BaseURL $contextPath -}}
 {{- $manifestUrl := "" -}}
+{{- $name := "front" -}}
+{{- $page := . -}}
 {{/*
 {{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
 */}}
@@ -11,14 +13,26 @@
 {{- end -}}
 */}}
 
-{{- $previewImg := (.Resources.ByType "image").GetMatch "front" -}}
+{{- $previewImg := (.Resources.ByType "image").GetMatch $name -}}
 {{- if eq $previewImg nil -}}
     {{ warnf "%s" (index .Params.resources 0).src }}
     {{- $previewImg = (.Resources.ByType "image").GetMatch (index .Params.resources 0).src -}}
+    {{- if ne ((.Resources.ByType "image").GetMatch (index .Params.resources 0).name) nil -}}
+      {{- $name = (.Resources.ByType "image").GetMatch (index .Params.resources 0).name -}}
+    {{- else -}}
+      {{- $name = (index .Params.resources 0).src -}}
+    {{- end -}}
 {{- end -}}
 {{- $context := path.Dir .File.Path -}}
 
 {{- $orientation := "" -}}
+{{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+  {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
+  {{- if not $name -}}
+    {{- warnf "JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
+  {{- end -}}
+  {{- $previewImg = partial "iiif/preview.html" (dict "context" $page "name" $name) -}}
+{{- end -}}
 {{- if eq $previewImg nil -}}
     {{- errorf "Can't find image 'front' for %s in 'iiif/iiif-presentation.html'" $context -}}
 {{- end -}}
