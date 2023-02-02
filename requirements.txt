@@ -5,7 +5,7 @@ pyyaml
 toml
 icalendar
 pylint
-qrcode ~=7.3
+qrcode ~=7.4
 cairosvg
 svgutils
 #svgutils @ git+https://github.com/btel/svg_utils@1cc5b888f265407d2ea3b1f93c95b2efd29c611c
