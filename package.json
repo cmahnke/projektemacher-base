@@ -29,7 +29,7 @@
   "postcss-cli": "^10.1.0",
   "postcss-discard-duplicates": "^5.1.0",
   "postcss-import": "^15.0.0",
-  "postcss-inline-svg": "^5.0.0",
+  "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
   "prettier": "^2.2.1",
   "puppeteer": "^19.0.0",
