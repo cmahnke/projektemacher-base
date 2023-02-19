@@ -6,6 +6,6 @@ from .PyHugolib import PyHugolib
 
 class Site(PyHugolib):
     def structure(self, hugo_dir):
-        oad_config = self.library.buildStructure
+        oad_config = self.library.BuildStructure
         load_config.argtypes = [ctypes.c_char_p]
         load_config.restype = ctypes.c_char_p

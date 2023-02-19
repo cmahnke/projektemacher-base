@@ -2,12 +2,15 @@ package main
 
 import (
   "C"
-  "log"
 
 //	"fmt"
-//	"os"
+  "log"
+	"os"
   "path/filepath"
+  "io/ioutil"
 //	"strings"
+  "bytes"
+  "errors"
 
   "encoding/json"
   "github.com/gohugoio/hugo/config"
@@ -26,41 +29,65 @@ type  MapEntry {
 */
 
 var (
-  env = "production"
+  Debug = false
+  Env = "production"
   ConfigDefaults = []string{"baseURL", "resourceDir", "contentDir", "dataDir", "i18nDir", "layoutDir", "assetDir", "archetypeDir", "publishDir", "workingDir", "defaultContentLanguage"}
 
+  buf bytes.Buffer
+	logger = log.New(&buf, "", log.Lshortfile | log.Ltime)
+  fs afero.Fs = hugofs.Os
 )
 
+func init() {
+    logger.SetOutput(ioutil.Discard)
+}
 
-//export loadConfig
-func loadConfig (filePtr *C.char) (*C.char) {
-  filename := C.GoString(filePtr)
-  if !filepath.IsAbs(filename) {
-    filename, _ = filepath.Abs(filename)
-  }
-  wd := filepath.Dir(filename)
-
+//export LoadConfigFromFile
+func LoadConfigFromFile (filenamePtr *C.char) (*C.char) {
+  filename := C.GoString(filenamePtr)
   if !config.IsValidConfigFilename(filename) {
-    log.Printf("Error: %s is not a valid filename", filename)
+    logger.Printf("Error: %s is not a valid filename", filename)
     return C.CString("{}")
   }
 
+  if !filepath.IsAbs(filename) {
+    filename, _ = filepath.Abs(filename)
+  }
+  siteDir := filepath.Dir(filename)
 
-  log.Printf("loading %s from %s", filename, wd)
-  var configFiles []string
-  var sourceFs afero.Fs = hugofs.Os
+  logger.Printf("loading %s from %s", filename, siteDir)
+
+  cfg := loadConfig(siteDir, filename)
+
+  return C.CString(cfgToStr(cfg))
+}
+
+//export LoadConfig
+func LoadConfig (siteDirPtr *C.char) (*C.char) {
+  siteDir := C.GoString(siteDirPtr)
+
+  s, _ := afero.IsDir(fs, siteDir)
+  if !s {
+    siteDir = filepath.Dir(siteDir)
+  }
+  filename, err := findConfig(siteDir)
+  if err != nil {
+    logger.Printf("Error: %s is not a valid filename", err)
+  }
+
+  logger.Printf("loading %s from %s", filename, siteDir)
 
   //var Cfg config.Provider
-  cfg, configFiles, err := hugolib.LoadConfig(hugolib.ConfigSourceDescriptor{Fs: sourceFs, Filename: filename, WorkingDir: wd, Environment: env, Path: wd, Logger: loggers.NewWarningLogger()})
+  cfg, _, err := hugolib.LoadConfig(hugolib.ConfigSourceDescriptor{Fs: fs, Filename: filename, WorkingDir: siteDir, Environment: Env, Path: siteDir, Logger: loggers.NewWarningLogger()})
 
   if err != nil {
-		log.Printf("Error: %s", err.Error())
+		logger.Printf("Error: %s", err.Error())
 	}
 
   if cfg == nil {
     return C.CString("{}")
   } else {
-    log.Printf("config %s", cfg)
+    logger.Printf("config %s", cfg)
   }
 
   baseConfig := make(map[string]any)
@@ -72,30 +99,110 @@ func loadConfig (filePtr *C.char) (*C.char) {
     baseConfig[l] = cfg.GetStringMap(l)
   }
 
-/*
-  for _, k := range append(ConfigDefaults, rootKeys...) {
-    log.Printf("%s -> %s \n", k, cfg.GetStringMap(k))
+  jsonStr, err := json.Marshal(&baseConfig)
+  if err != nil {
+      logger.Printf("Error: %s", err.Error())
+      return C.CString("{}")
+  } else {
+      logger.Println(string(jsonStr))
+      return C.CString(string(jsonStr))
   }
-*/
+}
 
-  for m := range configFiles {
-    log.Printf("%s \n", m)
+func resolveConfig (filePtr *C.char) (string, string, error) {
+  file := C.GoString(filePtr)
+  s, _ := afero.IsDir(fs, file)
+  if !s {
+    file = filepath.Dir(file)
+  }
+  filename, err := findConfig(file)
+  return file, filename, err
+}
+
+//export BuildStructure
+func BuildStructure (siteDirPtr *C.char) (*C.char) {
+  siteDir, filename, _ := resolveConfig(siteDirPtr)
+  cfg := loadConfig(siteDir, filename)
+
+  opts := hugolib.BuildCfg{NewConfig: cfg, SkipRender: true, ResetState: true}
+  hugolib.HugoSites.Build(opts, nil)
+
+
+  return C.CString("{}")
+}
+
+func loadConfig (path, file string) config.Provider {
+  cfg, configFiles, err := hugolib.LoadConfig(hugolib.ConfigSourceDescriptor{Fs: fs, Filename: file, WorkingDir: path, Environment: Env, Path: path, Logger: loggers.NewWarningLogger()})
+
+  for _, f := range configFiles {
+    logger.Printf("Loaded file %s", f)
+  }
+
+  if err != nil {
+    logger.Printf("Error: %s", err.Error())
+  }
+
+  return cfg
+}
+
+func findConfig (path string) (string, error)  {
+  for _, prefix := range config.DefaultConfigNames {
+    for _, suffix := range config.ValidConfigFileExtensions {
+      filename := prefix + "." + suffix
+      //logger.Printf("Checking for %s in %s", filename, path)
+      s, err := afero.Exists(fs, filepath.Join(path, filename))
+      if err != nil {
+        return "", errors.New("Error: Config file not found")
+      }
+      if (s) {
+        return filename, nil
+      }
+    }
+  }
+  return "", errors.New("Error: Config file not found")
+}
+
+func cfgToStr(cfg config.Provider) (string) {
+  baseConfig := make(map[string]any)
+  for _, k := range ConfigDefaults {
+    baseConfig[k] = cfg.GetString(k)
+  }
+
+  for _, l := range Keys(config.ConfigRootKeysSet) {
+    baseConfig[l] = cfg.GetStringMap(l)
   }
 
   jsonStr, err := json.Marshal(&baseConfig)
   if err != nil {
-      log.Printf("Error: %s", err.Error())
-      return C.CString("{}")
+      logger.Printf("Error: %s", err.Error())
+      return "{}"
   } else {
-      log.Println(string(jsonStr))
-      return C.CString(string(jsonStr))
+      logger.Println(string(jsonStr))
+      return string(jsonStr)
   }
-
 }
 
-//export buildStructure
-func buildStructure (filePtr, wdPointer *C.char) (*C.char) {
-  return C.CString("{}")
+/*
+//export GetDebug
+func getDebug() (C.bool) {
+  return C.bool(Debug)
+}
+*/
+
+//export SetDebug
+func SetDebug(debug bool) {
+  Debug = debug
+  logger.SetOutput(os.Stderr)
+}
+
+//export GetEnv
+func GetEnv() (*C.char) {
+  return C.CString(Env)
+}
+
+//export SetEnv
+func SetEnv(envPtr *C.char) {
+  Env = C.GoString(envPtr)
 }
 
 func Keys[T any](m map[string]T) (keys []string) {
@@ -105,16 +212,15 @@ func Keys[T any](m map[string]T) (keys []string) {
     return keys
 }
 
-
 //export fromJSON
 func fromJSON(documentPtr *C.char){
    documentString := C.GoString(documentPtr)
    var jsonDocument map[string]interface{}
    err := json.Unmarshal([]byte(documentString), &jsonDocument)
    if err != nil{
-      log.Fatal(err)
+      logger.Fatal(err)
    }
-   log.Println(jsonDocument)
+   logger.Println(jsonDocument)
 }
 
 func main(){
