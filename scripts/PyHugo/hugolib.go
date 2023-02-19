@@ -2,7 +2,6 @@ package main
 
 import (
   "C"
-
 //	"fmt"
   "log"
 	"os"
@@ -17,6 +16,7 @@ import (
   "github.com/gohugoio/hugo/hugofs"
   "github.com/gohugoio/hugo/hugolib"
   "github.com/gohugoio/hugo/common/loggers"
+  "github.com/gohugoio/hugo/deps"
 
   "github.com/spf13/afero"
 )
@@ -87,7 +87,7 @@ func LoadConfig (siteDirPtr *C.char) (*C.char) {
   if cfg == nil {
     return C.CString("{}")
   } else {
-    logger.Printf("config %s", cfg)
+    logger.Printf("Config is %s", cfg)
   }
 
   baseConfig := make(map[string]any)
@@ -125,8 +125,20 @@ func BuildStructure (siteDirPtr *C.char) (*C.char) {
   cfg := loadConfig(siteDir, filename)
 
   opts := hugolib.BuildCfg{NewConfig: cfg, SkipRender: true, ResetState: true}
-  hugolib.HugoSites.Build(opts, nil)
+  depsCfg := deps.DepsCfg{Fs: hugofs.NewDefault(cfg), Cfg: cfg}
+  sites, err := hugolib.NewHugoSites(depsCfg)
 
+  if err != nil {
+		logger.Printf("Error building site: %s", err.Error())
+	}
+
+  sites.Build(opts)
+
+  if sites == nil {
+    return C.CString("{}")
+  } else {
+    logger.Printf("Sites are %s", sites)
+  }
 
   return C.CString("{}")
 }
@@ -142,6 +154,7 @@ func loadConfig (path, file string) config.Provider {
     logger.Printf("Error: %s", err.Error())
   }
 
+  cfg.Set("workingDir", path)
   return cfg
 }
 
@@ -192,7 +205,9 @@ func getDebug() (C.bool) {
 //export SetDebug
 func SetDebug(debug bool) {
   Debug = debug
-  logger.SetOutput(os.Stderr)
+  if Debug == true {
+    logger.SetOutput(os.Stderr)
+  }
 }
 
 //export GetEnv

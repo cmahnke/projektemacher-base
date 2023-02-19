@@ -1,0 +1,23 @@
+[project]
+name = "PyHugolib"
+version = "0.0.1"
+authors = [
+  { name="Christian Mahnke",
+    email="cmahnke@gmail.com"
+  },
+]
+description = "Python Wrapper for Hugo(lib)"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cmahnke/projektemacher-base"
+"Bug Tracker" = "https://github.com/cmahnke/projektemacher-base/issues"
+[build-system]
+requires = ["setuptools", "setuptools-golang >= 1.1.0"]
+build-backend = "setuptools.build_meta:__legacy__"

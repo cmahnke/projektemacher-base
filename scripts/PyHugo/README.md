@@ -14,12 +14,22 @@ from PyHugolib import *
 
 ## Loading of a Site config
 
-The `Config` class can be sued to load a Hugo configuration
+The `Config` class can be used to load a Hugo configuration
 
 ```
 PyHugolib().setDebug(True)
 cfg = Config().load("../../../../config.toml")
 print(cfg["baseURL"])
+```
+
+## Loading of a Site structure
+
+The `Site` class can be used to load a Hugo site structure
+
+```
+PyHugolib().setDebug(True)
+structure = Site().structure("../../../../config.toml")
+print(structure)
 ```
 
 # Building
