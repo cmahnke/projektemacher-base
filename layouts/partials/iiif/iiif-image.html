@@ -9,7 +9,10 @@
 {{- $imgLocation := path.Join $contextPath .context.src -}}
 {{- $class := "" -}}
 {{- $orientation := "" -}}
-{{- if .context.params.class -}}
+{{/*
+{{- if (isset .Page.Params "iiifclass") -}}
+*/}}
+{{- if (isset .context.params "class") -}}
     {{- $class = .context.params.class -}}
 {{- end -}}
 {{- $name := "" -}}
@@ -22,21 +25,22 @@
     {{- $previewImg = ($page.Resources.GetMatch .context.src) -}}
 {{- end -}}
 {{- if eq $previewImg nil -}}
-    {{ errorf "Can't find image %s" $imgLocation }}
+    {{ errorf "Can't find image %s in 'iiif/iiif-image.html'" $imgLocation }}
 {{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+  {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
   {{- if not $name -}}
     {{- warnf "JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
   {{- end -}}
   {{- $previewImg = partial "iiif/preview.html" (dict "context" $page "name" $name) -}}
-{{- else -}}
-  {{- if lt $previewImg.Width $previewImg.Height -}}
-    {{- $orientation = "portrait" -}}
-  {{- else -}}
-    {{- $orientation = "landscape" -}}
-  {{- end -}}
 {{- end -}}
+{{- if lt $previewImg.Width $previewImg.Height -}}
+  {{- $orientation = "portrait" -}}
+{{- else -}}
+  {{- $orientation = "landscape" -}}
+{{- end -}}
+{{/* {{- warnf "Set orientation to %s in 'iiif/iiif-image.html'" $orientation -}} */}}
 
 {{- $mapName := replace (replace (replace .context.params.iiif "/" "_") "." "") "-" "_" -}}
 {{/*

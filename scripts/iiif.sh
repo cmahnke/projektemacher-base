@@ -10,6 +10,16 @@ CMD_PREFIX=""
 PDF_INFO_CMD="pdfinfo"
 PDF_IMAGES_CMD="pdfimages"
 
+if [ -z "$CORES" ] ; then
+  # https://stackoverflow.com/a/45181694
+  if [ ! command -v getconf &> /dev/null ] ; then
+    CORES=2
+  else
+    CORES=$(getconf _NPROCESSORS_ONLN)
+  fi
+fi
+JOBFILE=$(mktemp -t 3D_JOBS)
+
 if [ -z "$SKIP_IIIF" ] ; then
 
     if [ -z "$IMAGES" ] ; then
@@ -89,17 +99,22 @@ if [ -z "$SKIP_IIIF" ] ; then
             echo "Setting IIIF identifier to '$IIIF_ID'"
         fi
 
-        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET)"
+        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET) using '$IIIF_STATIC_CMD'"
         if [ $IIIF_STATIC_CMD = "vips" ] ; then
+            FULLDIR=$TARGET/full/full/0/
+            mkdir -p $FULLDIR
             if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
-                echo "Running Docker for JPEG XL"
+                echo "Running Docker for JPEG XL (Prefix '$CMD_PREFIX')"
                 $CMD_PREFIX vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
-                mkdir -p  $TARGET/full/full/0/
-                $CMD_PREFIX vips copy $IMAGE $TARGET/full/full/0/default.jpg
+                $CMD_PREFIX vips copy $IMAGE $FULLDIR/default.jpg
             else
                 vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
-                mkdir -p  $TARGET/full/full/0/
-                cp $IMAGE $TARGET/full/full/0/default.jpg
+                cp $IMAGE $FULLDIR/default.jpg
+            fi
+            if [ -r "$FULLDIR/default.jpg" ] ; then
+              echo "Created full image as JPEG at '$FULLDIR/default.jpg'"
+            else
+              echo "Full reolution JPEG not found at '$FULLDIR/default.jpg'!"
             fi
         elif [ $IIIF_STATIC_CMD = "iiif_static.py" ] ; then
             iiif_static.py -d $TARGET -i "$IIIF_ID" -t $TILE_SIZE $IMAGE

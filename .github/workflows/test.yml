@@ -14,13 +14,23 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version-file: '.nvmrc'
 
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
+
+# Needed to check if the JXL Python plugin builds
+      - name: Install JXL dependencies
+        run: |
+          ./scripts/github/jxl-0.7.0.sh
+
+# Needed to check if the JXL Python plugin builds
+      - name: Install required Python dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
 
       - name: Install Node dependencies
         run: |
@@ -38,7 +48,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version-file: '.nvmrc'
 
@@ -53,4 +63,17 @@ jobs:
           ./scripts/github/dart-sass.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
+
+  test_inkscape_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
+          ./scripts/github/setup-inkscape.sh
+      - name: Install Inkscape and it's dependencies
+        run: |
           ./scripts/github/setup-inkscape.sh

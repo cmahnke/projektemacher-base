@@ -62,7 +62,8 @@ fi
 
 if [ -z "$(ls -A ./node_modules/puppeteer-core/.local-chromium/)" ]; then
     echo "Chrome dependency seems to be missing, downloading again!"
-    if [ grep puppeteer package.json ] ; then
+    if grep puppeteer package.json ; then
+        echo "Running './node_modules/puppeteer/install.js"
         cd node_modules/puppeteer
         node install.js
         cd ../..
