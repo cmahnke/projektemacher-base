@@ -45,7 +45,7 @@ def main():
         'clean': clean,
     }
 
-    hugolib = Extension('hugolib',
+    hugolib = Extension('PyHugolib.hugolib',
                     sources = ['go/hugolib.go'])
 
     setup(name="PyHugolib",
