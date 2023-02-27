@@ -2,4 +2,5 @@ PyHugolib/build/hugolib.h
 PyHugolib/build/hugolib.so
 .eggs
 build
+dist
 PyHugolib.egg-info

@@ -4,7 +4,7 @@ import ctypes
 
 class PyHugolib:
     def __init__(self, lib = 'hugolib'):
-        candidates = list(Path(os.path.dirname(inspect.getfile(PyHugolib))).glob("build/{}*.so".format(lib)))
+        candidates = list(Path(os.path.dirname(inspect.getfile(PyHugolib))).glob("**/{}*.so".format(lib)))
         if len(candidates) < 1:
             raise "Cant find hugolib!"
         libfile = candidates[0]
