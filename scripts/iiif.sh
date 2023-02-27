@@ -7,6 +7,8 @@ DEFAULT_URL_PREFIX="."
 IMAGE_PREFIX=content
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl-uploader "
 CMD_PREFIX=""
+PDF_INFO_CMD="pdfinfo"
+PDF_IMAGES_CMD="pdfimages"
 
 if [ -z "$SKIP_IIIF" ] ; then
 
@@ -24,6 +26,11 @@ if [ -z "$SKIP_IIIF" ] ; then
             echo "Removed tailing slash: $URL_PREFIX"
         fi
     fi
+
+#    if ! command -v pdfinfo &> /dev/null ; then
+#        echo "poppler could not be found, trying vips"
+#        PDF_IMAGES_CMD="vips"
+#    fi
 
     if ! command -v vips &> /dev/null ; then
         echo "vips could not be found, using python"
@@ -48,6 +55,18 @@ if [ -z "$SKIP_IIIF" ] ; then
     fi
 
     echo "Processing files"
+
+#    # Check for PDF input
+#    for IMAGE in $IMAGES
+#    do
+#        IMAGE_SUFFIX=$(echo $IMAGE |awk -F . '{print $NF}')
+#        PDF_DIR=`basename $IMAGE .$IMAGE_SUFFIX`
+#        if [ "$IMAGE_SUFFIX" == "pdf" ] ; then
+#            $PDF_IMAGES_CMD -tiff $IMAGE $PDF_DIR
+#            mv ./$PDF_DIR/* .
+#        fi
+#    done
+
     # IIFF
     for IMAGE in $IMAGES
     do
