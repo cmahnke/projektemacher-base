@@ -40,6 +40,12 @@ print(structure)
 
 # Known issues
 
-* `setup.py` not working
+* Building with `setup.py` throws errors on Linux (see `Dockerfile`)
 * Theme configuration is not loaded
 * Building a site structure doesn't work yet
+
+# Using Docker
+
+```
+BUILDKIT_PROGRESS=plain docker buildx build .
+```
