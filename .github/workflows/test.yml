@@ -94,6 +94,6 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/python-dependencies.sh
-      - name: "Build Pyhuholib"
+      - name: "Build PyHugolib"
         run: |
           ./scripts/github/pyhugolib.sh
