@@ -77,3 +77,23 @@ jobs:
       - name: Install Inkscape and it's dependencies
         run: |
           ./scripts/github/setup-inkscape.sh
+
+  test_PyHugolib_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'scripts/PyHugo/go/go.mod'
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
+      - name: "Build Pyhuholib"
+        run: |
+          ./scripts/github/pyhugolib.sh

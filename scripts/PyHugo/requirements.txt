@@ -1,0 +1,1 @@
+setuptools-golang>=2.7.0

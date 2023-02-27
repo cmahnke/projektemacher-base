@@ -1,0 +1,5 @@
+PyHugolib/build/hugolib.h
+PyHugolib/build/hugolib.so
+.eggs
+build
+PyHugolib.egg-info

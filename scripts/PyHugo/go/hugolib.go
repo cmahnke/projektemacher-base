@@ -17,6 +17,7 @@ import (
   "github.com/gohugoio/hugo/hugolib"
   "github.com/gohugoio/hugo/common/loggers"
   "github.com/gohugoio/hugo/deps"
+  "github.com/gohugoio/hugo/langs"
 
   "github.com/spf13/afero"
 )
@@ -41,6 +42,12 @@ var (
 func init() {
     logger.SetOutput(ioutil.Discard)
 }
+/*
+func (log *log.Logger) Write(data []byte) (n int, err error) {
+    log.Print(data)
+    return len(data), nil
+}
+*/
 
 //export LoadConfigFromFile
 func LoadConfigFromFile (filenamePtr *C.char) (*C.char) {
@@ -95,6 +102,8 @@ func LoadConfig (siteDirPtr *C.char) (*C.char) {
     baseConfig[k] = cfg.GetString(k)
   }
 
+
+  //allmodules
   for _, l := range Keys(config.ConfigRootKeysSet) {
     baseConfig[l] = cfg.GetStringMap(l)
   }
@@ -123,6 +132,8 @@ func resolveConfig (filePtr *C.char) (string, string, error) {
 func BuildStructure (siteDirPtr *C.char) (*C.char) {
   siteDir, filename, _ := resolveConfig(siteDirPtr)
   cfg := loadConfig(siteDir, filename)
+  l := langs.NewDefaultLanguage(cfg)
+  cfg.Set("languagesSorted", langs.NewLanguages(l))
 
   opts := hugolib.BuildCfg{NewConfig: cfg, SkipRender: true, ResetState: true}
   depsCfg := deps.DepsCfg{Fs: hugofs.NewDefault(cfg), Cfg: cfg}
@@ -133,6 +144,10 @@ func BuildStructure (siteDirPtr *C.char) (*C.char) {
 	}
 
   sites.Build(opts)
+  if Debug {
+    logger.Printf("Main lang is %s", l)
+    sites.PrintProcessingStats(log.Writer())
+  }
 
   if sites == nil {
     return C.CString("{}")
