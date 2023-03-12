@@ -132,11 +132,11 @@ jobs:
           extended: true
 
       - name: Build Hugo site
-        run: hugo
-      - if: ${{ ! matrix.args }}
+        if: ${{ ! matrix.args }}
         run: hugo
 
-      - if: ${{ matrix.args }}
+      - name: Build Hugo site (with arguments and merged lang files)
+        if: ${{ matrix.args }}
         run: |
           ./scripts/init/i18n.sh i18n
           hugo ${{ matrix.args }}
