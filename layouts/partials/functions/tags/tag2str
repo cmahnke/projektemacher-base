@@ -1,9 +1,4 @@
 {{- $term := . -}}
-{{/*
-{{- if gt hugo.Version "0.109"  -}}
-  {{- errorf "Your hugo version is to new! This only works until v0.109.0, you have %s" hugo.Version -}}
-{{- end -}}
-*/}}
 {{/* TODO: Check if this can fail if the given type is wrong */}}
 {{- if in . "Term" -}}
     {{- $term = .Term -}}
