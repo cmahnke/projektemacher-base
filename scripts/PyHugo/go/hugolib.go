@@ -1,7 +1,10 @@
 package main
 
+//#include<stdbool.h>
+
+import "C"
+
 import (
-  "C"
 //	"fmt"
   "log"
 	"os"
@@ -10,6 +13,7 @@ import (
 //	"strings"
   "bytes"
   "errors"
+//  "strconv"
 
   "encoding/json"
   "github.com/gohugoio/hugo/config"
@@ -20,6 +24,7 @@ import (
   "github.com/gohugoio/hugo/langs"
 
   "github.com/spf13/afero"
+  jww "github.com/spf13/jwalterweatherman"
 )
 
 /*
@@ -35,7 +40,7 @@ var (
   ConfigDefaults = []string{"baseURL", "resourceDir", "contentDir", "dataDir", "i18nDir", "layoutDir", "assetDir", "archetypeDir", "publishDir", "workingDir", "defaultContentLanguage"}
 
   buf bytes.Buffer
-	logger = log.New(&buf, "", log.Lshortfile | log.Ltime)
+	logger = log.New(&buf, "", log.Lshortfile | log.Lmicroseconds)
   fs afero.Fs = hugofs.Os
 )
 
@@ -84,8 +89,26 @@ func LoadConfig (siteDirPtr *C.char) (*C.char) {
 
   logger.Printf("loading %s from %s", filename, siteDir)
 
+  stdoutThreshold := jww.LevelFatal
+  outHandle := ioutil.Discard
+  if Debug {
+    stdoutThreshold = jww.LevelDebug
+    outHandle = os.Stderr
+  }
+
+  hugoLogger := loggers.NewLogger(stdoutThreshold, jww.LevelFatal, outHandle, ioutil.Discard, false)
+
   //var Cfg config.Provider
-  cfg, _, err := hugolib.LoadConfig(hugolib.ConfigSourceDescriptor{Fs: fs, Filename: filename, WorkingDir: siteDir, Environment: Env, Path: siteDir, Logger: loggers.NewWarningLogger()})
+  cfg, _, err := hugolib.LoadConfig(
+    hugolib.ConfigSourceDescriptor{
+      Fs: fs,
+      Filename: filename,
+      WorkingDir: siteDir,
+      Environment: Env,
+      Path: siteDir,
+      Logger: hugoLogger,
+      //Logger: loggers.NewWarningLogger()
+    })
 
   if err != nil {
 		logger.Printf("Error: %s", err.Error())
@@ -97,6 +120,7 @@ func LoadConfig (siteDirPtr *C.char) (*C.char) {
     logger.Printf("Config is %s", cfg)
   }
 
+/*
   baseConfig := make(map[string]any)
   for _, k := range ConfigDefaults {
     baseConfig[k] = cfg.GetString(k)
@@ -116,6 +140,8 @@ func LoadConfig (siteDirPtr *C.char) (*C.char) {
       logger.Println(string(jsonStr))
       return C.CString(string(jsonStr))
   }
+  */
+  return C.CString(cfgToStr(cfg))
 }
 
 func resolveConfig (filePtr *C.char) (string, string, error) {
@@ -210,18 +236,22 @@ func cfgToStr(cfg config.Provider) (string) {
   }
 }
 
-/*
 //export GetDebug
-func getDebug() (C.bool) {
-  return C.bool(Debug)
+func GetDebug() (C.uint) {
+  //return C.CString(strconv.FormatBool(Debug))
+  if Debug {
+    return C.uint(1)
+  }
+  return C.uint(0)
 }
-*/
 
 //export SetDebug
 func SetDebug(debug bool) {
   Debug = debug
   if Debug == true {
     logger.SetOutput(os.Stderr)
+  } else {
+    logger.SetOutput(ioutil.Discard)
   }
 }
 
@@ -242,7 +272,7 @@ func Keys[T any](m map[string]T) (keys []string) {
     return keys
 }
 
-//export fromJSON
+/*
 func fromJSON(documentPtr *C.char){
    documentString := C.GoString(documentPtr)
    var jsonDocument map[string]interface{}
@@ -252,6 +282,7 @@ func fromJSON(documentPtr *C.char){
    }
    logger.Println(jsonDocument)
 }
+*/
 
 func main(){
 

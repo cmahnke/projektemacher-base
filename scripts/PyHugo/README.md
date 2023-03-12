@@ -40,9 +40,11 @@ print(structure)
 
 # Known issues
 
-* Building with `setup.py` throws errors on Linux (see `Dockerfile`)
+* Building with `setup.py` throws errors on Linux (see building of `Dockerfile`)
 * Theme configuration is not loaded
+* Loading configuration from directory (`_config`) certainly doesn't work
 * Building a site structure doesn't work yet
+* getEnv() doesn't work
 
 # Using Docker
 
