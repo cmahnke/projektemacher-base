@@ -133,7 +133,7 @@ jobs:
 
       - name: Build Hugo site
         run: hugo
-      - if: !${{ matrix.args }}
+      - if: ${{ ! matrix.args }}
         run: hugo
 
       - if: ${{ matrix.args }}
