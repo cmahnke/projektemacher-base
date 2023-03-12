@@ -103,10 +103,14 @@ jobs:
     continue-on-error: ${{ matrix.can-fail }}
     strategy:
       matrix:
-        version: ['0.78.2', '0.82.0', '0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', 'latest']
+        version: ['0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', 'latest']
         can-fail: [false]
         include:
-          - version: 0.80.0
+          - version: 0.78.2
+            can-fail: true
+          - version: 0.80.0 # Fails, doesn't work with supplied Dart SASS and emty files
+            can-fail: true
+          - version: 0.82.0 # Fails, since version check doesn't work with versions newer then 0.99
             can-fail: true
           - version: 0.104.3
             args: '--printI18nWarnings --printUnusedTemplates'
