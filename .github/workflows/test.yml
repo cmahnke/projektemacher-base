@@ -103,6 +103,13 @@ jobs:
     strategy:
       matrix:
         version: ['0.78.2', '0.82.0', '0.109.0', '0.111.2', 'latest']
+        include:
+          - version: 0.109.0
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.111.2
+            args: '--printI18nWarnings --printUnusedTemplates'
+        - version: latest
+          args: '--printI18nWarnings --printUnusedTemplates'
 
     steps:
       - uses: actions/checkout@v3
@@ -125,4 +132,9 @@ jobs:
           extended: true
 
       - name: Build Hugo site
-        run: hugo --printI18nWarnings --printUnusedTemplates
+        run: hugo
+      - if: !${{ matrix.args }}
+        run: hugo
+
+      - if: ${{ matrix.args }}
+        run: hugo ${{ matrix.args }}
