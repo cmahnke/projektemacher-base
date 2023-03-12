@@ -155,5 +155,4 @@ jobs:
         if: ${{ matrix.args }}
         working-directory: exampleSite
         run: |
-          ./scripts/init/i18n.sh i18n
           hugo --themesDir ../.. ${{ matrix.args }}
