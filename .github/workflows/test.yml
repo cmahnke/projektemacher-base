@@ -108,8 +108,8 @@ jobs:
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.111.2
             args: '--printI18nWarnings --printUnusedTemplates'
-        - version: latest
-          args: '--printI18nWarnings --printUnusedTemplates'
+          - version: latest
+            args: '--printI18nWarnings --printUnusedTemplates'
 
     steps:
       - uses: actions/checkout@v3
