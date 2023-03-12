@@ -100,13 +100,14 @@ jobs:
 
   test_hugo_versions:
     runs-on: ubuntu-22.04
-    continue-on-error: ${{ matrix.fail }}
+    continue-on-error: ${{ matrix.can-fail }}
     strategy:
       matrix:
         version: ['0.78.2', '0.80.0', '0.82.0', '0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', 'latest']
+        can-fail: [false]
         include:
           - version: 0.80.0
-            fail: true
+            can-fail: true
           - version: 0.104.3
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.106.0
