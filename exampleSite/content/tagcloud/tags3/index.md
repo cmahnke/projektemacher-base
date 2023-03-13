@@ -5,4 +5,5 @@ tags:
 - Some Tag
 - Another tag
 - Yet another Tag
+- Tag-with-hyphen
 ---
