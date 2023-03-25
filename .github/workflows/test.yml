@@ -115,8 +115,10 @@ jobs:
 #          - version: 0.82.0 # Fails, since version check doesn't work with versions newer then 0.99
 #            can-fail: true
 # Provide arg to run i18n.sh with 0.84.4
-          - version: 0.84.4
-            args: '--i18n-warnings'
+#          - version: 0.84.4
+#            args: '--i18n-warnings'
+          - version: 0.102.3
+            args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.104.3
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.106.0
