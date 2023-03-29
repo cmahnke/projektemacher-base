@@ -27,7 +27,7 @@
   "patch-package": "^6.2.2",
   "postcss": "^8.4.20",
   "postcss-cli": "^10.1.0",
-  "postcss-discard-duplicates": "^5.1.0",
+  "postcss-discard-duplicates": "^6.0.0",
   "postcss-import": "^15.0.0",
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
