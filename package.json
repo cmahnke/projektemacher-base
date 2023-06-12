@@ -13,6 +13,7 @@
   "yargs": "^17.6.0"
  },
  "devDependencies": {
+  "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
   "@fullhuman/postcss-purgecss": "^5.0.0",
   "cors": "^2.8.5",
   "doiuse": "^4.4.1",
