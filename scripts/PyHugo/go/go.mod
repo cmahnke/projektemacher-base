@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/gohugoio/hugo v0.110.0
 	github.com/spf13/afero v1.9.3
+	github.com/spf13/jwalterweatherman v1.1.0
 )
 
 require (
@@ -60,7 +61,6 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tdewolff/minify/v2 v2.12.4 // indirect
 	github.com/tdewolff/parse/v2 v2.6.4 // indirect

@@ -5,6 +5,9 @@
     "stylelint-no-unsupported-browser-features"
   ],
   "rules": {
+    "no-empty-source": [null, {"severity": "warning"}],
+    "media-feature-range-notation": [null, {"severity": "warning"}],
+    "declaration-block-no-redundant-longhand-properties": [null, {"severity": "warning"}],
     "at-rule-no-unknown": null,
     "scss/at-rule-no-unknown": true,
     "indentation": [4, {"baseIndentLevel": 1}],

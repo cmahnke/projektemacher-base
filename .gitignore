@@ -9,3 +9,7 @@ i18n/en.toml
 3029.patch
 **/puppeteerTmp
 **/.DS_Store
+public
+docs
+.hugo_build.lock
+resources

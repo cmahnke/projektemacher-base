@@ -1,8 +1,5 @@
 {{/* Inspired by https://github.com/gohugoio/hugoThemesSite/blob/ff2c51f118fe932525715002895eda1f036877d7/layouts/partials/tag-cloud.html */}}
 
-{{- if gt hugo.Version "0.109"  -}}
-  {{- errorf "Your hugo version is to new! This only works until v0.109.0, you have %s" hugo.Version -}}
-{{- end -}}
 
 {{- $tag := "tag" -}}
 {{- if .Get "tag" -}}

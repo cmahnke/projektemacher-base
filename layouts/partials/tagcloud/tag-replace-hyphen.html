@@ -1,13 +1,12 @@
-{{- if gt hugo.Version "0.109"  -}}
-  {{- errorf "Your hugo version is to new! This only works until v0.109.0, you have %s" hugo.Version -}}
-{{- end -}}
 {{- $term := partial "functions/tags/tag2str" . -}}
-{{/*
+
 {{- $term := . -}}
 {{- if in . "Term" -}}
     {{- $term = .Term -}}
 {{- else if eq (printf "%T" .) "hugolib.OrderedTaxonomyEntry" -}}
     {{- $term = .Name -}}
+    {{- else if eq (printf "%T" .) "page.OrderedTaxonomyEntry" -}}
+        {{- $term = .Name -}}
 {{- end -}}
-*/}}
+
 {{- replace $term  "-" " " -}}

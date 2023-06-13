@@ -1,0 +1,11 @@
+{{- $issues := where .Site.Pages "Params.year" "!=" nil -}}
+{{- $issues = sort $issues ".Params.year" -}}
+<div class="tab-content">
+    <div id="horizontal" class="tab-pane fade show active" role="tabpanel" aria-labelledby="horizontal-tab">
+        {{- partial "timeline/horizontal.html" (dict "context" . "entries" $issues) -}}
+    </div>
+
+    <div id="vertical" class="tab-pane fade" role="tabpanel" aria-labelledby="vertical-tab">
+        {{- partial "timeline/vertical.html" (dict "context" . "entries" $issues) -}}
+    </div>
+</div>

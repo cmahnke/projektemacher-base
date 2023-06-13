@@ -1,4 +1,6 @@
 #!/bin/sh
 
 mkdir -p ./PyHugolib/build
-go build -buildmode=c-shared -o ./PyHugolib/build/hugolib.so hugolib.go
+
+cd go
+GOMOD=`pwd` go build -buildmode=c-shared  -o ../PyHugolib/build/hugolib.so ./hugolib.go
