@@ -18,7 +18,7 @@
   "cors": "^2.8.5",
   "doiuse": "^6.0.1",
   "eslint": "~8.46.0",
-  "eslint-config-prettier": "~8.10.0",
+  "eslint-config-prettier": "~9.0.0",
   "eslint-plugin-compat": "~4.1.0",
   "eslint-plugin-json-es": "^1.5.7",
   "eslint-plugin-prettier": "~5.0.0",
