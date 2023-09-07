@@ -1,5 +1,6 @@
 #!/bin/sh
 
+apt-get update
 if [ "$( . /etc/lsb-release; echo $DISTRIB_RELEASE)" = "22.04" ] ; then
   echo "Marking Docker packages for holding"
   for pkg in docker-buildx-plugin docker-ce docker-ce-cli ; do apt-mark hold $pkg; done
@@ -7,6 +8,7 @@ fi
 
 ## See https://docs.docker.com/engine/install/ubuntu/
 #echo "Removing provided Docker version"
+#apt-get update
 #for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove $pkg; done
 #
 #echo "Adding Docker key"
