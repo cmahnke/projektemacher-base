@@ -28,3 +28,5 @@ sudo apt-get update
 
 echo "Installing Docker"
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+chgrp -hR docker /run/docker.sock
