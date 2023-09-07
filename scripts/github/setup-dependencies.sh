@@ -4,4 +4,4 @@ DOCKER_DEPENDENCIES="docker-buildx-plugin docker-ce docker-ce-cli"
 
 echo "Installing $RUN_DEPENDENCIES $DOCKER_DEPENDENCIES"
 sudo apt-get update
-sudo apt-get install $RUN_DEPENDENCIES
+sudo apt-get install $RUN_DEPENDENCIES $DOCKER_DEPENDENCIES
