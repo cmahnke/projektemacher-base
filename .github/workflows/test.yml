@@ -60,6 +60,7 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
+          ./scripts/github/setup-docker.sh
           ./scripts/github/dart-sass.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
