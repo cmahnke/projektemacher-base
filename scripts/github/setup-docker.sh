@@ -29,5 +29,7 @@ fi
 #echo "Installing Docker"
 #sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+#sudo groupadd docker
 #sudo usermod -aG docker $(id -un)
+#newgrp docker
 #sudo chgrp -hR docker /run/docker.sock /var/run/docker.sock
