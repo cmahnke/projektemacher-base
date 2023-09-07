@@ -30,4 +30,4 @@ echo "Installing Docker"
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 sudo usermod -aG docker $(id -un)
-sudo chgrp -hR docker /run/docker.sock / var/run/docker.sock
+sudo chgrp -hR docker /run/docker.sock /var/run/docker.sock
