@@ -11,7 +11,7 @@
         {{- end -}}
 
         {{- if eq ($iiif.Get "previewImg") nil -}}
-            {{- warnf "Can't find image %s" $imgLocation -}}
+            {{- warnf "Can't find image %s in 'iiif/kenburns.html'" $imgLocation -}}
         {{- end -}}
 
         {{- $iiif.Set "post" $.File.ContentBaseName -}}

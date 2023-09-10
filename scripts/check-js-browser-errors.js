@@ -36,8 +36,27 @@ if (!fs.existsSync(configFile)) {
 }
 
 var tests = [];
+var checkMesages = [];
 if (fs.existsSync(testFile)) {
     tests = JSON.parse(fs.readFileSync(testFile, 'utf8'));
+    if (typeof tests === 'object' && tests !== null && !Array.isArray(tests)) {
+        if (tests["messages"]) {
+            if (!Array.isArray(tests["messages"])) {
+                checkMesages = [tests["messages"]];
+            } else {
+                checkMesages = tests["messages"];
+            }
+            delete tests["messages"];
+        }
+        if (tests.hasOwnProperty('urls')) {
+          var tmpTests = [];
+          for (const u of tests["urls"]) {
+            tmpTests.push({"url": u});
+          }
+          delete tests["urls"];
+          tests = tmpTests;
+        }
+    }
 } else if (fs.existsSync(urlsFile)) {
     var urls = fs.readFileSync(urlsFile).toString().split("\n");
     for (var i in urls) {
@@ -63,6 +82,7 @@ console.log('Base URL is %s', baseURL);
 
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
+    /* TODO: This behaves differently then GitHub, redirect to URL ending in slash on request on directories. */
     app.use(express.static(webRoot));
     var server = app.listen(localPort, function () {
         console.log('Webserver started, serving \'%s\'', webRoot);
@@ -93,20 +113,22 @@ console.log('Base URL is %s', baseURL);
         request.continue();
         })
         .on('response', response => {
-            console.log('Got response for %s', response.url())
+            console.log('Browser: Got response for %s', response.url())
         });
 
     for (var i in tests) {
-
         var localFile;
-        if (tests[i]['url'] == '/') {
-            localFile = 'index.html';
-        } else {
+        if (typeof tests[i] === 'object' && tests[i] !== null && tests[i].hasOwnProperty('url')) {
             localFile = tests[i]['url'];
+        } else {
+            localFile = tests[i];
+        }
+        if (localFile == '/') {
+            localFile = 'index.html';
         }
         localFile = localFile.replace(baseURL, '/')
         localFile = localFile.split("?")[0].split("#")[0]
-        if (tests[i]['url'].startsWith('/')) {
+        if (localFile.startsWith('/')) {
             localFile = localFile.substring(1);
         }
 
@@ -118,26 +140,37 @@ console.log('Base URL is %s', baseURL);
             console.log('Local file %s doesn\'t exist, exiting!', checkFile);
             process.exit(3);
         }
-
-        page.on('console', msg => console.log('Browser console:', msg.text()))
+        //var response;
+        page.on('console', msg => {
+              console.log('Browser console:', msg.text());
+              if (checkMesages.length) {
+                for (const m of checkMesages) {
+                  console.log('Checking for "%s"', m);
+                  if (msg.text().includes(m)) {
+                    console.log('[console] Failing on message %s since it includes "%s"', msg.text(), m);
+                    process.exit(122);
+                  }
+                }
+              }
+            })
             .on('pageerror', error => {
-              console.log(error.message);
+              console.log('[pageerror] ' + error.message);
               process.exit(123);
             })
             .on('requestfailed', request => {
-              console.log('Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
+              console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
               if (request.resourceType() == 'media') {
-                  console.log('Ignoring failed media request for %s', request.url());
+                  console.log('[requestfailed] Ignoring failed media request for %s', request.url());
               } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
-                  console.log('Ignoring request for %s', request.url());
+                  console.log('[requestfailed] Ignoring request for %s', request.url());
               } else {
                   process.exit(124);
               }
             });
 
         checkURL = baseURL + localFile;
-        console.log('Opening file %s', checkURL);
-        const open = await page.goto(checkURL, { waitUntil: 'networkidle2', timeout: 0 });
+        console.log('-> Opening file %s', checkURL);
+        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
 
         if ('click' in tests[i]) {
             for (j in tests[i]['click']) {
@@ -171,6 +204,9 @@ console.log('Base URL is %s', baseURL);
             });
         }
 
+        //Events doen't really work well, just wait :(
+        await page.waitForTimeout(5000);
+        //await page.waitForNavigation();
     }
     await browser.close();
     await server.close();

@@ -2,16 +2,18 @@
 
 import qrcode, json, re, os
 import argparse, pathlib
+import urllib.parse as urlparser
 import svgutils.transform
 from termcolor import cprint
 from os.path import exists
 import qrcode.image.svg
 from qrcode.image.pil import PilImage
 from qrcode.image.styledpil import StyledPilImage
-from cairosvg import svg2png
+from cairosvg import svg2png, svg2pdf
 import xml.etree.ElementTree as ET
 from svgutils.compose import Unit
-from svgutils.transform import GroupElement, FigureElement
+from svgutils.transform import GroupElement, FigureElement, TextElement
+import idna
 
 defaultOutfile = "qrcode.svg"
 contentPath = "./docs"
@@ -20,17 +22,22 @@ factory = 'svg'
 iconScale = 0.25
 # Set this to None to get an transparent background
 backgroundColor = 'white'
+include_url = False
 
 parser = argparse.ArgumentParser(prog = 'generate-qr-codes.py', description = 'Generate QR Code')
 parser.add_argument('-i', '--include', '--icon', metavar="[include path]", type=pathlib.Path, help="Path to include icons from")
+parser.add_argument('-u', '--url', action='store_true', help="Include URL")
 parser.add_argument('-o', '--output', metavar="filename", help="Output file name, defaults to '{}'".format(defaultOutfile))
 parser.add_argument('-b', '--background', choices=['square', 'circle'], help="Background primitive for icon")
 args = parser.parse_args()
 
-if args.output is not None:
-    outfile = vars(args).output
+if args.output is not None and args.output != "":
+    outfile = args.output
 else:
     outfile = defaultOutfile
+
+if args.url:
+    include_url = True
 
 if (factory == 'svg'):
     factory = qrcode.image.svg.SvgPathImage
@@ -58,7 +65,6 @@ primitives['square'] = """
 """.format(backgroundColor)
 
 
-
 # Functions
 def setPathFill(svgStr, color):
     root = ET.fromstring(svgStr)
@@ -70,6 +76,12 @@ def getSize(svgStr):
     root = ET.fromstring(svgStr)
     return {'height': root.get('height'), 'width': root.get('width')}
 
+def setSize(svgStr, height, width):
+    root = ET.fromstring(svgStr)
+    root.set('height', height)
+    root.set('width', width)
+    return ElementTree.tostring(root, encoding='utf8', method='xml')
+
 def calculateMargin(width, scale):
     backgroundScale = 0.75
     objWidth = BetterUnit(width) * scale
@@ -79,13 +91,31 @@ def calculateMargin(width, scale):
 # Classes
 class BetterUnit (Unit):
     def __init__(self, measure):
-        if measure.endswith('%'):
-            m = re.match("([0-9]+\.?[0-9]*)(%)", measure)
-            value, unit = m.groups()
-            self.value = float(value)
-            self.unit = unit
+        if isinstance(measure, str):
+            if measure.endswith('%'):
+                m = re.match("([0-9]+\.?[0-9]*)(%)", measure)
+                value, unit = m.groups()
+                self.value = float(value)
+                self.unit = unit
+            else:
+                Unit.__init__(self, measure)
+        elif isinstance(measure, BetterUnit):
+            self.value = measure.value
+            self.unit = measure.unit
+        elif isinstance(measure, int):
+            self.value = float(measure)
+            self.unit = 'px'
+
+    @staticmethod
+    def fromObj(number):
+        if isinstance(number, Unit):
+            return Unit(str(number))
+        elif isinstance(number, str):
+            return BetterUnit(number)
+        elif isinstance(number, int):
+            return Unit(number)
         else:
-            Unit.__init__(self, measure)
+            raise TypeError('Only \'Unit\', \'str\' and \'int\' are supported, not \'{}\''.format(type(number)))
 
     def __sub__(self, number):
         if isinstance(number, Unit):
@@ -96,7 +126,7 @@ class BetterUnit (Unit):
         elif isinstance(number, int):
             return BetterUnit(str(self.value - number) + self.unit)
         else:
-            raise TypeError('Only \'Unit\' ant \'int\' are supported, not \'{}\''.format(type(number)))
+            raise TypeError('Only \'Unit\' and \'int\' are supported, not \'{}\''.format(type(number)))
 
     def __add__(self, number):
         if isinstance(number, Unit):
@@ -127,7 +157,15 @@ for subdir, dirs, files in os.walk(contentPath):
             else:
                 qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, image_factory=factory)
 
-            qr.add_data(data['url'])
+            url = data['url']
+
+            if isinstance(url, list):
+                shortest = url[0]
+                for u in url:
+                    if len(u) < len(shortest):
+                         url = u
+
+            qr.add_data(url)
             if backgroundColor:
                 img = qr.make_image(back_color=backgroundColor)
                 img._img.set('style', 'background-color: {};'.format(backgroundColor))
@@ -138,6 +176,7 @@ for subdir, dirs, files in os.walk(contentPath):
             size = getSize(svg)
             border = qr.border
             cols = len(qr.get_matrix()[0])
+            rows = len(qr.get_matrix())
             cprint("Size is {} by {}, width {}, border width {}".format(size["width"], size["height"], cols, border), 'yellow')
             if "color" in data:
                 svg = setPathFill(svg, data['color'])
@@ -187,10 +226,28 @@ for subdir, dirs, files in os.walk(contentPath):
                 else:
                     raise ValueError("Embedding Icon as raster image isn't supported!")
                     #img = qr.make_image(image_factory=StyledPilImage, embeded_image_path=icon)
+            if include_url:
+                svgTemplate = svgutils.transform.fromstring(svg)
+                #qrcodeHeight = (BetterUnit(size["height"]) / rows) * (rows - (border * 2))
+                #textHeight = BetterUnit(str(qrcodeHeight)) + BetterUnit("{}mm".format((border + (border /2))))
+                textHeight = BetterUnit(size["height"]) - BetterUnit("1mm")
+                textCenter = BetterUnit(size["width"]) / 2
+
+                if 'xn--' in url:
+                    urlparts = list(urlparser.urlsplit(url))
+                    urlparts[1] = idna.decode(urlparts[1])
+                    url = urlparser.urlunsplit(urlparts)
+                    cprint("Changing IDN to {}".format(url), 'yellow')
+                urlText = TextElement(textCenter.value, textHeight.value, url, size=1, color="#D3D3D3", anchor="middle")
+                cprint("Appending URL '{}'". format(url), 'green')
+                svgTemplate.append(urlText)
+                svg = svgTemplate.to_str().decode('utf-8')
 
             if outfile.endswith('svg'):
                 with open(os.path.join(subdir, outfile), "w") as svg_file:
                     svg_file.write(svg)
+            elif outfile.endswith('pdf'):
+                svg2pdf(bytestring=svg.encode('utf-8'), write_to=os.path.join(subdir, outfile))
             else:
                 svg2png(bytestring=svg.encode('utf-8'), write_to=os.path.join(subdir, outfile))
 

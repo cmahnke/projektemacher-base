@@ -11,6 +11,11 @@ else
     PDFJS_VERSION=master
 fi
 
+if [ -d "$TMP_DIR" ] ; then
+    echo "'$TMP_DIR' already exists - deleting"
+    rm -rf "$TMP_DIR"
+fi
+
 mkdir -p "$PDFJS_STATIC_DIR" "$TMP_DIR"
 git clone --depth 1 --branch "v$PDFJS_VERSION" https://github.com/mozilla/pdf.js "$TMP_DIR"
 

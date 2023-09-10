@@ -9,18 +9,28 @@ jobs:
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.8.1
         with:
           node-version-file: '.nvmrc'
 
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
+
+# Needed to check if the JXL Python plugin builds
+      - name: Install JXL dependencies
+        run: |
+          ./scripts/github/jxl-0.7.0.sh
+
+# Needed to check if the JXL Python plugin builds
+      - name: Install required Python dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
 
       - name: Install Node dependencies
         run: |
@@ -33,12 +43,12 @@ jobs:
   test_install:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.8.1
         with:
           node-version-file: '.nvmrc'
 
@@ -47,10 +57,124 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
           ./scripts/github/dart-sass.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
+
+  test_inkscape_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
           ./scripts/github/setup-inkscape.sh
+      - name: Install Inkscape and it's dependencies
+        run: |
+          ./scripts/github/setup-inkscape.sh
+
+  test_PyHugolib_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'scripts/PyHugo/go/go.mod'
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
+      - name: "Build PyHugolib"
+        run: |
+          ./scripts/github/pyhugolib.sh
+
+  test_hugo_versions:
+    runs-on: ubuntu-22.04
+    continue-on-error: ${{ matrix.can-fail }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['0.84.4', '0.102.3', '0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', '0.112.7', '0.118.2', 'latest']
+        can-fail: [false]
+        include:
+# Disabled old versions
+#          - version: 0.78.2
+#            can-fail: true
+#          - version: 0.80.0 # Fails, doesn't work with supplied Dart SASS and emty files
+#            can-fail: true
+#          - version: 0.82.0 # Fails, since version check doesn't work with versions older then 0.99
+#            can-fail: true
+#          - version: 0.84.4
+#            args: '--i18n-warnings'
+          - version: 0.102.3
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.104.3
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.106.0
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.109.0
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.110.0
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.111.2
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.112.7
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.118.2
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: latest
+            args: '--printI18nWarnings --printUnusedTemplates'
+
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install required dependencies
+        run: |
+          ./scripts/setup.sh
+
+      - name: Install Dart SASS
+        run: |
+          ./scripts/github/dart-sass.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2.6.0
+        with:
+          hugo-version: ${{ matrix.version }}
+          extended: true
+
+      - name: Merge lang files
+        if: ${{ matrix.args }}
+        run: |
+          ./scripts/init/i18n.sh i18n
+
+      - name: Build Hugo site
+        if: ${{ ! matrix.args }}
+        working-directory: exampleSite
+        run: hugo --themesDir ../..
+
+      - name: Build Hugo site (with arguments)
+        if: ${{ matrix.args }}
+        working-directory: exampleSite
+        run: |
+          hugo --themesDir ../.. ${{ matrix.args }}

@@ -1,0 +1,70 @@
+{{/* Required arguments */}}
+{{- $infoJson := .infoJson -}}
+{{- if isset . "context" -}}
+  {{- warnf "Context set for IIIF image partial, but not yet implemented!" -}}
+{{- end -}}
+
+{{/* Check defaults - optional parameters */}}
+{{- $baseURL := "" -}}
+{{- if isset . "baseURL" -}}
+  {{- $baseURL = .baseURL -}}
+{{- else -}}
+  {{- $baseURL := path.Dir $infoJson -}}
+{{- end -}}
+{{- $share := false -}}
+{{- if isset . "share" -}}
+  {{- $share = .share -}}
+{{- end -}}
+{{- $heading := "" -}}
+{{- if isset . "heading" -}}
+  {{- $heading = .heading -}}
+{{- end -}}
+{{- $idSuffix := replace (replace (replace $infoJson "/" "_") "." "") "-" "_" -}}
+{{- $mapName := printf "iiif_image_%s_%s" (delimit (shuffle (seq 1 9)) "") $idSuffix -}}
+{{- if isset . "mapName" -}}
+  {{- $mapName = .mapName -}}
+{{- end -}}
+{{- $rotation := 0 -}}
+{{- if isset . "rotation" -}}
+  {{- $rotation = .rotation -}}
+{{- end -}}
+{{- $class := "iiif iiif-image" -}}
+{{- if isset . "class" -}}
+  {{- $class = .class -}}
+{{- end -}}
+{{- $orientation := "" -}}
+{{- if isset . "orientation" -}}
+  {{- $orientation = .orientation -}}
+{{- end -}}
+{{- $downloadURL := "" -}}
+{{- if isset . "downloadURL" -}}
+  {{- $downloadURL = .downloadURL -}}
+{{- end -}}
+{{- $pageURL := "" -}}
+{{- if isset . "pageURL" -}}
+  {{- $pageURL = .pageURL -}}
+{{- end -}}
+
+<div class="{{ $class | safeHTML }} {{ $orientation | safeHTML }}">
+  <a name="{{ $mapName }}"></a>
+  {{- if $heading -}}
+    <div class="iiif-image-heading">{{ $heading }}</div>
+  {{- end -}}
+  <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}"></div>
+
+  <script type="text/javascript">
+    {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
+    {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }});
+    {{ $mapName | safeJS }}.updateSize();
+    {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
+  </script>
+  {{ if $share }}
+    <div class="share">
+      {{- if $downloadURL -}}
+        <a href="{{ $downloadURL }}" class="image-download">{{ i18n "fullResolution" }}</a> |
+      {{- end -}}
+      <a href="{{ $infoJson }}" class="iiif-link"><span class="iiif-iiif">{{ i18n "iiif" }}</span> <span class="iiif-manifest">{{ i18n "manifest" }}</span></a>
+      {{- if $pageURL }} | <a href="{{ $pageURL }}#{{ $mapName }}" class="image-link">{{ i18n "imageLink" }}</a>{{- end -}}
+    </div>
+  {{- end -}}
+</div>

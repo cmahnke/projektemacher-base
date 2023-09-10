@@ -13,3 +13,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/scripts/PyHugo"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: gomod
+    directory: "/scripts/PyHugo/go"
+    schedule:
+      interval: daily

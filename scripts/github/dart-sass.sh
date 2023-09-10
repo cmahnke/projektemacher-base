@@ -2,7 +2,7 @@
 
 echo "Trying to set up Dart Sass"
 
-DARTSASS_VERSION=1.55.0
+DARTSASS_VERSION=1.57.1
 BIN_DIR=/usr/local/bin
 
 case "`uname`" in

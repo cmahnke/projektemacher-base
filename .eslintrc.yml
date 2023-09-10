@@ -1,5 +1,6 @@
 env:
   browser: true
+  node: true
   es2021: true
 extends:
   - 'eslint:recommended'
@@ -13,5 +14,12 @@ rules:
 overrides:
   - files: ["*.toml"]
     parser: 'toml-eslint-parser'
+  - files: ["*.gjson", "*.geojson", "*.json"]
+    parser: 'eslint-plugin-json-es'
+    extends: 'plugin:eslint-plugin-json-es/recommended'
+ignorePatterns:
+  - layouts/_default/*
+  - node_modules/*
+
 
 #  ": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]

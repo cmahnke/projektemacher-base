@@ -7,6 +7,18 @@ DEFAULT_URL_PREFIX="."
 IMAGE_PREFIX=content
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl-uploader "
 CMD_PREFIX=""
+PDF_INFO_CMD="pdfinfo"
+PDF_IMAGES_CMD="pdfimages"
+
+if [ -z "$CORES" ] ; then
+  # https://stackoverflow.com/a/45181694
+  if [ ! command -v getconf &> /dev/null ] ; then
+    CORES=2
+  else
+    CORES=$(getconf _NPROCESSORS_ONLN)
+  fi
+fi
+JOBFILE=$(mktemp -t 3D_JOBS)
 
 if [ -z "$SKIP_IIIF" ] ; then
 
@@ -24,6 +36,11 @@ if [ -z "$SKIP_IIIF" ] ; then
             echo "Removed tailing slash: $URL_PREFIX"
         fi
     fi
+
+#    if ! command -v pdfinfo &> /dev/null ; then
+#        echo "poppler could not be found, trying vips"
+#        PDF_IMAGES_CMD="vips"
+#    fi
 
     if ! command -v vips &> /dev/null ; then
         echo "vips could not be found, using python"
@@ -48,6 +65,18 @@ if [ -z "$SKIP_IIIF" ] ; then
     fi
 
     echo "Processing files"
+
+#    # Check for PDF input
+#    for IMAGE in $IMAGES
+#    do
+#        IMAGE_SUFFIX=$(echo $IMAGE |awk -F . '{print $NF}')
+#        PDF_DIR=`basename $IMAGE .$IMAGE_SUFFIX`
+#        if [ "$IMAGE_SUFFIX" == "pdf" ] ; then
+#            $PDF_IMAGES_CMD -tiff $IMAGE $PDF_DIR
+#            mv ./$PDF_DIR/* .
+#        fi
+#    done
+
     # IIFF
     for IMAGE in $IMAGES
     do
@@ -70,17 +99,22 @@ if [ -z "$SKIP_IIIF" ] ; then
             echo "Setting IIIF identifier to '$IIIF_ID'"
         fi
 
-        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET)"
+        echo "Generating IIIF files for $IMAGE in directory $OUTPUT_DIR, IIIF directory $IIIF_DIR ($TARGET) using '$IIIF_STATIC_CMD'"
         if [ $IIIF_STATIC_CMD = "vips" ] ; then
+            FULLDIR=$TARGET/full/full/0/
+            mkdir -p $FULLDIR
             if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
-                echo "Running Docker for JPEG XL"
+                echo "Running Docker for JPEG XL (Prefix '$CMD_PREFIX')"
                 $CMD_PREFIX vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
-                mkdir -p  $TARGET/full/full/0/
-                $CMD_PREFIX vips copy $IMAGE $TARGET/full/full/0/default.jpg
+                $CMD_PREFIX vips copy $IMAGE $FULLDIR/default.jpg
             else
                 vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
-                mkdir -p  $TARGET/full/full/0/
-                cp $IMAGE $TARGET/full/full/0/default.jpg
+                cp $IMAGE $FULLDIR/default.jpg
+            fi
+            if [ -r "$FULLDIR/default.jpg" ] ; then
+              echo "Created full image as JPEG at '$FULLDIR/default.jpg'"
+            else
+              echo "Full reolution JPEG not found at '$FULLDIR/default.jpg'!"
             fi
         elif [ $IIIF_STATIC_CMD = "iiif_static.py" ] ; then
             iiif_static.py -d $TARGET -i "$IIIF_ID" -t $TILE_SIZE $IMAGE

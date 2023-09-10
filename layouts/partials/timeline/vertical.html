@@ -26,7 +26,7 @@
         {{- $imgLocation := $images.Get "previewLoc" -}}
         {{- $previewImg := $images.Get "preview" -}}
         {{- if eq $previewImg nil -}}
-            {{- warnf "Can't find image %s for post %s" $imgLocation $context -}}
+            {{- warnf "Can't find image %s for post %s in 'timeline/vertical.html'" $imgLocation $context -}}
         {{- end -}}
         {{- $previewImg = $previewImg.Resize "370x"  -}}
 

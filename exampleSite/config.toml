@@ -1,0 +1,28 @@
+baseURL = 'https://theme.projektemacher.org/'
+theme = ["projektemacher-base"]
+title = "Projektemacher Base"
+languageCode = "en"
+languagecode = "en"
+defaultcontentlanguage = "en"
+publishDir = "docs"
+canonifyurls = true
+disablePathToLower = true
+
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[imaging]
+    quality = 95
+
+[mediaTypes]
+  [mediaTypes."application/x-qrcode-template"]
+    suffixes = ["json"]
+
+[outputFormats]
+  [outputFormats.qrcode]
+    mediaType = "application/x-qrcode-template"
+    isPlainText = true
+    isHTML = false
+    baseName = "qrcode"
+    notAlternative = true
