@@ -11,8 +11,23 @@ if ! git diff --name-only --exit-code package.json ; then
     git checkout package.json
 fi
 
-CTX_PATH="$(dirname $(realpath $0))"
-THEME_PATH=$(realpath --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
+SED=sed
+REALPATH=realpath
+OS="`uname`"
+case "$OS" in
+  'Darwin')
+    SED=gsed
+    REALPATH=grealpath
+    ;;
+  'Linux')
+    SED=sed
+    REALPATH=realpath
+    ;;
+esac
+echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH'"
+
+CTX_PATH="$(dirname $($REALPATH $0))"
+THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
 
 # The order matters here - first all themes, then the file from this theme and then the one from the site itself
 THEMES_PACKAGE_FILES="$(find themes -name package.hugo.json)"
