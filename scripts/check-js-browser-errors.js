@@ -95,7 +95,7 @@ console.log('Base URL is %s', baseURL);
         */
         headless: 'new',
         devtools: false,
-        args:['--use-gl=egl']
+        args:['--use-gl=egl', '--disable-web-security']
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
