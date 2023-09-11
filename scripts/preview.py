@@ -82,10 +82,15 @@ def drawSVG(title, contentFile, outFile, config):
             previewElem.set(xlinkAttr, previewImg)
     elif "removeMissing" in config["svg"]:
         if config["svg"]["removeMissing"] == True:
-            parent = svgTree.findall(imageXPath + "/..", namespaces)[0]
-            previewElem = svgTree.findall(imageXPath, namespaces)[0]
-            parent.remove(previewElem)
-            cprint("Removd reference to missing image", "yellow")
+            parents = svgTree.findall(imageXPath + "/..", namespaces)
+            if len(parents) > 0:
+                parent = parents[0]
+                previewElem = svgTree.findall(imageXPath, namespaces)[0]
+                parent.remove(previewElem)
+                cprint("Removed reference to missing image", "yellow")
+            else:
+                cprint("Can't find parent for missing preview image from template '{}'".format(template), "yellow")
+
     else:
         cprint("Image '{}' dosn't exit, ignoring".format(previewImg), "red")
 
@@ -140,6 +145,9 @@ for subdir, dirs, files in os.walk(contentPath):
             lang = fileMatch.group(2)
             contentFile = os.path.join(subdir, file)
             metadata = readMetadata(contentFile)
+            if not "title" in metadata:
+                cprint("No title in " + subdir + "/" + file + ", setting empty string.", 'red')
+                metadata["title"] = ""
             outputFileSuffix = config["outputPrefix"]
             if lang:
                 outputFileSuffix += lang
