@@ -4,5 +4,7 @@
     {{- $term = .Term -}}
 {{- else if eq (printf "%T" .) "hugolib.OrderedTaxonomyEntry" -}}
     {{- $term = .Name -}}
+{{- else if eq (printf "%T" .) "page.OrderedTaxonomyEntry" -}}
+    {{- $term = .Name -}}
 {{- end -}}
 {{- return $term -}}
