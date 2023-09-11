@@ -97,7 +97,11 @@ def drawSVG(title, contentFile, outFile, config):
     #TODO: This currently only scales to width
     #TODO: This currenly only centres
     if previewImg != "" and "scale" in config["svg"]:
-        img = Image.open(previewImg)
+        try:
+            img = Image.open(previewImg)
+        except FileNotFoundError:
+            cprint("Can't find image file '{}', skipping!".format(previewImg), "red")
+            return
         imgWidth, imgHeight = img.size
 
         if config["svg"]["scale"] == "width":
