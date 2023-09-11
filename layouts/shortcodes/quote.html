@@ -8,6 +8,7 @@
 {{- end -}}
 {{- $link := .Get "link" -}}
 {{- $fromlink := .Get "from-link" -}}
+{{- $sourcelink := .Get "source-link" -}}
 
 <div class="quote">
     {{ if $link }}<a href="{{ $link }}">{{ end }}
@@ -20,6 +21,10 @@
           {{ if $fromlink }}<a href="{{ $fromlink }}">{{ end }}
           {{ $from }}
           {{ if $fromlink }}</a>{{ end }}
+          {{ if and $fromlink $sourcelink  }}, {{ end }}
+          {{ if $sourcelink }}<a href="{{ $sourcelink }}">{{ end -}}
+          {{ i18n "source" }}
+          {{- if $sourcelink }}</a>{{ end }}
         </div>
     {{ end }}
 </div>
