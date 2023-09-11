@@ -1,5 +1,5 @@
 {{/* TODO:
-      * Use the 'src' field istead of 'name', or at least use seperate parameters for that
+      * Use the 'src' field instead of 'name', or at least use seperate parameters for that
       * Make JPG or JXL handling transparent
 */}}
 {{- $defaultFrontName := "front" -}}
@@ -8,6 +8,7 @@
 {{- $src := "" -}}
 {{- $context := . -}}
 
+{{/* Check if parameters have been given */}}
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
   {{- $context = .context }}
   {{- if .name -}}
@@ -17,15 +18,17 @@
       {{- $name = "" -}}
     {{- end -}}
   {{- end -}}
+  {{ warnf "[partials/iiif/preview.html] called with params: name '%s', src '%s'" $name $src }}
 {{- else -}}
-  {{/* {{ warnf "preview called with %T" . }} */}}
+  {{/* PageState is the type if called with dot */}}
+  {{/* {{ warnf "[partials/iiif/preview.html] Preview called with %T" . }} */}}
 {{- end -}}
 
 {{ $img := "" }}
 {{ with $context }}
   {{- $resources := .Params.resources -}}
   {{- if eq $resources nil -}}
-    {{- errorf "Resource section for %s either empty or non existing" .File.Path -}}
+    {{- errorf "[partials/iiif/preview.html] Resource section for %s either empty or non existing" .File.Path -}}
   {{- end -}}
   {{- $frontResource := "" -}}
   {{- if ne $src "" -}}
@@ -35,9 +38,12 @@
   {{- end -}}
   {{- $infoJson := (index $frontResource 0).params.iiif -}}
   {{- $path := path.Dir $infoJson -}}
+  {{- if not $infoJson -}}
+    {{- errorf "[partials/iiif/preview.html] Error getting info.json path for %s" .File.Path -}}
+  {{- end -}}
   {{- $previewLoc := path.Join $path $fullResImgSuffix -}}
   {{- if not (fileExists (path.Join .File.Dir $previewLoc)) -}}
-    {{- errorf "%s referenced in %s doesn't exists!" $previewLoc .File.Path -}}
+    {{- errorf "[partials/iiif/preview.html] %s referenced in %s doesn't exists!" $previewLoc .File.Path -}}
   {{- end -}}
   {{- $img = .Resources.GetMatch $previewLoc -}}
 {{ end }}

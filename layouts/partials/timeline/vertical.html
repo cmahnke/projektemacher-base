@@ -2,6 +2,7 @@
 <div class="timeline timeline-vertical">
     {{- $first := index (first 1 $entries) 0 -}}
     {{- $last := index (last 1 $entries) 0 -}}
+    {{- $name := "preview" -}}
 
     {{- range $index, $entry := $entries -}}
         {{- $year := .Params.year -}}
@@ -19,14 +20,25 @@
                 {{- if or (eq .name "front") (eq .name "cover") -}}
                     {{- $images.Set "previewLoc" (path.Join $context .src) -}}
                     {{- $images.Set "preview" (($entry.Resources.ByType "image").GetMatch .name) -}}
+                    {{- $name = .name -}}
                 {{- end -}}
             {{- end -}}
         {{- end -}}
 
         {{- $imgLocation := $images.Get "previewLoc" -}}
         {{- $previewImg := $images.Get "preview" -}}
+
+        {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+          {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $entry.File.Path -}} */}}
+          {{- if not $name -}}
+            {{- warnf "[timeline/vertical.html] JXL Reference in %s, but no 'name' set, using default" $entry.File.Path -}}
+          {{- end -}}
+          {{- $previewImg = partial "iiif/preview.html" (dict "context" $entry "name" $name) -}}
+
+        {{- end -}}
+
         {{- if eq $previewImg nil -}}
-            {{- warnf "Can't find image %s for post %s in 'timeline/vertical.html'" $imgLocation $context -}}
+            {{- warnf "[timeline/vertical.html] Can't find image %s for post %s" $imgLocation $context -}}
         {{- end -}}
         {{- $previewImg = $previewImg.Resize "370x"  -}}
 

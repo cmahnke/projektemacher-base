@@ -61,11 +61,15 @@
                  {{ else }}
                     {{- $image.Set "previewImg" ($.Resources.GetMatch .src) -}}
                  {{- end -}}
-                 {{- if strings.HasSuffix ($image.Get "previewImg").Name "jxl" -}}
-                    {{- $image.Set "previewImg" ($defaultContentPage.Resources.GetMatch (printf "%s%s" $manifestDir $fullResImgSuffix)) -}}
+                 {{- if eq (string ($image.Get "previewImg").MediaType) "image/jxl" -}}
+                   {{- $previewLoc := path.Join $manifestDir $fullResImgSuffix -}}
+                   {{- if not (fileExists (path.Join $.File.Dir $previewLoc)) -}}
+                     {{- errorf "[_default/single.iiif.json] %s referenced in %s doesn't exists!" $previewLoc $.File.Path -}}
+                   {{- end -}}
+                  {{- $image.Set "previewImg" ($defaultContentPage.Resources.GetMatch $previewLoc) -}}
                  {{- end -}}
                  {{- if eq ($image.Get "previewImg") nil -}}
-                    {{- warnf "Can't find image %s in '_default/single.iiif.json'" ($image.Get "previewLoc") -}}
+                    {{- warnf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
                  {{- end -}}
 
                  {{- $canvas := "" -}}
@@ -103,7 +107,6 @@
 
                    "height": {{ $canvasHeight }},
                    "width": {{ $canvasWidth }},
-
                    {{- $thumbnail := ($image.Get "previewImg").Resize "120x80" -}}
                    "thumbnail": {
                        "@id": "{{ $thumbnail.Permalink }}",
