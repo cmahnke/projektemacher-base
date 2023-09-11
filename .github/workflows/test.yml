@@ -107,18 +107,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.84.4', '0.102.3', '0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', '0.112.7', '0.115.4', '0.118.2', 'latest']
+        version: ['0.102.3', '0.104.3','0.106.0', '0.109.0', '0.110.0', '0.111.2', '0.112.7', '0.115.4', '0.118.2', 'latest']
         can-fail: [false]
         include:
-# Disabled old versions
-#          - version: 0.78.2
-#            can-fail: true
-#          - version: 0.80.0 # Fails, doesn't work with supplied Dart SASS and emty files
-#            can-fail: true
-#          - version: 0.82.0 # Fails, since version check doesn't work with versions older then 0.99
-#            can-fail: true
-#          - version: 0.84.4
-#            args: '--i18n-warnings'
           - version: 0.102.3
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.104.3
