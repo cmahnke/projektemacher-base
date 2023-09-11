@@ -14,12 +14,12 @@
     "url": "{{- .Permalink -}}"
   {{- end -}}
   {{- if (isset .Params "qr-color") -}}
-    , "color": "{{ .Params.Get "qr-color" }}"
+    , "color": "{{ index .Params "qr-color" }}"
   {{- end -}}
   {{- if (isset .Params "qr-icon") -}}
-    , "icon": "{{ .Params.Get "qr-icon" }}"
+    , "icon": "{{ index .Params "qr-icon" }}"
   {{- end -}}
   {{- if (isset .Params "qr-icon-color") -}}
-    , "iconColor": "{{ .Params.Get "qr-icon-color" }}"
+    , "iconColor": "{{ index .Params "qr-icon-color" }}"
   {{- end -}}
 }
