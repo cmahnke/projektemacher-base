@@ -90,7 +90,10 @@ console.log('Base URL is %s', baseURL);
 
     const browser = await puppeteer.launch ({
         /*userDataDir: path.resolve(__dirname, './puppeteerTmp'),*/
+        /*  https://developer.chrome.com/articles/new-headless/
         headless: true,
+        */
+        headless: 'new',
         devtools: false,
         args:['--use-gl=egl']
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
