@@ -5,8 +5,10 @@
 </head>
 {{ block "body" . }}
     {{- $class := "" -}}
-    {{- if hasPrefix .Page.File.Path "about" -}}
-        {{- $class = "about" -}}
+    {{- with .Page.File -}}
+      {{- if hasPrefix .Path "about" -}}
+          {{- $class = "about" -}}
+      {{- end -}}
     {{- end -}}
     {{- if .Params.metaPage -}}
         {{- $class = printf "%s %s" $class "meta" -}}
