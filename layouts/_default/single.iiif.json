@@ -66,10 +66,10 @@
                    {{- if not (fileExists (path.Join $.File.Dir $previewLoc)) -}}
                      {{- errorf "[_default/single.iiif.json] %s referenced in %s doesn't exists!" $previewLoc $.File.Path -}}
                    {{- end -}}
-                  {{- $image.Set "previewImg" ($defaultContentPage.Resources.GetMatch $previewLoc) -}}
+                  {{- $image.Set "previewImg" ($.Resources.GetMatch $previewLoc) -}}
                  {{- end -}}
                  {{- if eq ($image.Get "previewImg") nil -}}
-                    {{- warnf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
+                    {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
                  {{- end -}}
 
                  {{- $canvas := "" -}}
@@ -108,6 +108,9 @@
                    "height": {{ $canvasHeight }},
                    "width": {{ $canvasWidth }},
                    {{- $thumbnail := ($image.Get "previewImg").Resize "120x80" -}}
+                   {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
+                      {{- errorf "[_default/single.iiif.json] Can't get thumbnail for %s" ($image.Get "previewLoc") -}}
+                   {{- end -}}
                    "thumbnail": {
                        "@id": "{{ $thumbnail.Permalink }}",
                        "format": "image/jpeg",
