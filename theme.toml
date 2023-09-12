@@ -24,3 +24,10 @@ min_version = 0.106
       isHTML = false
       baseName = "qrcode"
       notAlternative = true
+
+    [outputFormats.geojson]
+      mediaType = "application/geo+json"
+      isPlainText = true
+      isHTML = false
+      baseName = "map"
+      notAlternative = true

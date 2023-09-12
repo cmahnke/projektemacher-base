@@ -1,0 +1,14 @@
+{{ $geojson := .Get "src" }}
+{{- $id := md5 $geojson -}}
+{{- $var := printf "_%s" $id -}}
+<div class="map-wrapper">
+    <div class="map" id="{{ $id }}"></div>
+    <div id="{{ $id }}-popup" class="ol-popup">
+        <a href="#" id="{{ $id }}-popup-closer" class="ol-popup-closer"></a>
+    <div id="{{ $id }}-popup-content"></div>
+ </div>
+</div>
+<script type="text/javascript">
+    var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm');
+    {{ $var | safeJS }}.updateSize();
+</script>
