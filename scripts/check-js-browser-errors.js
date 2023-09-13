@@ -5,7 +5,9 @@ const toml = require('toml');
 const yargs = require('yargs');
 const express = require('express');
 const cors = require('cors');
+const mktemp = require('mktemp');
 const app = express();
+
 
 /* Settings */
 const urlsFile = 'test-urls.txt';
@@ -78,6 +80,22 @@ if (baseURL == '') {
 }
 console.log('Base URL is %s', baseURL);
 
+/*
+  See https://bugs.chromium.org/p/chromium/issues/detail?id=761295
+  See https://github.com/microsoft/playwright/issues/3509#issuecomment-675441299
+*/
+const tmpDir = mktemp.createDirSync('XXX-XXX');
+fs.mkdirSync(`${tmpDir}/userdir/Default`, { recursive: true });
+
+const defaultPreferences = {
+  plugins: {
+    always_open_pdf_externally: true,
+  },
+}
+const prefFile = `${tmpDir}/userdir/Default/Preferences`;
+fs.writeFileSync(prefFile, JSON.stringify(defaultPreferences));
+console.log('Wrote preference file to %s', prefFile);
+
 (async () => {
 
     app.use(cors());
@@ -95,7 +113,7 @@ console.log('Base URL is %s', baseURL);
         */
         headless: 'new',
         devtools: false,
-        args:['--use-gl=egl', '--disable-web-security']
+        args:['--use-gl=egl', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
