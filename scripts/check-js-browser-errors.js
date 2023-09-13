@@ -131,14 +131,14 @@ console.log('Wrote preference file to %s', prefFile);
             });
             return;
         }
+        if (request.url().toLowerCase().endsWith("pdf")) {
+          console.log('Warning: Response would hang Puppeteer, aborting!');
+          request.abort();
+        }
         request.continue();
         })
         .on('response', response => {
             console.log('Browser: Got response for %s', response.url());
-            if (response.url().toLowerCase().endsWith("pdf")) {
-              console.log('Warning: Response will hang Puppeteer!');
-              page.setDefaultNavigationTimeout(5000);
-            }
         });
 
     for (var i in tests) {
