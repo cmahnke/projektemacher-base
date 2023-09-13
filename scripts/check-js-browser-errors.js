@@ -125,6 +125,7 @@ console.log('Wrote preference file to %s', prefFile);
         if (request.url().toLowerCase().endsWith("pdf")) {
           console.log('Warning: Response would hang Puppeteer, aborting!');
           request.abort();
+          return;
         }
         if (request.url().startsWith(baseURL)) {
             newRequestUrl = request.url().replace(baseURL, remotePrefix)
