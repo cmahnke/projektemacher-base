@@ -122,6 +122,10 @@ console.log('Wrote preference file to %s', prefFile);
     page.on('request', request => {
         const headers = request.headers();
         var newRequestUrl;
+        if (request.url().toLowerCase().endsWith("pdf")) {
+          console.log('Warning: Response would hang Puppeteer, aborting!');
+          request.abort();
+        }
         if (request.url().startsWith(baseURL)) {
             newRequestUrl = request.url().replace(baseURL, remotePrefix)
             console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
@@ -130,10 +134,6 @@ console.log('Wrote preference file to %s', prefFile);
                 headers : headers
             });
             return;
-        }
-        if (request.url().toLowerCase().endsWith("pdf")) {
-          console.log('Warning: Response would hang Puppeteer, aborting!');
-          request.abort();
         }
         request.continue();
         })
