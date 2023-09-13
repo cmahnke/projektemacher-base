@@ -134,7 +134,11 @@ console.log('Wrote preference file to %s', prefFile);
         request.continue();
         })
         .on('response', response => {
-            console.log('Browser: Got response for %s', response.url())
+            console.log('Browser: Got response for %s', response.url());
+            if (response.url().toLowerCase().endsWith("pdf")) {
+              console.log('Warning: Response will hang Puppeteer!');
+              page.setDefaultNavigationTimeout(5000);
+            }
         });
 
     for (var i in tests) {
@@ -184,6 +188,8 @@ console.log('Wrote preference file to %s', prefFile);
                   console.log('[requestfailed] Ignoring failed media request for %s', request.url());
               } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
                   console.log('[requestfailed] Ignoring request for %s', request.url());
+              } else if (response.url().toLowerCase().endsWith("pdf")) {
+                  console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
               } else {
                   process.exit(124);
               }
