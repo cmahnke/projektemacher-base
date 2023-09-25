@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gohugoio/hugo v0.110.0
-	github.com/spf13/afero v1.9.5
+	github.com/spf13/afero v1.10.0
 	github.com/spf13/jwalterweatherman v1.1.0
 )
 
