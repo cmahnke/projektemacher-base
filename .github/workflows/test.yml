@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-22.04
@@ -126,7 +130,6 @@ jobs:
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates'
-
 
     steps:
       - uses: actions/checkout@v4
