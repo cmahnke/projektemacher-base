@@ -20,10 +20,10 @@ function checkMapboxStyle(style) {
 
 export function mapViewer (elem, style, geoJson, source, bbox, center, initialZoom, maxZoom) {
 
-  if (source !== undefined || source != '') {
+  if (source !== undefined || source != '') {
     source = layer_url;
   }
-  if (bbox === undefined || bbox == [] || bbox == '') {
+  if (bbox === undefined || bbox == [] || bbox == '') {
     bbox = [[-180, -85.051129] ,[180, 85.051129]];
   }
   if (center === undefined) {
@@ -69,7 +69,7 @@ export function mapViewer (elem, style, geoJson, source, bbox, center, initialZo
   });
   apply(map, style);
 
-  if (geoJson !== undefined && geoJson != [] && geoJson != '') {
+  if (geoJson !== undefined && geoJson != [] && geoJson != '') {
     if (!Array.isArray(geoJson)) {
       geoJson = [geoJson];
     }
