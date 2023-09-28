@@ -50,7 +50,9 @@ export function mapViewer (elem, style, geoJson, source, bbox, center, initialZo
     style.sources.vector_layer_.tiles = [layer_url];
     style.sources.vector_layer_.maxzoom = maxZoom;
     style.sources.vector_layer_.minzoom = 0;
-    style.sources.vector_layer_.bounds = bbox .flat();
+    style.sources.vector_layer_.bounds = bbox.flat();
+    style.center = center;
+    style.zoom = initialZoom;
     view = new View({
       center: fromLonLat(center),
       projection: 'EPSG:3857',
