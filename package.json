@@ -8,6 +8,7 @@
   "mirador": "ProjectMirador/mirador",
   "normalize.css": "^8.0.1",
   "ol": "^8.1.0",
+  "ol-mapbox-style": "^12.0.0",
   "pdfjs-dist": "^3.2.146",
   "pdfobject": "^2.1.1",
   "yargs": "^17.6.0"
