@@ -30,6 +30,9 @@ if [ -z "$YARN" ] ; then
   #Try /usr/local/bin/yarn
   if [ -x /usr/local/bin/yarn ] ; then
     YARN=/usr/local/bin/yarn
+  else
+    sudo npm install -g yarn
+    YARN='npm run yarn'
   fi
 fi
 echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH'"
