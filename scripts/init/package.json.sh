@@ -31,11 +31,11 @@ if [ -z "$YARN" ] ; then
   if [ -x /usr/local/bin/yarn ] ; then
     YARN=/usr/local/bin/yarn
   else
-    sudo npm install -g yarn
+    npm install -g yarn
     YARN='npm run yarn'
   fi
 fi
-echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH'"
+echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', yarn is '$YARN'"
 
 CTX_PATH="$(dirname $($REALPATH $0))"
 THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
