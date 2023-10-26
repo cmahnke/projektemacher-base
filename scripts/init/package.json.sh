@@ -24,6 +24,14 @@ case "$OS" in
     REALPATH=realpath
     ;;
 esac
+
+YARN=`which yarn`
+if [ -z "$YARN" ] ; then
+  #Try /usr/local/bin/yarn
+  if [ -x /usr/local/bin/yarn ] ; then
+    YARN=/usr/local/bin/yarn
+  fi
+fi
 echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH'"
 
 CTX_PATH="$(dirname $($REALPATH $0))"
@@ -64,7 +72,7 @@ if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
   cp ./themes/projektemacher-base/purgecss.config.js .
 fi
 
-yarn install
+$YARN install
 ERR=$?
 if [ $ERR -ne 0 ] ; then
     echo "yarn install failed with $ERR"
