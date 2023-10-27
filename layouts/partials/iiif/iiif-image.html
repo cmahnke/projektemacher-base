@@ -4,7 +4,10 @@
 {{/* TODO: Remove this */}}
 {{- $site := .site }}
 {{- if eq $site nil -}}
-    {{- $site = .Site -}}
+    {{- $site = $.Site -}}
+{{- end -}}
+{{- if eq $site nil -}}
+    {{- errorf "Site is %#v (nil)" $site -}}
 {{- end -}}
 {{- $imgLocation := path.Join $contextPath .context.src -}}
 {{- $class := "" -}}
