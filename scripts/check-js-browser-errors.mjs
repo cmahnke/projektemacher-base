@@ -1,13 +1,12 @@
-const puppeteer = require ('puppeteer')
-const fs = require('fs');
-const path = require('path');
-const toml = require('toml');
-const yargs = require('yargs');
-const express = require('express');
-const cors = require('cors');
-const mktemp = require('mktemp');
+import puppeteer from 'puppeteer';
+import fs from 'fs';
+import path from 'path';
+import toml from 'toml';
+import yargs from 'yargs';
+import express from 'express';
+import cors from 'cors';
+import mktemp from 'mktemp';
 const app = express();
-
 
 /* Settings */
 const urlsFile = 'test-urls.txt';
@@ -19,7 +18,7 @@ const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com'];
 
-const argv = yargs.option('force', {
+const argv = yargs().option('force', {
     alias: 'f',
     description: 'Don\'t ignore mising files',
     type: 'boolean'
@@ -196,12 +195,12 @@ console.log('Wrote preference file to %s', prefFile);
               }
             });
 
-        checkURL = baseURL + localFile;
+        var checkURL = baseURL + localFile;
         console.log('-> Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
 
         if ('click' in tests[i]) {
-            for (j in tests[i]['click']) {
+            for (let j in tests[i]['click']) {
                 const [response] = await Promise.all([
                     page.waitForNavigation(),
                     page.click(tests[i]['click'][j]),

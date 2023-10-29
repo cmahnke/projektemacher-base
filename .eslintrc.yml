@@ -11,15 +11,15 @@ parserOptions:
 rules:
   no-unused-vars: 1
   toml/padding-line-between-tables: 0
+  no-prototype-builtins: 0
 overrides:
   - files: ["*.toml"]
     parser: 'toml-eslint-parser'
   - files: ["*.gjson", "*.geojson", "*.json"]
     parser: 'eslint-plugin-json-es'
     extends: 'plugin:eslint-plugin-json-es/recommended'
+  - files: ["scripts/*.cjs", "scripts/*.mjs"]
 ignorePatterns:
   - layouts/_default/*
   - node_modules/*
-
-
-#  ": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
+  - scripts/**/*.toml
