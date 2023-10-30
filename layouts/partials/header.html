@@ -2,7 +2,17 @@
   <div class="menu">
     {{ partial "menu.html" . }}
   </div>
-  <a href="/"><img class="header-logo" alt="{{ .Site.Title }}" src="/images/header.svg"></a>
+  {{- $defaultHeaderImage := "/images/header.svg" -}}
+  {{- $headerImage := "" -}}
+  {{- if ne $.Site.Params.headerimage "" -}}
+    {{- $headerImage = $.Site.Params.headerimage -}}
+  {{- else -}}
+    {{- $headerImage = $defaultHeaderImage -}}
+  {{- end -}}
+  <a href="/">
+    {{- if ne $headerImage "" -}}
+      <img class="header-logo" alt="{{ .Site.Title }}" src="{{ $headerImage }}"></a>
+    {{- end -}}
     <h1 class="header-title">{{ .Title }}</h1>
     {{- $subtitle := .Params.subtitle | default "" -}}
     {{- if ne $subtitle "" -}}
