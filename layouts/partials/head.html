@@ -48,14 +48,16 @@
 {{- $style := slice $ourStyle | resources.Concat "css/concated.css" | minify | fingerprint -}}
 <link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">
 
+{{/* TODO: Move to 'html/head/favicon.html' */}}
 <link rel="icon" type="image/png" href="{{ .Site.Params.favicon_32 | default "/images/favicon-32.png" | absURL }}" sizes="32x32">
 <link rel="icon" type="image/png" href="{{ .Site.Params.favicon_16 | default "/images/favicon-16.png" | absURL }}" sizes="16x16">
 {{ if .Site.Params.favicon_svg }}
     <link rel="icon" type="image/svg+xml" href="{{ .Site.Params.favicon_svg }}">
 {{ end }}
-
+{{/* TODO: remove this
 <link rel="shortcut icon" href="{{ "img/favicon.ico" | absURL }}" type="image/x-icon">
 <link rel="icon" href="{{ "img/favicon.ico" | absURL }}" type="image/x-icon">
+*/}}
 
 {{ with .OutputFormats.Get "RSS" }}
     <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
