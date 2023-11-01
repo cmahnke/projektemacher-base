@@ -17,7 +17,7 @@ SITE_FONTS=static/fonts/
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
-for FONT in `find "$FONT_BASE" -type d -depth 2` ;
+for FONT in `find "$FONT_BASE" -maxdepth 2 -type d` ;
 do
   FONT_NAME=$(basename $FONT)
   echo "Extracting $FONT_NAME from $FONT"
