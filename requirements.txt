@@ -1,4 +1,3 @@
-pillow
 wheel
 termcolor
 pyyaml
@@ -10,13 +9,15 @@ cairosvg
 svgutils
 #svgutils @ git+https://github.com/btel/svg_utils@1cc5b888f265407d2ea3b1f93c95b2efd29c611c
 idna
-
 auditwheel
 Cython
+# Newer Versions fail with `jxlpy`
+Pillow==9.5.0
 # See https://adamj.eu/tech/2019/03/11/pip-install-from-a-git-repository/
 #jxlpy @ git+https://github.com/foosoftsrl/jxlpy@0.9.5
 #https://github.com/foosoftsrl/jxlpy/releases/download/0.9.5/jxlpy-0.9.5-cp310-cp310-macosx_11_0_arm64.whl
 jxlpy
+#pyvips
 
 #GeoJSON Requirements
 geojson
