@@ -6,4 +6,7 @@
         {{- $viewport = printf "%s, %s" $viewport "user-scalable=no" -}}
     {{- end -}}
 {{- end -}}
+{{- if .Site.Params.minimalUI -}}
+  {{- $viewport = printf "%s, %s" $viewport "minimal-ui" -}}
+{{- end -}}
 <meta name="viewport" content="{{ $viewport }}">
