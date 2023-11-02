@@ -31,6 +31,8 @@ FONT_DIR="$BASE/out/fonts"
 SITE_CSS=assets/css/fonts/
 SITE_FONTS=static/fonts/
 
+echo "Installing Fonts to $BASE"
+
 ( cd $BASE && npm --no-audit install )
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
