@@ -48,4 +48,4 @@ done
 echo "Copying CSS to '$SITE_CSS'"
 cp -n $CSS_DIR/* $SITE_CSS ||/usr/bin/true
 echo "Copying Fonts to '$SITE_FONTS'"
-cp -n $FONT_DIR/* $SITE_FONTS
+cp -n $FONT_DIR/* $SITE_FONTS ||/usr/bin/true
