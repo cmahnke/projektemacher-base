@@ -16,6 +16,10 @@ case "$OS" in
     ;;
 esac
 
+if [ -z "$1" ] ; then
+  THEME_PATH="$1"
+fi
+
 if [ -z "$THEME_PATH" ] ; then
   THEME_PATH=.
 fi

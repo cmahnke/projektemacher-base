@@ -15,6 +15,6 @@ case "$OS" in
 esac
 
 CTX_PATH="$(dirname $($REALPATH $0))"
-THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
+export THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
 
 $THEME_PATH/scripts/fonts.sh
