@@ -16,6 +16,7 @@ else
 fi
 
 python -m pip install --upgrade pip
+echo "Searching for requirements.txt in '$SEARCH_PATH'"
 for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt"`
 do
     PYTHON_DEPENDENCIES=`cat $REQUIREMENTS | tr '\n' ' '`
