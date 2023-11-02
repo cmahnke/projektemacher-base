@@ -17,4 +17,4 @@ esac
 CTX_PATH="$(dirname $($REALPATH $0))"
 export THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
 
-$THEME_PATH/scripts/fonts.sh
+$THEME_PATH/scripts/fonts.sh $THEME_PATH
