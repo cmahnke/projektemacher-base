@@ -16,7 +16,7 @@ case "$OS" in
     ;;
 esac
 
-if [ -z "$1" ] ; then
+if [ -n "$1" ] ; then
   THEME_PATH="$1"
 fi
 
@@ -45,7 +45,7 @@ do
   $SED -i -E 's/\.\/files/\.\/fonts/g' $CSS_DIR/$FONT_NAME.css
   cp $FONT/files/*.woff* $FONT_DIR
 done
-echo "Copying CSS"
+echo "Copying CSS to '$SITE_CSS'"
 cp -n $CSS_DIR/* $SITE_CSS ||/usr/bin/true
-echo "Copying Fonts"
+echo "Copying Fonts to '$SITE_FONTS'"
 cp -n $FONT_DIR/* $SITE_FONTS
