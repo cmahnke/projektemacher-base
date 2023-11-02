@@ -2,6 +2,20 @@
 
 set -e -o pipefail
 
+SED=sed
+REALPATH=realpath
+OS="`uname`"
+case "$OS" in
+  'Darwin')
+    SED=gsed
+    REALPATH=grealpath
+    ;;
+  'Linux')
+    SED=sed
+    REALPATH=realpath
+    ;;
+esac
+
 if [ -z "$THEME_PATH" ] ; then
   THEME_PATH=.
 fi
@@ -22,7 +36,7 @@ do
   FONT_NAME=$(basename $FONT)
   echo "Extracting $FONT_NAME from $FONT"
   cat $FONT/*.css >> $CSS_DIR/$FONT_NAME.css
-  sed -i '' -E 's/\.\/files/\.\/fonts/g' $CSS_DIR/$FONT_NAME.css
+  $SED -i -E 's/\.\/files/\.\/fonts/g' $CSS_DIR/$FONT_NAME.css
   cp $FONT/files/*.woff* $FONT_DIR
 done
 echo "Copying CSS"
