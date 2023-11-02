@@ -9,10 +9,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/fonts"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "Pillow"
   - package-ecosystem: "pip"
     directory: "/scripts/PyHugo"
     schedule:
