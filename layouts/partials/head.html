@@ -42,7 +42,7 @@
     <link href="{{ . }}" rel="stylesheet">
 {{- end }}
 
-{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "includePaths" (slice "node_modules/ol" "static/css" "node_modules/normalize.css")) -}}
+{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "enableSourceMap" (not hugo.IsProduction) "includePaths" (slice "node_modules/ol" "static/css" "node_modules/normalize.css" "assets/css")) -}}
 {{- $ourTemplate := resources.Get "scss/base.scss" -}}
 {{- $ourStyle := $ourTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
 {{- $style := slice $ourStyle | resources.Concat "css/concated.css" | minify | fingerprint -}}

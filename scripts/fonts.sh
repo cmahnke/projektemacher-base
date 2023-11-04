@@ -42,7 +42,7 @@ do
   FONT_NAME=$(basename $FONT)
   echo "Extracting $FONT_NAME from $FONT"
   cat $FONT/*.css >> $CSS_DIR/$FONT_NAME.css
-  $SED -i -E 's/\.\/files/\.\/fonts/g' $CSS_DIR/$FONT_NAME.css
+  $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
   cp $FONT/files/*.woff* $FONT_DIR
 done
 echo "Copying CSS to '$SITE_CSS'"

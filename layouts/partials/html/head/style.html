@@ -1,4 +1,4 @@
-{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" -}}
+{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" -}}
 
 {{- $includes := "" -}}
 {{- if .includes -}}
@@ -7,7 +7,7 @@
     {{- $includes = $buildinIncludes -}}
 {{- end -}}
 
-{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "includePaths" $includes) -}}
+{{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "enableSourceMap" (not hugo.IsProduction) "includePaths" $includes) -}}
 {{- $scssTemplate := resources.Get "scss/base.scss" -}}
 {{- $scssStyle := $scssTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
 
