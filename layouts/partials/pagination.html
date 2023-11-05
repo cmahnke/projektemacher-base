@@ -1,3 +1,10 @@
+{{/* TODO: Enable this
+{{ if eq (printf "%T" .) "*page.Paginator" }}
+	{{- $pag := . -}}
+{{- else -}}
+	{{- $pag := $.Paginator -}}
+{{- end -}}
+*/}}
 {{ $pag := $.Paginator }}
 {{- $currentPage := $pag.PageNumber -}}
 {{ if gt $pag.TotalPages 1 }}
