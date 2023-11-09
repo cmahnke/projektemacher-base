@@ -32,9 +32,9 @@
 {{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-  {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
+  {{/* {{- warnf "[partials/iiif/iiif-image.html] Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
   {{- if not $name -}}
-    {{- warnf "JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
+    {{- warnf "[partials/iiif/iiif-image.html] JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
   {{- end -}}
   {{- $previewImg = partial "iiif/preview.html" (dict "context" $page "name" $name) -}}
 {{- end -}}
@@ -43,7 +43,7 @@
 {{- else -}}
   {{- $orientation = "landscape" -}}
 {{- end -}}
-{{/* {{- warnf "Set orientation to %s in 'iiif/iiif-image.html'" $orientation -}} */}}
+{{/* {{- warnf "[partials/iiif/iiif-image.html] Set orientation to %s" $orientation -}} */}}
 
 {{- $mapName := replace (replace (replace .context.params.iiif "/" "_") "." "") "-" "_" -}}
 {{/*
@@ -56,7 +56,7 @@
 {{- if or $site.IsServer (not (isset $site.Params "productioniiifurlprefix")) -}}
   {{- $infoJson = printf "/%s" (path.Join $contextPath .context.params.iiif) -}}
   {{- $baseURL = printf "/%s/%s/" $contextPath (path.Dir .context.params.iiif) -}}
-  {{- warnf "Setting IIIF URL locally to %s" $infoJson -}}
+  {{- warnf "[partials/iiif/iiif-image.html] Setting IIIF URL locally to %s" $infoJson -}}
 {{- else -}}
   {{- $infoJson = printf "%s%s" $site.Params.productionIIIFURLPrefix (path.Join $contextPath .context.params.iiif) -}}
   {{- $baseURL = "" -}}

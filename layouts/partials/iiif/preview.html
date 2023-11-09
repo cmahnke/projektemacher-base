@@ -34,9 +34,25 @@
   {{- if ne $src "" -}}
     {{- $frontResource = where $resources "src" $src -}}
   {{- else -}}
-    {{- $frontResource = where $resources "name" $name -}}
+    {{- if (gt (where $resources "name" $name | len) 0) -}}
+      {{- $frontResource = where $resources "name" $name -}}
+    {{- else if (gt (where $resources "name" "preview" | len) 0) -}}
+      {{- $frontResource = where $resources "name" "preview" -}}
+    {{- else -}}
+      {{- warnf "[partials/iiif/preview.html] Can't guess preview resource for %s #%v, this will probably fail" .File.Path $resources -}}
+    {{- end -}}
+  {{- end -}}
+  {{/* TODO this is just a hack for incomplete content files
+  {{- if eq $frontResource "" -}}
+    {{- warnf "[partials/iiif/preview.html] No preview resource found for %s, trying first one" .File.Path -}}
+    {{- $frontResource = (index $resources 0) -}}
+  {{- end -}}
+  */}}
+  {{- if eq (index $frontResource 0) nil -}}
+    {{- errorf "[partials/iiif/preview.html] Can't find preview resource for %s (looking for name '%s' or source '%s')" .File.Path $name $src -}}
   {{- end -}}
   {{- $infoJson := (index $frontResource 0).params.iiif -}}
+  {{- $resName := (index $frontResource 0).name -}}
   {{- $path := path.Dir $infoJson -}}
   {{- if not $infoJson -}}
     {{- errorf "[partials/iiif/preview.html] Error getting info.json path for %s" .File.Path -}}
@@ -45,6 +61,7 @@
   {{- if not (fileExists (path.Join .File.Dir $previewLoc)) -}}
     {{- errorf "[partials/iiif/preview.html] %s referenced in %s doesn't exists!" $previewLoc .File.Path -}}
   {{- end -}}
+  {{- warnf "[partials/iiif/preview.html] Using image %s as previre for %s" $previewLoc .File.Path -}}
   {{- $img = .Resources.GetMatch $previewLoc -}}
 {{ end }}
 {{- return $img -}}

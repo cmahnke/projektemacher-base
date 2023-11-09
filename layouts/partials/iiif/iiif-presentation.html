@@ -29,12 +29,12 @@
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
   {{- if not $name -}}
-    {{- warnf "JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
+    {{- warnf "[partials/iiif/iiif-presentation.html] JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
   {{- end -}}
   {{- $previewImg = partial "iiif/preview.html" (dict "context" $page "name" $name) -}}
 {{- end -}}
 {{- if eq $previewImg nil -}}
-    {{- errorf "Can't find image 'front' for %s in 'iiif/iiif-presentation.html'" $context -}}
+    {{- errorf "[partials/iiif/iiif-presentation.html] Can't find image 'front' for %s" $context -}}
 {{- end -}}
 {{ if lt $previewImg.Width $previewImg.Height }}
     {{- $orientation = "portrait" -}}
