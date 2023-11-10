@@ -34,10 +34,10 @@
     </div>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener("DOMContentLoaded", function() {
             var expire = 30 * 24 * 60 * 60;
-            var overlay = $('#{{ $id | safeJS }}').find('.opt-in');
-            var toggle = $('#{{ $id | safeJS }}').find('.opt-in-switch input');
+            var overlay = document.querySelector('#{{ $id | safeJS }}').querySelector('.opt-in');
+            var toggle = document.querySelector('#{{ $id | safeJS }}').querySelector('.opt-in-switch input');
             addConsent(toggle, overlay, '{{ $cookie }}', '{{ $iframe }}');
         });
     </script>
