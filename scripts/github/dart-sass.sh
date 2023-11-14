@@ -39,4 +39,4 @@ tar -xvf dart-sass-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
 sudo cp -r dart-sass/* $BIN_DIR
 rm -rf dart-sass*;
 
-dart-sass --version
+sass --version
