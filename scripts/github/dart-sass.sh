@@ -27,15 +27,16 @@ case "`uname -m`" in
     ;;
 esac
 
-DARTSASS_URL="https://github.com/sass/dart-sass-embedded/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
+DARTSASS_URL="https://github.com/sass/dart-sass/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
+#DARTSASS_URL="https://github.com/sass/dart-sass-embedded/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
 
 
 echo "Downloading ${DARTSASS_URL}"
 
 curl -LJO "${DARTSASS_URL}"
 
-tar -xvf sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
-sudo mv sass_embedded/dart-sass-embedded $BIN_DIR
-rm -rf sass_embedded*;
+tar -xvf dart-sass-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz
+sudo cp -r dart-sass/* $BIN_DIR
+rm -rf dart-sass*;
 
-dart-sass-embedded --version
+dart-sass --version
