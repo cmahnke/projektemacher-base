@@ -17,6 +17,7 @@
     "scss/dollar-variable-empty-line-before": [null, {"severity": "warning"}],
     "block-no-empty": [null, {"severity": "warning"}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
+    "comment-whitespace-inside": [null, {"severity": "warning"}],
     "color-function-notation": "legacy",
     "alpha-value-notation": "number",
     "selector-class-pattern": [null, {"severity": "warning"}],
