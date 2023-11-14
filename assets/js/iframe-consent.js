@@ -25,16 +25,13 @@ export function addConsent(toggle, overlay, cookie, iframe) {
       console.log('Setting conset cookie for ' + cookie + ' to true, expire: ' + expire);
       setConsent(cookie, true, expire)
       overlay.style.display = 'none';
-      /* TODO: This seems to be wrong
-         overlay.parentNode.insertAdjacentHTML("afterEnd", iframe);
-      */
-      //overlay.parentNode.appendChild(iframe);
-      overlay.parentNode.insertAdjacentHTML("afterEnd", iframe);
+      overlay.parentNode.querySelector('.iframe-content').innerHTML = iframe;
+      Array.from(overlay.parentNode.querySelectorAll('.iframe-content script')).forEach(el => eval(el.innerHTML));
     } else {
       console.log('Setting conset cookie for ' + cookie + ' to false, expire: ' + expire);
       setConsent(cookie, false, expire)
       overlay.style.display = 'block';
-      overlay.nextSibling.remove();
+      Array.from(overlay.parentNode.querySelectorAll('.iframe-content *')).forEach(el => el.remove());
     }
   });
   if (getConsent(cookie)) {
