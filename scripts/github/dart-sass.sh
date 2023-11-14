@@ -27,7 +27,7 @@ case "`uname -m`" in
     ;;
 esac
 
-DARTSASS_URL="https://github.com/sass/dart-sass/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
+DARTSASS_URL="https://github.com/sass/dart-sass/releases/download/${DARTSASS_VERSION}/dart-sass-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
 #DARTSASS_URL="https://github.com/sass/dart-sass-embedded/releases/download/${DARTSASS_VERSION}/sass_embedded-${DARTSASS_VERSION}-${OS}-${ARCH}.tar.gz"
 
 
