@@ -1,4 +1,12 @@
 {{ $pag := $.Paginator }}
+{{/*
+{{ warnf "paginator is of %s" (printf "%T" .) }}
+{{ if eq (printf "%T" .) "*page.Paginator" }}
+	{{- $pag := . -}}
+{{- else -}}
+	{{- $pag := $.Paginator -}}
+{{- end -}}
+*/}}
 {{- $currentPage := $pag.PageNumber -}}
 {{ if gt $pag.TotalPages 1 }}
 <nav class="navigation pagination" role="navigation">
