@@ -38,6 +38,8 @@
       {{- $frontResource = where $resources "name" $name -}}
     {{- else if (gt (where $resources "name" "preview" | len) 0) -}}
       {{- $frontResource = where $resources "name" "preview" -}}
+    {{- else if (gt (where $resources "name" "cover" | len) 0) -}}
+      {{- $frontResource = where $resources "name" "cover" -}}
     {{- else -}}
       {{- warnf "[partials/iiif/preview.html] Can't guess preview resource for %s #%v, this will probably fail" .File.Path $resources -}}
     {{- end -}}
@@ -61,7 +63,7 @@
   {{- if not (fileExists (path.Join .File.Dir $previewLoc)) -}}
     {{- errorf "[partials/iiif/preview.html] %s referenced in %s doesn't exists!" $previewLoc .File.Path -}}
   {{- end -}}
-  {{- warnf "[partials/iiif/preview.html] Using image %s as previre for %s" $previewLoc .File.Path -}}
+  {{- warnf "[partials/iiif/preview.html] Using image %s as preview for %s" $previewLoc .File.Path -}}
   {{- $img = .Resources.GetMatch $previewLoc -}}
 {{ end }}
 {{- return $img -}}

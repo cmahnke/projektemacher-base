@@ -7,7 +7,7 @@ window.addMirador = function(id, uri) {
     // Languages
     var lang = 'en';
     if (document.documentElement.lang !== undefined) {
-        lang = document.documentElement.lang;
+      lang = document.documentElement.lang;
     }
 
     var mirador = Mirador.viewer({
@@ -15,12 +15,12 @@ window.addMirador = function(id, uri) {
         // See https://github.com/ProjectMirador/mirador/blob/master/src/config/settings.js
         language: lang,
         availableLanguages: {
-            de: 'Deutsch',
-            en: 'English',
+          de: 'Deutsch',
+          en: 'English',
         },
         windows: [{
-            "loadedManifest": uri,
-            thumbnailNavigationDisplayed: false
+          "loadedManifest": uri,
+          thumbnailNavigationDisplayed: false
         }],
         window: {
             allowFullscreen: true,
@@ -32,30 +32,30 @@ window.addMirador = function(id, uri) {
             defaultView: 'single',
             hideWindowTitle: true,
             panels: {
-                info: true,
-                attribution: false,
-                canvas: false,
-                annotations: false,
-                search: false
+              info: true,
+              attribution: false,
+              canvas: false,
+              annotations: false,
+              search: false
             },
             views: [{
-                    key: 'single',
-                    behaviors: ['individuals']
+                  key: 'single',
+                  behaviors: ['individuals']
                 },
                 {
-                    key: 'book',
-                    behaviors: ['paged']
+                  key: 'book',
+                  behaviors: ['paged']
                 }
             ]
         },
         workspace: {
-            draggingEnabled: false,
-            allowNewWindows: false,
-            showZoomControls: true,
-            type: 'mosaic'
+          draggingEnabled: false,
+          allowNewWindows: false,
+          showZoomControls: true,
+          type: 'mosaic'
         },
         workspaceControlPanel: {
-            enabled: false,
+          enabled: false,
         }
     });
     return mirador;

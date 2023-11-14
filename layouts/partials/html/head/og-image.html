@@ -20,6 +20,22 @@
     {{- $previewImg = partial "preview/prerendered.html" (dict "context" .) -}}
 {{- end -}}
 
+{{/* TODO: Finish this check */}}
+{{/*
+{{- if eq (printf "%T" $previewImg) "string" -}}
+  {{- $previewImg = .Resources.Get $previewImg -}}
+{{- end -}}
+*/}}
+
+{{- if ne (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
+  {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg .File.Path $previewImg -}}
+{{- end -}}
+{{/*
+{{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+  {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" .File.Path -}}
+{{- end -}}
+*/}}
+
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
     <meta property="og:image" content="{{ $previewImg.Permalink }}" />
     <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
@@ -27,7 +43,7 @@
     <meta property="og:image:height" content="{{ $previewImg.Height }}" />
 {{- else -}}
 {{/*
-    {{- warnf "Can't generate preview for %s in 'head/og-image.html'" .File.Path }}
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
 */}}
     {{ $path := "" }}
     {{ with .File }}
@@ -35,5 +51,5 @@
     {{ else }}
         {{ $path = .Path }}
     {{ end }}
-    {{- warnf "Can't generate preview for %s in 'head/og-image.html'" .File.Path }}
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
 {{- end -}}

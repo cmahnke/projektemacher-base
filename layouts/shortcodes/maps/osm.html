@@ -1,4 +1,5 @@
 {{ $geojson := .Get "src" }}
+{{/* TODO: Remove this if partial works
 {{- $id := md5 $geojson -}}
 {{- $var := printf "_%s" $id -}}
 <div class="map-wrapper">
@@ -12,3 +13,5 @@
     var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm');
     {{ $var | safeJS }}.updateSize();
 </script>
+*/}}
+{{- partial "maps/osm.html" (dict "context" . "geojson" $geojson ) -}}
