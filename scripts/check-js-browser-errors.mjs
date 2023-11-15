@@ -179,7 +179,7 @@ console.log('Wrote preference file to %s', prefFile);
               }
             })
             .on('pageerror', error => {
-              console.log('[pageerror] ' + error.message, request.url());
+              console.log('[pageerror] ' + error.message, localFile);
               process.exit(123);
             })
             .on('requestfailed', request => {
