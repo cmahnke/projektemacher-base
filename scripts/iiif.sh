@@ -62,6 +62,11 @@ if [ -z "$SKIP_IIIF" ] ; then
             CMD_PREFIX=$DOCKER_PREFIX
         fi
 
+        if ! vips dzsave &> /dev/null ; then
+            echo "vips cant generate image pyramids, trying docker"
+            CMD_PREFIX=$DOCKER_PREFIX
+        fi
+
     fi
 
     echo "Processing files"
