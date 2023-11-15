@@ -323,7 +323,7 @@ window.animatedMap = function(element, url, rotation, baseURL, initialZoom, anim
                     }
                 })
                 .catch(function(body) {
-                    console.log('Could not read image info json. ' + body);
+                    console.log(`Could not read image info json from "${url}".` + body);
                 });
         })
         .catch(function() {
