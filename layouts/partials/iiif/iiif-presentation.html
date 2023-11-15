@@ -13,6 +13,8 @@
 {{- end -}}
 */}}
 
+{{- $manifestUrl = replaceRE "^(https?://[^/]*/)/(.*)$" "$1$2" $manifestUrl -}}
+
 {{- $previewImg := (.Resources.ByType "image").GetMatch $name -}}
 {{- if eq $previewImg nil -}}
     {{ warnf "%s" (index .Params.resources 0).src }}
