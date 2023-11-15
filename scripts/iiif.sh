@@ -108,18 +108,18 @@ if [ -z "$SKIP_IIIF" ] ; then
         if [ $IIIF_STATIC_CMD = "vips" ] ; then
             FULLDIR=$TARGET/full/full/0/
             mkdir -p $FULLDIR
-            if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
+            #if [ "$IMAGE_SUFFIX" == "jxl" ] ; then
                 echo "Running Docker for JPEG XL (Prefix '$CMD_PREFIX')"
-                $CMD_PREFIX vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
+                $CMD_PREFIX vips dzsave $IMAGE $TARGET --tile-size=$TILE_SIZE --layout iiif --id "$IIIF_ID"
                 $CMD_PREFIX vips copy $IMAGE $FULLDIR/default.jpg
-            else
-                vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
-                cp $IMAGE $FULLDIR/default.jpg
-            fi
+            #else
+            #    vips dzsave $IMAGE $TARGET -t $TILE_SIZE --layout iiif --id "$IIIF_ID"
+            #    cp $IMAGE $FULLDIR/default.jpg
+            #fi
             if [ -r "$FULLDIR/default.jpg" ] ; then
               echo "Created full image as JPEG at '$FULLDIR/default.jpg'"
             else
-              echo "Full reolution JPEG not found at '$FULLDIR/default.jpg'!"
+              echo "Full resolution JPEG not found at '$FULLDIR/default.jpg'!"
             fi
         elif [ $IIIF_STATIC_CMD = "iiif_static.py" ] ; then
             iiif_static.py -d $TARGET -i "$IIIF_ID" -t $TILE_SIZE $IMAGE
