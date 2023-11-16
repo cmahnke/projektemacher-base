@@ -9,6 +9,7 @@ rm -rf static/images/favicon*
 find content/ -name ogPreview*.svg | xargs rm
 find content/ -name ogPreview*.png | xargs rm
 find content/ -name ogPreview*.jpg | xargs rm
+find content/ -name vips-properties.xml | xargs rm
 
 rm -rf node_modules
 
