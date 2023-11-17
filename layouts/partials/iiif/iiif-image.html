@@ -1,6 +1,8 @@
 {{- $contextPath := .contextPath -}}
 {{- $pageURL := .pageURL -}}
 {{- $page := .pageContext }}
+{{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
+
 {{/* TODO: Remove this */}}
 {{- $site := .site }}
 {{- if eq $site nil -}}
@@ -52,6 +54,7 @@
 */}}
 {{- $infoJson := "" -}}
 {{- $baseURL := "" -}}
+{{ $downloadURL := printf "%s" .context.src }}
 
 {{- if or $site.IsServer (not (isset $site.Params "productioniiifurlprefix")) -}}
   {{- $infoJson = printf "/%s" (path.Join $contextPath .context.params.iiif) -}}
@@ -59,6 +62,7 @@
   {{- warnf "[partials/iiif/iiif-image.html] Setting IIIF URL locally to %s" $infoJson -}}
 {{- else -}}
   {{- $infoJson = printf "%s%s" $site.Params.productionIIIFURLPrefix (path.Join $contextPath .context.params.iiif) -}}
+  {{- $downloadURL = printf "%s%s" $site.Params.productionIIIFURLPrefix (path.Join $contextPath (path.Dir .context.params.iiif) $fullResImgSuffix) -}}
   {{- $baseURL = "" -}}
 {{- end -}}
 
@@ -96,7 +100,7 @@
         {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
     </script>
     <div class="share">
-        {{ $downloadURL := printf "%s" .context.src }}
+
         <a href="{{ $downloadURL }}" class="image-download">{{ i18n "fullResolution" }}</a> |
         <a href="{{ $infoJson }}" class="iiif-link"><span class="iiif-iiif">{{ i18n "iiif" }}</span> <span class="iiif-manifest">{{ i18n "manifest" }}</span></a> |
         <a href="{{ $pageURL }}#{{ $mapName }}" class="image-link">{{ i18n "imageLink" }}</a>
