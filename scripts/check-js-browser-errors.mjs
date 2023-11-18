@@ -142,7 +142,7 @@ console.log('Wrote preference file to %s', prefFile);
         });
 
     for (var i in tests) {
-        var localFile;
+        var localFile, fragment;
         if (typeof tests[i] === 'object' && tests[i] !== null && tests[i].hasOwnProperty('url')) {
             localFile = tests[i]['url'];
         } else {
@@ -153,6 +153,9 @@ console.log('Wrote preference file to %s', prefFile);
         }
         localFile = localFile.replace(baseURL, '/')
         localFile = localFile.split("?")[0].split("#")[0]
+        if (localFile.split("?")[0].split("#")[1] !== undefined) {
+          fragment = localFile.split("?")[0].split("#")[1]
+        }
         if (localFile.startsWith('/')) {
             localFile = localFile.substring(1);
         }
@@ -196,6 +199,9 @@ console.log('Wrote preference file to %s', prefFile);
             });
 
         var checkURL = baseURL + localFile;
+        if (fragment !== undefined && fragment != "") {
+          checkURL = checkURL + '#' + fragment;
+        }
         console.log('-> Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
 
