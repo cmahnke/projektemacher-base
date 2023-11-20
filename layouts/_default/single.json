@@ -2,13 +2,21 @@
 {{/*
 {{- $imageIdSuffix := "/full/full/0/default.jpg" -}}
 */}}
+
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
 {{- $imageIdSuffix := "" -}}
 {{ if eq .Sites.First.Language.Lang .Page.Lang }}
 {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
 {
     {{- $contextPath := path.Dir .File.Path -}}
     {{- $urlBase := "" -}}
-    {{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+    {{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
         {{- $urlBase = printf "%s/" (substr .Permalink 0 (sub (len .Permalink) 1)) -}}
     {{- else -}}
         {{- $localPath := (substr .RelPermalink 1 (sub (len .RelPermalink) 1)) -}}

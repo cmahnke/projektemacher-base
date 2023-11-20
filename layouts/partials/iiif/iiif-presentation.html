@@ -3,8 +3,16 @@
 {{- $manifestUrl := "" -}}
 {{- $name := "front" -}}
 {{- $page := . -}}
+
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
 {{/*
-{{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+{{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
 */}}
     {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" .Params.iiifManifest) -}}
 {{/*

@@ -1,5 +1,12 @@
 {{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" -}}
 
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
 {{- $includes := "" -}}
 {{- if .includes -}}
     {{- $includes = union $buildinIncludes .includes -}}
@@ -47,7 +54,7 @@
 {{- $fileName = md5 $fileName -}}
 
 {{- $style := "" -}}
-{{- if not .Site.IsServer -}}
+{{- if not $isServer -}}
     {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
 {{- else -}}
     {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}

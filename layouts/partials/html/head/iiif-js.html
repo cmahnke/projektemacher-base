@@ -1,6 +1,13 @@
 {{- $prefix := "" -}}
 {{- $name := "" -}}
 {{- $context := "" -}}
+{{- $isServer := false -}}
+
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
 
 {{- if in . "context" -}}
     {{- if .context -}}
@@ -22,7 +29,7 @@
 
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
 
-{{- if .Site.IsServer -}}
+{{- if $isServer -}}
     {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
 {{- end -}}
 

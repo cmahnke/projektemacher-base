@@ -1,6 +1,13 @@
 {{- $iiif := newScratch -}}
 {{- $contextPath := path.Dir .File.Path -}}
 
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
 {{- range .Params.resources -}}
     {{- if .params.featured -}}
         {{- $imgLocation := path.Join $contextPath .src -}}
@@ -36,7 +43,7 @@
 {{- end -}}
 
 {{- $infoJson := "" -}}
-{{- if or .Site.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+{{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
     {{- $infoJson = printf "/%s" (path.Join $contextPath ($iiif.Get "manifest")) -}}
 {{- else -}}
     {{- $infoJson = printf "%s%s" .Site.Params.productionIIIFURLPrefix (path.Join $contextPath ($iiif.Get "manifest")) -}}

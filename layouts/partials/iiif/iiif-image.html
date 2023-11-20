@@ -11,6 +11,13 @@
 {{- if eq $site nil -}}
     {{- errorf "Site is %#v (nil)" $site -}}
 {{- end -}}
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = $site.IsServer -}}
+{{- end -}}
+
 {{- $imgLocation := path.Join $contextPath .context.src -}}
 {{- $class := "" -}}
 {{- $orientation := "" -}}
@@ -56,7 +63,7 @@
 {{- $baseURL := "" -}}
 {{ $downloadURL := printf "%s" .context.src }}
 
-{{- if or $site.IsServer (not (isset $site.Params "productioniiifurlprefix")) -}}
+{{- if or $isServer (not (isset $site.Params "productioniiifurlprefix")) -}}
   {{- $infoJson = printf "/%s" (path.Join $contextPath .context.params.iiif) -}}
   {{- $baseURL = printf "/%s/%s/" $contextPath (path.Dir .context.params.iiif) -}}
   {{- warnf "[partials/iiif/iiif-image.html] Setting IIIF URL locally to %s" $infoJson -}}

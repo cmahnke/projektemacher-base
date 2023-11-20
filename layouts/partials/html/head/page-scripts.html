@@ -1,7 +1,15 @@
 {{/* Merge this into script.html */}}
+
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
 {{- if .Params.js -}}
     {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
-    {{- if .Site.IsServer -}}
+    {{- if $isServer -}}
         {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
     {{- end -}}
     {{- $fileName := "" -}}
@@ -14,7 +22,7 @@
         {{- $fileName = printf "%s%s" $fileName $script -}}
     {{- end -}}
 
-    {{- if not $.Site.IsServer -}}
+    {{- if not $isServer -}}
         {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | minify | fingerprint -}}
     {{- else -}}
         {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}

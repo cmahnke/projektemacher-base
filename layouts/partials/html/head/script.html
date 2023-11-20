@@ -1,6 +1,13 @@
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
 
-{{- if .Site.IsServer -}}
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
+{{- if $isServer -}}
     {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
 {{- end -}}
 
@@ -60,7 +67,7 @@
 {{- $fileName = md5 $fileName -}}
 
 {{- $mainJs := "" -}}
-{{- if not .Site.IsServer -}}
+{{- if not $isServer -}}
     {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | minify | fingerprint -}}
 {{- else -}}
     {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | fingerprint -}}
