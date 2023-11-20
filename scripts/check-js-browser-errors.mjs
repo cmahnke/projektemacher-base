@@ -153,8 +153,9 @@ console.log('Wrote preference file to %s', prefFile);
         }
         localFile = localFile.replace(baseURL, '/')
         localFile = localFile.split("?")[0].split("#")[0]
-        if (localFile.split("?")[0].split("#")[1] !== undefined) {
-          fragment = localFile.split("?")[0].split("#")[1]
+        if (localFile.split("#")[1] !== undefined) {
+          fragment = localFile.split("#")[1]
+          console.log(`Check for document fragment '${fragment}' requested`);
         }
         if (localFile.startsWith('/')) {
             localFile = localFile.substring(1);
