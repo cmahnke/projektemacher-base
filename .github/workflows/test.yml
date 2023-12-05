@@ -130,7 +130,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.114.1', '0.115.4', '0.118.2', '0.119.0', '0.120.4', 'latest']
+        version: ['0.114.1', '0.115.4', '0.118.2', '0.119.0', '0.120.4', '0.121.0', 'latest']
         can-fail: [false]
         include:
           - version: 0.114.1
@@ -142,6 +142,8 @@ jobs:
           - version: 0.119.0
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.120.4
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.121.0
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates'
