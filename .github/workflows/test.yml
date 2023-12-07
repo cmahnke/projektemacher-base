@@ -59,7 +59,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -111,7 +111,7 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - uses: actions/setup-go@v4
@@ -162,7 +162,7 @@ jobs:
           ./scripts/github/dart-sass.sh
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
