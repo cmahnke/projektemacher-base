@@ -46,7 +46,7 @@
   "stylelint-config-standard-scss": "^11.0.0",
   "stylelint-no-unsupported-browser-features": "^7.0.0",
   "stylelint-prettier": "^5.0.0",
-  "stylelint-scss": "^5.0.0",
+  "stylelint-scss": "^6.0.0",
   "svgo": "^3.0.2",
   "toml": "^3.0.0"
  },
