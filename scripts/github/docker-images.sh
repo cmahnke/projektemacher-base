@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "Installing Docker"
+sudo apt install docker
+
 # Format ["TAG"]="GLOBAL NAME"
 declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"]="ghcr.io/cmahnke/iiif-action:latest-jxl-uploader" )
 
