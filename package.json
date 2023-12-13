@@ -54,7 +54,7 @@
     "string-width": "^6.1.0"
  },
  "scripts": {
-  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.json 'docs/css/*.css'",
+  "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.yaml 'docs/css/*.css'",
   "lint-scss": "stylelint 'assets/scss/*'",
   "lint-js": "eslint 'assets/js/*'",
   "lint-toml": "eslint --ext .toml i18n",
