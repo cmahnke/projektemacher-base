@@ -33,7 +33,7 @@ SITE_FONTS=static/fonts/
 
 echo "Installing Fonts to $BASE"
 
-( cd $BASE && npm --no-audit install )
+( cd $BASE && npm --no-audit install --omit=dev )
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
