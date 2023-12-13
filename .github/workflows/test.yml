@@ -108,8 +108,9 @@ jobs:
 
       - name: Lint fonts
         run: |
-          cd node_modules
+          cd fonts
           npm --no-audit install
+          cd ..
           ln -s fonts/node_modules ./node_modules
           yarn run stylelint --config .stylelintrc-postbuild.yaml 'assets/css/*'
 
