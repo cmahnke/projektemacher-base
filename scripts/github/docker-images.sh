@@ -18,3 +18,11 @@ do
         docker pull "${DOCKER_IMAGES[$IMAGE]}"
     fi
 done
+
+echo "The following images are installed:"
+docker images
+ERR=$?
+if [ $ERR -ne 0 ] ; then
+  echo "Error $ERR running Docker"
+  exit $ERR
+fi
