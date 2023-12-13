@@ -90,6 +90,26 @@ jobs:
         run: |
           ./scripts/fonts.sh
 
+  lint_fonts:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install fonts
+        run: |
+          ./scripts/fonts.sh
+
+      - name: Lint fonts
+        run: |
+          yarn run stylelint --config .stylelintrc-postbuild.yaml 'assets/css/*'
+
   test_inkscape_install:
     runs-on: ubuntu-22.04
     steps:

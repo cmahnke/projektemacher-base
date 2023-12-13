@@ -1,0 +1,90 @@
+extends:
+  - stylelint-config-standard
+  - stylelint-config-recommended-scss
+#  - stylelint-no-unsupported-browser-features
+  - stylelint-prettier/recommended
+plugins:
+  - stylelint-scss
+#  - stylelint-order
+rules:
+  font-family-name-quotes: always-where-recommended
+  selector-attribute-quotes: always
+  property-no-unknown:
+    - true
+    - ignoreProperties:
+        - contain
+  no-empty-source:
+    - null
+    - severity: warning
+  media-feature-range-notation:
+    - null
+    - severity: warning
+  declaration-block-no-redundant-longhand-properties:
+    - null
+    - severity: warning
+  at-rule-no-unknown:
+    - null
+  scss/at-rule-no-unknown:
+    - true
+  scss/dollar-variable-empty-line-before:
+    - null
+    - severity: warning
+  block-no-empty:
+    - null
+    - severity: warning
+  comment-empty-line-before:
+    - null
+    - severity: warning
+  comment-whitespace-inside:
+    - null
+    - severity: warning
+  color-function-notation:
+    - legacy
+  alpha-value-notation:
+    - number
+  selector-class-pattern:
+    - null
+    - severity: warning
+  value-keyword-case:
+    - lower
+    - ignoreProperties:
+      - font-family
+  import-notation:
+    - null
+    - severity: warning
+  annotation-no-unknown:
+    - null
+    - severity: warning
+  scss/no-global-function-names:
+    - null
+    - severity: warning
+  function-no-unknown:
+    - true
+    - ignoreFunctions:
+      - lighten
+      - darken
+#  plugin/no-unsupported-browser-features:
+#    - true
+#    - browsers:
+#      - "> 0.5%"
+#      - "last 2 versions"
+#      - "Firefox ESR"
+#      - "not dead"
+#      - "not op_mini all"
+#    - ignore:
+#      - rem
+#    - ignorePartialSupport: true
+#    - severity: warning
+# Replaced by prettier
+#  indentation:
+#    - 4
+#    - baseIndentLevel: 1
+#  number-leading-zero:
+#    - always
+#    - severity: warning
+#  max-empty-lines:
+#    - 1
+#    - severity: warning
+#  max-line-length:
+#    - null
+#    - severity: warning

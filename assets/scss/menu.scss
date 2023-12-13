@@ -109,7 +109,9 @@ $burger-menu-secondary: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org
             width: auto;
             border-top: solid 2px $font-color-body;
             border-bottom: solid 2px $font-color-body;
-            transition: opacity 0.25s, max-height 0.15s linear;
+            transition:
+                opacity 0.25s,
+                max-height 0.15s linear;
             height: auto;
         }
 
@@ -206,15 +208,12 @@ $burger-menu-secondary: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org
         width: 2.4em;
 
         @media (max-width: 45em) {
-
         }
 
         @media (max-width: 30em) {
-
         }
 
         @media (max-width: 20em) {
-
         }
     }
 

@@ -17,7 +17,12 @@
         font-weight: 300;
         position: absolute;
         top: -1em;
-        text-shadow: 0 0 0.4em white, 0 0 0.4em white, 0 0 0.4em white, 0 0 0.4em white, 0 0 0.5em white;
+        text-shadow:
+            0 0 0.4em white,
+            0 0 0.4em white,
+            0 0 0.4em white,
+            0 0 0.4em white,
+            0 0 0.5em white;
     }
 
     .preview-text-container {
@@ -30,7 +35,7 @@
         position: relative;
 
         img {
-            box-shadow: 0 10px 15px rgba(0, 0, 0, .4);
+            box-shadow: 0 10px 15px 0 rgba(0, 0, 0, 0.4);
             width: 300px;
             max-width: 85%;
         }
@@ -102,8 +107,6 @@
         margin-bottom: 1.5rem;
         height: auto;
     }
-
-
 
     .preview-title {
         font-size: larger;
