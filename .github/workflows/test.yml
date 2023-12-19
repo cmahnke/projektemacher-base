@@ -19,7 +19,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: '.nvmrc'
 
@@ -54,7 +54,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: '.nvmrc'
 
@@ -82,7 +82,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: '.nvmrc'
 
@@ -98,7 +98,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: '.nvmrc'
 
