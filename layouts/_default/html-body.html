@@ -1,6 +1,11 @@
 {{- partial "header.html" . -}}
 
-<div class="container include">
+{{- $classes := "container include" -}}
+{{- if and .Section (ne .Section "") -}}
+  {{- $classes = printf "%s %s" $classes .Section -}}
+{{- end -}}
+
+<div class="{{ $classes }}">
     <main role="main" class="article include">
         <button id="fullscreen-button" type="button" class="fullscreen-button">
             <i class="fullscreen-icon"></i>
