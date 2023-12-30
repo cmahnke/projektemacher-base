@@ -17,7 +17,12 @@
     {{- $mainJs := slice -}}
     {{ range $script := .Params.js }}
         {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
-        {{- $main := resources.Get $script | js.Build $mainOpts -}}
+        {{- $main := "" -}}
+        {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
+          {{- $main = resources.Get $script | js.Build $mainOpts -}}
+        {{- else -}}
+          {{- $main = resources.GetRemote $script | js.Build $mainOpts -}}
+        {{- end -}}
         {{- $mainJs = $mainJs | append $main -}}
         {{- $fileName = printf "%s%s" $fileName $script -}}
     {{- end -}}
