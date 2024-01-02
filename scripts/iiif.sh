@@ -58,7 +58,7 @@ if [ -z "$SKIP_IIIF" ] ; then
         fi
 
         if ! vips jxlsave &> /dev/null ; then
-            echo "vips cant read JPEG XL files, trying docker"
+            echo "vips can't read JPEG XL files, trying docker"
             CMD_PREFIX=$DOCKER_PREFIX
         fi
 
