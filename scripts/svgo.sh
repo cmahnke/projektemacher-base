@@ -11,7 +11,7 @@ if [ -z "`which jq`" ] ; then
   exit 2
 fi
 
-if [ `jq -e '.scripts.svgo' package.json` ] ; then
+if jq -e '.scripts.svgo' package.json ; then
   echo "Error: svgo command gets overwritten in package.json"
   exit 1
 fi
