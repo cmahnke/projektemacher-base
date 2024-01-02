@@ -4,6 +4,16 @@ if [ -z "$IMAGES" ] ; then
   IMAGES=$(find content -name '*.svg')
 fi
 
+if [ -z "`which jq`" ] ; then
+  echo "jq is needed for sanity check"
+  exit 2
+fi
+
+if [ -n "`jq -r '.scripts.svgo' package.json`" ] ; then
+  echo "Error: svgo command gets overwritten in package.json"
+  exit 1
+fi
+
 IFS=$(echo -en "\n\b")
 for IMAGE in $IMAGES
 do
