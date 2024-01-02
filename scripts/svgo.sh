@@ -14,6 +14,11 @@ if [ -n "`jq -r '.scripts.svgo' package.json`" ] ; then
   exit 1
 fi
 
+if [ -n "$1" ] ; then
+  $OUTDIR="$1"
+  echo "Using $OUTDIR as output directory"
+fi
+
 IFS=$(echo -en "\n\b")
 for IMAGE in $IMAGES
 do
@@ -22,7 +27,11 @@ do
 
     echo "Processing '$IMAGE'..."
     yarn run svgo --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
-    rm "$IMAGE"
+    if [ -z "$OUTDIR" ] ; then
+      rm "$IMAGE"
+    else
+      IMAGE="$OUTDIR/$IMAGE_PREFIX.svg"
+    fi
     mv "$TMP_FILE" "$IMAGE"
 
 done
