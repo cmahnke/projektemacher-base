@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -z "$IMAGES" ] ; 
+if [ -z "$IMAGES" ] ; then
   IMAGES=$(find content -name '*.svg')
 fi
 
