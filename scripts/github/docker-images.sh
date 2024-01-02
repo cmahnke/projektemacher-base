@@ -4,7 +4,8 @@ echo "Installing Docker"
 sudo apt install docker
 
 # Format ["TAG"]="GLOBAL NAME"
-declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"]="ghcr.io/cmahnke/iiif-action:latest-jxl-uploader" )
+declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"]="ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"
+                           ["ghcr.io/cmahnke/font-action:latest"]="ghcr.io/cmahnke/font-action:latest" )
 
 
 for IMAGE in "${!DOCKER_IMAGES[@]}"
