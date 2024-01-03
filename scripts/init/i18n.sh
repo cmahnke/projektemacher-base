@@ -35,6 +35,7 @@ do
   if [ -r "$LANG_DIR/$LANG.toml" ] ; then
     echo "'$LANG.toml' already exists, skipping"
   else
+    echo "Merging: "`ls $LANG_DIR/*.$LANG.toml`" into $LANG_DIR/$LANG.toml"
     cat $LANG_DIR/*.$LANG.toml >> $LANG_DIR/$LANG.toml
     echo "Deleting "`ls $LANG_DIR/*.$LANG.toml`
     rm $LANG_DIR/*.$LANG.toml
