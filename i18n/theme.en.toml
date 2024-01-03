@@ -82,6 +82,10 @@ other = "Allow external content"
 [allTags]
 other = "View all posts tagged"
 
+# Terms
+[allEntries]
+other = "All entries for"
+
 # Feature status
 [thisFeature]
 other = "This feature"

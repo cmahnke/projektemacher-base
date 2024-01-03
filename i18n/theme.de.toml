@@ -82,6 +82,10 @@ other = "Externe Inhalte zulassen"
 [allTags]
 other = "Alle Beiträge mit dem Tag"
 
+# Terms
+[allEntries]
+other = "Alle Einträge für"
+
 # Feature status
 [thisFeature]
 other = "Diese Funktionalität ist"
