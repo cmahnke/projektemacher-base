@@ -1,0 +1,103 @@
+{{/* This file builds a cache of the used shortcodes and the required SCSS, CSS and JS Files. */}}
+{{- $includes := dict -}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $shortcodes := slice -}}
+{{/* Get all pages and extract used shortcodes with a regular expression */}}
+{{- range $page := $.Site.Pages -}}
+  {{- with $page.File -}}
+    {{- $matches := findRESubmatch `{{[<%]\s*([^\s]*)\b.*\s*[%>]}}` $page.RawContent -}}
+    {{- $matches = (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+    {{- if $matches -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes %s in %s" $matches .Filename -}}
+      {{- end -}}
+      {{- $shortcodes = $shortcodes | append $matches -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{/* Remove any duplicates */}}
+{{- $shortcodes = $shortcodes | uniq -}}
+{{- if $debug -}}
+  {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes %s" $shortcodes -}}
+{{- end -}}
+
+{{- $candidates := slice -}}
+{{- range $shortcode := $shortcodes -}}
+  {{/* Find definition of each found shortcode, this way we can make sure to include the ondes defined by any theme */}}
+  {{- $shortcodeFile := printf "layouts/shortcodes/%s.html" $shortcode -}}
+  {{- if fileExists $shortcodeFile -}}
+    {{- $shortcodeContent := readFile $shortcodeFile -}}
+    {{/* Get the inline partial returning the required metadata for the shortcode */}}
+    {{- $matches := findRESubmatch `{{-?\s*define\s*"(.*-metadata.*)"\s*-?}}` $shortcodeContent -}}
+    {{- $template := (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+    {{- if (len $template) -}}
+      {{- $template = index $template 0 -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Trying to load metadata partial for shortcode %s" $template -}}
+      {{- end -}}
+      {{- $include := unmarshal (partialCached $template .) -}}
+      {{/* Since this template should only be called once, we should do some sanity checks here. */}}
+      {{- if isset $include "js" -}}
+        {{- if eq (printf "%T" (index $include "js")) "string" -}}
+          {{- $include = merge $include (dict "js" (slice (index $include "js"))) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $include = merge $include (dict "js" slice) -}}
+      {{- end -}}
+      {{- if isset $include "scss" -}}
+        {{- if eq (printf "%T" (index $include "scss")) "string" -}}
+          {{- $include = merge $include (dict "scss" (slice (index $include "scss"))) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $include = merge $include (dict "scss" slice) -}}
+      {{- end -}}
+      {{- if isset $include "css" -}}
+        {{- if eq (printf "%T" (index $include "css")) "string" -}}
+          {{- $include = merge $include (dict "css" (slice (index $include "css"))) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $include = merge $include (dict "css" slice) -}}
+      {{- end -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Loaded metadata partial for shortcode %s, contents %#v" $template $include -}}
+      {{- end -}}
+      {{- $includes = merge $includes (dict $shortcode $include) -}}
+    {{- else -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Shortcode file %s doesn't contain metadata" $shortcodeFile -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- if $debug -}}
+      {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Couldn't load shortcode %s" $shortcodeFile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $debug -}}
+  {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Returning shortcode metadata cache %#v" $includes -}}
+{{- end -}}
+{{/* Return a JSON containing all shortcodes and their required includes */}}
+{{- $includes | jsonify }}
+
+{{- define "partials/shortcodes/shortcode-helper-extract-matches.html" -}}
+  {{- $matches := .matches -}}
+  {{- $rMatches := slice -}}
+  {{- range $matches -}}
+    {{- $rMatches = $rMatches | append (index . 1) -}}
+  {{- end -}}
+  {{- return $rMatches -}}
+{{- end -}}
+
+{{/*
+{{- define "partials/shortcodes/shortcode-helper-find.html" -}}
+  {{- $pattern := .pattern -}}
+  {{- $input := .input -}}
+  {{- $limit := 0 -}}
+  {{- if isset . "limit" -}}
+    {{- $limit := .limit -}}
+  {{- end -}}
+  {{- $matches := findRESubmatch $pattern $input $limit -}}
+  {{- return (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+{{- end -}}
+*/}}

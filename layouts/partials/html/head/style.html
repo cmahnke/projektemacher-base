@@ -1,5 +1,21 @@
 {{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" -}}
 
+{{- $context := "" -}}
+{{- if isset . "context" -}}
+  {{- $context = .context -}}
+{{- end -}}
+
+{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+
+{{- $css := slice -}}
+{{- if isset . "css" -}}
+  {{- if reflect.IsSlice .css -}}
+      {{- $css = .css -}}
+  {{- else -}}
+      {{- $css = slice .css -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $isServer := false -}}
 {{- if gt hugo.Version "0.120.0" -}}
   {{- $isServer = hugo.IsServer -}}
@@ -7,7 +23,11 @@
   {{- $isServer = .Site.IsServer -}}
 {{- end -}}
 
-{{- $includes := "" -}}
+{{- $includes := partial "partials/html/head/page-styles.html" $context -}}
+
+{{- if and $debug (len $includes) -}}
+  {{- warnf "[partials/html/head/style.html] Include page specific styles %#v for %s" $includes $context.File.Path  -}}
+{{- end -}}
 {{- if .includes -}}
     {{- $includes = union $buildinIncludes .includes -}}
 {{- else -}}
@@ -18,27 +38,20 @@
 {{- $scssTemplate := resources.Get "scss/base.scss" -}}
 {{- $scssStyle := $scssTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
 
-{{- $css := slice -}}
 {{- $cssResources := slice -}}
-{{- if .css -}}
-    {{- if reflect.IsSlice .css -}}
-        {{- $css = .css -}}
+
+{{- range $file := $css -}}
+  {{- if eq (printf "%T" $file) "string" -}}
+    {{- if ne (resources.Get $file) nil -}}
+      {{- $cssResources = $cssResources | append (resources.Get $file) -}}
     {{- else -}}
-        {{- $css = slice .css -}}
+      {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
     {{- end -}}
-    {{- range $file := $css -}}
-        {{- if eq (printf "%T" $file) "string" -}}
-            {{- if ne (resources.Get $file) nil -}}
-                {{- $cssResources = $cssResources | append (resources.Get $file) -}}
-            {{- else -}}
-                {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
-            {{- end -}}
-        {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
-            {{ $cssResources = $cssResources | append $file -}}
-        {{- else -}}
-            {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
-        {{- end -}}
-    {{- end -}}
+  {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
+    {{ $cssResources = $cssResources | append $file -}}
+  {{- else -}}
+    {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
+  {{- end -}}
 {{- end -}}
 
 {{- if gt (len $cssResources) 0  -}}

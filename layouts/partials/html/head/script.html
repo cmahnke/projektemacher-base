@@ -8,7 +8,7 @@
 {{- end -}}
 
 {{- if $isServer -}}
-    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+  {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
 {{- end -}}
 
 {{- $externals := slice "domain" -}}
