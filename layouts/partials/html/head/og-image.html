@@ -2,15 +2,17 @@
     Pinterest sizes: https://louisem.com/228434/pinterest-pin-size
     Open Graph sizees: https://iamturns.com/open-graph-image-size/
     */}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+
 {{- $ogHeight := 630 -}}
 {{- $ogWidth := 1200 -}}
 {{- if isset $.Site.Params "preview" -}}
-    {{- if $.Site.Params.preview.size.height -}}
-        {{- $ogHeight = $.Site.Params.preview.size.height -}}
-    {{- end -}}
-    {{- if $.Site.Params.preview.size.width -}}
-        {{- $ogWidth = $.Site.Params.preview.size.width -}}
-    {{- end -}}
+  {{- if $.Site.Params.preview.size.height -}}
+    {{- $ogHeight = $.Site.Params.preview.size.height -}}
+  {{- end -}}
+  {{- if $.Site.Params.preview.size.width -}}
+    {{- $ogWidth = $.Site.Params.preview.size.width -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $previewImg := "" -}}
@@ -28,28 +30,34 @@
 */}}
 
 {{- if ne (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
-  {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg .File.Path $previewImg -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg .File.Path $previewImg -}}
+  {{- end -}}
 {{- end -}}
 {{/*
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-  {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" .File.Path -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" .File.Path -}}
+  {{- end -}}
 {{- end -}}
 */}}
 
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
-    <meta property="og:image" content="{{ $previewImg.Permalink }}" />
-    <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
-    <meta property="og:image:width" content="{{ $previewImg.Width }}" />
-    <meta property="og:image:height" content="{{ $previewImg.Height }}" />
+  <meta property="og:image" content="{{ $previewImg.Permalink }}" />
+  <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
+  <meta property="og:image:width" content="{{ $previewImg.Width }}" />
+  <meta property="og:image:height" content="{{ $previewImg.Height }}" />
 {{- else -}}
 {{/*
     {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
 */}}
-    {{ $path := "" }}
-    {{ with .File }}
-        {{ $path = .Path }}
-    {{ else }}
-        {{ $path = .Path }}
-    {{ end }}
+  {{ $path := "" }}
+  {{ with .File }}
+    {{ $path = .Path }}
+  {{ else }}
+    {{ $path = .Path }}
+  {{ end }}
+  {{- if $debug -}}
     {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
+  {{- end -}}
 {{- end -}}

@@ -1,4 +1,5 @@
-{{/* Merge this into script.html */}}
+{{/* TODO: Merge this into script.html */}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 
 {{- $isServer := false -}}
 {{- if gt hugo.Version "0.120.0" -}}
@@ -6,31 +7,54 @@
 {{- else -}}
   {{- $isServer = .Site.IsServer -}}
 {{- end -}}
+{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" .)) "js" -}}
 
-{{- if .Params.js -}}
-    {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
-    {{- if $isServer -}}
-        {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+{{- if and $debug (len $includes) -}}
+  {{- warnf "[partials/html/head/page-scripts.html] Got JS script(s) %#v for %s" $includes .File.Dir -}}
+{{- end -}}
+
+{{- $scripts := .Params.js -}}
+
+{{- if and $scripts (not (reflect.IsSlice $scripts)) -}}
+  {{- $scripts = slice $scripts -}}
+{{- end -}}
+
+{{- if (len $includes) -}}
+  {{- $scripts = union $scripts $includes -}}
+{{- end -}}
+
+{{- if and $debug (ne $scripts nil) (len $scripts) -}}
+  {{- warnf "[partials/html/head/page-scripts.html] All collected JS script(d) %#v for %s" $scripts .File.Dir -}}
+{{- end -}}
+
+{{- if $scripts -}}
+  {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+  {{- if $isServer -}}
+      {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
+  {{- end -}}
+  {{- $fileName := "" -}}
+
+  {{- $mainJs := slice -}}
+
+  {{ range $script := $scripts }}
+    {{- if $debug -}}
+      {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
-    {{- $fileName := "" -}}
-
-    {{- $mainJs := slice -}}
-    {{ range $script := .Params.js }}
-        {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
-        {{- $main := "" -}}
-        {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
-          {{- $main = resources.Get $script | js.Build $mainOpts -}}
-        {{- else -}}
-          {{- $main = resources.GetRemote $script | js.Build $mainOpts -}}
-        {{- end -}}
-        {{- $mainJs = $mainJs | append $main -}}
-        {{- $fileName = printf "%s%s" $fileName $script -}}
-    {{- end -}}
-
-    {{- if not $isServer -}}
-        {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | minify | fingerprint -}}
+    {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
+    {{- $main := "" -}}
+    {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
+      {{- $main = resources.Get $script | js.Build $mainOpts -}}
     {{- else -}}
-        {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
+      {{- $main = resources.GetRemote $script | js.Build $mainOpts -}}
     {{- end -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+    {{- $mainJs = $mainJs | append $main -}}
+    {{- $fileName = printf "%s%s" $fileName $script -}}
+  {{- end -}}
+
+  {{- if not $isServer -}}
+      {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | minify | fingerprint -}}
+  {{- else -}}
+      {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
+  {{- end -}}
+  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
 {{- end -}}

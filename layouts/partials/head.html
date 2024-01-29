@@ -1,3 +1,5 @@
+{{- wanrf "[partials/head.html] Warning: using this template make it impossible to use page specific scripts and styles!" -}}
+
 <meta charset="utf-8">
 
 {{ with .Title }} <title>{{ . }} {{if $.IsHome}}- {{ $.Site.Params.slogan | default "" | safeHTML }}{{ end }}</title>

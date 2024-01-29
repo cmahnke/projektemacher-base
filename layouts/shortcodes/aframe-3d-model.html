@@ -1,0 +1,25 @@
+{{- $src := .Get "src" -}}
+{{- $class := .Get "class" -}}
+{{- $style := .Get "style" -}}
+{{- $id := printf "_gtlf-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+
+{{- if eq $class "" -}}
+  {{- $class = "aframe-3d-model" -}}
+{{- end -}}
+
+<div class="{{ $class }}" id="{{ $id }}" style="{{ $style | safeCSS }}">
+  <a-scene renderer="colorManagement: true;" xr-mode-ui="enabled: true" embedded>
+    <a-assets>
+      <a-asset-item id="{{ printf "%s-src" $id }}" src="{{ $src }}"></a-asset-item>
+    </a-assets>
+
+    <a-entity camera look-controls="enabled: false" orbit-controls="autoRotate: true; enableDamping: true; dampingFactor: 0.05; rotateSpeed:0.15; minDistance: 2; maxPolarAngle: 90; initialPosition: 0 0.5 4; maxDistance:8;"  mouse-cursor=""></a-entity>
+    <a-entity gltf-model="#{{ printf "%s-src" $id }}" rotation="0 90 0"></a-entity>
+    <!--<a-sky color="#000000"></a-sky>-->
+
+  </a-scene>
+</div>
+
+{{- define "partials/shortcodes/aframe-3d-model-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "https://aframe.io/releases/1.5.0/aframe.min.js" "https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js" "https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js") "scss" (slice "scss/3d/3d-model.scss")) | jsonify -}}
+{{- end -}}

@@ -1,0 +1,6 @@
+{{- $debug := false -}}
+{{- if $.Site.Params.debug -}}
+  {{- $debug = $.Site.Params.debug -}}
+  {{- warnf "[partials/functions/debug/enabled.html] Debug mode (for some newer templetes) set to '%t'" $debug -}}
+{{- end -}}
+{{- return $debug -}}
