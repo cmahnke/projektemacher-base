@@ -1,5 +1,5 @@
 name = "Projektemacher Base"
-min_version = 0.118
+min_version = 0.120
 
 [author]
   name = "Christian Mahnke"
