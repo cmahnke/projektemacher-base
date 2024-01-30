@@ -1,0 +1,8 @@
+{{- $slice := .slice -}}
+{{- $outList := slice -}}
+{{- range $item := $slice -}}
+  {{- if ne $item nil -}}
+    {{- $outList = $outList | append $item -}}
+  {{- end -}}
+{{- end -}}
+{{- return $outList -}}

@@ -7,7 +7,7 @@
   {{- $class = "aframe-3d-model" -}}
 {{- end -}}
 
-<div class="{{ $class }}" id="{{ $id }}" style="{{ $style | safeCSS }}">
+<div class="{{ $class }}" id="{{ $id }}" {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
   <a-scene renderer="colorManagement: true;" xr-mode-ui="enabled: true" embedded>
     <a-assets>
       <a-asset-item id="{{ printf "%s-src" $id }}" src="{{ $src }}"></a-asset-item>

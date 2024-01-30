@@ -4,6 +4,8 @@
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
 {{/* TODO: Remove this */}}
+{{/* TODO: Add param for context to use this: {{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+*/}}
 {{- $site := .site }}
 {{- if eq $site nil -}}
     {{- $site = $.Site -}}

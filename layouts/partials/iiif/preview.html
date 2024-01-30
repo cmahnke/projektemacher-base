@@ -51,7 +51,9 @@
   {{- end -}}
   {{/* TODO this is just a hack for incomplete content files
   {{- if eq $frontResource "" -}}
-    {{- warnf "[partials/iiif/preview.html] No preview resource found for %s, trying first one" .File.Path -}}
+    {{- if $debug -}}
+      {{- warnf "[partials/iiif/preview.html] No preview resource found for %s, trying first one" .File.Path -}}
+    {{- end -}}
     {{- $frontResource = (index $resources 0) -}}
   {{- end -}}
   */}}

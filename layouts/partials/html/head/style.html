@@ -103,12 +103,11 @@
     {{- warnf "File %s needs to be string or ResourceAdapter" $file -}}
   {{- end -}}
 {{- end -}}
+{{/* TODO: Check why this is nessecary and if we lose some CSS styles */}}
+{{- $cssResources := partial "partials/functions/arrays/filter-nil.html" (dict "slice" $cssResources) -}}
 
-{{/* TODO: Check if this still is right, we now get a slice of resources or strings */}}
-{{- if (len $cssResources)  -}}
+{{- if (len $cssResources) -}}
   {{- $scssStyle = union $cssResources $scssStyle -}}
-{{- else -}}
-  {{- $scssStyle = slice $scssStyle -}}
 {{- end -}}
 
 {{- $fileName := "" -}}
@@ -116,6 +115,10 @@
   {{- $fileName = printf "%s%s" $fileName $file.Name -}}
 {{- end -}}
 {{- $fileName = md5 $fileName -}}
+
+{{- if ne (printf "%T" $scssStyle) "resource.Resources" -}}
+  {{- warnf "[partials/html/head/style.html] Collected styles for %s are of wrong type (%T) instead of resource.Resources - this will fail!" $context.File.Path $scssStyle -}}
+{{- end -}}
 
 {{- $style := "" -}}
 {{- if not $isServer -}}
