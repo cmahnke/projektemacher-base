@@ -7,6 +7,7 @@
 {{- $name := $defaultFrontName -}}
 {{- $src := "" -}}
 {{- $context := . -}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
 
 {{/* Check if parameters have been given */}}
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
@@ -18,7 +19,9 @@
       {{- $name = "" -}}
     {{- end -}}
   {{- end -}}
-  {{ warnf "[partials/iiif/preview.html] called with params: name '%s', src '%s'" $name $src }}
+  {{- if $debug -}}
+    {{- warnf "[partials/iiif/preview.html] called with params: name '%s', src '%s'" $name $src -}}
+  {{- end -}}
 {{- else -}}
   {{/* PageState is the type if called with dot */}}
   {{/* {{ warnf "[partials/iiif/preview.html] Preview called with %T" . }} */}}
@@ -41,7 +44,9 @@
     {{- else if (gt (where $resources "name" "cover" | len) 0) -}}
       {{- $frontResource = where $resources "name" "cover" -}}
     {{- else -}}
-      {{- warnf "[partials/iiif/preview.html] Can't guess preview resource for %s #%v, this will probably fail" .File.Path $resources -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/iiif/preview.html] Can't guess preview resource for %s #%v, this will probably fail" .File.Path $resources -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{/* TODO this is just a hack for incomplete content files

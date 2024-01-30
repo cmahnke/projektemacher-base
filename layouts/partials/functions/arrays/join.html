@@ -1,0 +1,13 @@
+{{- $slice := .slice -}}
+{{- $separator := "" -}}
+{{- if isset . "separator" -}}
+  {{- $separator := .separator -}}
+{{- end -}}
+{{- $returnStr := "" -}}
+{{- range $str := $slice -}}
+  {{- if eq (printf "%T" $str) "string" -}}
+    {{- $returnStr := printf "%s%s%s" $returnStr $separator $str -}}
+  {{- else -}}
+    {{- errorf "Cant handle type %T" $str -}}
+  {{- end -}}
+{{- end -}}

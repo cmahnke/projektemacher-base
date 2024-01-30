@@ -6,13 +6,16 @@
 {{- end -}}
 
 {{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+{{- $includes := unmarshal (partial "shortcodes/shortcode-helper.html" $context) -}}
+{{- $includesCSS := index $includes "css" -}}
+{{- $includesSCSS := index $includes "scss" -}}
 
 {{- $css := slice -}}
 {{- if isset . "css" -}}
   {{- if reflect.IsSlice .css -}}
-      {{- $css = .css -}}
+    {{- $css = .css -}}
   {{- else -}}
-      {{- $css = slice .css -}}
+    {{- $css = slice .css -}}
   {{- end -}}
 {{- end -}}
 
@@ -23,26 +26,73 @@
   {{- $isServer = .Site.IsServer -}}
 {{- end -}}
 
-{{- $includes := partial "partials/html/head/page-styles.html" $context -}}
-
-{{- if and $debug (len $includes) -}}
-  {{- warnf "[partials/html/head/style.html] Include page specific styles %#v for %s" $includes $context.File.Path  -}}
+{{/*
+{{- $pageIncludes := partial "partials/html/head/page-styles.html" $context -}}
+{{- if and $debug (len $pageIncludes) -}}
+  {{- warnf "[partials/html/head/style.html] Include page specific styles %#v for %s" $pageIncludes $context.File.Path  -}}
 {{- end -}}
+*/}}
+
+{{- $includes := "" -}}
 {{- if .includes -}}
-    {{- $includes = union $buildinIncludes .includes -}}
+  {{- $includes = union $buildinIncludes .includes -}}
 {{- else -}}
-    {{- $includes = $buildinIncludes -}}
+  {{- $includes = $buildinIncludes -}}
 {{- end -}}
 
+{{- $scss := slice "scss/base.scss" -}}
+{{- $pageSCSS := .Params.scss -}}
+{{- if and $pageSCSS (not (reflect.IsSlice $pageSCSS)) -}}
+    {{- $pageSCSS = slice $pageSCSS -}}
+{{- end -}}
+{{- if (len $includesSCSS) -}}
+  {{- $pageSCSS = union .Params.scss $includesSCSS -}}
+{{- end -}}
+{{- if and $debug (ne $pageSCSS nil) (len $pageSCSS) -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS .File.Dir -}}
+{{- end -}}
+
+{{- if and (ne $pageSCSS nil) (len $pageSCSS) -}}
+  {{- $scss = union $scss $pageSCSS -}}
+{{- end -}}
+
+{{/* Process SCSS file */}}
 {{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "enableSourceMap" (not hugo.IsProduction) "includePaths" $includes) -}}
-{{- $scssTemplate := resources.Get "scss/base.scss" -}}
-{{- $scssStyle := $scssTemplate | resources.ExecuteAsTemplate "scss/base.scss" . | toCSS $options -}}
+
+{{- $scssStyle := slice -}}
+{{- range $file := $scss -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/style.html] Processing SCSS script %s" $file -}}
+  {{- end -}}
+  {{- $scssTemplate := resources.Get $file -}}
+  {{- $scssStyle = $scssStyle | append ($scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options) -}}
+{{- end -}}
+
+{{- $pageCSS := .Params.css -}}
+{{- if and $pageCSS (not (reflect.IsSlice $pageCSS)) -}}
+    {{- $pageCSS = slice $pageCSS -}}
+{{- end -}}
+{{- if (len $includesCSS) -}}
+  {{- $pageCSS = union .Params.css $includesCSS -}}
+{{- end -}}
+{{- if and $debug (ne $pageCSS nil) (len $pageCSS) -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS .File.Dir -}}
+{{- end -}}
+
+{{- if and (ne $pageCSS nil) (len $pageCSS) -}}
+  {{- $css = union $css $pageCSS -}}
+{{- end -}}
 
 {{- $cssResources := slice -}}
 
 {{- range $file := $css -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/style.html] Processing CSS script %s" $file -}}
+  {{- end -}}
   {{- if eq (printf "%T" $file) "string" -}}
-    {{- if ne (resources.Get $file) nil -}}
+    {{- if not (or (hasPrefix $file "http") (hasPrefix $file "//")) -}}
+      {{- $cssResources = $cssResources | append (resources.Get $file) -}}
+    {{- else if ne (resources.Get $file) nil -}}
       {{- $cssResources = $cssResources | append (resources.Get $file) -}}
     {{- else -}}
       {{- warnf "Can't read file %s maybe you've forgot to add a module mount?" $file -}}
@@ -54,23 +104,24 @@
   {{- end -}}
 {{- end -}}
 
-{{- if gt (len $cssResources) 0  -}}
-    {{- $scssStyle = union $cssResources (slice $scssStyle) -}}
+{{/* TODO: Check if this still is right, we now get a slice of resources or strings */}}
+{{- if (len $cssResources)  -}}
+  {{- $scssStyle = union $cssResources $scssStyle -}}
 {{- else -}}
-    {{- $scssStyle = slice $scssStyle -}}
+  {{- $scssStyle = slice $scssStyle -}}
 {{- end -}}
 
 {{- $fileName := "" -}}
 {{- range $file := $scssStyle -}}
-    {{- $fileName = printf "%s%s" $fileName $file.Name -}}
+  {{- $fileName = printf "%s%s" $fileName $file.Name -}}
 {{- end -}}
 {{- $fileName = md5 $fileName -}}
 
 {{- $style := "" -}}
 {{- if not $isServer -}}
-    {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
+  {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
 {{- else -}}
-    {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}
+  {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}
 {{- end -}}
 
 <link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">
