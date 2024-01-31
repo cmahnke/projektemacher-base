@@ -1,11 +1,36 @@
 {{- $src := .Get "src" -}}
 {{- $class := .Get "class" -}}
-{{- $style := .Get "style" -}}
+{{- $style := "" -}}
+{{ if isset .Params "style" }}
+  {{- $style := .Get "style" -}}
+{{- end -}}
 {{- $id := printf "_gtlf-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
 
 {{- if eq $class "" -}}
   {{- $class = "aframe-3d-model" -}}
 {{- end -}}
+
+{{- $autorotate := "true" -}}
+{{- if (.Get "autorotate") -}}
+  {{- $autorotate = .Get "autorotate" -}}
+{{- end -}}
+
+{{- $minDistance := 2 -}}
+{{- if (.Get "minDistance") -}}
+  {{- $minDistance = .Get "minDistance" -}}
+{{- end -}}
+
+{{- $maxDistance := 10 -}}
+{{- if (.Get "maxDistance") -}}
+  {{- $maxDistance = .Get "maxDistance" -}}
+{{- end -}}
+
+{{- $initialPosition := "0 0.5 4" -}}
+{{- if (.Get "initialPosition") -}}
+  {{- $initialPosition = .Get "initialPosition" -}}
+{{- end -}}
+
+{{- $controls := printf "autoRotate: %s; enableDamping: true; dampingFactor: 0.05; minDistance: %d; maxDistance: %d; initialPosition: %s;" $autorotate $minDistance $maxDistance $initialPosition -}}
 
 <div class="{{ $class }}" id="{{ $id }}" {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
   <a-scene renderer="colorManagement: true;" xr-mode-ui="enabled: true" embedded>
@@ -13,7 +38,7 @@
       <a-asset-item id="{{ printf "%s-src" $id }}" src="{{ $src }}"></a-asset-item>
     </a-assets>
 
-    <a-entity camera look-controls="enabled: false" orbit-controls="autoRotate: true; enableDamping: true; dampingFactor: 0.05; rotateSpeed:0.15; minDistance: 2; maxPolarAngle: 90; initialPosition: 0 0.5 4; maxDistance:8;"  mouse-cursor=""></a-entity>
+    <a-entity camera look-controls="enabled: false" orbit-controls="{{ $controls }} rotateSpeed:0.15; maxPolarAngle: 90;"  mouse-cursor=""></a-entity>
     <a-entity gltf-model="#{{ printf "%s-src" $id }}" rotation="0 90 0"></a-entity>
     <!--<a-sky color="#000000"></a-sky>-->
 
