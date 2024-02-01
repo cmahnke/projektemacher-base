@@ -7,7 +7,10 @@
 {{- end -}}
 
 {{- $tags := $.Site.Taxonomies.tags.ByCount -}}
-{{- $filtered := where $tags "Count" ">=" 3 -}}
+{{- $filtered := slice -}}
+{{- if ne $tags nil -}}
+  {{- $filtered = where $tags "Count" ">=" 3 -}}
+{{- end -}}
 {{- $filtered = where $filtered "Term" "not in" (slice "hugo" "tags" "rss") -}}
 {{- $highest := (index $filtered 0).Count -}}
 {{- $lowest :=  (index (last 1 $filtered) 0).Count -}}
