@@ -1,0 +1,23 @@
+[
+  {
+    "language": "Hugo Templates",
+    "extensions": [
+      ".html",
+      ".json",
+      ".geojson",
+      ".gjson",
+      ".rss",
+      ".scss",
+      ".css"
+    ],
+    "markers": [
+      {
+        "type": "block",
+        "pattern": {
+          "start": "\\{\\{/\\*",
+          "end": "\\*/\\}\\}"
+        }
+      }
+    ]
+  }
+]
