@@ -1,10 +1,14 @@
 {{- $context := .context -}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
 {{- $fit := .fit -}}
 {{- $postProcess := false -}}
 {{- if and (ne .postProcess nil) (eq .postProcess true) -}}
   {{- $postProcess = true -}}
 {{- end -}}
-{{- $contextPath := path.Dir $context.File.Path -}}
+{{- $contextPath := "" -}}
+{{- if and (ne $context.File nil) (ne $context.File.Path nil) -}}
+  {{- $contextPath = path.Dir $context.File.Path -}}
+{{- end -}}
 {{- $previewImg := "" -}}
 {{- $images := newScratch -}}
 {{- $previewReference := "" -}}
@@ -34,7 +38,9 @@
 {{- if and (eq $previewReference "") (strings.HasPrefix $contextPath "post") (not (and (isset $context.Params "type") (eq $context.Params.type "other"))) -}}
   {{- errorf "[partials/preview/preview-internal.html] Can't find front resource name for %s" $contextPath -}}
 {{- else if (strings.HasPrefix $contextPath "post") -}}
-  {{- warnf "[partials/preview/preview-internal.html] Using resource '#%v' as front preview for %s" $previewReference $contextPath -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/preview/preview-internal.html] Using resource '#%v' as front preview for %s" $previewReference $contextPath -}}
+  {{- end -}}
 {{- end -}}
 
 {{- if and (ne $previewReference "") (reflect.IsMap $previewReference) -}}
@@ -50,21 +56,27 @@
   {{- end -}}
   {{- $params = $previewReference.params -}}
 {{- else if and (strings.HasPrefix $contextPath "post") (not (and (isset .Params "type") (eq .Params.type "other"))) -}}
-  {{- warnf "[partials/preview/preview-internal.html] No resources for %s" $contextPath -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/preview/preview-internal.html] No resources for %s" $contextPath -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $previewImg = $images.Get "preview" -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{- if not $previewReference.name -}}
-    {{- warnf "[partials/preview/preview-internal.html] JXL Reference in %s, but no 'name' set, using default" $context.File.Path -}}
+    {{- if $debug -}}
+      {{- warnf "[partials/preview/preview-internal.html] JXL Reference in %s, but no 'name' set, using default" $context.File.Path -}}
+    {{- end -}}
   {{- end -}}
   {{- $previewImg = partial "iiif/preview.html" (dict "context" $context "name" $previewReference.name) -}}
   {{- if or (eq $previewImg "") (eq $previewImg nil) -}}
     {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
     {{- $previewLoc := path.Join (path.Dir $previewReference.params.iiif) $fullResImgSuffix -}}
     {{- $imgLocation = path.Join $contextPath $previewLoc -}}
-    {{- warnf "[partials/preview/preview-internal.html] Getting JXL preview for %s failed! Trying to load from %s" $contextPath $previewLoc -}}
+    {{- if $debug -}}
+      {{- warnf "[partials/preview/preview-internal.html] Getting JXL preview for %s failed! Trying to load from %s" $contextPath $previewLoc -}}
+    {{- end -}}
 
 {{/*
 {{ $relContext := strings.Substr $contextPath (len $context.Parent.Page.File.Dir) }}
