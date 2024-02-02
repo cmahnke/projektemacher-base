@@ -4,6 +4,11 @@
     */}}
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 
+{{- $filePath := "" -}}
+{{- if and (ne .File nil) (ne .File.Path nil) -}}
+  {{- $filePath = .File.Path -}}
+{{- end -}}
+
 {{- $ogHeight := 630 -}}
 {{- $ogWidth := 1200 -}}
 {{- if isset $.Site.Params "preview" -}}
@@ -31,13 +36,13 @@
 
 {{- if ne (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
   {{- if $debug -}}
-    {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg .File.Path $previewImg -}}
+    {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg $filePath $previewImg -}}
   {{- end -}}
 {{- end -}}
 {{/*
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{- if $debug -}}
-    {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" .File.Path -}}
+    {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" $filePath -}}
   {{- end -}}
 {{- end -}}
 */}}
@@ -49,7 +54,7 @@
   <meta property="og:image:height" content="{{ $previewImg.Height }}" />
 {{- else -}}
 {{/*
-    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" $filePath }}
 */}}
   {{ $path := "" }}
   {{ with .File }}
@@ -58,6 +63,6 @@
     {{ $path = .Path }}
   {{ end }}
   {{- if $debug -}}
-    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" $filePath }}
   {{- end -}}
 {{- end -}}
