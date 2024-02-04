@@ -63,6 +63,7 @@
   {{- $infoJson := (index $frontResource 0).params.iiif -}}
   {{- $resName := (index $frontResource 0).name -}}
   {{- $path := path.Dir $infoJson -}}
+  {{/* TODO: Guard usage of .File.Path here  */}}
   {{- if not $infoJson -}}
     {{- errorf "[partials/iiif/preview.html] Error getting info.json path for %s" .File.Path -}}
   {{- end -}}
@@ -70,7 +71,9 @@
   {{- if not (fileExists (path.Join .File.Dir $previewLoc)) -}}
     {{- errorf "[partials/iiif/preview.html] %s referenced in %s doesn't exists!" $previewLoc .File.Path -}}
   {{- end -}}
-  {{- warnf "[partials/iiif/preview.html] Using image %s as preview for %s" $previewLoc .File.Path -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/iiif/preview.html] Using image %s as preview for %s" $previewLoc .File.Path -}}
+  {{- end -}}
   {{- $img = .Resources.GetMatch $previewLoc -}}
 {{ end }}
 {{- return $img -}}
