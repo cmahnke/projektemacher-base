@@ -79,6 +79,7 @@
       {{- warnf "[partials/preview/preview-internal.html] Getting JXL preview for %s failed! Trying to load from %s" $contextPath $previewLoc -}}
     {{- end -}}
 
+{{/* TODO: Remove this */}}
 {{/*
 {{ $relContext := strings.Substr $contextPath (len $context.Parent.Page.File.Dir) }}
 {{ warnf "--parentPath: %s -> relPAth: %s" $context.Parent.Page.File.Dir $relContext }}
