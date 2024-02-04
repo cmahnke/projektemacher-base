@@ -1,0 +1,46 @@
+# file types
+
+[wigglegram]
+other = "Wackelbild"
+
+[sterescopic_jpeg]
+other = "Stereo JPEG"
+
+[anaglyph]
+other = "Anaglyph"
+
+[mpo]
+other = "MPO"
+
+[single_frames]
+other = "Einzelbilder"
+
+[vr_glasses]
+other = "VR Brille"
+
+[fullscreen]
+other = "Vollbild"
+
+# Type descriptions
+
+[wigglegram_desc]
+other = "Beide Bilder als animiertes Gif mit schnellem Wechsel (Wackelbild, eng. <a href=\"https://en.wikipedia.org/wiki/Wiggle_stereoscopy\">Wigglegram</a>)."
+
+[sterescopic_jpeg_desc]
+other = "Beide Bilder im JPS (JPEG Stereoscopic) Format (vertauscht - \"cross-eyed\"). Kann mit <a href=\"http://www.sview.ru/en/\" target=\"_blank\">sView</a> betrachtet werden."
+
+[anaglyph_desc]
+other = "Beide Bilder als <a href=\"https://de.wikipedia.org/wiki/Anaglyph_3D\" target=\"_blank\">Anaglyphe</a>."
+
+[mpo_desc]
+other = "Beide Bilder im <a href=\"https://de.wikipedia.org/wiki/Multi_Picture_Object\" target=\"_blank\">MPO Format</a>."
+
+[left_image]
+other = "Das linke Bild."
+
+[right_image]
+otgher = "Das rechte Bild."
+
+# Actions
+[full_resolution_new_tab]
+other = "In voller Auflösung in einem neuen Tab öffnen"
