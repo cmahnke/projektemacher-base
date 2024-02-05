@@ -7,9 +7,9 @@ jobs:
   build:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v4.12.2"
+      - uses: "actions/checkout@v3"
       - name: "TODO to Issue"
-        uses: "alstr/todo-to-issue-action@v4"
+        uses: "alstr/todo-to-issue-action@v4.12.2"
         with:
           AUTO_ASSIGN: true
           LANGUAGES: "https://raw.githubusercontent.com/cmahnke/projektemacher-base/main/.gotml.json"
