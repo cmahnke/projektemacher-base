@@ -241,7 +241,6 @@ jobs:
           extended: true
 
       - name: Merge lang files
-        if: ${{ matrix.args }}
         run: |
           ./scripts/init/i18n.sh i18n
 
