@@ -12,5 +12,5 @@ jobs:
         uses: "alstr/todo-to-issue-action@v4.12.2"
         with:
           AUTO_ASSIGN: true
-          LANGUAGES: "https://raw.githubusercontent.com/cmahnke/projektemacher-base/main/.gotml.json"
+          LANGUAGES: "https://raw.githubusercontent.com/cmahnke/projektemacher-base/main/.syntax.json"
           NO_STANDARD: true
