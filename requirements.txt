@@ -22,5 +22,5 @@ Pillow==10.0.1
 #jxlpy @ git+https://github.com/foosoftsrl/jxlpy@0.9.5
 #https://github.com/foosoftsrl/jxlpy/releases/download/0.9.5/jxlpy-0.9.5-cp310-cp310-macosx_11_0_arm64.whl
 #jxlpy @ git+https://github.com/olokelo/jxlpy@4cc41c4ec51dc2099c5b4b65235859f869e98ea0
-jxlpy
+jxlpy>=0.9.3
 #pyvips
