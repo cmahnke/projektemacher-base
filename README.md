@@ -56,3 +56,8 @@ git commit
 ```
 
 Don't forget to add `projektemacher-base` to `config.toml`
+
+
+# Example site
+
+The [example site](https://cmahnke.github.io/projektemacher-base/) is currently unfinished.
