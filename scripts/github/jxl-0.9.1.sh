@@ -15,7 +15,7 @@ sudo apt-get install -y libstdc++6 libtcmalloc-minimal4 libgcc-s1 libc6 libilmba
 mkdir -p /tmp/jxl
 cd /tmp/jxl
 
-wget https://github.com/libjxl/libjxl/releases/download/v0.9.0/jxl-debs-amd64-ubuntu-22.04-v0.9.1.tar.gz
+wget https://github.com/libjxl/libjxl/releases/download/v0.9.1/jxl-debs-amd64-ubuntu-22.04-v0.9.1.tar.gz
 tar xzf jxl-debs-amd64-ubuntu-22.04-v0.9.1.tar.gz
 
 sudo apt install -y -f ./libjxl_0.9.1_amd64.deb
