@@ -16,7 +16,7 @@ else
 fi
 
 python -m pip install --upgrade pip
-set -e -o pipefail
+set -e
 echo "Searching for requirements.txt in '$SEARCH_PATH'"
 for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt"`
 do
