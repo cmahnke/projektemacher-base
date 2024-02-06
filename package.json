@@ -37,7 +37,7 @@
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
   "prettier": "^3.0.0",
-  "puppeteer": "^21.1.0",
+  "puppeteer": "^22.0.0",
   "purgecss": "^5.0.0",
   "react": "^18.2.0",
   "react-dom": "^18.2.0",
