@@ -240,7 +240,7 @@ console.log('Wrote preference file to %s', prefFile);
 
         //Events doen't really work well, just wait :(
         //await page.waitForTimeout(5000);
-        await page.waitFor(5000);
+        await new Promise(r => setTimeout(r, 6000));
         //await page.waitForNavigation();
     }
     await browser.close();
