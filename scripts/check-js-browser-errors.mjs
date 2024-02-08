@@ -16,7 +16,7 @@ const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
-const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com'];
+const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/'];
 
 const argv = yargs().option('force', {
     alias: 'f',
