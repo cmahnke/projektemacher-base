@@ -61,3 +61,9 @@ Don't forget to add `projektemacher-base` to `config.toml`
 # Example site
 
 The [example site](https://cmahnke.github.io/projektemacher-base/) is currently unfinished.
+
+# TODO
+* Finish example site
+* Finish migration to new font infrastructure
+* Include nomalize.js by default
+* Finish shortcode metadata
