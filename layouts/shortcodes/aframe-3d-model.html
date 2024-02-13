@@ -17,12 +17,12 @@
 
 {{- $minDistance := 2 -}}
 {{- if (.Get "minDistance") -}}
-  {{- $minDistance = .Get "minDistance" -}}
+  {{- $minDistance = int (.Get "minDistance") -}}
 {{- end -}}
 
 {{- $maxDistance := 10 -}}
 {{- if (.Get "maxDistance") -}}
-  {{- $maxDistance = .Get "maxDistance" -}}
+  {{- $maxDistance = int (.Get "maxDistance") -}}
 {{- end -}}
 
 {{- $initialPosition := "0 0.5 4" -}}
