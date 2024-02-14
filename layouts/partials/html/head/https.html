@@ -1,3 +1,10 @@
-{{- if .Site.IsServer  -}}
+{{- $isServer := false -}}
+{{- if gt hugo.Version "0.120.0" -}}
+  {{- $isServer = hugo.IsServer -}}
+{{- else -}}
+  {{- $isServer = .Site.IsServer -}}
+{{- end -}}
+
+{{- if not $isServer  -}}
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 {{- end -}}
