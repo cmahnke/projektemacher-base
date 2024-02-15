@@ -1,4 +1,4 @@
-{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" -}}
+{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" "assets/css/fonts" -}}
 
 {{- $context := "" -}}
 {{- if isset . "context" -}}
@@ -26,13 +26,6 @@
   {{- $isServer = .Site.IsServer -}}
 {{- end -}}
 
-{{/*
-{{- $pageIncludes := partial "partials/html/head/page-styles.html" $context -}}
-{{- if and $debug (len $pageIncludes) -}}
-  {{- warnf "[partials/html/head/style.html] Include page specific styles %#v for %s" $pageIncludes $context.File.Path  -}}
-{{- end -}}
-*/}}
-
 {{- $includes := "" -}}
 {{- if .includes -}}
   {{- $includes = union $buildinIncludes .includes -}}
@@ -41,7 +34,7 @@
 {{- end -}}
 
 {{- $scss := slice "scss/base.scss" -}}
-{{- $pageSCSS := .Params.scss -}}
+{{- $pageSCSS := $context.Params.scss -}}
 {{- if and $pageSCSS (not (reflect.IsSlice $pageSCSS)) -}}
     {{- $pageSCSS = slice $pageSCSS -}}
 {{- end -}}
@@ -68,7 +61,7 @@
   {{- $scssStyle = $scssStyle | append ($scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options) -}}
 {{- end -}}
 
-{{- $pageCSS := .Params.css -}}
+{{- $pageCSS := $context.Params.css -}}
 {{- if and $pageCSS (not (reflect.IsSlice $pageCSS)) -}}
     {{- $pageCSS = slice $pageCSS -}}
 {{- end -}}
