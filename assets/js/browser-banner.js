@@ -1,7 +1,8 @@
 const { detect } = require('detect-browser');
 const detected = detect();
 
-function browserBanner(banner, browsers) {
+function browserBanner(banner, browsers, parent) {
+  parent.insertBefore(banner, parent.firstChild)
   if (detected && browsers.includes(detected.name)) {
     banner.style.display = 'block';
   }

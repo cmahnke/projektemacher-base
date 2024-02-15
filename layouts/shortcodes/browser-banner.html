@@ -13,7 +13,10 @@
   {{- $class = printf "%s %s" $class (.Get "class") -}}
 {{- end -}}
 {{- $id := printf "_browser-banner-%s" (md5 (printf "%s-%s" $browser now.UnixNano)) -}}
-
+{{- $parent := "body" -}}
+{{ if isset .Params "parent" }}
+  {{- $parent = .Get "parent" -}}
+{{- end -}}
 
 <div class="browser-banner {{ delimit $browser " " }}" style="{{ $style | safeCSS }}" id="{{ $id }}">
     <div class="text-container">
@@ -24,7 +27,9 @@
     <script type="text/javascript">
         var browsers = {{ $browser | jsonify | safeJS }};
         var banner = document.getElementById('{{ $id }}');
-        browserBanner(banner, browsers);
+        var parent = document.querySelector('{{ $parent }}');
+
+        browserBanner(banner, browsers, parent);
     </script>
 </div>
 
