@@ -8,4 +8,17 @@ function browserBanner(banner, browsers) {
   console.log(detected, browsers);
 }
 
+function browserDisableSelector(selector, browsers) {
+  document.addEventListener("DOMContentLoaded", function() {
+    if (detected && browsers.includes(detected.name)) {
+      const selected = document.querySelectorAll(selector);
+      selected.forEach((elem) => {
+        elem.style.display = 'none';
+      });
+    }
+  });
+
+}
+
 window.browserBanner = browserBanner;
+window.browserDisableSelector = browserDisableSelector;
