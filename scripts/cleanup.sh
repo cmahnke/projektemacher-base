@@ -19,4 +19,6 @@ if [ -d themes/projektemacher-base/node_modules ] ; then
 fi
 
 git checkout package.json yarn.lock
+# Cleanup and reset language files
 git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base clean -x -f i18n
+git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base checkout -f i18n
