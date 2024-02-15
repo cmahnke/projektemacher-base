@@ -13,6 +13,9 @@
 {{- $autorotate := "true" -}}
 {{- if (.Get "autorotate") -}}
   {{- $autorotate = .Get "autorotate" -}}
+  {{- if eq (printf "%T" $autorotate) "bool" -}}
+    {{- $autorotate = printf "%v" $autorotate -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $minDistance := 2 -}}
@@ -30,10 +33,24 @@
   {{- $initialPosition = .Get "initialPosition" -}}
 {{- end -}}
 
+{{/* TODO: This shgoulkd be done with a bool */}}
+{{- $xrMode := "true" -}}
+{{- if (.Get "xrMode") -}}
+  {{- $xrMode = .Get "xrMode" -}}
+  {{- if eq (printf "%T" $xrMode) "bool" -}}
+    {{- $xrMode = printf "%v" $xrMode -}}
+  {{- end -}}
+  {{/*
+  {{- if eq $xrMode "false" -}}
+    {{- printf "$s ; arEnabled: false;" $xrMode -}}
+  {{- end -}}
+  */}}
+{{- end -}}
+
 {{- $controls := printf "autoRotate: %s; enableDamping: true; dampingFactor: 0.05; minDistance: %d; maxDistance: %d; initialPosition: %s;" $autorotate $minDistance $maxDistance $initialPosition -}}
 
 <div class="{{ $class }}" id="{{ $id }}" {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
-  <a-scene renderer="colorManagement: true;" xr-mode-ui="enabled: true" embedded>
+  <a-scene renderer="colorManagement: true; antialias: true" xr-mode-ui="enabled: {{ $xrMode }};" embedded>
     <a-assets>
       <a-asset-item id="{{ printf "%s-src" $id }}" src="{{ $src }}"></a-asset-item>
     </a-assets>
