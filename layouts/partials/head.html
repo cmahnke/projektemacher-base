@@ -2,17 +2,18 @@
 
 <meta charset="utf-8">
 
-{{ with .Title }} <title>{{ . }} {{if $.IsHome}}- {{ $.Site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
-{{ end }}
+{{- with .Title -}}
+  <title>{{ . }} {{if $.IsHome}}- {{ $.Site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
+{{- end -}}
 
 {{- if .Description -}}
-    <meta name="description" content="{{ .Description }}" />
+  <meta name="description" content="{{ .Description }}" />
 {{- else -}}
-    <meta name="description" content="{{ .Site.Params.description }}" />
+  <meta name="description" content="{{ .Site.Params.description }}" />
 {{- end -}}
 
 {{ if hasPrefix .Page.Name "404" }}
-    <meta http-equiv="refresh" content="15; URL={{ .Site.BaseURL }}">
+  <meta http-equiv="refresh" content="15; URL={{ .Site.BaseURL }}">
 {{- end }}
 
 {{ hugo.Generator }}
