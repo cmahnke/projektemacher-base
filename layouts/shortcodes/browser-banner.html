@@ -1,0 +1,33 @@
+{{- $class := .Get "class" -}}
+{{- $style := "display: none;" -}}
+{{ if isset .Params "style" }}
+  {{- $style = printf "%s %s" $style (.Get "style") -}}
+{{- end -}}
+{{- $text := .Inner -}}
+{{- $browser := slice -}}
+{{- if (.Get "browser") -}}
+  {{- $browser = split (.Get "browser") "," -}}
+{{- end -}}
+{{- $class := printf "browser-banner %s" (delimit $browser " ") -}}
+{{ if isset .Params "class" }}
+  {{- $class = printf "%s %s" $class (.Get "class") -}}
+{{- end -}}
+{{- $id := printf "_browser-banner-%s" (md5 (printf "%s-%s" $browser now.UnixNano)) -}}
+
+
+<div class="browser-banner {{ delimit $browser " " }}" style="{{ $style | safeCSS }}" id="{{ $id }}">
+    <div class="text-container">
+      <p>
+      {{ $text | markdownify }}
+      </p>
+    </div>
+    <script type="text/javascript">
+        var browsers = {{ $browser | jsonify | safeJS }};
+        var banner = document.getElementById('{{ $id }}');
+        browserBanner(banner, browsers);
+    </script>
+</div>
+
+{{- define "partials/shortcodes/audioplayer-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/browser-banner.js") "scss" (slice "scss/browser-banner.scss")) | jsonify -}}
+{{- end -}}

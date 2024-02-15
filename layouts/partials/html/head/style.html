@@ -39,7 +39,7 @@
     {{- $pageSCSS = slice $pageSCSS -}}
 {{- end -}}
 {{- if (len $includesSCSS) -}}
-  {{- $pageSCSS = union .Params.scss $includesSCSS -}}
+  {{- $pageSCSS = union $pageSCSS $includesSCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageSCSS nil) (len $pageSCSS) -}}
   {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS .File.Dir -}}
@@ -66,7 +66,7 @@
     {{- $pageCSS = slice $pageCSS -}}
 {{- end -}}
 {{- if (len $includesCSS) -}}
-  {{- $pageCSS = union .Params.css $includesCSS -}}
+  {{- $pageCSS = union $pageCSS $includesCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageCSS nil) (len $pageCSS) -}}
   {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS .File.Dir -}}

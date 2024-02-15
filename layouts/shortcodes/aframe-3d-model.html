@@ -1,8 +1,11 @@
 {{- $src := .Get "src" -}}
-{{- $class := .Get "class" -}}
+{{- $class := "" -}}
+{{ if isset .Params "class" }}
+  {{- $class = .Get "class" -}}
+{{- end -}}
 {{- $style := "" -}}
 {{ if isset .Params "style" }}
-  {{- $style := .Get "style" -}}
+  {{- $style = .Get "style" -}}
 {{- end -}}
 {{- $id := printf "_gtlf-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
 
@@ -63,5 +66,6 @@
 </div>
 
 {{- define "partials/shortcodes/aframe-3d-model-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "https://aframe.io/releases/1.5.0/aframe.min.js" "https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js" "https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js") "scss" (slice "scss/3d/3d-model.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "https://aframe.io/releases/1.5.0/aframe.min.js" "https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js") "scss" (slice "scss/3d/3d-model.scss")) | jsonify -}}
 {{- end -}}
+{{/* This doesn't seem to be needed "https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js" */}}
