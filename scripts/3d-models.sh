@@ -23,9 +23,9 @@ do
 
     if [ -r $METADATA ] ; then
       echo "Adding metadata from $METADATA to $GLB"
-      $METADATA_SCRIPT $GLB "metadata-$GLB" --packet $METADATA
+      $METADATA_SCRIPT $GLB "$GLB.with-metadata" --packet $METADATA
       rm $GLB
-      mv "metadata-$GLB" $GLB
+      mv "$GLB.with-metadata" $GLB
     fi
 
 done
