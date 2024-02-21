@@ -28,9 +28,18 @@
 
 {{- $includes := "" -}}
 {{- if .includes -}}
+  {{- $paramIncludes := .includes -}}
+  {{- if not (reflect.IsSlice $paramIncludes) -}}
+    {{- $paramIncludes = split $paramIncludes " " -}}
+  {{- end -}}
   {{- $includes = union $buildinIncludes .includes -}}
 {{- else -}}
   {{- $includes = $buildinIncludes -}}
+{{- end -}}
+{{- $includes = uniq $includes -}}
+
+{{- if $debug -}}
+  {{ warnf "[partials/html/head/style.html] Include path for SCSS/CSS (Dart SASS) is '%s'" (delimit $includes ", ") }}
 {{- end -}}
 
 {{- $scss := slice "scss/base.scss" -}}
