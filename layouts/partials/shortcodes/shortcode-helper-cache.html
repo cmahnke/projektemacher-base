@@ -1,7 +1,7 @@
 {{/* This file builds a cache of the used shortcodes and the required SCSS, CSS and JS Files. */}}
 {{- $includes := dict -}}
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
-{{- $shortcodes := slice -}}
+{{- $shortcodeTags := slice -}}
 {{/* Get all pages and extract used shortcodes with a regular expression */}}
 {{- range $page := $.Site.Pages -}}
   {{- with $page.File -}}
@@ -11,14 +11,21 @@
       {{- if $debug -}}
         {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes %s in %s" $matches .Filename -}}
       {{- end -}}
-      {{- $shortcodes = $shortcodes | append $matches -}}
+      {{- $shortcodeTags = $shortcodeTags | append $matches -}}
     {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{/* Remove shortcodes starting with '/' */}}
+{{- $shortcodes := slice -}}
+{{- range $tag := $shortcodeTags -}}
+  {{- if not (hasPrefix $tag "/") -}}
+    {{- $shortcodes = $shortcodes | append $tag -}}
   {{- end -}}
 {{- end -}}
 {{/* Remove any duplicates */}}
 {{- $shortcodes = $shortcodes | uniq -}}
 {{- if $debug -}}
-  {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes %s" $shortcodes -}}
+  {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes '%s'" (delimit $shortcodes ", ") -}}
 {{- end -}}
 
 {{- $candidates := slice -}}
