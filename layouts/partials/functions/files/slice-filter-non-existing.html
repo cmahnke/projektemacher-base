@@ -1,0 +1,15 @@
+{{- $files := .files -}}
+{{- $context := .context -}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+{{- $outFiles := slice -}}
+{{- range $file := $files -}}
+  {{ with resources.Get $file }}
+  {{/* {{- if fileExists $file -}} */}}
+    {{- $outFiles = $outFiles | append $file -}}
+  {{- else -}}
+    {{- if $debug -}}
+      {{- warnf "[partials/functions/files/check-no-existing.html] File %s is missing!" $file -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $outFiles -}}
