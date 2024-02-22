@@ -44,6 +44,11 @@
 
 {{- $scss := slice "scss/base.scss" -}}
 {{- $pageSCSS := $context.Params.scss -}}
+{{- if and (ne $pageSCSS nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
+  {{- warnf "[partials/html/head/style.html] Ignoring page SCSS includes for %s" $context.File.Dir -}}
+  {{- $pageSCSS = slice -}}
+{{- end -}}
+
 {{- if and $pageSCSS (not (reflect.IsSlice $pageSCSS)) -}}
     {{- $pageSCSS = slice $pageSCSS -}}
 {{- end -}}
@@ -71,6 +76,11 @@
 {{- end -}}
 
 {{- $pageCSS := $context.Params.css -}}
+{{- if and (ne $pageCSS nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
+  {{- warnf "[partials/html/head/style.html] Ignoring page CSS includes for %s" $context.File.Dir -}}
+  {{- $pageCSS = slice -}}
+{{- end -}}
+
 {{- if and $pageCSS (not (reflect.IsSlice $pageCSS)) -}}
     {{- $pageCSS = slice $pageCSS -}}
 {{- end -}}

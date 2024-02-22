@@ -1,6 +1,8 @@
 {{/* TODO: Merge this into script.html */}}
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 
+{{- $context := . -}}
+
 {{- $isServer := false -}}
 {{- if gt hugo.Version "0.120.0" -}}
   {{- $isServer = hugo.IsServer -}}
@@ -13,14 +15,19 @@
   {{- warnf "[partials/html/head/page-scripts.html] Got JS script(s) %#v for %s" $includes .File.Dir -}}
 {{- end -}}
 
-{{- $scripts := .Params.js -}}
-
-{{- if and $scripts (not (reflect.IsSlice $scripts)) -}}
-  {{- $scripts = slice $scripts -}}
+{{- $pageScripts := $context.Params.js -}}
+{{- if and (ne $pageScripts nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
+  {{- warnf "[partials/html/head/style.html] Ignoring page SCSS includes for %s" $context.File.Dir -}}
+  {{- $pageScripts = slice -}}
 {{- end -}}
 
+{{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
+  {{- $scripts = slice $pageScripts -}}
+{{- end -}}
+
+{{- $scripts := $pageScripts -}}
 {{- if (len $includes) -}}
-  {{- $scripts = union $scripts $includes -}}
+  {{- $scripts = union $pageScripts $includes -}}
 {{- end -}}
 
 {{- if and $debug (ne $scripts nil) (len $scripts) -}}
