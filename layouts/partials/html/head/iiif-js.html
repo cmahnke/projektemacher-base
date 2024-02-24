@@ -1,18 +1,12 @@
 {{- $prefix := "" -}}
 {{- $name := "" -}}
 {{- $context := "" -}}
-{{- $isServer := false -}}
-
-{{- if gt hugo.Version "0.120.0" -}}
-  {{- $isServer = hugo.IsServer -}}
-{{- else -}}
-  {{- $isServer = .Site.IsServer -}}
-{{- end -}}
+{{- $isServer := hugo.IsServer -}}
 
 {{- if in . "context" -}}
-    {{- if .context -}}
-        {{ $context = .context }}
-    {{- end -}}
+  {{- if .context -}}
+    {{ $context = .context }}
+  {{- end -}}
 {{- end -}}
 
 {{- if .Page.Params.iiifcontext -}}

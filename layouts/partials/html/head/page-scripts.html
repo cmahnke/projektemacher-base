@@ -3,12 +3,7 @@
 
 {{- $context := . -}}
 
-{{- $isServer := false -}}
-{{- if gt hugo.Version "0.120.0" -}}
-  {{- $isServer = hugo.IsServer -}}
-{{- else -}}
-  {{- $isServer = .Site.IsServer -}}
-{{- end -}}
+{{- $isServer := hugo.IsServer -}}
 {{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" .)) "js" -}}
 
 {{- if and $debug (len $includes) -}}

@@ -3,12 +3,7 @@
 {{- $defaultContentLanguage := partialCached "functions/i18n/default-lang" . -}}
 {{- $defaultContentPage := partial "functions/i18n/page-for-lang" (dict "context" . "lang" $defaultContentLanguage) -}}
 
-{{- $isServer := false -}}
-{{- if gt hugo.Version "0.120.0" -}}
-  {{- $isServer = hugo.IsServer -}}
-{{- else -}}
-  {{- $isServer = .Site.IsServer -}}
-{{- end -}}
+{{- $isServer := hugo.IsServer -}}
 
 {{- $imageIdSuffix := "" -}}
 {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}

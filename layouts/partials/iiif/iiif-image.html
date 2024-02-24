@@ -13,12 +13,7 @@
 {{- if eq $site nil -}}
     {{- errorf "Site is %#v (nil)" $site -}}
 {{- end -}}
-{{- $isServer := false -}}
-{{- if gt hugo.Version "0.120.0" -}}
-  {{- $isServer = hugo.IsServer -}}
-{{- else -}}
-  {{- $isServer = $site.IsServer -}}
-{{- end -}}
+{{- $isServer := hugo.IsServer -}}
 
 {{- $imgLocation := path.Join $contextPath .context.src -}}
 {{- $class := "" -}}
