@@ -79,18 +79,6 @@
       {{- warnf "[partials/preview/preview-internal.html] Getting JXL preview for %s failed! Trying to load from %s" $contextPath $previewLoc -}}
     {{- end -}}
 
-{{/* TODO: Remove this */}}
-{{/*
-{{ $relContext := strings.Substr $contextPath (len $context.Parent.Page.File.Dir) }}
-{{ warnf "--parentPath: %s -> relPAth: %s" $context.Parent.Page.File.Dir $relContext }}
-{{ $parentPreviewReference := (path.Join $relContext $previewReference.name $fullResImgSuffix) }}
-{{ warnf "--from parent--> %s #%v" $parentPreviewReference ($context.Parent.Page.Resources.GetMatch $parentPreviewReference )  }}
-
-{{ warnf "--> #%v" ($context.Page.Resources.Match (printf "%s/%s" $previewReference.name "**.jpg") )  }}
-{{ warnf "---> #%v" ($context.Parent.Page.Resources )  }}
-{{ warnf "--page-> Getting %s as page: #%v" $relContext (.GetPage $relContext) }}
-*/}}
-
     {{- if $context.IsSection -}}
       {{- $previewImg = $context.Page.Resources.GetMatch $previewLoc -}}
     {{- else -}}
