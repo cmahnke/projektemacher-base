@@ -10,7 +10,7 @@
   "js-cookie": "^3.0.0",
   "mirador": "ProjectMirador/mirador#5cb692ed31480c1e130f4a8715726688cb35796d",
   "normalize.css": "^8.0.1",
-  "ol": "^8.1.0",
+  "ol": "^9.0.0",
   "ol-mapbox-style": "^12.0.0",
   "pdfjs-dist": "^4.0.189",
   "pdfobject": "^2.1.1",
