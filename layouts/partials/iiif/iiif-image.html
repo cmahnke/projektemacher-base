@@ -11,7 +11,7 @@
     {{- $site = $.Site -}}
 {{- end -}}
 {{- if eq $site nil -}}
-    {{- errorf "Site is %#v (nil)" $site -}}
+    {{- errorf "[partials/iiif/iiif-image.html] Site is %#v (nil)" $site -}}
 {{- end -}}
 {{- $isServer := hugo.IsServer -}}
 
@@ -34,7 +34,7 @@
     {{- $previewImg = ($page.Resources.GetMatch .context.src) -}}
 {{- end -}}
 {{- if eq $previewImg nil -}}
-    {{ errorf "Can't find image %s in 'iiif/iiif-image.html'" $imgLocation }}
+    {{ errorf "[partials/iiif/iiif-image.html] Can't find image %s in 'iiif/iiif-image.html'" $imgLocation }}
 {{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
