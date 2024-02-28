@@ -1,8 +1,7 @@
 {
-  "extends": ["stylelint-config-standard-scss"],
+  "extends": ["stylelint-config-standard-scss", "stylelint-config-recommended-scss", "stylelint-prettier/recommended"],
   "plugins": [
-    "stylelint-scss",
-    "stylelint-no-unsupported-browser-features"
+    "stylelint-scss"
   ],
   "rules": {
     "no-empty-source": [null, {"severity": "warning"}],
@@ -10,10 +9,6 @@
     "declaration-block-no-redundant-longhand-properties": [null, {"severity": "warning"}],
     "at-rule-no-unknown": null,
     "scss/at-rule-no-unknown": true,
-    "indentation": [4, {"baseIndentLevel": 1}],
-    "number-leading-zero": ["always", {"severity": "warning"}],
-    "max-empty-lines": [1, {"severity": "warning"}],
-    "max-line-length": [null, {"severity": "warning"}],
     "scss/dollar-variable-empty-line-before": [null, {"severity": "warning"}],
     "block-no-empty": [null, {"severity": "warning"}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
@@ -22,11 +17,6 @@
     "selector-class-pattern": [null, {"severity": "warning"}],
     "value-keyword-case": ["lower", {"ignoreProperties": ["font-family"]}],
     "scss/no-global-function-names": [null, {"severity": "warning"}],
-    "plugin/no-unsupported-browser-features": [true, {
-      "browsers": ["> 0.5%", "last 2 versions", "Firefox ESR", "not dead", "not op_mini all"],
-      "ignore": ["rem"],
-      "ignorePartialSupport": true,
-      "severity": "warning"
-    }]
+    "function-no-unknown": [null, {"ignoreFunctions": ["lighten", "darken"]}]
   }
 }
