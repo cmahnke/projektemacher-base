@@ -17,6 +17,8 @@
     "selector-class-pattern": [null, {"severity": "warning"}],
     "value-keyword-case": ["lower", {"ignoreProperties": ["font-family"]}],
     "scss/no-global-function-names": [null, {"severity": "warning"}],
-    "function-no-unknown": [null, {"ignoreFunctions": ["lighten", "darken"]}]
+    "function-no-unknown": [null, {"ignoreFunctions": ["lighten", "darken"]}],
+    "comment-empty-line-before": [null, {"severity": "warning"}],
+    "comment-whitespace-inside": [null, {"severity": "warning"}]
   }
 }
