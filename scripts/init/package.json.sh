@@ -35,6 +35,8 @@ if [ -z "$YARN" ] ; then
     YARN='npm run yarn'
   fi
 fi
+echo "Using 'yarn' from '$YARN'"
+
 echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', yarn is '$YARN'"
 
 CTX_PATH="$(dirname $($REALPATH $0))"
