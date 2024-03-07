@@ -12,6 +12,9 @@ other = "Anaglyph"
 [mpo]
 other = "MPO"
 
+[depthmap]
+other = "Tiefenkarte"
+
 [single_frames]
 other = "Einzelbilder"
 
@@ -34,6 +37,9 @@ other = "Beide Bilder als <a href=\"https://de.wikipedia.org/wiki/Anaglyph_3D\" 
 
 [mpo_desc]
 other = "Beide Bilder im <a href=\"https://de.wikipedia.org/wiki/Multi_Picture_Object\" target=\"_blank\">MPO Format</a>."
+
+[depthmap_desc]
+other = "Eine <a href=\"https://en.wikipedia.org/wiki/Depth_map\" target=\"_blank\">Tiefenkarte</a> generiert aus den Einzelbildern."
 
 [left_image]
 other = "Das linke Bild."
