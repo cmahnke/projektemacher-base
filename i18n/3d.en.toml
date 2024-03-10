@@ -41,12 +41,11 @@ other = "Both images in <a href=\"https://en.wikipedia.org/wiki/Multi_Picture_Ob
 [depthmap_desc]
 other = "A <a href=\"https://en.wikipedia.org/wiki/Depth_map\" target=\"_blank\">Depth map</a> generated from the singele frames."
 
-
 [left_image]
 other = "The left image."
 
 [right_image]
-otgher = "The right image."
+other = "The right image."
 
 # Actions
 [full_resolution_new_tab]

@@ -45,7 +45,7 @@ other = "Eine <a href=\"https://en.wikipedia.org/wiki/Depth_map\" target=\"_blan
 other = "Das linke Bild."
 
 [right_image]
-otgher = "Das rechte Bild."
+other = "Das rechte Bild."
 
 # Actions
 [full_resolution_new_tab]
