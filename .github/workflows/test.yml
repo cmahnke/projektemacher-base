@@ -136,6 +136,19 @@ jobs:
         run: |
           ./scripts/github/setup-inkscape.sh
 
+  test_xslt_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
+      - name: Install Saxon and it's dependencies
+        run: |
+          ./scripts/github/setup-xslt.sh
+
   test_PyHugolib_install:
     runs-on: ubuntu-22.04
     steps:
