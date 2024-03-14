@@ -23,5 +23,5 @@ curl $RESOLVER_URL --output $SAXON_DIR/$RESOLVER_FILE
 ln -s $SAXON_DIR/$SAXON_FILE $SAXON_DIR/saxon.jar
 ln -s $SAXON_DIR/$RESOLVER_FILE $SAXON_DIR/xmlresolver.jar
 
-printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform' > $SAXON_SCRIPT
+printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform "$@"' > $SAXON_SCRIPT
 chmod +x $SAXON_SCRIPT
