@@ -131,7 +131,6 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/setup-inkscape.sh
       - name: Install Inkscape and it's dependencies
         run: |
           ./scripts/github/setup-inkscape.sh
@@ -148,6 +147,9 @@ jobs:
       - name: Install Saxon and it's dependencies
         run: |
           ./scripts/github/setup-xslt.sh
+      - name: List Saxon directory
+        run: |
+          ls -al /opt/saxon
 
   test_PyHugolib_install:
     runs-on: ubuntu-22.04

@@ -14,14 +14,14 @@ RUN_DEPENDENCIES="openjdk-17-jdk curl"
 echo "Installing $RUN_DEPENDENCIES"
 sudo apt-get install $RUN_DEPENDENCIES
 
-mkdir -p $SAXON_DIR
+sudo mkdir -p $SAXON_DIR
 # Get Saxon
 SAXON_FILE=$(basename $SAXON_URL)
 RESOLVER_FILE=$(basename $RESOLVER_URL)
-curl $SAXON_URL --output $SAXON_DIR/$SAXON_FILE
-curl $RESOLVER_URL --output $SAXON_DIR/$RESOLVER_FILE
-ln -s $SAXON_DIR/$SAXON_FILE $SAXON_DIR/saxon.jar
-ln -s $SAXON_DIR/$RESOLVER_FILE $SAXON_DIR/xmlresolver.jar
+sudo curl $SAXON_URL --output $SAXON_DIR/$SAXON_FILE
+sudo curl $RESOLVER_URL --output $SAXON_DIR/$RESOLVER_FILE
+sudo ln -s $SAXON_DIR/$SAXON_FILE $SAXON_DIR/saxon.jar
+sudo ln -s $SAXON_DIR/$RESOLVER_FILE $SAXON_DIR/xmlresolver.jar
 
-printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform "$@"' > $SAXON_SCRIPT
-chmod +x $SAXON_SCRIPT
+sudo printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform "$@"' > $SAXON_SCRIPT
+sudo chmod +x $SAXON_SCRIPT
