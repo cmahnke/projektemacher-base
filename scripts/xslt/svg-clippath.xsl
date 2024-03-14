@@ -12,9 +12,27 @@
       <defs>
         <clipPath>
           <xsl:attribute name="id" select="'clipPath'" />
+          <!--
+          <xsl:apply-templates select="//svg:path"/>
+        -->
           <xsl:for-each select="//svg:path">
+            <xsl:apply-templates select="."/>
+            <!--
+            <path>
+              <xsl:attribute name="d">
+                <xsl:copy>
+                  <xsl:analyze-string select="@d" regex="(M.*Z).*" flags="x">
+                    <xsl:matching-substring>
+                      <xsl:value-of select="regex-group(1)"/>
+                    </xsl:matching-substring>
+                  </xsl:analyze-string>
+                </xsl:copy>
+              </xsl:attribute>
+            </path>
             <xsl:copy-of select="." />
+            -->
           </xsl:for-each>
+
         </clipPath>
       </defs>
       <xsl:apply-templates />
@@ -23,6 +41,21 @@
   <xsl:template match="@*|node()">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()" />
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="svg:path">
+    <xsl:copy>
+      <xsl:copy-of select="@*[name()!='d']" />
+      <xsl:attribute name="d">
+        <xsl:copy>
+          <xsl:analyze-string select="@d" regex="(M.*Z).*" flags="x">
+            <xsl:matching-substring>
+              <xsl:value-of select="regex-group(1)"/>
+            </xsl:matching-substring>
+          </xsl:analyze-string>
+        </xsl:copy>
+      </xsl:attribute>
+      <xsl:apply-templates />
     </xsl:copy>
   </xsl:template>
 </xsl:stylesheet>
