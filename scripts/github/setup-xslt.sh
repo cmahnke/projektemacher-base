@@ -25,3 +25,6 @@ sudo ln -s $SAXON_DIR/$RESOLVER_FILE $SAXON_DIR/xmlresolver.jar
 
 sudo printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform "$@"' > $SAXON_SCRIPT
 sudo chmod +x $SAXON_SCRIPT
+
+echo "Installed Saxon to /opt/saxon:"
+ls -al /opt/saxon
