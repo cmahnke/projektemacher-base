@@ -5,7 +5,7 @@ if [ -z "$SAXON" ] ; then
 fi
 
 if [ -z "$SAXON" ] ; then
-  SAXON="/opt/saxon/saxon"
+  SAXON="java -jar /opt/saxon/saxon.jar"
 fi
 
 if [ -z "$SAXON" ] ; then
