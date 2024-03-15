@@ -5,20 +5,36 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      github-actions:
+        patterns:
+        - '*'
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      npm:
+        patterns:
+        - '*'
   - package-ecosystem: "npm"
     directory: "/fonts"
     schedule:
       interval: "daily"
+    groups:
+      fonts:
+        patterns:
+        - '*'
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
     ignore:
       - dependency-name: "Pillow"
+    groups:
+      pip:
+        patterns:
+        - '*'
   - package-ecosystem: "pip"
     directory: "/scripts/PyHugo"
     schedule:

@@ -3,7 +3,7 @@
 SAXON_URL="https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/12.1/Saxon-HE-12.1.jar"
 RESOLVER_URL="https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/5.1.2/xmlresolver-5.1.2.jar"
 SAXON_DIR="/opt/saxon"
-SAXON_SCRIPT="/opt/saxon/saxon"
+SAXON_SCRIPT="$SAXON_DIR=/saxon"
 
 sudo apt update
 
