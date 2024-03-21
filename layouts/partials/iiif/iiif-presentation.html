@@ -4,15 +4,20 @@
 {{- $name := "front" -}}
 {{- $page := . -}}
 
+{{- $manifest := "./manifest.json" -}}
+{{- if and .Params.iiifManifest (ne .Params.iiifManifest "") -}}
+  {{- $manifest = .Params.iiifManifest -}}
+{{- end -}}
+
 {{- $isServer := hugo.IsServer -}}
 
 {{/*
 {{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
 */}}
-    {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" .Params.iiifManifest) -}}
+    {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" $manifest) -}}
 {{/*
 {{- else -}}
-    {{- $manifestUrl = printf "%s%s/%s" .Site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" .Params.iiifManifest) -}}
+    {{- $manifestUrl = printf "%s%s/%s" .Site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" $manifest) -}}
 {{- end -}}
 */}}
 
