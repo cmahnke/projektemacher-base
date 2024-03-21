@@ -29,7 +29,7 @@
         {{- $previewImg := $images.Get "preview" -}}
 
         {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-          {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $entry.File.Path -}} */}}
+          {{/* {{- warnf "[timeline/vertical.html] Page %s contains JXL image" $entry.File.Path -}} */}}
           {{- if not $name -}}
             {{- warnf "[timeline/vertical.html] JXL Reference in %s, but no 'name' set, using default" $entry.File.Path -}}
           {{- end -}}

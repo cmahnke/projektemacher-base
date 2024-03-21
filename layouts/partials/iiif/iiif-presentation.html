@@ -20,7 +20,7 @@
 
 {{- $previewImg := (.Resources.ByType "image").GetMatch $name -}}
 {{- if eq $previewImg nil -}}
-    {{ warnf "%s" (index .Params.resources 0).src }}
+    {{ warnf "[partials/iiif/iiif-presentation.html] Preview image is nil: %s" (index .Params.resources 0).src }}
     {{- $previewImg = (.Resources.ByType "image").GetMatch (index .Params.resources 0).src -}}
     {{- if ne ((.Resources.ByType "image").GetMatch (index .Params.resources 0).name) nil -}}
       {{- $name = (.Resources.ByType "image").GetMatch (index .Params.resources 0).name -}}
@@ -32,7 +32,7 @@
 
 {{- $orientation := "" -}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-  {{/* {{- warnf "Page %s contains JXL image in 'iiif/iiif-image.html'" $page.File.Path -}} */}}
+  {{/* {{- warnf "[partials/iiif/iiif-presentation.html] Page %s contains JXL image" $page.File.Path -}} */}}
   {{- if not $name -}}
     {{- warnf "[partials/iiif/iiif-presentation.html] JXL Reference in %s, but no 'name' set, using default" $page.File.Path -}}
   {{- end -}}
