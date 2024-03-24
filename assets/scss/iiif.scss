@@ -92,3 +92,15 @@
         width: 100%;
     }
 }
+
+.presentation-api.download {
+  a.pdf-download::after {
+    content: url($pdf-light);
+    display: inline-block;
+    vertical-align: bottom;
+    margin-top: 1rem;
+    margin-right: 0.5em;
+    height: 1.2em;
+    width: 1.2em;
+  }
+}

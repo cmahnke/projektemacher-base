@@ -1,0 +1,17 @@
+{{- $contextPath := path.Dir .File.Path -}}
+{{- $isServer := hugo.IsServer -}}
+
+{{- if .Site.Params.pdfDownload -}}
+  {{ $pdfFileName := printf "%s.pdf" (path.Split $contextPath).File }}
+  {{- $pdfPath := "" -}}
+  {{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+    {{- $pdfPath = printf "/%s" (path.Join $contextPath $pdfFileName) -}}
+    {{- warnf "[partials/iiif/iiif-presentation.html] Setting PDF URL locally to %s" $pdfPath -}}
+  {{- else -}}
+    {{- $pdfPath = printf "%s%s" .Site.Params.productionIIIFURLPrefix (path.Join $contextPath $pdfFileName) -}}
+  {{- end -}}
+
+  <div class="presentation-api download">
+    <a href="{{ $pdfPath }}" title="{{ i18n "pdfDownload" }}" class="pdf-download">{{ i18n "pdfDownload" }}</a>
+  </div>
+{{- end -}}
