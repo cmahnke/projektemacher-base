@@ -12,6 +12,7 @@ idna
 auditwheel
 Cython
 qrcode
+python-frontmatter
 #GeoJSON Requirements
 geojson
 pyproj
@@ -23,3 +24,6 @@ Pillow
 #jxlpy @ git+https://github.com/olokelo/jxlpy@4cc41c4ec51dc2099c5b4b65235859f869e98ea0
 jxlpy>=0.9.3
 #pyvips
+#PDF tools
+pikepdf
+fpdf2

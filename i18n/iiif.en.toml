@@ -13,3 +13,6 @@ other = "IIIF"
 
 [manifest]
 other = "manifest"
+
+[pdfDownload]
+other = "Download as PDF"
