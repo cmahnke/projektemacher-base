@@ -5,6 +5,15 @@
   {{/* Check if we only got one param, this will be the geojson referece */}}
   {{- $geojson := . -}}
 {{- end -}}
+{{- $cluster := .cluster -}}
+{{- if eq $cluster nil -}}
+  {{- $cluster = false -}}
+{{- end -}}
+{{/* See https://openlayers.org/en/latest/apidoc/module-ol_style_Icon.html for options */}}
+{{- $marker := .marker -}}
+{{- if eq $marker nil -}}
+  {{- $marker = false -}}
+{{- end -}}
 {{- $id := md5 $geojson -}}
 {{- $var := printf "_%s" $id -}}
 <div class="map-wrapper">
@@ -15,6 +24,6 @@
   </div>
 </div>
 <script type="text/javascript">
-  var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm');
+  var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm', {{ $cluster | safeJS }} {{ if $marker }}, {{ $marker | safeJS}}  {{ end }});
   {{ $var | safeJS }}.updateSize();
 </script>
