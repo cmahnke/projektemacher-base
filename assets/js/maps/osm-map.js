@@ -31,22 +31,63 @@ export function initMap(element, url, source, cluster, marker) {
     overlay.setPosition(coord);
   }
 
+  /* Marker style */
+  var iconStyle;
+  var markerOptions = {};
+  if (marker !== undefined && marker) {
+    try {
+        marker = JSON.parse(marker);
+    } catch (e) {
+    }
+    iconStyle = new Style({image: new Icon(marker)});
+    markerOptions = {hitTolerance: 10};
+  }
+
+  function clusterMemberStyle(clusterMember) {
+    if (marker !== undefined && marker) {
+      return new Style({
+        geometry: clusterMember.getGeometry(),
+        image: new Icon(marker),
+      });
+    } else {
+      return new Style({
+        geometry: clusterMember.getGeometry()
+      });
+    }
+  }
+
   function clusterStyle(feature) {
     const size = feature.get('features').length;
     if (size > 1) {
-      return [
-        new Style({
-          image: outerCircle,
-        }),
-        new Style({
-          image: innerCircle,
-          text: new Text({
-            text: size.toString(),
-            fill: textFill,
-            stroke: textStroke,
+      if (marker !== undefined && marker) {
+        return [
+          new Style({image: new Icon(marker)}),
+          new Style({
+            image: new CircleStyle({radius: 15, displacement: [-10, 25], fill: new Fill({color: 'rgba(255, 255, 255, 0.7)'})}),
+            text: new Text({
+              text: size.toString(),
+              fill: textFill,
+              stroke: textStroke,
+              offsetY: -25,
+              offsetX: -10
+            })
           }),
-        }),
-      ];
+        ];
+      } else {
+        return [
+          new Style({
+            image: outerCircle,
+          }),
+          new Style({
+            image: innerCircle,
+            text: new Text({
+              text: size.toString(),
+              fill: textFill,
+              stroke: textStroke,
+            }),
+          }),
+        ];
+      }
     }
     const originalFeature = feature.get('features')[0];
     return clusterMemberStyle(originalFeature);
@@ -69,24 +110,13 @@ export function initMap(element, url, source, cluster, marker) {
   var closer = document.getElementById(element + '-popup-closer');
 
   /* Cluster coloring*/
-  const outerCircleFill = new Fill({color: 'rgba(255, 153, 102, 0.3)'});
-  const innerCircleFill = new Fill({color: 'rgba(255, 165, 0, 0.7)'});
-  const outerCircle = new CircleStyle({radius: 20, fill: outerCircleFill});
-  const innerCircle = new CircleStyle({radius: 14, fill: innerCircleFill});
+  const outerCircleFill = new Fill({color: 'rgba(255, 255, 255, 0.7)'});
+  const innerCircleFill = new Fill({color: 'rgba(255, 255, 255, 0.3)'});
+  const innerCircle = new CircleStyle({radius: 8, fill: innerCircleFill, stroke: new Stroke({color: 'rgba(51, 153, 204, 0.7)', width: 1.25})});
+  const outerCircle = new CircleStyle({radius: 15, fill: outerCircleFill, stroke: new Stroke({color: 'rgba(51, 153, 204, 0.3)', width: 1.25})});
   const textFill = new Fill({color: '#fff'});
   const textStroke = new Stroke({color: 'rgba(0, 0, 0, 0.6)', width: 3});
 
-  /* Marker style */
-  var iconStyle;
-  var markerOptions = {};
-  if (marker !== undefined && marker) {
-    try {
-        marker = JSON.parse(marker);
-    } catch (e) {
-    }
-    iconStyle = new Style({image: new Icon(marker)});
-    markerOptions = {hitTolerance: 10};
-  }
 
     // Base layer
     var baseLayer;
@@ -141,7 +171,7 @@ export function initMap(element, url, source, cluster, marker) {
                     if (cluster !== undefined && cluster) {
                       // See https://openlayers.org/en/latest/examples/clusters-dynamic.html
                       const clusterSource = new Cluster({
-                        distance: 35,
+                        distance: 25,
                         source: vectorSource,
                       });
 
