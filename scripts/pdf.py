@@ -120,7 +120,11 @@ def processSingle(post: Post, out: pathlib.Path):
                 label = r['params']['label']
             labels.append(label)
             cprint(f"Adding page {label} from {file}", 'yellow')
-            image_to_pdf(pdf, file)
+            try:
+                image_to_pdf(pdf, file)
+            except FileNotFoundError as e:
+                cprint(f"File not found: {e.filename}!", 'red')
+
         cprint(f"Saving to {out}", 'green')
         pdf.output(str(out))
         add_metadata(out, pdf_metadata, labels)
