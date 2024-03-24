@@ -49,21 +49,18 @@
   "purgecss": "^5.0.0",
   "react": "^18.2.0",
   "react-dom": "^18.2.0",
-  "stylelint": "^16.0.2",
-  "stylelint-config-prettier": "^9.0.3",
+  "stylelint": "^16.3.0",
+  "stylelint-config-prettier": "^9.0.5",
   "stylelint-config-sass-guidelines": "^11.0.0",
   "stylelint-config-standard": "^36.0.0",
   "stylelint-config-standard-scss": "^13.0.0",
-  "stylelint-no-unsupported-browser-features": "^8.0.0",
+  "stylelint-no-unsupported-browser-features": "^8.0.1",
   "stylelint-prettier": "^5.0.0",
-  "stylelint-scss": "^6.0.0",
+  "stylelint-scss": "^6.2.1",
   "svgo": "^3.2.0",
   "three": "^0.162.0",
   "toml": "^3.0.0",
   "xslt3": "^2.6.0"
- },
- "overrides": {
-  "string-width": "^6.1.0"
  },
  "scripts": {
   "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.yaml 'docs/css/*.css'",
