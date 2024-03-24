@@ -12,8 +12,11 @@ other = "Anaglyph"
 [mpo]
 other = "MPO"
 
+[depthmap]
+other = "Depth map"
+
 [single_frames]
-other = "Einzelbilder"
+other = "Single frames"
 
 [vr_glasses]
 other = "VR glasses"
@@ -35,11 +38,14 @@ other = "Both images as <a href=\"https://en.wikipedia.org/wiki/Anaglyph_3D\" ta
 [mpo_desc]
 other = "Both images in <a href=\"https://en.wikipedia.org/wiki/Multi_Picture_Object\" target=\"_blank\">MPO format</a>."
 
+[depthmap_desc]
+other = "A <a href=\"https://en.wikipedia.org/wiki/Depth_map\" target=\"_blank\">Depth map</a> generated from the singele frames."
+
 [left_image]
 other = "The left image."
 
 [right_image]
-otgher = "The right image."
+other = "The right image."
 
 # Actions
 [full_resolution_new_tab]

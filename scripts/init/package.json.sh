@@ -30,11 +30,15 @@ if [ -z "$YARN" ] ; then
   #Try /usr/local/bin/yarn
   if [ -x /usr/local/bin/yarn ] ; then
     YARN=/usr/local/bin/yarn
+  elif [ -x `npm root -g`/yarn/bin/yarn ] ; then
+    YARN=`npm root -g`/yarn/bin/yarn
   else
     npm install -g yarn
     YARN='npm run yarn'
   fi
 fi
+echo "Using 'yarn' from '$YARN'"
+
 echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', yarn is '$YARN'"
 
 CTX_PATH="$(dirname $($REALPATH $0))"

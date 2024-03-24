@@ -1,3 +1,6 @@
+{{- if not hugo.IsProduction -}}
+  <meta http-equiv="hugoEnvironment" content="{{ hugo.Environment }}">
+{{- end -}}
 {{ partial "html/head/metadata.html" . }}
 {{ partial "html/head/description.html" . }}
 {{ partial "html/head/og-meta.html" . }}

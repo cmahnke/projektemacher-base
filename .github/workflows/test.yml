@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.123.4
+  HUGO_VERSION: 0.124.1
 
 jobs:
   lint:
@@ -131,10 +131,25 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/setup-inkscape.sh
       - name: Install Inkscape and it's dependencies
         run: |
           ./scripts/github/setup-inkscape.sh
+
+  test_xslt_install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/setup-dependencies.sh
+      - name: Install Saxon and it's dependencies
+        run: |
+          ./scripts/github/setup-xslt.sh
+      - name: List Saxon directory
+        run: |
+          ls -al /opt/saxon
 
   test_PyHugolib_install:
     runs-on: ubuntu-22.04
@@ -162,12 +177,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.123.2', '0.123.3', 'latest']
+        version: ['0.123.3', '0.124.0', 'latest']
         can-fail: [false]
         include:
-          - version: 0.123.2
-            args: '--printI18nWarnings --printUnusedTemplates'
           - version: 0.123.3
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.124.0
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates'
