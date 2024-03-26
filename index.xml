@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projektemacher Base template on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/</link>
+    <description>Recent content in Projektemacher Base template on Projektemacher Base</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://theme.projektemacher.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>November 1961</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>October 1972</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tags 1</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tags 2</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tags 3</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tags 4</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ToDo</title>
+      <link>https://theme.projektemacher.org/todo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/todo/</guid>
+      <description>Introduction There are several sources for issues:
+The GitHub Issues The annotations / tags in various files This file General goals Finish this site as documentation Deprecate Hugo versions before 0.123 Remove duplicate functionality Use shortcode metadata for every shortcode </description>
+    </item>
+    
+  </channel>
+</rss>
