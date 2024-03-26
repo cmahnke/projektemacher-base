@@ -199,14 +199,16 @@ export function initMap(element, url, source, cluster, marker) {
                                 // Show an expanded view of the cluster members.
                                 clickFeature = features[0];
                                 featurePopUp(clickFeature);
-                                /*
                                 clickResolution = resolution;
-                                clusterCircles.setStyle(clusterCircleStyle);
-                                */
+                                //TODO: check for what this is needed
+                                //clusterCircles.setStyle(clusterCircleStyle);
                               } else {
                                 // Zoom to the extent of the cluster members.
                                 view.fit(extent, {duration: 500, padding: [50, 50, 50, 50]});
                               }
+                            } else if (clusterMembers.length == 1) {
+                              clickFeature = clusterMembers[0];
+                              featurePopUp(clickFeature);
                             }
                           }
                         });
