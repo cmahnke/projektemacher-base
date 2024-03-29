@@ -37,7 +37,8 @@
     "@fontsource/poiret-one": "^5.0.17",
     "@fontsource/purple-purse": "^5.0.18",
     "@fontsource/roboto": "^5.0.8",
-    "@fontsource/caprasimo": "^5.0.3"
+    "@fontsource/caprasimo": "^5.0.3",
+    "@fontsource/special-elite": "^5.0.8"
   },
   "devDependencies": {
     "stylelint": "^16.0.2",
