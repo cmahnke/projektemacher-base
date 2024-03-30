@@ -8,16 +8,20 @@
 <div class="{{ $classes }}">
     <main role="main" class="article include">
         <button id="fullscreen-button" type="button" class="fullscreen-button">
-            <i class="fullscreen-icon"></i>
+          <i class="fullscreen-icon"></i>
         </button>
         <div id="fullscreen-context" class="include-wrapper">
-            {{ partial "html/html-body.html" . }}
+          {{ partial "html/html-body.html" . }}
         </div>
     </main>
     {{- if .Content -}}
         <div class="container">
             <main role="main" class="article">
-                {{ partial "article.html" . }}
+              {{- if templates.Exists "article.html" -}}
+                {{- partial "article.html" . -}}
+              {{- else -}}
+                {{- warnf "[_default/html-body.html] Couln't find file article.html!" -}}
+              {{- end -}}
             </main>
         </div>
     {{- end -}}
