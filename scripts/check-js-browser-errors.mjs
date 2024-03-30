@@ -11,7 +11,7 @@ const app = express();
 /* Settings */
 const urlsFile = 'test-urls.txt';
 const testFile = 'test-urls.json';
-const configFile = ['config.toml', 'hugo.toml'];
+var configFile = ['config.toml', 'hugo.toml'];
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
 const localPort = 3000;
