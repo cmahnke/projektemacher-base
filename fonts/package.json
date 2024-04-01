@@ -39,7 +39,9 @@
     "@fontsource/purple-purse": "^5.0.18",
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/caprasimo": "^5.0.3",
-    "@fontsource/special-elite": "^5.0.8"
+    "@fontsource/special-elite": "^5.0.8",
+    "@fontsource/pixelify-sans": "^5.0.1",
+    "@fontsource/press-start-2p": "^5.0.19"
   },
   "devDependencies": {
     "stylelint": "^16.0.2",
