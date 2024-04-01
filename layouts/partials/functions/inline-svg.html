@@ -1,0 +1,6 @@
+{{- $svg := .svg -}}
+{{- $content := readFile $svg -}}
+{{- if not (fileExists $svg) -}}
+  {{- errorf "[partials/functions/inline-svg.html] File %s doesn't exist!" $svg -}}
+{{- end -}}
+{{- return ($content | safeHTML) -}}
