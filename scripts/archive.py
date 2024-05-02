@@ -51,7 +51,7 @@ async def archive(urls, client):
 
 def filter_links(links):
     def url_filter(item):
-        if item.startswith('http'):
+        if item is not None and item.startswith('http'):
             up = urlparse(item)
             if not up.hostname in exclude:
                 return item
