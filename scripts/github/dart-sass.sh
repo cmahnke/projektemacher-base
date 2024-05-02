@@ -1,8 +1,8 @@
 #!/bin/sh
 
 echo "Trying to set up Dart Sass"
-
-DARTSASS_VERSION=1.63.6
+# Last known working is 1.63.6
+DARTSASS_VERSION=1.75.0
 BIN_DIR=/usr/local/bin
 
 case "`uname`" in

@@ -1,0 +1,35 @@
+/* Variables that need to be defined */
+$font-body-font: 'Inconsolata' !default;
+$color-body-text: #333333 !default;
+$font-color-body: #333333 !default;
+$color-link-text: #333333 !default;
+$color-link-hover: #333333 !default;
+$color-link-active: #333333 !default;
+$color-header-text: #333333 !default;
+$color-paper: hsl(48, 93%, 89%);
+$color-paper-dark: darken($color-paper, 4%);
+$color-paper-light: lighten($color-paper, 4%);
+
+/* Imports */
+@import "projektemacher-base";
+@import "iframe-consent";
+@import "media-info";
+@import "media-info";
+@import "theme";
+@import "timeline";
+@import "share";
+@import "map";
+@import "icons";
+@import "iiif";
+@import "mirador";
+@import "footer";
+@import "menu";
+@import "audioplayer";
+@import "browser-banner";
+@import "theme";
+@import "color-sample";
+@import "textures/wood.scss";
+@import "3d/3d-model";
+
+/* These are ignore since they need external libraries */
+/* @import "ol-iiif"; */

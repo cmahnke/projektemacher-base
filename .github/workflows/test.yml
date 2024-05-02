@@ -89,6 +89,21 @@ jobs:
           ./scripts/github/docker-images.sh
           ./scripts/github/setup-yarn.sh
 
+  test_install_scss:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+
+      - name: Install Dart SASS
+        run: |
+          ./scripts/github/dart-sass.sh
+
+      - name: Run Dart SASS
+        run: |
+          sass -I assets/scss/ assets/scss/lint_dummy.scss
+
   test_fonts:
     runs-on: ubuntu-22.04
     steps:
