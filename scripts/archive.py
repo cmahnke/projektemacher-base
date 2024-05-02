@@ -11,7 +11,7 @@ from termcolor import cprint
 archive_prefix = "https://web.archive.org/save/"
 available_prefix = "http://archive.org/wayback/available?url="
 default_dir = "./docs"
-exclude = ['localhost', 'projektemacher.org', 'de.wikipedia.org', 'en.wikipedia.org', 'github.com', 'gohugo.io', 'archive.org']
+exclude = ['localhost', 'static.projektemacher.org', 'projektemacher.org', 'de.wikipedia.org', 'en.wikipedia.org', 'github.com', 'gohugo.io', 'archive.org', 'www.worldcat.org']
 max_age = 60
 
 def check_availability(url):
