@@ -1,4 +1,4 @@
-{{- if or .Site.Menus.main hugo.IsMultiLingual -}}
+{{- if or .Site.Menus.main hugo.IsMultilingual -}}
   {{- $basePath := "" -}}
   {{- if and (ne .File nil) (ne .File.Dir nil) -}}
     {{- $basePath = trim .File.Dir "/" -}}
@@ -21,7 +21,7 @@
           </li>
         {{- end -}}
       {{- end -}}
-      {{- if hugo.IsMultiLingual -}}
+      {{- if hugo.IsMultilingual -}}
         {{- range (default .Site.Home.AllTranslations .Translations) -}}
           {{- if ne $.Site.Language .Language -}}
             <li class="navigation-item lang">
