@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.124.1
+  HUGO_VERSION: 0.125.4
 
 jobs:
   lint:
@@ -31,6 +31,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Configure npm
+        run: npm config set legacy-peer-deps true
+
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
@@ -38,7 +41,7 @@ jobs:
 # Needed to check if the JXL Python plugin builds
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.9.1.sh
+          ./scripts/github/jxl-0.10.2.sh
 
 # Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
@@ -47,12 +50,16 @@ jobs:
 
       - name: Install Node dependencies
         run: |
+          #npm install --ignore-scripts
           yarn install --ignore-scripts
 
       - name: Run linters
         run: |
           yarn run lint
           yarn run eslint scripts/
+          #npx stylelint -c .stylelintrc.json 'assets/scss/*'
+          #npx eslint assets/js
+          #npx eslint scripts
 
   test_install:
     runs-on: ubuntu-22.04
@@ -177,12 +184,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.123.3', '0.124.0', 'latest']
+        version: ['0.123.3', '0.124.1', '0.125.4', 'latest']
         can-fail: [false]
         include:
           - version: 0.123.3
             args: '--printI18nWarnings --printUnusedTemplates'
-          - version: 0.124.0
+          - version: 0.124.1
+            args: '--printI18nWarnings --printUnusedTemplates'
+          - version: 0.125.4
             args: '--printI18nWarnings --printUnusedTemplates'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates'
@@ -206,7 +215,7 @@ jobs:
           python-version: '3.10'
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2.6.0
+        uses: peaceiris/actions-hugo@v3.0.0
         with:
           hugo-version: ${{ matrix.version }}
           extended: true

@@ -17,6 +17,9 @@ updates:
       npm:
         patterns:
         - '*'
+    ignore:
+      - dependency-name: "eslint"
+        versions: '>8'
   - package-ecosystem: "npm"
     directory: "/fonts"
     schedule:

@@ -25,6 +25,7 @@
     "@fontsource-variable/source-code-pro": "^5.0.16",
     "@fontsource-variable/tektur": "^5.0.3",
     "@fontsource-variable/tilt-neon": "^5.0.3",
+    "@fontsource-variable/museomoderno": "^5.0.20",
     "@fontsource/alata": "^5.0.8",
     "@fontsource/archivo": "^5.0.15",
     "@fontsource/berkshire-swash": "^5.0.17",
@@ -37,7 +38,11 @@
     "@fontsource/poiret-one": "^5.0.17",
     "@fontsource/purple-purse": "^5.0.18",
     "@fontsource/roboto": "^5.0.8",
-    "@fontsource/caprasimo": "^5.0.3"
+    "@fontsource/caprasimo": "^5.0.3",
+    "@fontsource/special-elite": "^5.0.8",
+    "@fontsource/pixelify-sans": "^5.0.1",
+    "@fontsource/press-start-2p": "^5.0.19",
+    "@fontsource-variable/handjet": "^5.0.4"
   },
   "devDependencies": {
     "stylelint": "^16.0.2",
