@@ -27,3 +27,7 @@ jxlpy>=0.9.3
 #PDF tools
 pikepdf
 fpdf2
+# Archiver
+beautifulsoup4
+httpx
+requests
