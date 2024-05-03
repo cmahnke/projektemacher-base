@@ -12,6 +12,7 @@ archive_prefix = "https://web.archive.org/save/"
 available_prefix = "http://archive.org/wayback/available?url="
 default_dir = "./docs"
 exclude = ['localhost', 'static.projektemacher.org', 'projektemacher.org', 'de.wikipedia.org', 'en.wikipedia.org', 'github.com', 'gohugo.io', 'archive.org', 'www.worldcat.org']
+# Maximal age in days
 max_age = 60
 
 def check_availability(url):
@@ -25,7 +26,7 @@ def check_availability(url):
         if age.days > max_age:
             cprint(f"URL {url} snapshot is older then {max_age}!", 'yellow')
             return False
-        cprint(f"URL {url} has been archived within the last {max_age}!", 'green')
+        cprint(f"URL {url} has been archived within the last {max_age} days!", 'green')
         return True
     else:
         cprint(f"URL {url} is not archived!", 'yellow')

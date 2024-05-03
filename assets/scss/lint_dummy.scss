@@ -29,6 +29,3 @@ $color-paper-light: lighten($color-paper, 4%);
 @import "color-sample";
 @import "textures/wood";
 @import "3d/3d-model";
-
-/* These are ignore since they need external libraries */
-/* @import "ol-iiif"; */
