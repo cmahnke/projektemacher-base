@@ -100,6 +100,16 @@ jobs:
         run: |
           ./scripts/github/dart-sass.sh
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install Yarn and Node modules
+        run: |
+          ./scripts/github/setup-yarn.sh
+          yarn install
+
       - name: Run Dart SASS
         run: |
           sass -I assets/scss/ assets/scss/lint_dummy.scss
