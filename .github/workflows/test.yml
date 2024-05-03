@@ -112,7 +112,7 @@ jobs:
 
       - name: Run Dart SASS
         run: |
-          sass -I assets/scss/ assets/scss/lint_dummy.scss
+          sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss
 
   test_fonts:
     runs-on: ubuntu-22.04
