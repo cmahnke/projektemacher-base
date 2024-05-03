@@ -108,7 +108,7 @@ jobs:
       - name: Install Yarn and Node modules
         run: |
           ./scripts/github/setup-yarn.sh
-          yarn install
+          yarn install --ignore-scripts
 
       - name: Run Dart SASS
         run: |
