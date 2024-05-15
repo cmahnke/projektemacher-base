@@ -1,0 +1,11 @@
+[cookieText]
+other = "This website uses cookies and similar mechanisms to analyse access. The data collected is passed on to third-party providers for this purpose. This requires your consent, which can be revoked at any time."
+
+[cookieAccept]
+other = "Accept"
+
+[cookieDeny]
+other = "Deny"
+
+[cookieMore]
+other = "More information"

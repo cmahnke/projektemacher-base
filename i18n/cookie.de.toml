@@ -1,0 +1,11 @@
+[cookieText]
+other = "Diese Website verwendet Cookies und ähnliche Mechanismen, um die Zugriffe zu analysieren. Die erhobenen Daten werden dafür an Drittanbieter weitergeben. Dafür ist Ihre Zustimung notwending, diese kann jederzeit wiederufen werden."
+
+[cookieAccept]
+other = "Zustimmen"
+
+[cookieDeny]
+other = "Ablehnen"
+
+[cookieMore]
+other = "Weitere Informationen"
