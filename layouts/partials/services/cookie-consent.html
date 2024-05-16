@@ -56,17 +56,17 @@
     document.getElementById('cookie-notice').style.display = 'block';
   }
 
-  document.querySelector('#cookie-notice .cookie-notice-accept').addEventListener("click",function() {
+  document.querySelector('#cookie-notice .cookie-notice-accept').addEventListener("click", function() {
     createCookie('cookie-notice-option','true',31);
     document.getElementById('cookie-notice').classList.add('hidden');
   });
 
-  document.querySelector('#cookie-notice .close').addEventListener("click",function() {
+  document.querySelector('#cookie-notice .close').addEventListener("click", function() {
     createCookie('cookie-notice-option','false',31);
     document.getElementById('cookie-notice').classList.add('hidden');
   });
 
-  document.querySelector('#cookie-notice .cookie-notice-deny').addEventListener("click",function() {
+  document.querySelector('#cookie-notice .cookie-notice-deny').addEventListener("click", function() {
     createCookie('cookie-notice-option','false',31);
     document.getElementById('cookie-notice').classList.add('hidden');
   });
