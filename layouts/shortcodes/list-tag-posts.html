@@ -1,0 +1,22 @@
+{{- $tag := "" -}}
+{{- with .Get "tag" -}}
+    {{- $tag = . -}}
+{{- end -}}
+
+{{- $section := "post" -}}
+{{- with .Get "section" -}}
+    {{- $section = . -}}
+{{- end -}}
+
+{{- if ne $tag "" -}}
+  {{- $pages := where .Site.Pages "Section" $section -}}
+  {{- $t := slice $tag -}}
+  {{- $pages := where $pages "Params.tags" "intersect" $t -}}
+  <ul class="tagged-posts {{ $tag | safeCSS }}">
+    {{- range $pages -}}
+      <li>
+        <a href="{{ .RelPermalink }}" title="{{ .Title }}">{{ .Title }}</a>
+      </li>
+    {{- end -}}
+  <ul>
+{{- end -}}
