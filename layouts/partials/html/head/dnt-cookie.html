@@ -1,0 +1,6 @@
+<script>
+  if (localStorage.getItem("doNotTrack") === null) {
+    localStorage.setItem("doNotTrack", "1") // default value before any choice has been made
+  }
+  var doNotTrack = localStorage.getItem("doNotTrack");
+</script>

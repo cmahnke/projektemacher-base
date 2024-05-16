@@ -1,0 +1,97 @@
+/* Inspired by https://defency.eu/posts/2023/10/hugo.io-how-to-integrate-cookie-consent-for-google-analytics/ */
+
+$accept-color: #0fff50;
+$decline-color: #fd1c03;
+$button-background: gray;
+
+#cookie-notice {
+  font-size: medium;
+  padding: 2rem 3rem;
+  display: none;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  min-height: 15vh;
+  max-height: 40vh;
+  background: rgb(70, 70, 70);
+  color: rgba(255,255,255,0.8);
+  z-index: 999;
+
+  .cookie-notice-text {
+    margin-bottom: 2rem;
+    font-size: 1.2em;
+    color: white;
+    line-height: 1.6;
+  }
+
+  a {
+    font-weight: 600;
+    display: inline-flex;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    z-index: 999;
+  }
+
+  .button {
+    background-color: $button-background;
+    border: none;
+    color: white;
+    padding: 1em;
+    text-align: center;
+    font-size: 1em;
+    line-height: 1;
+    vertical-align: middle;
+    margin: .6em;
+    opacity: 0.8;
+    transition: 0.3s;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+
+    span {
+      vertical-align: sub;
+    }
+
+    &:hover {
+      opacity: 1;
+      transition: 0.3s;
+    }
+
+    &:active {
+      box-shadow: -2px -2px lighten($button-background, 20%);
+      transform: translate(2px, 2px);
+    }
+
+    &.cookie-notice-accept {
+      color: $accept-color;
+    }
+
+    &.cookie-notice-deny {
+      color: $decline-color;
+    }
+
+    &.cookie-notice-more {
+      color: white;
+    }
+
+  }
+}
+
+@media (max-width: 767px) {
+  #cookie-notice {
+    left: 0px;
+
+    span {
+      display: block;
+      padding-top: 3px;
+      margin-bottom: 1rem;
+    }
+
+    a {
+      position: relative;
+      bottom: 4px;
+      z-index: 999;
+    }
+
+  }
+}
