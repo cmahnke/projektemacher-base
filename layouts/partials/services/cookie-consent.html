@@ -12,14 +12,14 @@
   {{/* TODO make about link configurable */}}
   <i class="close"></i>
   <div class="cookie-notice-text">{{ i18n "cookieText" }}</div>
-  <a class="cookie-notice-accept button">
+  <a href="#" class="cookie-notice-accept button">
     <span>{{ i18n "cookieAccept" }}</span>
   </a>
-  <a class="cookie-notice-deny button">
+  <a href="#" class="cookie-notice-deny button">
     <span>{{ i18n "cookieDeny" }}</span>
   </a>
   {{- if $privacyPolicyLink -}}
-    <a href="/about/en/privacy/" class="cookie-notice-more button">
+    <a href="{{ $privacyPolicyLink | safeHTML }}" class="cookie-notice-more button">
       <span>{{ i18n "cookieMore" }}</span>
     </a>
   {{- end -}}
