@@ -17,6 +17,18 @@ $button-background: gray;
   color: rgba(255,255,255,0.8);
   z-index: 999;
 
+  .close {
+    height: 2.4em;
+    width: 2.4em;
+    content: url($close-light);
+    display: inline-block;
+    vertical-align: bottom;
+    top: 1.4em;
+    right: 1.4em;
+    position: absolute;
+    cursor: pointer;
+  }
+
   .cookie-notice-text {
     margin-bottom: 2rem;
     font-size: 1.2em;
@@ -54,12 +66,14 @@ $button-background: gray;
 
     &:hover {
       opacity: 1;
+      box-shadow:
+                  -4px -4px lighten($button-background, 30%);
       transition: 0.3s;
     }
 
     &:active {
-      box-shadow: -2px -2px lighten($button-background, 20%);
-      transform: translate(2px, 2px);
+      box-shadow: -2px -2px lighten($button-background, 15%);
+      transform: translate(-2px, -2px);
     }
 
     &.cookie-notice-accept {
@@ -74,6 +88,17 @@ $button-background: gray;
       color: white;
     }
 
+  }
+
+  &.hidden {
+    animation: hide 500ms forwards;
+  }
+
+  @keyframes hide {
+    to {
+      opacity: 0;
+      display: none;
+    }
   }
 }
 

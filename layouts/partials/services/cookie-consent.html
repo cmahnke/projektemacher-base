@@ -10,6 +10,7 @@
 <div id="cookie-notice">
   {{/* TODO Add clode button */}}
   {{/* TODO make about link configurable */}}
+  <i class="close"></i>
   <div class="cookie-notice-text">{{ i18n "cookieText" }}</div>
   <a class="cookie-notice-accept button">
     <span>{{ i18n "cookieAccept" }}</span>
@@ -24,46 +25,49 @@
   {{- end -}}
 </div>
 <script>
-    function createCookie(name,value,days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + value + expires + "; path=/";
+  function createCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days*24*60*60*1000));
+      expires = "; expires=" + date.toUTCString();
     }
-    function readCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
+    document.cookie = name + "=" + value + expires + "; path=/";
+  }
+  function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
-    function eraseCookie(name) {
-        createCookie(name,"",-1);
-    }
+    return null;
+  }
+  function eraseCookie(name) {
+    createCookie(name,"",-1);
+  }
 
-    if(readCookie('cookie-notice-option')=='true') {
-        {{ if hugo.IsProduction | or (eq .Site.Params.env "production") }}
-                localStorage.setItem("doNotTrack", "0");
-        {{ end }}
-    } else if (readCookie('cookie-notice-option')!='false'){
-        document.getElementById('cookie-notice').style.display = 'block';
-    }
+  if(readCookie('cookie-notice-option')=='true') {
+      {{ if hugo.IsProduction | or (eq .Site.Params.env "production") }}
+              localStorage.setItem("doNotTrack", "0");
+      {{ end }}
+  } else if (readCookie('cookie-notice-option')!='false'){
+    document.getElementById('cookie-notice').style.display = 'block';
+  }
 
-    document.querySelector('#cookie-notice .cookie-notice-accept').addEventListener("click",function() {
-        createCookie('cookie-notice-option','true',31);
-        document.getElementById('cookie-notice').style.display = 'none';
-        location.reload();
-    });
+  document.querySelector('#cookie-notice .cookie-notice-accept').addEventListener("click",function() {
+    createCookie('cookie-notice-option','true',31);
+    document.getElementById('cookie-notice').classList.add('hidden');
+  });
 
-    document.querySelector('#cookie-notice .cookie-notice-deny').addEventListener("click",function() {
-        createCookie('cookie-notice-option','false',31);
-        document.getElementById('cookie-notice').style.display = 'none';
-        location.reload();
-    });
+  document.querySelector('#cookie-notice .close').addEventListener("click",function() {
+    createCookie('cookie-notice-option','false',31);
+    document.getElementById('cookie-notice').classList.add('hidden');
+  });
+
+  document.querySelector('#cookie-notice .cookie-notice-deny').addEventListener("click",function() {
+    createCookie('cookie-notice-option','false',31);
+    document.getElementById('cookie-notice').classList.add('hidden');
+  });
 </script>
