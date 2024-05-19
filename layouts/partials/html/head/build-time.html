@@ -2,3 +2,4 @@
 {{- if ne .GitInfo nil -}}
     <meta name="projektemacher.org:git-commit" content="{{ .GitInfo.AbbreviatedHash }}">
 {{- end -}}
+{{- partialCached "html/head/stats.html" . -}}

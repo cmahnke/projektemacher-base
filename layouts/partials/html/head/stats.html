@@ -1,0 +1,4 @@
+{{- $stats := $.Site.Data.stats -}}
+{{- if ne $stats nil -}}
+  <meta name="projektemacher.org:stats" content="{{ $stats | jsonify | safeHTML }}">
+{{- end -}}
