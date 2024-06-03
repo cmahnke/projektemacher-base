@@ -32,7 +32,7 @@
     "@fontsource/cormorant": "^5.0.8",
     "@fontsource/cormorant-garamond": "^5.0.8",
     "@fontsource/courier-prime": "^5.0.17",
-    "@fontsource/figtree": "^5.0.20",
+    "@fontsource-variable/figtree": "^5.0.21",
     "@fontsource/lato": "^5.0.17",
     "@fontsource/libre-baskerville": "^5.0.8",
     "@fontsource/permanent-marker": "^5.0.8",
@@ -41,7 +41,6 @@
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/caprasimo": "^5.0.3",
     "@fontsource/special-elite": "^5.0.8",
-    "@fontsource/pixelify-sans": "^5.0.1",
     "@fontsource/press-start-2p": "^5.0.19",
     "@fontsource-variable/handjet": "^5.0.4"
   },
