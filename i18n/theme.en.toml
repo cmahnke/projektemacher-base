@@ -92,3 +92,6 @@ other = "This feature"
 
 [underConstruction]
 other = "is currently under construction"
+
+[privacyPolicy]
+other = "Privacy policy"

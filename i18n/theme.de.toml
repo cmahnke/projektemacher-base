@@ -92,3 +92,6 @@ other = "Diese Funktionalität ist"
 
 [underConstruction]
 other = "derzeit in der Entwicklung"
+
+[privacyPolicy]
+other = "Datenschutzerklärung"

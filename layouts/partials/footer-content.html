@@ -15,6 +15,13 @@
     {{- if and $.Sites.First.Params.cc (eq $.Sites.First.Params.cc true) -}}
         <p class="cc">{{ i18n "cc" | safeHTML }}</p>
 	  {{- end -}}
+    {{- if and $.Sites.First.Params.footer.privacy (eq $.Sites.First.Params.footer.privacy true) -}}
+      {{ $privacyUrl := "/privacy" }}
+      {{- if and $.Sites.First.Params.footer.privacyUrl -}}
+        {{ $privacyUrl := $.Sites.First.Params.footer.privacyUrl }}
+      {{- end -}}
+      <p class="privacy"><a href="{{ $privacyUrl | safeHTML }}" title="{{ i18n "privacyPolicy" | safeHTML }}">{{ i18n "privacyPolicy" | safeHTML }}</a></p>
+	  {{- end -}}
     {{- if ne (.Scratch.Get "footer") nil -}}
         {{- .Scratch.Get "footer" | safeHTML -}}
     {{- end -}}
