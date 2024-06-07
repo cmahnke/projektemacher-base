@@ -24,10 +24,10 @@ Es erfolgt kein Tracking und der Betreiber hat auf diese Daten keinen direkten Z
 
 Die Zurverfügungstellung der Website wird durch den folgenden Hoster realisiert:
 
-GitHub Inc.
-88 Colin P Kelly Jr St
-San Francisco, CA 94107
-United States
+GitHub Inc.<br />
+88 Colin P Kelly Jr St<br />
+San Francisco, CA 94107<br />
+United States<br />
 
 Dieser ist Empfänger Ihrer personenbezogenen Daten. Dies entspricht berechtigtem Interesse im Sinne des [Art. 6 Abs. 1 S. 1 lit. f DSGVO](https://dsgvo-gesetz.de/art-6-dsgvo/), selbst keinen Server vorhalten zu müssen. Serverstandort ist USA.
 
@@ -41,4 +41,4 @@ Die Verarbeitung der unter diesem Abschnitt angegebenen Daten ist weder gesetzli
 
 GitHub hat Compliance-Maßnahmen für internationale Datenübermittlungen umgesetzt. Diese gelten für alle weltweiten Aktivitäten, bei denen GitHub personenbezogene Daten von natürlichen Personen in der EU verarbeitet. Diese Maßnahmen basieren auf den EU-Standardvertragsklauseln (SCCs). Weitere Informationen finden Sie unter: [https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-data-protection-addendum#attachment-1–the-standard-contractual-clauses-processors](https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-data-protection-addendum#attachment-1–the-standard-contractual-clauses-processors)
 
-~Basiert auf [open source privacy](https://opr.vc/docs/hosting/github_pages/)~
+<p class="small">Basiert auf <a href="https://opr.vc/docs/hosting/github_pages/">open source privacy</a></p>

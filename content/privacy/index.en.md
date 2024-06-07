@@ -24,10 +24,10 @@ There is no tracking and the operator has no direct access to this data.
 
 The website is provided by the following host:
 
-GitHub Inc.
-88 Colin P Kelly Jr St
-San Francisco, CA 94107
-United States
+GitHub Inc.<br />
+88 Colin P Kelly Jr St<br />
+San Francisco, CA 94107<br />
+United States<br />
 
 This is the recipient of your personal data. This corresponds to a legitimate interest within the meaning of [Art. 6 para. 1 sentence 1 lit. f GDPR](https://gdpr-info.eu/art-6-gdpr/) in not having to maintain a server ourselves. Server location is USA.
 
@@ -41,4 +41,4 @@ The processing of the data specified in this section is not required by law or c
 
 GitHub has implemented compliance measures for international data transfers. These apply to all global activities where GitHub processes personal data of natural persons in the EU. These measures are based on the EU Standard Contractual Clauses (SCCs). Further information can be found at: [https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-data-protection-addendum#attachment-1-the-standard-contractual-clauses-processors](https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-data-protection-addendum#attachment-1-the-standard-contractual-clauses-processors)
 
-~Automatic translation based on [open source privacy](https://opr.vc/docs/hosting/github_pages/)~
+<p class="small">Automatic translation based on <a href="https://opr.vc/docs/hosting/github_pages/">open source privacy</a></p>
