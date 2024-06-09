@@ -1,6 +1,7 @@
 {{/* See https://pfischbeck.de/en/posts/multilingual-dates-in-hugo/ */}}
 {{/* TODO: Deprecate this, it's build into Hugo for about three years now! */}}
-{{ .Date | time.Format ":date_full" -}}
+{{- warnf "[date.html] The date template is deprecated use https://gohugo.io/functions/time/format/" -}}
+{{- .Date | time.Format ":date_full" -}}
 {{/*
 {{ if eq "de" .Language.Lang }}
     {{- .Date.Day }}. {{ index .Site.Data.months (printf "%d" .Date.Month) }} {{ .Date.Year -}}
