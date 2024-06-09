@@ -20,7 +20,7 @@ set -e
 echo "Searching for requirements.txt in '$SEARCH_PATH'"
 for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt"`
 do
-    PYTHON_DEPENDENCIES=`cat $REQUIREMENTS | tr '\n' ' '`
+    PYTHON_DEPENDENCIES=`cat "$REQUIREMENTS" | tr '\n' ' '`
     echo "Installing Python modules '$PYTHON_DEPENDENCIES' from '$REQUIREMENTS'"
     pip install -r "$REQUIREMENTS"
 done
