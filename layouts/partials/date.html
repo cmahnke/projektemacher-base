@@ -1,6 +1,5 @@
 {{/* See https://pfischbeck.de/en/posts/multilingual-dates-in-hugo/ */}}
-{{/* TODO: Deprecate this, it's build into Hugo for about three years now! */}}
-{{- warnf "[date.html] The date template is deprecated use https://gohugo.io/functions/time/format/" -}}
+{{- errorf "[date.html] The date template is deprecated use https://gohugo.io/functions/time/format/" -}}
 {{- .Date | time.Format ":date_full" -}}
 {{/*
 {{ if eq "de" .Language.Lang }}
