@@ -20,7 +20,7 @@
         {{- $localPath := (substr .RelPermalink 1 (sub (len .RelPermalink) 1)) -}}
         {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
     {{- end -}}
-    "@context":"http://iiif.io/api/presentation/2.1/context.json",
+    "@context":"http://iiif.io/api/presentation/2/context.json",
     "@type":"sc:Manifest",
     "@id":"{{ .Permalink }}",
     "viewingDirection":"left-to-right",
