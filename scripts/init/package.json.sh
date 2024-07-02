@@ -79,7 +79,7 @@ if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
   cp ./themes/projektemacher-base/purgecss.config.js .
 fi
 
-$YARN install
+$YARN install --ignore-engines
 ERR=$?
 if [ $ERR -ne 0 ] ; then
     echo "yarn install failed with $ERR"
