@@ -72,7 +72,7 @@
   "postbuild-lint": "yarn run check-generated-css",
   "prepatch": "cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD",
   "patch": "yarn run patch-package",
-  "postinstall": "yarn run prepatch && yarn run patch && yarn run postinstall-mirador",
+  "postinstall": "yarn run prepatch && yarn run patch && yarn run postinstall-mirador && ls -al node_modules/mirador/dist",
   "postinstall-mirador": "cd node_modules/mirador && yarn add -D @babel/plugin-proposal-private-property-in-object && yarn install && yarn run build",
   "validate-iiif-gnu": "find docs -name manifest.json -print0 | xargs -r -0 -n1 yarn run eslint -c themes/projektemacher-base/.eslintrc.yml",
   "validate-gjson-gnu": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -r -0 -n1 yarn run eslint -c themes/projektemacher-base/.eslintrc.yml",
