@@ -64,3 +64,15 @@ other = "Magazine"
 
 [Magazin]
 other = "Magazine"
+
+[light]
+other = "Light"
+
+[maps]
+other = "Maps"
+
+[digitalImages]
+other = "Digital images"
+
+[data]
+other = "Daten"

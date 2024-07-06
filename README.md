@@ -67,3 +67,7 @@ The [example site](https://cmahnke.github.io/projektemacher-base/) is currently 
 * Finish migration to new font infrastructure
 * Include nomalize.js by default
 * Finish shortcode metadata
+
+# Tools
+
+* [IIIF validator](https://presentation-validator.iiif.io/)
