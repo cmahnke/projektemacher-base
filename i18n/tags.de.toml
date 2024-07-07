@@ -75,4 +75,7 @@ other = "Karten"
 other = "Digitale Bilder"
 
 [data]
-other = "Data"
+other = "Daten"
+
+[photography]
+other = "Fotografie"
