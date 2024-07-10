@@ -8,15 +8,19 @@
     {{- $section = . -}}
 {{- end -}}
 
+{{- $excludeSelf := true -}}
+
 {{- if ne $tag "" -}}
   {{- $pages := where .Site.Pages "Section" $section -}}
   {{- $t := slice $tag -}}
   {{- $pages := where $pages "Params.tags" "intersect" $t -}}
   <ul class="tagged-posts {{ $tag | safeCSS }}">
     {{- range $pages -}}
-      <li>
-        <a href="{{ .RelPermalink }}" title="{{ .Title }}">{{ .Title }}</a>
-      </li>
+      {{- if not (and $excludeSelf (eq .RelPermalink $.Page.RelPermalink)) -}}
+        <li>
+          <a href="{{ .RelPermalink }}" title="{{ .Title }}">{{ .Title }}</a>
+        </li>
+      {{- end -}}
     {{- end -}}
   <ul>
 {{- end -}}
