@@ -94,3 +94,6 @@ other = "Foto"
 
 [exhibition]
 other = "Ausstellung"
+
+[object]
+other = "Objekt"
