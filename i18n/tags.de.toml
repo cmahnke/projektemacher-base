@@ -65,35 +65,37 @@ other = "Zeitschrift"
 [Magazin]
 other = "Zeitschrift"
 
-[light]
+#christianmahnke.de
+
+[Light]
 other = "Licht"
 
-[maps]
+[Maps]
 other = "Karten"
 
-[digitalImages]
+[DigitalImages]
 other = "Digitale Bilder"
 
-[data]
+[Data]
 other = "Daten"
 
-[photography]
+[Photography]
 other = "Fotografie"
 
-[donation]
+[Donation]
 other = "Spende"
 
-[fun]
+[Fun]
 other = "Spaß"
 
-[travel]
+[Travel]
 other = "Reisen"
 
-[photo]
+[Photo]
 other = "Foto"
 
-[exhibition]
+[Exhibition]
 other = "Ausstellung"
 
-[object]
+[Object]
 other = "Objekt"
