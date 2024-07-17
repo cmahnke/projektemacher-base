@@ -99,3 +99,15 @@ other = "Exhibition"
 
 [Object]
 other = "Object"
+
+[Art]
+other = "Art"
+
+[WoodblockPrint]
+other = "Woodblock print"
+
+[Etching]
+other = "Etching"
+
+[Painting]
+other = "Painting"

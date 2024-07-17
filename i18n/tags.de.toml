@@ -99,3 +99,15 @@ other = "Ausstellung"
 
 [Object]
 other = "Objekt"
+
+[Art]
+other = "Kunst"
+
+[WoodblockPrint]
+other = "Holzschnitt"
+
+[Etching]
+other = "Radierung"
+
+[Painting]
+other = "Gemälde"
