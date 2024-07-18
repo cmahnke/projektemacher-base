@@ -119,4 +119,7 @@ other = "Linolschnitt"
 other = "Lithography"
 
 [Conference]
-other = "Conference]"
+other = "Conference"
+
+[Serigraphy]
+other = "Serigraphy"
