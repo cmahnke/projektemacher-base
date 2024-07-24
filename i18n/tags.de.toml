@@ -123,3 +123,9 @@ other = "Konferenz"
 
 [Serigraphy]
 other = "Serigrafie"
+
+[Signature]
+other = "Signatur"
+
+[BlindEmbossing]
+other = "Blindprägung"
