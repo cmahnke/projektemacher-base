@@ -22,9 +22,11 @@
           {{ $from }}
           {{ if $fromlink }}</a>{{ end }}
           {{ if and $fromlink $sourcelink  }}, {{ end }}
-          {{ if $sourcelink }}<a href="{{ $sourcelink }}">{{ end -}}
-          {{ i18n "source" }}
-          {{- if $sourcelink }}</a>{{ end }}
+          {{ if $sourcelink }}
+            <a href="{{ $sourcelink }}">
+              {{ i18n "source" }}
+            </a>
+          {{ end }}
         </div>
     {{ end }}
 </div>
