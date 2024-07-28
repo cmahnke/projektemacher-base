@@ -129,3 +129,10 @@ other = "Signature"
 
 [BlindEmbossing]
 other = "Blind embossing"
+
+# Tags for Ric
+[EBay]
+other = "eBay"
+
+[SourceBlogspot]
+other = "Taken from Blogspot"
