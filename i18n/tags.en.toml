@@ -136,3 +136,6 @@ other = "eBay"
 
 [SourceBlogspot]
 other = "Taken from Blogspot"
+
+[Hint]
+other = "Hint"
