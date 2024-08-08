@@ -10,5 +10,5 @@ echo "Using $PYTHON, at $PYTHON_PATH, version $PYTHON_VERSION"
 
 brew install jpeg-xl
 
-$PYTHON_PATH/pip$PYTHON_VERSION install Pillow
-LDFLAGS="-L/opt/homebrew/lib/" CPPFLAGS="-I/opt/homebrew/include/" $PYTHON_PATH/pip$PYTHON_VERSION install $JXLPY
+$PYTHON_PATH/pip$PYTHON_VERSION install --break-system-packages Pillow
+LDFLAGS="-L/opt/homebrew/lib/" CPPFLAGS="-I/opt/homebrew/include/" $PYTHON_PATH/pip$PYTHON_VERSION install --break-system-packages $JXLPY
