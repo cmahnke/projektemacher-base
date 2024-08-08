@@ -1,5 +1,5 @@
 #!/bin/sh
-RUN_DEPENDENCIES="bash coreutils imagemagick parallel rsync sshpass bash jq findutils libcairo2-dev pkg-config poppler-utils	libvips-tools patchelf wget"
+RUN_DEPENDENCIES="bash coreutils imagemagick parallel rsync sshpass bash jq findutils libcairo2-dev pkg-config poppler-utils	libvips-tools patchelf wget gifsicle"
 DOCKER_DEPENDENCIES="moby-buildx moby-cli moby-engine"
 
 sudo apt-get update
