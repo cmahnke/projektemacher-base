@@ -4,7 +4,8 @@ import sys, os, pathlib, re, argparse
 from pprint import pprint
 from math import floor
 from datetime import datetime
-from datetime import UTC
+# Doesn't work with Python 3.10
+#from datetime import UTC
 from fpdf import FPDF
 from fpdf import FPDF_VERSION
 from PIL import Image
@@ -41,7 +42,9 @@ def add_metadata(file, metadata, labels=None):
                 meta["dc:creator"] = metadata["author"]
             meta["pdf:Producer"] = f"py-pdf/fpdf{FPDF_VERSION}"
             meta["xmp:CreatorTool"] = __file__
-            meta["xmp:MetadataDate"] = datetime.now(UTC).isoformat()
+            meta["xmp:MetadataDate"] = datetime.now(datetime.utcnow().astimezone().tzinfo).isoformat()
+            # Doesn't work with Python 3.10
+            # meta["xmp:MetadataDate"] = datetime.now(UTC).isoformat()
         if labels is not None:
             try:
                 pdf.Root.PageLabels
