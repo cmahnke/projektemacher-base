@@ -4,6 +4,7 @@ import sys, os, pathlib, re, argparse
 from pprint import pprint
 from math import floor
 from datetime import datetime
+from datetime import UTC
 from fpdf import FPDF
 from fpdf import FPDF_VERSION
 from PIL import Image
@@ -14,11 +15,17 @@ from content import Post, Content
 
 PDF_DPI = 300
 TRANSCODE = True
+DEFAULT_IN_DPI = 600
 
 def scale_image(image: Image, dpi: int):
-    in_dpi = image.info['dpi'][0]
-    width = floor((image.size[0] / image.info['dpi'][0]) * dpi)
-    height = floor((image.size[1] / image.info['dpi'][1]) * dpi)
+    if 'dpi' in image.info:
+        in_dpi = image.info['dpi'][0]
+        width = floor((image.size[0] / image.info['dpi'][0]) * dpi)
+        height = floor((image.size[1] / image.info['dpi'][1]) * dpi)
+    else:
+        in_dpi = DEFAULT_IN_DPI
+        width = floor((image.size[0] / DEFAULT_IN_DPI) * dpi)
+        height = floor((image.size[1] / DEFAULT_IN_DPI) * dpi)
     cprint(f"Resizing from {image.size[0]}x{image.size[1]} to {width}x{height} (from {in_dpi}dpi to {dpi}dpi)", 'yellow')
     image = image.resize((width, height), Image.Resampling.LANCZOS)
     image.info['dpi'] = (dpi, dpi)
@@ -34,7 +41,7 @@ def add_metadata(file, metadata, labels=None):
                 meta["dc:creator"] = metadata["author"]
             meta["pdf:Producer"] = f"py-pdf/fpdf{FPDF_VERSION}"
             meta["xmp:CreatorTool"] = __file__
-            meta["xmp:MetadataDate"] = datetime.now(datetime.utcnow().astimezone().tzinfo).isoformat()
+            meta["xmp:MetadataDate"] = datetime.now(UTC).isoformat()
         if labels is not None:
             try:
                 pdf.Root.PageLabels
@@ -67,8 +74,13 @@ def image_to_pdf(pdf: FPDF, image: pathlib.Path) -> None:
     width: float
     height: float
     width, height = cover.size
-    dpi = cover.info['dpi'][0]
-    width, height = px_to_mm(width, cover.info['dpi'][0]), px_to_mm(height, cover.info['dpi'][1])
+    if 'dpi' in cover.info:
+        dpi = cover.info['dpi'][0]
+        width, height = px_to_mm(width, cover.info['dpi'][0]), px_to_mm(height, cover.info['dpi'][1])
+    else:
+        cprint(f"DPI not set assuming {DEFAULT_IN_DPI}", 'red')
+        width, height = px_to_mm(width, DEFAULT_IN_DPI), px_to_mm(height, DEFAULT_IN_DPI)
+        dpi = DEFAULT_IN_DPI
     cprint(f"Page size is {width}mm x {height}mm", 'yellow')
     pdf.add_page(format=(width, height))
     if dpi == PDF_DPI:
@@ -105,7 +117,7 @@ def processSingle(post: Post, out: pathlib.Path):
             file = os.path.join(path, r['src'])
 
             if str(file).endswith('.jxl'):
-                if jxlpy not in sys.modules:
+                if 'jxlpy' not in sys.modules:
                     import jxlpy
                     from jxlpy import JXLImagePlugin
 
