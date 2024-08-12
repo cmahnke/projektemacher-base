@@ -119,7 +119,7 @@ console.log('Wrote preference file to %s', prefFile);
         */
         headless: 'new',
         devtools: false,
-        args:['--use-gl=egl', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
+        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
