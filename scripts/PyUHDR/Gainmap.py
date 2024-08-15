@@ -1,3 +1,4 @@
+import logging
 import cv2 as cv
 import numpy as np
 import ffmpeg
@@ -17,14 +18,15 @@ def save_yuv(img, output_file, brightness=None, contrast=None):
     #cprint(f"$ {' '.join(args)}", 'yellow')
 
     if brightness is not None or contrast is not None:
-        if brightness is not None and contrast is None:
-            eq = f"brightness={brightness}"
-        elif brightness is None and contrast is not None:
-            eq = f"contrast={contrast}"
-        elif brightness is not None and contrast is not None:
-            eq = f"brightness={brightness}:contrast={contrast}"
+        eq = {}
+        if brightness is not None :
+            eq["brightness"] = brightness
+        if contrast is not None:
+            eq["contrast"] = contrast
+
+        logging.info(f"Equalizer settings to be used {eq}")
         converter = (
-            ffmpeg.input('pipe:', format='rawvideo', pix_fmt='bgr24', s=f"{width}x{height}").filter("eq", eq)
+            ffmpeg.input('pipe:', format='rawvideo', pix_fmt='bgr24', s=f"{width}x{height}").filter("eq", **eq)
             .filter("format", "p010").output(output_file).overwrite_output().run_async(pipe_stdin=True)
         )
     else:
