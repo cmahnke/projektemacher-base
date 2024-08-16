@@ -46,9 +46,7 @@ class Posts:
             if hasattr(exc, "problem_mark"):
                 mark = exc.problem_mark
                 cprint(
-                    "Error in {} position: ({}:{})".format(
-                        file, mark.line + 1, mark.column + 1
-                    ),
+                    "Error in {} position: ({}:{})".format(file, mark.line + 1, mark.column + 1),
                     "red",
                 )
         except Exception as inst:

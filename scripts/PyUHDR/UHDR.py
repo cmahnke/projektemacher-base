@@ -68,9 +68,7 @@ class UHDR:
         return img, exif
 
     def _tmp_img(self):
-        with tempfile.NamedTemporaryFile(
-            mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()
-        ) as sdr:
+        with tempfile.NamedTemporaryFile(mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()) as sdr:
             file = sdr.name
             logging.info(f"Saving PIL Image to {file}")
             self._image.save(sdr, subsampling=0, format="JPEG", quality=self.quality)
@@ -109,7 +107,7 @@ class UHDR:
             if not self.debug:
                 atexit.register(os.remove, yuv_output)
             else:
-                logging.info(f"Debug enabled, keeping file {file} after end of program")
+                logging.info(f"Debug enabled, keeping file {yuv_output} after end of program")
             yuv_output = save_yuv(
                 self._image,
                 yuv_output,
@@ -120,6 +118,4 @@ class UHDR:
         else:
             yuv_output = gainmap
 
-        return self._uhdrapp.uhdr_process(
-            self._tmp_img(), yuv_output, out_file=out_file
-        )
+        return self._uhdrapp.uhdr_process(self._tmp_img(), yuv_output, out_file=out_file)

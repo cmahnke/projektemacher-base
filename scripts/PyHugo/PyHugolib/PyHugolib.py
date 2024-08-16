@@ -21,11 +21,7 @@ class PyHugolib:
         self.library = self._load_lib()
 
     def _load_lib(self):
-        candidates = list(
-            Path(os.path.dirname(inspect.getfile(PyHugolib))).glob(
-                PyHugolib._library_pattern
-            )
-        )
+        candidates = list(Path(os.path.dirname(inspect.getfile(PyHugolib))).glob(PyHugolib._library_pattern))
         if len(candidates) < 1:
             raise "Can't find hugolib!"
         self.logger.info("Loading Library {}".format(candidates[0]))

@@ -10,9 +10,7 @@ from PIL import Image
 class GainmapPreprocessing:
     def normalize(img):
         # cvAr = greyscale(pilImg)
-        norm = cv.normalize(
-            src=img, dst=None, beta=0, alpha=255, norm_type=cv.NORM_MINMAX
-        )
+        norm = cv.normalize(src=img, dst=None, beta=0, alpha=255, norm_type=cv.NORM_MINMAX)
         return norm
 
     def grayscale(img):
@@ -81,9 +79,7 @@ def save_yuv(
 
         logging.info(f"Equalizer settings to be used {eq}")
         converter = (
-            ffmpeg.input(
-                "pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}"
-            )
+            ffmpeg.input("pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}")
             .filter("eq", **eq)
             .filter("format", "p010")
             .output(output_file)
@@ -92,9 +88,7 @@ def save_yuv(
         )
     else:
         converter = (
-            ffmpeg.input(
-                "pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}"
-            )
+            ffmpeg.input("pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}")
             .filter("format", "p010")
             .output(output_file)
             .overwrite_output()

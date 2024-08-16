@@ -20,15 +20,12 @@ class UHDRApp:
         self.init()
         self.debug = debug
         if default_ultrahdr_app_bin == "" or (
-            not os.path.isfile(default_ultrahdr_app_path)
-            and not os.access(default_ultrahdr_app_path, os.X_OK)
+            not os.path.isfile(default_ultrahdr_app_path) and not os.access(default_ultrahdr_app_path, os.X_OK)
         ):
             self.ultrahdr_app_path = shutil.which(default_ultrahdr_app_bin)
         else:
             self.ultrahdr_app_path = default_ultrahdr_app_path
-        logging.warning(
-            f"UltraHDR app initialized, binary is at {self.ultrahdr_app_path}"
-        )
+        logging.warning(f"UltraHDR app initialized, binary is at {self.ultrahdr_app_path}")
 
     def init(self):
         try:
@@ -51,40 +48,30 @@ class UHDRApp:
                 width, height = img.size
             logging.info(f"Loaded file {image}, dimensions {width}x{height}")
         elif isinstance(image, Image.Image):
-            logging.warning(
-                f"PIL Image passed to UHDR app wrapper, saving as file - metadata might get lost!"
-            )
+            logging.warning(f"PIL Image passed to UHDR app wrapper, saving as file - metadata might get lost!")
             width, height = image.size
-            with tempfile.NamedTemporaryFile(
-                mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()
-            ) as sdr:
+            with tempfile.NamedTemporaryFile(mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()) as sdr:
                 logging.info(f"Saving PIL Image to {sdr.name}")
                 image.save(sdr)
                 image = sdr.name
             if not self.debug:
                 atexit.register(os.remove, image)
             else:
-                logging.info(
-                    f"Debug enabled, keeping file {image} after end of program"
-                )
+                logging.info(f"Debug enabled, keeping file {image} after end of program")
 
         elif isinstance(image, (np.ndarray, np.generic)):
             logging.warning(
                 f"NumPy Array (certainly from OpenCV) passed to UHDR app wrapper, saving as file - metadata might get lost!"
             )
             height, width, channels = img.shape
-            with tempfile.NamedTemporaryFile(
-                mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()
-            ) as sdr:
+            with tempfile.NamedTemporaryFile(mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()) as sdr:
                 logging.info(f"Saving NumPy Image to {sdr.name}")
                 cv.imwrite(sdr.name, image)
                 image = sdr.name
             if not self.debug:
                 atexit.register(os.remove, image)
             else:
-                logging.info(
-                    f"Debug enabled, keeping file {image} after end of program"
-                )
+                logging.info(f"Debug enabled, keeping file {image} after end of program")
 
         else:
             logging.error(f"Can't handle image of type {type(image)}")
@@ -96,9 +83,7 @@ class UHDRApp:
         if self.client is None:
             return self.uhdr_process_cli(image, gainmap_file, width, height, out_file)
         else:
-            return self.uhdr_process_docker(
-                image, gainmap_file, width, height, out_file
-            )
+            return self.uhdr_process_docker(image, gainmap_file, width, height, out_file)
 
     def uhdr_process_cli(self, input, gainmap_file, width, height, out_file="out.jpeg"):
         args = [
@@ -122,9 +107,7 @@ class UHDRApp:
         subprocess.check_call(args)
         return out_file
 
-    def uhdr_process_docker(
-        self, input, gainmap_file, width, height, out_file="out.jpeg"
-    ):
+    def uhdr_process_docker(self, input_file, gainmap_file, width, height, out_file="out.jpeg"):
         args = [
             default_ultrahdr_app_bin,
             "-m",
@@ -132,7 +115,7 @@ class UHDRApp:
             "-p",
             gainmap_file,
             "-i",
-            input,
+            input_file,
             "-w",
             str(width),
             "-h",
