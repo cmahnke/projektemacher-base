@@ -18,6 +18,10 @@ class UHDR:
 
     def _open(self, file):
         if isinstance(file, str):
+            if str(file).endswith('.jxl'):
+                if 'jxlpy' not in sys.modules:
+                    import jxlpy
+                    from jxlpy import JXLImagePlugin
             img = Image.open(file)
             width, height = img.size
         elif isinstance(image, Image.Image):
