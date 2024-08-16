@@ -1,11 +1,12 @@
 import os, io, re, glob, pathlib, mimetypes
 import frontmatter
 
+
 class Post:
     filePattern = "(_?)index(\.([a-zA-Z-]){2,5})?\.md"
     filePatternMatcher = re.compile(filePattern)
 
-    def __init__(self, path, lang = None):
+    def __init__(self, path, lang=None):
         self.files = {}
         self.post = {}
         self.section = False
@@ -24,7 +25,7 @@ class Post:
         if not None in self.post:
             self.post[None] = self.post[list(self.post.keys())[0]]
             self.files[None] = self.files[list(self.files.keys())[0]]
-        if self.files[None].startswith('_'):
+        if self.files[None].startswith("_"):
             self.section = True
 
     def _fromDict(self, dict):
@@ -44,40 +45,41 @@ class Post:
     def _findResources(self, lang):
         if not lang in self.resources:
             self.resources[lang] = []
-        if 'resources' in self.post[lang].metadata:
-            for resource in self.post[lang].metadata['resources']:
+        if "resources" in self.post[lang].metadata:
+            for resource in self.post[lang].metadata["resources"]:
                 self.resources[lang].append(resource)
 
     def _load(self, lang, path):
         with open(path) as f:
             self.post[lang] = frontmatter.load(f)
 
-    def getContent(self, lang = None):
+    def getContent(self, lang=None):
         return self.post[lang].content
 
-    def getMetadata(self, lang = None):
+    def getMetadata(self, lang=None):
         return self.post[lang].metadata
 
-    def getResources(self, lang = None):
+    def getResources(self, lang=None):
         if len(self.resources[lang]) == 0:
             return None
         return self.resources[lang]
 
-    def getResourcesByType(self, type, lang = None):
+    def getResourcesByType(self, type, lang=None):
         retRes = []
         if len(self.resources[lang]) == 0:
             return None
         for r in self.resources[lang]:
-            if 'src' in r:
-                t = mimetypes.guess_type(r['src'])
+            if "src" in r:
+                t = mimetypes.guess_type(r["src"])
                 if t[0].startswith(type):
                     retRes.append(r)
         if len(retRes) == 0:
             return None
         return retRes
 
+
 class Content:
-    def __init__(self, path='content'):
+    def __init__(self, path="content"):
         self.path = path
         self.posts = []
         self.iterPos = -1
@@ -91,7 +93,7 @@ class Content:
                 self.posts.append(Post(post_variants))
         mimetypes.init()
 
-    def __iter__(self) :
+    def __iter__(self):
         return self
 
     def __next__(self):

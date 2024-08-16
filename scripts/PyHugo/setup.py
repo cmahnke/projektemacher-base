@@ -9,6 +9,7 @@ go_path = os.path.join(cwd, "go")
 
 # Heavily inspired by PyTorch setup.py
 
+
 class clean(setuptools.Command):
     user_options = []
 
@@ -21,15 +22,16 @@ class clean(setuptools.Command):
     def run(self):
         import glob
 
-        with open('.gitignore', 'r') as f:
+        with open(".gitignore", "r") as f:
             ignores = f.read()
-            for wildcard in filter(None, ignores.split('\n')):
-                wildcard = wildcard.lstrip('./')
+            for wildcard in filter(None, ignores.split("\n")):
+                wildcard = wildcard.lstrip("./")
                 for filename in glob.glob(wildcard):
                     try:
                         os.remove(filename)
                     except OSError:
                         shutil.rmtree(filename, ignore_errors=True)
+
 
 def main():
     dist = Distribution()
@@ -42,13 +44,13 @@ def main():
         sys.exit(1)
 
     cmdclass = {
-        'clean': clean,
+        "clean": clean,
     }
 
-    hugolib = Extension('PyHugolib.hugolib',
-                    sources = ['go/hugolib.go'])
+    hugolib = Extension("PyHugolib.hugolib", sources=["go/hugolib.go"])
 
-    setup(name="PyHugolib",
+    setup(
+        name="PyHugolib",
         version="0.0.1",
         description="Python interface for Hugolib",
         author="Christian Mahnke",
@@ -56,10 +58,10 @@ def main():
         cmdclass=cmdclass,
         packages=setuptools.find_packages(),
         ext_modules=[hugolib],
-        build_golang={'root': 'projektemacher.org/hugo/python'},
-        setup_requires=[
-            'setuptools-golang>=2.7.0'
-        ])
+        build_golang={"root": "projektemacher.org/hugo/python"},
+        setup_requires=["setuptools-golang>=2.7.0"],
+    )
+
 
 if __name__ == "__main__":
     main()

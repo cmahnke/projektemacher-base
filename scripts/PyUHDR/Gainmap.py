@@ -6,10 +6,13 @@ import numpy as np
 import ffmpeg
 from PIL import Image
 
+
 class GainmapPreprocessing:
     def normalize(img):
-        #cvAr = greyscale(pilImg)
-        norm = cv.normalize(src=img, dst=None, beta=0, alpha=255, norm_type=cv.NORM_MINMAX)
+        # cvAr = greyscale(pilImg)
+        norm = cv.normalize(
+            src=img, dst=None, beta=0, alpha=255, norm_type=cv.NORM_MINMAX
+        )
         return norm
 
     def grayscale(img):
@@ -31,11 +34,13 @@ class GainmapPreprocessing:
     def invert(img):
         return cv.bitwise_not(img)
 
+
 def get_processors():
     processors = {}
     for function in getmembers(GainmapPreprocessing, predicate=isfunction):
         processors[function[0]] = function[1]
     return processors
+
 
 def process(img, pipeline):
     if isinstance(img, Image.Image):
@@ -46,7 +51,15 @@ def process(img, pipeline):
         img = processors[processor](img)
     return img
 
-def save_yuv(img, output_file, brightness=None, contrast=None, pipeline=None, return_prerocessed=False):
+
+def save_yuv(
+    img,
+    output_file,
+    brightness=None,
+    contrast=None,
+    pipeline=None,
+    return_prerocessed=False,
+):
     if isinstance(img, (np.ndarray, np.generic)):
         pass
     elif isinstance(img, Image.Image):
@@ -59,26 +72,33 @@ def save_yuv(img, output_file, brightness=None, contrast=None, pipeline=None, re
         img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
     height, width, channels = img.shape
 
-    #args = ['ffmpeg', '-i', 'pipe:', '-filter:v', 'format=p010', name]
-    #cprint(f"$ {' '.join(args)}", 'yellow')
-
     if brightness is not None or contrast is not None:
         eq = {}
-        if brightness is not None :
+        if brightness is not None:
             eq["brightness"] = brightness
         if contrast is not None:
             eq["contrast"] = contrast
 
         logging.info(f"Equalizer settings to be used {eq}")
         converter = (
-            ffmpeg.input('pipe:', format='rawvideo', pix_fmt='bgr24', s=f"{width}x{height}").filter("eq", **eq)
-            .filter("format", "p010").output(output_file).overwrite_output().run_async(pipe_stdin=True)
+            ffmpeg.input(
+                "pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}"
+            )
+            .filter("eq", **eq)
+            .filter("format", "p010")
+            .output(output_file)
+            .overwrite_output()
+            .run_async(pipe_stdin=True)
         )
     else:
-
         converter = (
-            ffmpeg.input('pipe:', format='rawvideo', pix_fmt='bgr24', s=f"{width}x{height}")
-            .filter("format", "p010").output(output_file).overwrite_output().run_async(pipe_stdin=True)
+            ffmpeg.input(
+                "pipe:", format="rawvideo", pix_fmt="bgr24", s=f"{width}x{height}"
+            )
+            .filter("format", "p010")
+            .output(output_file)
+            .overwrite_output()
+            .run_async(pipe_stdin=True)
         )
     converter.communicate(input=img.astype(np.uint8).tobytes())
     converter.stdin.close()
@@ -88,8 +108,9 @@ def save_yuv(img, output_file, brightness=None, contrast=None, pipeline=None, re
     else:
         return (output_file, img)
 
+
 def pil_to_numpy(img):
-    return cv.cvtColor(np.array(img.convert('RGB')), cv.COLOR_RGB2BGR)
+    return cv.cvtColor(np.array(img.convert("RGB")), cv.COLOR_RGB2BGR)
 
 
 processors = get_processors()

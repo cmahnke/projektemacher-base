@@ -3,6 +3,7 @@ wheel
 termcolor
 pyyaml
 toml
+iiif
 icalendar
 pylint
 qrcode ~=7.4
@@ -32,3 +33,9 @@ fpdf2
 beautifulsoup4
 httpx
 requests
+# HDR related
+ffmpeg-python
+opencv
+opencv-contrib-python-headless
+docker
+pyexiv2

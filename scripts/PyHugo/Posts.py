@@ -1,6 +1,7 @@
 import os, io, re, yaml, glob
 from termcolor import cprint
 
+
 class Posts:
     filePattern = "(_?)index(\.([a-zA-Z-]){2,5})?\.md"
     paths = []
@@ -36,16 +37,21 @@ class Posts:
 
         return postFiles
 
-    def readMetadata (self, file):
+    def readMetadata(self, file):
         post = io.open(file, mode="r", encoding="utf-8").read()
-        header = re.sub(r'^---$.(.*?)^---$.*', "\\1", post, 0, re.MULTILINE | re.DOTALL)
+        header = re.sub(r"^---$.(.*?)^---$.*", "\\1", post, 0, re.MULTILINE | re.DOTALL)
         try:
             post = yaml.load(header, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
-            if hasattr(exc, 'problem_mark'):
-               mark = exc.problem_mark
-               cprint("Error in {} position: ({}:{})".format(file, mark.line + 1, mark.column + 1), 'red')
+            if hasattr(exc, "problem_mark"):
+                mark = exc.problem_mark
+                cprint(
+                    "Error in {} position: ({}:{})".format(
+                        file, mark.line + 1, mark.column + 1
+                    ),
+                    "red",
+                )
         except Exception as inst:
-            cprint("Error in %s".format(file), 'red')
+            cprint("Error in %s".format(file), "red")
 
         return post
