@@ -2,21 +2,25 @@ import logging
 import tempfile
 import atexit
 
+from PIL import Image
+
 from .UHDRApp import UHDRApp
-from .Gainmap import save_yuv
+from .Gainmap import save_yuv, pil_to_numpy
 
 class UHDR:
-    def __init__(self, image, brightness=None, contrast=None):
+    def __init__(self, image, brightness=None, contrast=None, pipeline=None, debug=False):
         self.uhdrapp = UHDRApp()
-        self.image = self.open(image)
+        self._image = self._open(image)
         self.brightness = brightness
         self.contrast = contrast
+        self.pipeline = pipeline
+        self.debug = debug
 
-    def open(self, file):
-        if isinstance(image, str):
-            img = Image.open(image)
+    def _open(self, file):
+        if isinstance(file, str):
+            img = Image.open(file)
             width, height = img.size
-        elif isinstance(image, Image):
+        elif isinstance(image, Image.Image):
             img = file
         #Crop if needed
         w, h = img.size
@@ -38,19 +42,33 @@ class UHDR:
         return img
 
     def _tmp_img(self):
-        with tempfile.NamedTemporaryFile(mode="wb") as sdr:
-            self.image.save(sdr)
+        with tempfile.NamedTemporaryFile(mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()) as sdr:
             file = sdr.name
-        atexit.register(os.remove, file)
+            logging.info(f"Saving PIL Image to {file}")
+            self._image.save(sdr)
+        if not debug:
+            atexit.register(os.remove, file)
+        else:
+            logging.info(f"Debug enabled, keeping file {file} after end of program")
         return file
+
+    @property
+    def image(self):
+        return self._image
+
+    @property
+    def image_cv(self):
+        return pil_to_numpy(self._image)
 
     def process(self, out_file, gainmap = None):
         if gainmap is None:
             yuv_output = tempfile.NamedTemporaryFile(mode="wb")
-            atexit.register(os.remove, yuv_output)
-            yuv_output = save_yuv(self.image, yuv_output, brightness=self.brightness, contrast=self.contrast)
+            if not debug:
+                atexit.register(os.remove, yuv_output)
+            else:
+                logging.info(f"Debug enabled, keeping file {file} after end of program")
+            yuv_output = save_yuv(self._image, yuv_output, brightness=self.brightness, contrast=self.contrast, pipeline=self.pipeline)
         else:
             yuv_output = gainmap
-
 
         return self.uhdrapp.uhdr_process(self._tmp_img, yuv_output, out_file=out_file)

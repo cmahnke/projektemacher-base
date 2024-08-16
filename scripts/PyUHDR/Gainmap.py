@@ -1,14 +1,59 @@
 import logging
+from inspect import getmembers, isfunction
+
 import cv2 as cv
 import numpy as np
 import ffmpeg
 from PIL import Image
 
-def save_yuv(img, output_file, brightness=None, contrast=None):
+class GainmapPreprocessing:
+    def normalize(img):
+        #cvAr = greyscale(pilImg)
+        norm = cv.normalize(src=img, dst=None, beta=0, alpha=255, norm_type=cv.NORM_MINMAX)
+        return norm
+
+    def grayscale(img):
+        return cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+    def denoise(img):
+        return cv.fastNlMeansDenoising(img)
+
+    def smoothen(img):
+        return cv.bilateralFilter(cvAr, 25, 75, 75)
+
+    def white_balance(img, balancer="simple"):
+        if balancer == "simple":
+            wb = cv.xphoto.createSimpleWB()
+        elif balencer == "grayworld":
+            wb = cv.xphoto.createGrayworldWB()
+        return wb.balanceWhite(img)
+
+    def invert(img):
+        return cv.bitwise_not(img)
+
+def get_processors():
+    processors = {}
+    for function in getmembers(GainmapPreprocessing, predicate=isfunction):
+        processors[function[0]] = function[1]
+    return processors
+
+def process(img, pipeline):
+    if isinstance(img, Image.Image):
+        img = pil_to_numpy(img)
+    logging.info(f"Processing pipline {', '.join(pipeline)}")
+    for processor in pipeline:
+        logging.info(f"Running processor {processor}")
+        img = processors[processor](img)
+    return img
+
+def save_yuv(img, output_file, brightness=None, contrast=None, pipeline=None, return_prerocessed=False):
     if isinstance(img, (np.ndarray, np.generic)):
         pass
-    elif isinstance(image, Image):
-        img = cv.cvtColor(np.array(img.convert('RGB')), cv.COLOR_RGB2BGR)
+    elif isinstance(img, Image.Image):
+        img = pil_to_numpy(img)
+
+    if pipeline is not None and len(pipeline):
+        img = process(img, pipeline)
 
     if len(img.shape) < 3:
         img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
@@ -38,4 +83,13 @@ def save_yuv(img, output_file, brightness=None, contrast=None):
     converter.communicate(input=img.astype(np.uint8).tobytes())
     converter.stdin.close()
     converter.wait()
-    return output_file
+    if not return_prerocessed:
+        return output_file
+    else:
+        return (output_file, img)
+
+def pil_to_numpy(img):
+    return cv.cvtColor(np.array(img.convert('RGB')), cv.COLOR_RGB2BGR)
+
+
+processors = get_processors()

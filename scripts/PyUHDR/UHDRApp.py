@@ -3,6 +3,7 @@ import shutil
 import logging
 import subprocess
 import atexit
+import tempfile
 
 from PIL import Image
 import docker
@@ -40,9 +41,10 @@ class UHDRApp:
         if isinstance(image, str):
             img = Image.open(image)
             width, height = img.size
-        elif isinstance(image, Image):
-            width, height = img.size
-            with tempfile.NamedTemporaryFile(mode="wb") as sdr:
+        elif isinstance(image, Image.Image):
+            width, height = image.size
+            with tempfile.NamedTemporaryFile(mode="wb", suffix=".jpg", delete=False, dir=os.getcwd()) as sdr:
+                logging.info(f"Saving PIL Image to {sdr.name}")
                 image.save(sdr)
                 image = sdr.name
             atexit.register(os.remove, image)
@@ -63,6 +65,6 @@ class UHDRApp:
 
     def uhdr_process_docker(self, input, gainmap_file, width, height, out_file="out.jpeg"):
         args = [default_ultrahdr_app_bin, "-m", "0", "-p", gainmap_file, "-i", input, "-w", str(width), "-h", str(height), "-a", "0", "-z", out_file]
-        logging.debug(f"$ {' '.join(args)}")
+        logging.debug(f"$ DOCKER {' '.join(args)}")
         self.client.containers.run(docker_image, args, volumes=[f"{os.getcwd()}:{os.getcwd()}"], working_dir=os.getcwd())
         return out_file
