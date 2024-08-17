@@ -9,22 +9,13 @@ from PIL.ExifTags import TAGS
 import pyexiv2
 from .UHDRApp import UHDRApp
 from .Gainmap import save_yuv, pil_to_numpy, debug_save
+from .UHDRError import UHDRResizeError
 
 
 class UHDR:
     debug_gainmap = "debug-gainmap.jpg"
 
-    def __init__(
-        self,
-        image,
-        brightness=None,
-        contrast=None,
-        pipeline=None,
-        debug=False,
-        quality=100,
-        metadata=None,
-        scale=True
-    ):
+    def __init__(self, image, brightness=None, contrast=None, pipeline=None, debug=False, quality=100, metadata=None, scale=True):
         self._uhdrapp = UHDRApp()
         self._image, exif = self._open(image, scale)
         self.brightness = brightness
@@ -46,37 +37,34 @@ class UHDR:
                 if "jxlpy" not in sys.modules:
                     import jxlpy
                     from jxlpy import JXLImagePlugin
+
                     pyexiv2.enableBMFF()
             img = Image.open(file)
-            width, height = img.size
             exif = pyexiv2.Image(file).read_exif()
 
         elif isinstance(file, Image.Image):
             img = file
             exif = UHDR.convert_exif(img.getexif())
+        elif isinstance(file, (np.ndarray, np.generic)):
+            raise ValueError("NumPy array (from OpenCV) as in out not supported")
 
         # Crop if needed
         w, h = img.size
+        logging.debug(f"Loaded image with dimensions {w}x{h}")
         if (w % 2 or h % 2) and scale:
             logging.info(f"Resizing iamge, size {w}x{h}")
             new_w, new_h = im.size
             new_w -= w % 2
             new_h -= h % 2
-            left = (w - new_w)//2
-            top = (h - new_h)//2
+            left = (w - new_w) // 2
+            top = (h - new_h) // 2
 
             img = img.crop((left, top, new_w, new_h))
-        #            if w != new_w or h != new_h:
-        #                temp_input = f"{input}-tmp.jpg"
-        #                logging.info(f"Input image reszized to {temp_input}, size {new_w}x{new_h}")
-        #                if not args.keep:
-        #                    atexit.register(os.remove, temp_input)
-        #                im.save(temp_input)
-        #                input = temp_input
-        # im = Image.open(temp_input)
-        # Convert PIL to opencv
+
         elif (w % 2 or h % 2) and not scale:
-            raise
+            raise UHDRResizeError("Scaling disabled")
+        if w == 0 or h == 0:
+            raise UHDRResizeError(f"Scaling from {w}x{h} resulted in width or height of 0")
         return img, exif
 
     def _tmp_img(self):

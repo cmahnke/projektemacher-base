@@ -99,6 +99,7 @@ def save_yuv(
 
     return (output_file, img)
 
+
 def pil_to_numpy(img):
     return cv.cvtColor(np.array(img.convert("RGB")), cv.COLOR_RGB2BGR)
 
@@ -108,5 +109,6 @@ def debug_save(img, file):
         img.save(file)
     elif isinstance(img, (np.ndarray, np.generic)):
         cv.imwrite(file, img, [cv.IMWRITE_JPEG_QUALITY, 100])
+
 
 processors = get_processors()
