@@ -35,7 +35,7 @@ httpx
 requests
 # HDR related
 ffmpeg-python
-opencv
+opencv-python
 opencv-contrib-python-headless
 docker
 pyexiv2
