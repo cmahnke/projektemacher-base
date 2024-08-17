@@ -5,12 +5,15 @@ import atexit
 
 from PIL import Image
 from PIL.Image import Exif
+from PIL.ExifTags import TAGS
 import pyexiv2
 from .UHDRApp import UHDRApp
-from .Gainmap import save_yuv, pil_to_numpy
+from .Gainmap import save_yuv, pil_to_numpy, debug_save
 
 
 class UHDR:
+    debug_gainmap = "debug-gainmap.jpg"
+
     def __init__(
         self,
         image,
@@ -31,7 +34,7 @@ class UHDR:
         if isinstance(metadata, dict):
             self._metadata = metadata
         elif isinstance(metadata, Exif):
-            raise
+            self._metadata = UHDR.convert_exif(metadata)
         if metadata is None:
             self._metadata = exif
         self.quality = quality
@@ -43,15 +46,14 @@ class UHDR:
                 if "jxlpy" not in sys.modules:
                     import jxlpy
                     from jxlpy import JXLImagePlugin
+                    pyexiv2.enableBMFF()
             img = Image.open(file)
             width, height = img.size
             exif = pyexiv2.Image(file).read_exif()
 
         elif isinstance(file, Image.Image):
             img = file
-            exif = img.getexif()
-            # TODO: convert to pyexiv2 structure
-            raise
+            exif = UHDR.convert_exif(img.getexif())
 
         # Crop if needed
         w, h = img.size
@@ -83,6 +85,7 @@ class UHDR:
             logging.info(f"Saving PIL Image to {file}")
             self._image.save(sdr, subsampling=0, format="JPEG", quality=self.quality)
         if self._metadata is not None:
+
             with pyexiv2.Image(file) as img:
                 img.modify_exif(self._metadata)
         if not self.debug:
@@ -113,18 +116,23 @@ class UHDR:
 
     def process(self, out_file, gainmap=None):
         if gainmap is None:
-            yuv_output = tempfile.NamedTemporaryFile(mode="wb")
+            tmp_gainmap = tempfile.NamedTemporaryFile(mode="wb", suffix=".yuv", delete=False, dir=os.getcwd())
+            yuv_output = tmp_gainmap.name
+            logging.info(f"No Gainmap given, generating one to {yuv_output}")
             if not self.debug:
                 atexit.register(os.remove, yuv_output)
             else:
                 logging.info(f"Debug enabled, keeping file {yuv_output} after end of program")
-            yuv_output = save_yuv(
+
+            yuv_output, gainmap_img = save_yuv(
                 self._image,
                 yuv_output,
                 brightness=self.brightness,
                 contrast=self.contrast,
                 pipeline=self.pipeline,
             )
+            if self.debug:
+                debug_save(gainmap_img, UHDR.debug_gainmap)
         else:
             yuv_output = gainmap
 
@@ -133,6 +141,6 @@ class UHDR:
     @staticmethod
     def convert_exif(exif):
         pyexiv2_exif = {}
-        for k, v in exif.items():
-
-            pyexiv2_exif[k] = v
+        for tag, value in exif.items():
+            pyexiv2_exif[TAGS.get(tag, tag)] = value
+        return pyexiv2_exif
