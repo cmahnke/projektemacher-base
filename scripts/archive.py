@@ -11,9 +11,20 @@ from termcolor import cprint
 archive_prefix = "https://web.archive.org/save/"
 available_prefix = "http://archive.org/wayback/available?url="
 default_dir = "./docs"
-exclude = ['localhost', 'static.projektemacher.org', 'projektemacher.org', 'de.wikipedia.org', 'en.wikipedia.org', 'github.com', 'gohugo.io', 'archive.org', 'www.worldcat.org']
+exclude = [
+    "localhost",
+    "static.projektemacher.org",
+    "projektemacher.org",
+    "de.wikipedia.org",
+    "en.wikipedia.org",
+    "github.com",
+    "gohugo.io",
+    "archive.org",
+    "www.worldcat.org",
+]
 # Maximal age in days
 max_age = 60
+
 
 def check_availability(url):
     available_url = f"{available_prefix}{url}"
@@ -24,13 +35,14 @@ def check_availability(url):
         last = parse(last, fuzzy=True)
         age = datetime.now() - last
         if age.days > max_age:
-            cprint(f"URL {url} snapshot is older then {max_age}!", 'yellow')
+            cprint(f"URL {url} snapshot is older then {max_age}!", "yellow")
             return False
-        cprint(f"URL {url} has been archived within the last {max_age} days!", 'green')
+        cprint(f"URL {url} has been archived within the last {max_age} days!", "green")
         return True
     else:
-        cprint(f"URL {url} is not archived!", 'yellow')
+        cprint(f"URL {url} is not archived!", "yellow")
         return False
+
 
 async def archive(urls, client):
     async_reqs = []
@@ -38,21 +50,30 @@ async def archive(urls, client):
         archive_url = f"{archive_prefix}{url}"
         try:
             if not check_availability(url):
+
                 async def req(url):
                     try:
                         resp = await client.get(url)
                         resp.raise_for_status()
-                    except (httpx.ReadTimeout, httpx.TimeoutException, httpx.NetworkError, httpx.HTTPStatusError, httpcore.ReadTimeout) as error:
-                        cprint(f"", 'red')
+                    except (
+                        httpx.ReadTimeout,
+                        httpx.TimeoutException,
+                        httpx.NetworkError,
+                        httpx.HTTPStatusError,
+                        httpcore.ReadTimeout,
+                    ) as error:
+                        cprint(f"", "red")
+
                 async_reqs.append(req(archive_url))
                 print(f"Saving {archive_url}")
         except:
-            cprint(f"Failed to check availability of {url}", 'red')
+            cprint(f"Failed to check availability of {url}", "red")
     return async_reqs
+
 
 def filter_links(links):
     def url_filter(item):
-        if item is not None and item.startswith('http'):
+        if item is not None and item.startswith("http"):
             up = urlparse(item)
             if not up.hostname in exclude:
                 return item
@@ -62,22 +83,25 @@ def filter_links(links):
 
     return list(filter(url_filter, unique))
 
+
 def extract_links(file):
     urls = []
     with open(file, "r") as handle:
-        soup = BeautifulSoup(handle.read(), 'html.parser')
-        for link in soup.find_all('a'):
-            urls.append(link.get('href'))
+        soup = BeautifulSoup(handle.read(), "html.parser")
+        for link in soup.find_all("a"):
+            urls.append(link.get("href"))
     return urls
+
 
 def build_file_list(dir):
     htmls = []
     for path, dirnames, files in os.walk(dir):
         for file in files:
             (base, ext) = os.path.splitext(file)
-            if ext != '' and ext in ('.html'):
+            if ext != "" and ext in (".html"):
                 htmls.append(os.path.join(path, file))
     return htmls
+
 
 def build_url_list(dir):
     files = build_file_list(dir)
@@ -87,10 +111,11 @@ def build_url_list(dir):
     urls = filter_links(urls)
     return urls
 
+
 async def main() -> int:
-    parser = argparse.ArgumentParser(prog='archive.py')
-    parser.add_argument('--dir', '-d', type=pathlib.Path, help='Path to posts to process')
-    parser.add_argument('--exclude', '-e', nargs='+', help='Host names to exclude')
+    parser = argparse.ArgumentParser(prog="archive.py")
+    parser.add_argument("--dir", "-d", type=pathlib.Path, help="Path to posts to process")
+    parser.add_argument("--exclude", "-e", nargs="+", help="Host names to exclude")
 
     args = parser.parse_args()
 
@@ -101,8 +126,8 @@ async def main() -> int:
 
     if args.exclude is not None:
         for excl in args.exclude:
-            exclude.extend(excl.split(','))
-        cprint(f"Excluding {exclude}", 'green')
+            exclude.extend(excl.split(","))
+        cprint(f"Excluding {exclude}", "green")
 
     urls = build_url_list(dir)
 
@@ -110,7 +135,8 @@ async def main() -> int:
     async_reqs = await archive(urls, client)
     await asyncio.gather(*async_reqs)
     await client.aclose()
-    cprint(f"Saved {len(async_reqs)} URLs", 'green')
+    cprint(f"Saved {len(async_reqs)} URLs", "green")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(asyncio.run(main()))

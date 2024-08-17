@@ -4,6 +4,7 @@ import tempfile
 import atexit
 
 from PIL import Image
+from PIL.Image import Exif
 import pyexiv2
 from .UHDRApp import UHDRApp
 from .Gainmap import save_yuv, pil_to_numpy
@@ -19,19 +20,23 @@ class UHDR:
         debug=False,
         quality=100,
         metadata=None,
+        scale=True
     ):
         self._uhdrapp = UHDRApp()
-        self._image, exif = self._open(image)
+        self._image, exif = self._open(image, scale)
         self.brightness = brightness
         self.contrast = contrast
         self.pipeline = pipeline
         self.debug = debug
-        self._metadata = metadata
-        if self._metadata is None:
+        if isinstance(metadata, dict):
+            self._metadata = metadata
+        elif isinstance(metadata, Exif):
+            raise
+        if metadata is None:
             self._metadata = exif
         self.quality = quality
 
-    def _open(self, file):
+    def _open(self, file, scale=True):
         exif = None
         if isinstance(file, str):
             if str(file).endswith(".jxl"):
@@ -42,7 +47,7 @@ class UHDR:
             width, height = img.size
             exif = pyexiv2.Image(file).read_exif()
 
-        elif isinstance(image, Image.Image):
+        elif isinstance(file, Image.Image):
             img = file
             exif = img.getexif()
             # TODO: convert to pyexiv2 structure
@@ -50,12 +55,15 @@ class UHDR:
 
         # Crop if needed
         w, h = img.size
-        if w % 2 or h % 2:
+        if (w % 2 or h % 2) and scale:
             logging.info(f"Resizing iamge, size {w}x{h}")
             new_w, new_h = im.size
             new_w -= w % 2
             new_h -= h % 2
-            img = img.crop((0, 0, new_w, new_h))
+            left = (w - new_w)//2
+            top = (h - new_h)//2
+
+            img = img.crop((left, top, new_w, new_h))
         #            if w != new_w or h != new_h:
         #                temp_input = f"{input}-tmp.jpg"
         #                logging.info(f"Input image reszized to {temp_input}, size {new_w}x{new_h}")
@@ -65,6 +73,8 @@ class UHDR:
         #                input = temp_input
         # im = Image.open(temp_input)
         # Convert PIL to opencv
+        elif (w % 2 or h % 2) and not scale:
+            raise
         return img, exif
 
     def _tmp_img(self):
@@ -119,3 +129,10 @@ class UHDR:
             yuv_output = gainmap
 
         return self._uhdrapp.uhdr_process(self._tmp_img(), yuv_output, out_file=out_file)
+
+    @staticmethod
+    def convert_exif(exif):
+        pyexiv2_exif = {}
+        for k, v in exif.items():
+
+            pyexiv2_exif[k] = v

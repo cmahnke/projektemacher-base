@@ -6,10 +6,10 @@ import toml
 
 defaultOutfile = "out.toml"
 
-parser = argparse.ArgumentParser(prog = 'clean-toml.py', description = 'Remove duplicates from toml files')
+parser = argparse.ArgumentParser(prog="clean-toml.py", description="Remove duplicates from toml files")
 parser.add_argument("files", type=pathlib.Path, help="Input file name(s)", nargs="+")
-parser.add_argument('-o', '--output', help="Output file name, defaults to '{}'".format(defaultOutfile))
-parser.add_argument('-d', '--delete', action='store_true', help="Remove input files")
+parser.add_argument("-o", "--output", help="Output file name, defaults to '{}'".format(defaultOutfile))
+parser.add_argument("-d", "--delete", action="store_true", help="Remove input files")
 
 args = parser.parse_args()
 
