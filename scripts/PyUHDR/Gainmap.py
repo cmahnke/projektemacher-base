@@ -1,4 +1,5 @@
 import logging
+import json
 from inspect import getmembers, isfunction
 
 import cv2 as cv
@@ -20,7 +21,7 @@ class GainmapPreprocessing:
         return cv.fastNlMeansDenoising(img)
 
     def smoothen(img):
-        return cv.bilateralFilter(cvAr, 25, 75, 75)
+        return cv.bilateralFilter(img, 25, 75, 75)
 
     def white_balance(img, balancer="simple"):
         if balancer == "simple":
@@ -43,7 +44,7 @@ def get_processors():
 def process(img, pipeline):
     if isinstance(img, Image.Image):
         img = pil_to_numpy(img)
-    logging.info(f"Processing pipline {', '.join(pipeline)}")
+    logging.info(f"Processing pipeline {', '.join(pipeline)}")
     for processor in pipeline:
         logging.info(f"Running processor {processor}")
         img = processors[processor](img)
@@ -109,6 +110,10 @@ def debug_save(img, file):
         img.save(file)
     elif isinstance(img, (np.ndarray, np.generic)):
         cv.imwrite(file, img, [cv.IMWRITE_JPEG_QUALITY, 100])
+
+def load_config(config):
+    with open(config) as f:
+        return json.load(f)
 
 
 processors = get_processors()

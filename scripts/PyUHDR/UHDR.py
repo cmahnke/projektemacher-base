@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import tempfile
 import atexit
@@ -38,9 +39,13 @@ class UHDR:
                     import jxlpy
                     from jxlpy import JXLImagePlugin
 
-                    pyexiv2.enableBMFF()
+                    #pyexiv2.enableBMFF()
             img = Image.open(file)
-            exif = pyexiv2.Image(file).read_exif()
+            pyexiv2.set_log_level(0)
+            if not str(file).endswith(".jxl"):
+                exif = pyexiv2.Image(file).read_exif()
+            else:
+                exif = None
 
         elif isinstance(file, Image.Image):
             img = file
@@ -52,10 +57,11 @@ class UHDR:
         w, h = img.size
         logging.debug(f"Loaded image with dimensions {w}x{h}")
         if (w % 2 or h % 2) and scale:
-            logging.info(f"Resizing iamge, size {w}x{h}")
-            new_w, new_h = im.size
+
+            new_w, new_h = img.size
             new_w -= w % 2
             new_h -= h % 2
+            logging.info(f"Resizing image, from {w}x{h} to {new_w}x{new_h}")
             left = (w - new_w) // 2
             top = (h - new_h) // 2
 
