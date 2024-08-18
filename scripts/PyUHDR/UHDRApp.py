@@ -22,6 +22,8 @@ class UHDRApp:
                 self.client = UHDRApp.init_docker()
             else:
                 self.client = client
+        else:
+            self.client = None
         self.debug = debug
         if default_ultrahdr_app_bin == "" or (
             not os.path.isfile(default_ultrahdr_app_path) and not os.access(default_ultrahdr_app_path, os.X_OK)
