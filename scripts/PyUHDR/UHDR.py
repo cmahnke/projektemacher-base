@@ -17,8 +17,21 @@ from .UHDRError import UHDRResizeError
 class UHDR:
     debug_gainmap = "debug-gainmap.jpg"
 
-    def __init__(self, image, brightness=None, contrast=None, pipeline=None, debug=False, quality=100, metadata=None, scale=True, config=None):
-        self._uhdrapp = UHDRApp()
+    def __init__(
+        self,
+        image,
+        docker_client=None,
+        brightness=None,
+        contrast=None,
+        pipeline=None,
+        debug=False,
+        quality=100,
+        metadata=None,
+        scale=True,
+        config=None,
+    ):
+        self.docker_client = docker_client
+        self._uhdrapp = UHDRApp(docker_client, self.docker_client)
         self._image, exif = self._open(image, scale)
         self.debug = debug
 
@@ -36,7 +49,7 @@ class UHDR:
 
         if config is not None:
             config = UHDR.load_config(config)
-            if "pipeline" in config :
+            if "pipeline" in config:
                 self.pipeline = config["pipeline"]
             if "quality" in config:
                 self.quality = config["quality"]
@@ -48,7 +61,9 @@ class UHDR:
             pipeline_str = "[]"
         else:
             pipeline_str = ", ".join(self.pipeline)
-        logging.info(f"Quality set to {self.quality}, contrast to {self.contrast}, brightness to {self.brightness}, pipeline {pipeline_str}")
+        logging.info(
+            f"Quality set to {self.quality}, contrast to {self.contrast}, brightness to {self.brightness}, pipeline {pipeline_str}"
+        )
 
     def _open(self, file, scale=True):
         exif = None
@@ -58,7 +73,7 @@ class UHDR:
                     import jxlpy
                     from jxlpy import JXLImagePlugin
 
-                    #pyexiv2.enableBMFF()
+                    # pyexiv2.enableBMFF()
             img = Image.open(file)
             pyexiv2.set_log_level(0)
             if not str(file).endswith(".jxl"):

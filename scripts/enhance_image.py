@@ -92,7 +92,9 @@ def main(argv) -> int:
     # metadata = {"Exif.Image.XResolution":, "Exif.Image.XResolution": }
 
     logging.info(f"Quality set to {quality}, contrast to {contrast}, brightness to {brightness}")
-    uhdr = UHDR(infile, contrast=contrast, brightness=brightness, pipeline=pipeline, debug=args.keep, quality=quality, config=args.json)
+    uhdr = UHDR(
+        infile, contrast=contrast, brightness=brightness, pipeline=pipeline, debug=args.keep, quality=quality, config=args.json
+    )
     uhdr.process(output)
 
 

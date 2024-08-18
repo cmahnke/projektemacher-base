@@ -16,8 +16,12 @@ default_ultrahdr_app_path = f"/usr/local/bin/{default_ultrahdr_app_bin}"
 
 
 class UHDRApp:
-    def __init__(self, debug=False):
-        self.init()
+    def __init__(self, debug=False, docker=True, docker_client=None):
+        if docker:
+            if docker_client is None:
+                self.client = UHDRApp.init_docker()
+            else:
+                self.client = client
         self.debug = debug
         if default_ultrahdr_app_bin == "" or (
             not os.path.isfile(default_ultrahdr_app_path) and not os.access(default_ultrahdr_app_path, os.X_OK)
@@ -26,21 +30,6 @@ class UHDRApp:
         else:
             self.ultrahdr_app_path = default_ultrahdr_app_path
         logging.warning(f"UltraHDR app initialized, binary is at {self.ultrahdr_app_path}")
-
-    def init(self):
-        try:
-            self.client = docker.from_env()
-            image = docker_image.split("/")
-            repo = image.pop(0)
-            image = "/".join(image)
-            image = image.split(":")
-            tag = image.pop(-1)
-            logging.warning(f"Pulling {image[0]}, tag {tag} from {repo}")
-            self.client.images.pull(f"{repo}/{image[0]}", tag=tag)
-
-        except:
-            self.client = None
-            logging.warning("Couldn't connect to docker")
 
     def uhdr_process(self, image, gainmap_file, out_file="out.jpeg"):
         if isinstance(image, str):
@@ -133,3 +122,21 @@ class UHDRApp:
             working_dir=os.getcwd(),
         )
         return out_file
+
+    @staticmethod
+    def init_docker():
+        client = None
+        try:
+            client = docker.from_env()
+            image = docker_image.split("/")
+            repo = image.pop(0)
+            image = "/".join(image)
+            image = image.split(":")
+            tag = image.pop(-1)
+            logging.warning(f"Pulling {image[0]}, tag {tag} from {repo}")
+            local_images =  client.images.list(filters={"reference": f"{repo}/{image[0]}"})
+            if len(local_images) < 1:
+                client.images.pull(f"{repo}/{image[0]}", tag=tag)
+        except:
+            logging.warning("Couldn't connect to docker")
+        return client
