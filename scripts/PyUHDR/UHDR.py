@@ -3,6 +3,7 @@ import sys
 import logging
 import tempfile
 import atexit
+import json
 
 from PIL import Image
 from PIL.Image import Exif
@@ -16,20 +17,38 @@ from .UHDRError import UHDRResizeError
 class UHDR:
     debug_gainmap = "debug-gainmap.jpg"
 
-    def __init__(self, image, brightness=None, contrast=None, pipeline=None, debug=False, quality=100, metadata=None, scale=True):
+    def __init__(self, image, brightness=None, contrast=None, pipeline=None, debug=False, quality=100, metadata=None, scale=True, config=None):
         self._uhdrapp = UHDRApp()
         self._image, exif = self._open(image, scale)
-        self.brightness = brightness
-        self.contrast = contrast
-        self.pipeline = pipeline
         self.debug = debug
+
         if isinstance(metadata, dict):
             self._metadata = metadata
         elif isinstance(metadata, Exif):
             self._metadata = UHDR.convert_exif(metadata)
         if metadata is None:
             self._metadata = exif
+
+        self.brightness = brightness
+        self.contrast = contrast
+        self.pipeline = pipeline
         self.quality = quality
+
+        if config is not None:
+            config = UHDR.load_config(config)
+            if "pipeline" in config :
+                self.pipeline = config["pipeline"]
+            if "quality" in config:
+                self.quality = config["quality"]
+            if "brightness" in config:
+                self.brightness = config["brightness"]
+            if "contrast" in config:
+                self.contrast = config["contrast"]
+        if not self.pipeline or len(self.pipeline) < 1:
+            pipeline_str = "[]"
+        else:
+            pipeline_str = ", ".join(self.pipeline)
+        logging.info(f"Quality set to {self.quality}, contrast to {self.contrast}, brightness to {self.brightness}, pipeline {pipeline_str}")
 
     def _open(self, file, scale=True):
         exif = None
@@ -138,3 +157,8 @@ class UHDR:
         for tag, value in exif.items():
             pyexiv2_exif[TAGS.get(tag, tag)] = value
         return pyexiv2_exif
+
+    @staticmethod
+    def load_config(config):
+        with open(config) as f:
+            return json.load(f)

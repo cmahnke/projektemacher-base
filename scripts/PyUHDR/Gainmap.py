@@ -1,5 +1,4 @@
 import logging
-import json
 from inspect import getmembers, isfunction
 
 import cv2 as cv
@@ -110,10 +109,6 @@ def debug_save(img, file):
         img.save(file)
     elif isinstance(img, (np.ndarray, np.generic)):
         cv.imwrite(file, img, [cv.IMWRITE_JPEG_QUALITY, 100])
-
-def load_config(config):
-    with open(config) as f:
-        return json.load(f)
 
 
 processors = get_processors()
