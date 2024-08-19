@@ -6,7 +6,7 @@
 {{- $isServer := hugo.IsServer -}}
 
 {{- $imageIdSuffix := "" -}}
-{{ if eq .Sites.First.Language.Lang .Page.Lang }}
+{{ if eq .Sites.Default.Language.Lang .Page.Lang }}
 {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
 {
     {{- $contextPath := path.Dir .File.Path -}}
