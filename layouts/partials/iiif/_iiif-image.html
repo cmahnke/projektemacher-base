@@ -44,6 +44,10 @@
 {{- if isset . "pageURL" -}}
   {{- $pageURL = .pageURL -}}
 {{- end -}}
+{{- $hdr := false -}}
+{{- if isset . "hdr" -}}
+  {{- $hdr = .hdr -}}
+{{- end -}}
 
 <div class="{{ $class | safeHTML }} {{ $orientation | safeHTML }}">
   <a name="{{ $mapName }}"></a>
@@ -54,7 +58,7 @@
 
   <script type="text/javascript">
     {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
-    {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }});
+    {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }}, {{ $hdr }});
     {{ $mapName | safeJS }}.updateSize();
     {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
   </script>

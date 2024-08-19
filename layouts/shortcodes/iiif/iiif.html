@@ -22,11 +22,17 @@ Parameters:
 {{- $src := .Get "src" -}}
 {{- $share := false -}}
 {{ if (.Get "share") }}
-  {{- $share := (.Get "share") -}}
+  {{- $share = (.Get "share") -}}
 {{- end -}}
+
+{{- $hdr := false -}}
+{{ if (.Get "hdr") }}
+  {{- $hdr = (.Get "hdr") -}}
+{{- end -}}
+
 {{- $downloadURL := "" -}}
 {{- if .Get "downloadURL" -}}
   {{- $downloadURL = .Get "downloadURL" -}}
 {{- end -}}
 
-{{ partial "iiif/_iiif-image.html" (dict "infoJson" $src "share" $share "downloadURL" $downloadURL) }}
+{{ partial "iiif/_iiif-image.html" (dict "infoJson" $src "share" $share "downloadURL" $downloadURL "hdr" $hdr) }}
