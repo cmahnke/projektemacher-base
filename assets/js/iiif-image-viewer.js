@@ -6,7 +6,8 @@ import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import {Control, FullScreen, Rotate, Zoom} from 'ol/control';
-import { fromUserCoordinate, fromUserExtent } from 'ol/proj.js';
+import {fromUserCoordinate, fromUserExtent} from 'ol/proj.js';
+import {defaultGetContextHDR} from 'hdr-canvas';
 
 class AnimatedView extends View {
   /**
@@ -199,10 +200,13 @@ class RotateRightControl extends Control {
         * projektemacher-base/layouts/partials/iiif/kenburns.html
  */
 
-window.addMap = function(element, url, rotation, baseURL) {
+window.addMap = function(element, url, rotation, baseURL, hdr) {
     var initialRotation = 0;
     if (rotation !== undefined && rotation != 0) {
         initialRotation = rotation * Math.PI / 180;
+    }
+    if (hdr === undefined) {
+        hdr = false;
     }
     // Languages
     var lang = 'en';
@@ -215,6 +219,11 @@ window.addMap = function(element, url, rotation, baseURL) {
                      'en': {'zoomIn': 'Zoom in', 'zoomOut': 'Zoom out', 'fullscreen': 'Toggle full-screen', 'rotate': 'Reset rotation', 'rotateLeft': 'Rotate 90° left', 'rotateRight': 'Rotate 90° right'}};
 
     console.log('Setting up ' + lang);
+
+    if (hdr) {
+      defaultHDRContext();
+      console.log('Enabled HDR Canvas');
+    }
 
     var layer = new TileLayer(),
         map = new Map({
