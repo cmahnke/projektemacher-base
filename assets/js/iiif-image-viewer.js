@@ -221,7 +221,7 @@ window.addMap = function(element, url, rotation, baseURL, hdr) {
     console.log('Setting up ' + lang);
 
     if (hdr) {
-      defaultHDRContext();
+      defaultGetContextHDR();
       console.log('Enabled HDR Canvas');
     }
 
