@@ -16,7 +16,7 @@
   "pdfobject": "^2.1.1",
   "stickybits": "^3.7.11",
   "yargs": "^17.6.0",
-  "hdr-canvas": "^0.0.7",
+  "hdr-canvas": "^0.0.7"
  },
  "devDependencies": {
   "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
