@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import {Control, FullScreen, Rotate, Zoom} from 'ol/control';
 import {fromUserCoordinate, fromUserExtent} from 'ol/proj.js';
-import {defaultGetContextHDR} from 'hdr-canvas';
+import {defaultGetContextHDR, checkHDR, checkHDRCanvas} from 'hdr-canvas';
 
 class AnimatedView extends View {
   /**
@@ -220,7 +220,7 @@ window.addMap = function(element, url, rotation, baseURL, hdr) {
 
     console.log('Setting up ' + lang);
 
-    if (hdr) {
+    if (hdr && checkHDR() && checkHDRCanvas()) {
       defaultGetContextHDR();
       console.log('Enabled HDR Canvas');
     }
