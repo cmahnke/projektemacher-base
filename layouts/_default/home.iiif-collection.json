@@ -1,0 +1,63 @@
+{{/*
+* Check if page is section child and parent also has iiif Context
+
+*/}}
+
+{{- $iiif := where $.Site.AllPages ".Params.iiifContext" "!=" nil -}}
+{{- $items := slice -}}
+{{/* TODO: Remove this */}}
+{{- range $iiif -}}
+  {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
+    {{ $items = $items | append . }}
+  {{- else if hasPrefix .Params.iiifContext "http://iiif.io/api/image/" -}}
+    {{- warnf "[home.iiif-collection.json] Ignorig %s" .Path -}}
+  {{- end -}}
+{{- end -}}
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "{{ $.Site.BaseURL }}collection.json",
+  "type": "Collection",
+  "label": {
+      "{{ $.Site.Language.Lang }}": [
+        "{{ $.Site.Title }}"
+      ]
+    {{- if hugo.IsMultilingual -}}
+      {{ $translations := where $.Site.Home.AllTranslations ".Lang" "!=" $.Site.Language.Lang }}
+      {{- range $i, $translation := $translations -}}
+      ,
+        "{{ $translation.Lang }}": [
+          "{{ $translation.Name }}"
+        ]
+        {{- if ne $i (sub (len $translations) 1) -}}
+         ,
+        {{- end -}}
+      {{ end }}
+    {{- end -}}
+  },
+  "items": [
+    {{- range $i, $item := $items -}}
+      {
+        "id": "{{ printf "%s%s/manifest.json" $.Site.BaseURL (substr $item.Path 1) }}",
+        "type": "Manifest",
+        "label": {
+          {{- if not hugo.IsMultilingual -}}
+            "{{ $.Site.Language.Lang }}": [
+              "{{ $item.Title }}"
+            ]
+          {{- else -}}
+            {{- if .IsTranslated -}}
+              {{- range .Translations -}}
+                "{{ .Lang }}": [
+                  "{{ .Title }}"
+                ]
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        }
+      }
+      {{- if ne $i (sub (len $items) 1) -}}
+       ,
+      {{- end -}}
+    {{- end -}}
+  ]
+}
