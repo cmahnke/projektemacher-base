@@ -3,12 +3,13 @@
   {{- $pages = $pages | lang.Merge .Site.RegularPages -}}
 {{- end -}}
 
-{{- $iiif := where $pages ".Params.iiifContext" "!=" nil -}}
+{{- $iiif := where $pages "Params.iiifContext" "!=" nil -}}
 {{- $iiif = where $iiif "Params.displayinlist" "!=" false -}}
 
 {{- $items := slice -}}
 {{/* TODO: Remove this
 * Check if page is section child and parent also has iiif Context
+* Check also for .Params.output
 */}}
 {{- range $iiif -}}
   {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
@@ -37,8 +38,28 @@
   },
   "items": [
     {{- range $i, $item := $items -}}
+      {{- with $item.Params.outputs -}}
+        {{- $skip := true -}}
+        {{- range . -}}
+          {{- if eq .Name "iiif" -}}
+            {{- $skip = false -}}
+          {{- end -}}
+          {{- if eq .Name "iiif-manifest" -}}
+            {{- $skip = false -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $skip -}}
+          {{- continue -}}
+        {{- end -}}
+      {{- else -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- $manifest := "manifest.json" -}}
+      {{- with $item.Params.iiifManifest -}}
+        {{- $manifest = path.Base . -}}
+      {{- end -}}
       {
-        "id": "{{ printf "%s%s/manifest.json" $.Site.BaseURL (substr $item.Path 1) }}",
+        "id": "{{ printf "%s%s/%s" $.Site.BaseURL (substr $item.Path 1) $manifest }}",
         "type": "Manifest",
         "label": {
           "{{ $.Site.Language.Lang }}": [
