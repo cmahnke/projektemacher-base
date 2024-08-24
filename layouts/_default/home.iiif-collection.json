@@ -1,9 +1,15 @@
-{{- $iiif := where $.Site.Pages ".Params.iiifContext" "!=" nil -}}
+{{- $pages := .Site.RegularPages -}}
+  {{- range .Site.Home.Translations -}}
+  {{- $pages = $pages | lang.Merge .Site.RegularPages -}}
+{{- end -}}
+
+{{- $iiif := where $pages ".Params.iiifContext" "!=" nil -}}
+{{- $iiif = where $iiif "Params.displayinlist" "!=" false -}}
+
 {{- $items := slice -}}
 {{/* TODO: Remove this
 * Check if page is section child and parent also has iiif Context
 */}}
-
 {{- range $iiif -}}
   {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
     {{ $items = $items | append . }}
@@ -20,7 +26,7 @@
         "{{ $.Site.Title }}"
       ]
     {{- if hugo.IsMultilingual -}}
-      {{ $translations := where $.Site.Home.AllTranslations ".Lang" "!=" $.Site.Language.Lang }}
+      {{- $translations := where $.Site.Home.AllTranslations ".Lang" "!=" $.Site.Language.Lang -}}
       {{- range $translations -}}
       ,
         "{{ .Lang }}": [
