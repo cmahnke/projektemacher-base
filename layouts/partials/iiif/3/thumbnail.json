@@ -1,43 +1,12 @@
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 {{- $previewImg := "" -}}
-
-{{/* TODO: Get the first image if no preview has been declared
-
-{{- range $i, $res := .Params.resources -}}
-  {{- if eq $i 1 -}}
-    {{- $image.Set "first" ($.Resources.GetMatch .src) -}}
-  {{- end -}}
-
-  {{- $manifestDir := path.Dir .params.iiif -}}
-
-  {{- if .name -}}
-    {{- $image.Set "previewImg" ($.Resources.GetMatch .name) -}}
-  {{ else }}
-    {{- $image.Set "previewImg" ($.Resources.GetMatch .src) -}}
-  {{- end -}}
-  {{- if eq (string ($image.Get "previewImg").MediaType) "image/jxl" -}}
-    {{- $previewLoc := path.Join $manifestDir $fullResImgSuffix -}}
-    {{- if not (fileExists (path.Join $.File.Dir $previewLoc)) -}}
-      {{- errorf "[_default/single.iiif.json] %s referenced in %s doesn't exists!" $previewLoc $.File.Path -}}
-    {{- end -}}
-   {{- $image.Set "previewImg" ($.Resources.GetMatch $previewLoc) -}}
-  {{- end -}}
-  {{- if eq ($image.Get "previewImg") nil -}}
-    {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
-  {{- end -}}
-{{- end -}}
-
-
-{{- $previewImg := partial "preview/preview-internal.html" (dict "context" .) -}}
-{{- $thumbnail := $previewImg.Resize "300x" -}}
-*/}}
-
+{{- $previewReference := "" -}}
 {{- $contextPath := "" -}}
+
 {{- if and (ne .File nil) (ne .File.Path nil) -}}
   {{- $contextPath = path.Dir .File.Path -}}
 {{- end -}}
-{{- $previewReference := "" -}}
 
 {{- if and (isset .Params "preview") .Params.preview -}}
   {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
