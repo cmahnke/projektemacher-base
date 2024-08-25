@@ -118,8 +118,7 @@
           "label": { "none": [ {{ $pageLabel | jsonify }} ]},
 
           {{- if .params.hint -}}
-      {{/* TODO Update to V3 */}}
-            "viewingHint":"{{ .params.hint }}",
+            "behavior": ["{{ .params.hint }}"],
           {{- end -}}
 
           "thumbnail": [
