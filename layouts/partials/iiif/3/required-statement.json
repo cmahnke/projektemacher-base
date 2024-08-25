@@ -1,0 +1,25 @@
+{{- $defaultAttribution := dict "de" "Bereitgestellt von Projektemacher" "en" "Provided by Projektemacher" -}}
+{{- if isset .Params "iiifAttribution" -}}
+  ,"attribution":"{{ .Params.iiifAttribution }}",
+{{- end -}}
+
+"requiredStatement": {
+  "label": { "en": [ "Attribution" ],
+    "de": [ "Namensnennung" ]
+  },
+  "value": {
+    {{- $translations := .AllTranslations -}}
+    {{- range $i, $translation := $translations -}}
+      "{{ .Lang }}": [
+      {{- if isset $translation.Params "iiifAttribution" -}}
+        {{ $translation.Params.iiifAttribution | jsonify }}
+      {{- else -}}
+        {{ index $defaultAttribution $translation.Lang | jsonify }}
+      {{- end -}}
+      ]
+      {{- if ne $i (sub (len $translations) 1) -}}
+       ,
+      {{- end -}}
+    {{- end -}}
+  }
+}

@@ -1,14 +1,14 @@
 {{/* Check if we need to escape - | jsonify */}}
-"label": {
+"summary": {
     "{{ $.Site.Language.Lang }}": [
-      {{ .Title | jsonify }}
+      {{ .Description | jsonify }}
     ]
   {{- if hugo.IsMultilingual -}}
     {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
     {{- range $translations -}}
     ,
       "{{ .Lang }}": [
-        {{ .Title | jsonify }}
+        {{ .Description | jsonify }}
       ]
     {{ end }}
   {{- end -}}
