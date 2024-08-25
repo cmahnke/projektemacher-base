@@ -1,0 +1,170 @@
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+
+{{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
+{{/* TODO: THis below isn't valid anymore }}
+{{/* This is a hack to get the default content language - this is a missing Hugo feature */}}
+{{- $defaultContentLanguage := partialCached "functions/i18n/default-lang" . -}}
+{{- $defaultContentPage := partial "functions/i18n/page-for-lang" (dict "context" . "lang" $defaultContentLanguage) -}}
+
+{{- $imageIdSuffix := "" -}}
+{
+  {{- $contextPath := path.Dir .File.Path -}}
+  {{- $urlBase := "" -}}
+  {{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+    {{- $pl := .Permalink -}}
+    {{- if ne $.Site.Language.Lang $defaultContentLanguage -}}
+      {{- $pl = $defaultContentPage.Permalink -}}
+    {{- end -}}
+    {{- $urlBase = printf "%s/" (substr $pl 0 (sub (len $pl) 1)) -}}
+  {{- else -}}
+    {{- $localPath := (substr .RelPermalink 1 (sub (len .RelPermalink) 1)) -}}
+    {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
+  {{- end -}}
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "type": "Manifest",
+  "id": "{{ .Permalink }}",
+  "viewingDirection": "left-to-right",
+  {{- $defaultBehavior := "paged" -}}
+
+  "behavior":
+    {{- if and (isset .Params "iiif") (isset .Params.iiif "behavior") -}}
+      {{ .Params.iiif.behavior | jsonify }}
+    {{- else -}}
+      ["{{ $defaultBehavior }}"]
+    {{- end -}}
+  ,
+
+  {{- if .Description -}}
+    {{- partial "iiif/3/manifest-summary.json" . -}},
+  {{- end -}}
+
+  {{- if and (isset .Params "iiif") (isset .Params.iiif "rights") -}}
+    {"rights", "{{ .Params.iiif.rights }}"},
+  {{- end -}}
+  {{ partial "iiif/3/required-statement.json" . }},
+  {{ partial "iiif/3/thumbnail.json" . }},
+  {{ partialCached "iiif/3/provider.json" . }},
+
+  "homepage": [
+    {
+      "id": "{{ .Permalink }}",
+      "type": "Text",
+      "format": "text/html",
+      {{- partial "iiif/3/manifest-label.json" . -}}
+    }
+  ],
+
+  {{- partial "iiif/3/manifest-label.json" . -}},
+  {{- if and (isset .Params "iiif") (isset .Params.iiif "metadata") -}}
+    {{- jsonify .Params.iiif.metadata -}}
+  {{- end -}}
+  {{- if isset .Params "iiifMetadata" -}}
+    {{- errorf "[single.iiii-metadata.json] .Params.iiifMetadata isn't supported anymore use .Params.iiif.metadata" -}}
+  {{- end -}}
+  {{- if and (isset .Params "iiif") (isset .Params.iiif "structure") -}}
+    "structures": {{- jsonify .Params.iiif.structure -}}
+  {{- end -}}
+
+  {{- if isset .Params "iiifStructure" -}}
+    {{- errorf "[single.iiii-metadata.json] .Params.iiifStructure isn't supported anymore use .Params.iiif.structure" -}}
+  {{- end -}}
+
+  {{- $firstCanvasId := "" -}}
+  {{- $firstResource := index .Params.resources 0 -}}
+  {{ if $firstResource.name -}}
+    {{- $firstCanvasId = $firstResource.name -}}
+  {{- else -}}
+    {{- $firstCanvasId = path.Dir $firstResource.params.iiif -}}
+  {{- end -}}
+
+  "items": [
+    {{- range $i, $res := .Params.resources -}}
+      {{- $imageRes := $.Resources.Get $res.src -}}
+      {{/* Check for JXL */}}
+      {{- if eq (string $imageRes.MediaType) "image/jxl" -}}
+        {{- $previewLoc := path.Join (path.Dir $res.params.iiif) $fullResImgSuffix -}}
+        {{- if $debug -}}
+          {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
+        {{- end -}}
+        {{- $imageRes = $.Resources.Get $previewLoc -}}
+      {{- end -}}
+      {{- if eq $imageRes nil -}}
+        {{- errorf "[single.iiif-manifest.json] failed to load from %#v" $res -}}
+      {{- end -}}
+
+      {{- $manifestDir := path.Dir .params.iiif -}}
+
+      {{- $canvas := "" -}}
+      {{- if .name -}}
+        {{- $canvas = .name -}}
+      {{- else -}}
+        {{- $canvas = path.Dir .params.iiif -}}
+      {{- end -}}
+      {{- $canvasId := printf "%scanvas/%s" $.Permalink $canvas -}}
+
+        {
+          "id":"{{ $canvasId }}",
+          "type": "Canvas",
+          "height": {{ $imageRes.Height }},
+          "width": {{ $imageRes.Width }},
+          {{- $pageLabel := "" -}}
+          {{- if .params.label -}}
+            {{- $pageLabel = .params.label -}}
+          {{- else if findRE `?gm:page0*(\d+)\..*` (path.Base .params.iiif) -}}
+            {{- $pageLabel = replaceRE `?gm:page0*(\d+)\..*` "$1" (path.Base .params.iiif) -}}
+          {{- else -}}
+            {{- $pageLabel =  "uncounted" -}}
+          {{- end -}}
+          "label": { "none": [ {{ $pageLabel | jsonify }} ]},
+
+          {{- if .params.hint -}}
+      {{/* TODO Update to V3 */}}
+            "viewingHint":"{{ .params.hint }}",
+          {{- end -}}
+
+          "thumbnail": [
+            {{- $thumbnail := $imageRes.Resize "300x" -}}
+            {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
+              {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
+            {{- end -}}
+            {
+              "id": "{{ $thumbnail.Permalink }}",
+              "format": "image/jpeg",
+              "type":"Image",
+              "height": {{ $thumbnail.Height }},
+              "width": {{ $thumbnail.Width }}
+            }
+          ],
+          {{- $annnotationId := printf "%sannotation/%s" $urlBase $manifestDir -}}
+          "items": [{
+            "id": "{{ $annnotationId }}",
+            "type": "AnnotationPage",
+            "items":[
+            {{- $imageId := printf "%s%s%s" $urlBase $manifestDir $imageIdSuffix -}}
+
+            {
+              "id": "{{ printf "%s-image" $annnotationId }}",
+              "type": "Annotation",
+              "motivation":"painting",
+              "body":{
+                "id":"{{ printf "%s%s" $imageId $fullResImgSuffix }}",
+                "type":"Image",
+                "format":"image/jpeg",
+                "height": {{ $imageRes.Height }},
+                "width": {{ $imageRes.Width }},
+                "service": [{
+                  "id":"{{ $imageId }}",
+                  "type": "ImageService2",
+                  "profile":"level0"
+                }]
+              },
+              "target":"{{ $canvasId }}"
+            }]
+          }]
+       }
+       {{- if ne $i (sub (len $.Params.resources) 1) -}}
+        ,
+       {{- end -}}
+     {{- end -}}
+  ]
+}
