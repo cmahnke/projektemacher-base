@@ -1,8 +1,13 @@
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
-{{- $image := newScratch -}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $previewImg := "" -}}
+
+{{/* TODO: Get the first image if no preview has been declared
 
 {{- range $i, $res := .Params.resources -}}
-
+  {{- if eq $i 1 -}}
+    {{- $image.Set "first" ($.Resources.GetMatch .src) -}}
+  {{- end -}}
 
   {{- $manifestDir := path.Dir .params.iiif -}}
 
@@ -22,7 +27,44 @@
     {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
   {{- end -}}
 {{- end -}}
-{{- $thumbnail := ($image.Get "previewImg").Resize "300x" -}}
+
+
+{{- $previewImg := partial "preview/preview-internal.html" (dict "context" .) -}}
+{{- $thumbnail := $previewImg.Resize "300x" -}}
+*/}}
+
+{{- $contextPath := "" -}}
+{{- if and (ne .File nil) (ne .File.Path nil) -}}
+  {{- $contextPath = path.Dir .File.Path -}}
+{{- end -}}
+{{- $previewReference := "" -}}
+
+{{- if and (isset .Params "preview") .Params.preview -}}
+  {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
+{{- else if isset .Params "resources" -}}
+  {{- if (gt (where .Params.resources "name" "preview" | len) 0) -}}
+    {{- $previewReference = index (where .Params.resources "name" "preview") 0 -}}
+  {{- else if (gt (where .Params.resources "name" "cover" | len) 0) -}}
+    {{- $previewReference = index (where .Params.resources "name" "cover") 0 -}}
+  {{- else if (gt (where .Params.resources "name" "front" | len) 0) -}}
+    {{- $previewReference = index (where .Params.resources "name" "front") 0 -}}
+  {{- else if (gt (.Params.resources | len) 0) -}}
+    {{- $previewReference = index .Params.resources 0 -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $previewImg = .Resources.Get $previewReference.src -}}
+{{/* Check for JXL */}}
+{{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+  {{- $previewLoc := path.Join (path.Dir $previewReference.params.iiif) $fullResImgSuffix -}}
+  {{- if $debug -}}
+    {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $previewReference.src $previewLoc .File.Path }}
+  {{- end -}}
+  {{- $previewImg = .Resources.Get $previewLoc -}}
+{{- end -}}
+
+{{- $thumbnail := $previewImg.Resize "300x" -}}
+
 {{- if ne $thumbnail nil -}}
   "thumbnail": {
     "id": "{{ $thumbnail.Permalink }}",
