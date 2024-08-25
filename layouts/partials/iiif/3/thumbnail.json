@@ -22,7 +22,7 @@
     {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
   {{- end -}}
 {{- end -}}
-{{- $thumbnail := ($image.Get "previewImg").Resize "300x200" -}}
+{{- $thumbnail := ($image.Get "previewImg").Resize "300x" -}}
 {{- if ne $thumbnail nil -}}
   "thumbnail": {
     "id": "{{ $thumbnail.Permalink }}",
