@@ -22,20 +22,7 @@
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "id": "{{ $.Site.BaseURL }}collection.json",
   "type": "Collection",
-  "label": {
-      "{{ $.Site.Language.Lang }}": [
-        "{{ $.Site.Title }}"
-      ]
-    {{- if hugo.IsMultilingual -}}
-      {{- $translations := where $.Site.Home.AllTranslations ".Lang" "!=" $.Site.Language.Lang -}}
-      {{- range $translations -}}
-      ,
-        "{{ .Lang }}": [
-          "{{ .Name }}"
-        ]
-      {{ end }}
-    {{- end -}}
-  },
+  {{- partial "iiif/3/manifest-label.json" . -}},
   "items": [
     {{- range $i, $item := $items -}}
       {{- with $item.Params.outputs -}}

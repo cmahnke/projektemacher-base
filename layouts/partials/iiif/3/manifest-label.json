@@ -1,0 +1,15 @@
+{{/* Check if we need to escape - | jsonify */}}
+"label": {
+    "{{ $.Site.Language.Lang }}": [
+      "{{ $.Site.Title }}"
+    ]
+  {{- if hugo.IsMultilingual -}}
+    {{- $translations := where $.Site.Home.AllTranslations ".Lang" "!=" $.Site.Language.Lang -}}
+    {{- range $translations -}}
+    ,
+      "{{ .Lang }}": [
+        "{{ .Name }}"
+      ]
+    {{ end }}
+  {{- end -}}
+}

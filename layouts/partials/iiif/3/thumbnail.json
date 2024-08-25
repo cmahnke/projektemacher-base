@@ -35,11 +35,11 @@
 {{- $thumbnail := $previewImg.Resize "300x" -}}
 
 {{- if ne $thumbnail nil -}}
-  "thumbnail": {
+  "thumbnail": [{
     "id": "{{ $thumbnail.Permalink }}",
     "format": "image/jpeg",
     "type":"Image",
     "height": {{ $thumbnail.Height }},
     "width": {{ $thumbnail.Width }}
-  }
+  }]
 {{- end -}}
