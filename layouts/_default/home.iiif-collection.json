@@ -39,17 +39,24 @@
   "items": [
     {{- range $i, $item := $items -}}
       {{- with $item.Params.outputs -}}
-        {{- $skip := true -}}
-        {{- range . -}}
-          {{- if eq .Name "iiif" -}}
-            {{- $skip = false -}}
+        {{/* This is usually used if a output format definition isn't in config.toml - we could also fail here */}}
+        {{- if reflect.IsSlice . -}}
+          {{- if and (not (in . "iiif")) (not (in . "iiif-manifest")) -}}
+            {{- continue -}}
           {{- end -}}
-          {{- if eq .Name "iiif-manifest" -}}
-            {{- $skip = false -}}
+        {{- else -}}
+          {{- $skip := true -}}
+          {{- range . -}}
+            {{- if eq .Name "iiif" -}}
+              {{- $skip = false -}}
+            {{- end -}}
+            {{- if eq .Name "iiif-manifest" -}}
+              {{- $skip = false -}}
+            {{- end -}}
           {{- end -}}
-        {{- end -}}
-        {{- if $skip -}}
-          {{- continue -}}
+          {{- if $skip -}}
+            {{- continue -}}
+          {{- end -}}
         {{- end -}}
       {{- else -}}
         {{- continue -}}
