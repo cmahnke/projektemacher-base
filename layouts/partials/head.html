@@ -66,3 +66,7 @@
     <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
     <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
 {{ end }}
+
+{{ with .OutputFormats.Get "iiif-collection" }}
+    <link href="{{ .RelPermalink }}" rel="alternate" type="application/ld+json;profile=http://iiif.io/api/presentation/3/context.json" title="{{ $.Site.Title | default "" }}" />
+{{ end }}
