@@ -1,0 +1,34 @@
+{{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
+{{- $image := newScratch -}}
+
+{{- range $i, $res := .Params.resources -}}
+
+
+  {{- $manifestDir := path.Dir .params.iiif -}}
+
+  {{- if .name -}}
+    {{- $image.Set "previewImg" ($.Resources.GetMatch .name) -}}
+  {{ else }}
+    {{- $image.Set "previewImg" ($.Resources.GetMatch .src) -}}
+  {{- end -}}
+  {{- if eq (string ($image.Get "previewImg").MediaType) "image/jxl" -}}
+    {{- $previewLoc := path.Join $manifestDir $fullResImgSuffix -}}
+    {{- if not (fileExists (path.Join $.File.Dir $previewLoc)) -}}
+      {{- errorf "[_default/single.iiif.json] %s referenced in %s doesn't exists!" $previewLoc $.File.Path -}}
+    {{- end -}}
+   {{- $image.Set "previewImg" ($.Resources.GetMatch $previewLoc) -}}
+  {{- end -}}
+  {{- if eq ($image.Get "previewImg") nil -}}
+    {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
+  {{- end -}}
+{{- end -}}
+{{- $thumbnail := ($image.Get "previewImg").Resize "300x200" -}}
+{{- if ne $thumbnail nil -}}
+  "thumbnail": {
+    "id": "{{ $thumbnail.Permalink }}",
+    "format": "image/jpeg",
+    "type":"Image",
+    "height": {{ $thumbnail.Height }},
+    "width": {{ $thumbnail.Width }}
+  },
+{{- end -}}
