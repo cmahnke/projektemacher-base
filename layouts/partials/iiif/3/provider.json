@@ -13,11 +13,24 @@
   ],
   "logo": [
     {
-      "id": "https://projektemacher.org/images/logo.png",
-      "type": "Image",
-      "format": "image/png",
-      "height": 1024,
-      "width": 1024
+      {{- if isset .Params "iiifLogo" -}}
+        {{- errorf "[iiif/3/provider.json] .Params.iiifLogo isn't supported anymore use .Params.iiif.logo" -}}
+      {{- end -}}
+      {{- if and (isset .Params "iiif") (isset .Params.iiif "logo") -}}
+        {{- warnf "[iiif/3(provider.json] Using provided logo - check if this works as expected" -}}
+        "id":"{{ .Params.iiif.logo.img }}",
+        "service":{
+           "@context":"http://iiif.io/api/image/2/context.json",
+           "id":"{{ .Params.iiif.logo.url }}",
+           "profile":"http://iiif.io/api/image/2/level0.json"
+        }
+      {{- else -}}
+        "id": "https://projektemacher.org/images/logo.png",
+        "type": "Image",
+        "format": "image/png",
+        "height": 1024,
+        "width": 1024
+      {{- end -}}
     }
   ],
   "seeAlso": [

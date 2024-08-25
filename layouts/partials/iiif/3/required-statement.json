@@ -11,8 +11,11 @@
     {{- $translations := .AllTranslations -}}
     {{- range $i, $translation := $translations -}}
       "{{ .Lang }}": [
-      {{- if isset $translation.Params "iiifAttribution" -}}
-        {{ $translation.Params.iiifAttribution | jsonify }}
+      {{- if isset .Params "iiifAttribution" -}}
+        {{- errorf "[iiif/3/provider.json] .Params.iiifAttribution isn't supported anymore use .Params.iiif.attribution" -}}
+      {{- end -}}
+      {{- if and (isset .Params "iiif") (isset .Params.iiif "attribution") -}}
+        {{ $translation.Params.iiif.attribution | jsonify }}
       {{- else -}}
         {{ index $defaultAttribution $translation.Lang | jsonify }}
       {{- end -}}
