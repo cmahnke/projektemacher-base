@@ -41,5 +41,5 @@
     "type":"Image",
     "height": {{ $thumbnail.Height }},
     "width": {{ $thumbnail.Width }}
-  },
+  }
 {{- end -}}
