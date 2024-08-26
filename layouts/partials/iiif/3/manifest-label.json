@@ -1,4 +1,3 @@
-{{/* Check if we need to escape - | jsonify */}}
 "label": {
     "{{ $.Site.Language.Lang }}": [
       {{ .Title | jsonify }}

@@ -50,7 +50,21 @@
       "id": "{{ .Permalink }}",
       "type": "Text",
       "format": "text/html",
-      {{- partial "iiif/3/manifest-label.json" . -}}
+
+      "label": {
+          "{{ $.Site.Language.Lang }}": [
+            {{ printf "%s: %s" .Site.Title .Title | jsonify }}
+          ]
+        {{- if hugo.IsMultilingual -}}
+          {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
+          {{- range $translations -}}
+          ,
+            "{{ .Lang }}": [
+              {{ printf "%s: %s" .Site.Title .Title | jsonify }}
+            ]
+          {{ end }}
+        {{- end -}}
+      }
     }
   ],
 
