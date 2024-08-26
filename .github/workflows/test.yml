@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.133.0
+  HUGO_VERSION: 0.133.1
 
 jobs:
   lint:
@@ -209,7 +209,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.127.0', '0.128.2', '0.129.0', '0.132.2', 'latest']
+        version: ['0.127.0', '0.128.2', '0.129.0', '0.132.2', '0.133.0', 'latest']
         can-fail: [false]
         include:
           - version: 0.127.0
@@ -219,6 +219,8 @@ jobs:
           - version: 0.129.0
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.132.2
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.133.0
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
