@@ -115,9 +115,9 @@
           {{- else if (hasPrefix $manifestDir "cover") -}}
             {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
           {{- else if (hasPrefix $manifestDir "front") -}}
-            {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderer Buchdeckel") -}}
+            {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
           {{- else if (hasPrefix $manifestDir "back") -}}
-            {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Hinterer Buchdeckel") -}}
+            {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
           {{- else if (hasPrefix $manifestDir "title") -}}
             {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
           {{- else -}}
