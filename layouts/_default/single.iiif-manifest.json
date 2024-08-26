@@ -42,8 +42,13 @@
     {"rights", "{{ .Params.iiif.rights }}"},
   {{- end -}}
   {{ partial "iiif/3/required-statement.json" . }},
-  {{ partial "iiif/3/thumbnail.json" . }},
-  {{ partialCached "iiif/3/provider.json" . }},
+
+  {{- $thumnail := trim (partial "iiif/3/thumbnail.json" .) "\n\t " -}}
+  {{- if ne $thumnail ""}}
+    {{- $thumnail -}},
+  {{- end -}}
+
+  {{- partialCached "iiif/3/provider.json" . -}},
 
   "homepage": [
     {
