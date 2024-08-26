@@ -112,7 +112,7 @@ def processSingle(post: Post, out: pathlib.Path):
     metadata = post.getMetadata()
     path = post.path
     if not "title" in metadata:
-        raise ValueError(f"No title in {post}")
+        raise ValueError(f"No title in {repr(post)}")
     else:
         title = metadata["title"]
     description = ""
