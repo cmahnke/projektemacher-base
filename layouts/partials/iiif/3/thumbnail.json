@@ -22,7 +22,7 @@
   {{- end -}}
 {{- end -}}
 {{- if or (eq $previewReference "") (eq $previewReference nil) -}}
-  {{- errorf "[iiif/3/thumbnail.json] Couldn't resolve preview for %s from %s" $contextPath (jsonify $previewReference) -}}
+  {{- errorf "[iiif/3/thumbnail.json] Couldn't resolve preview for %s from %s" $contextPath (jsonify .Params.resources) -}}
 {{- end -}}
 {{- $previewImg = .Resources.Get $previewReference.src -}}
 {{/* Check for JXL */}}
