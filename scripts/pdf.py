@@ -112,7 +112,7 @@ def processSingle(post: Post, out: pathlib.Path):
     metadata = post.getMetadata()
     path = post.path
     if not "title" in metadata:
-        raise ValueError(f"No title in {post}")
+        raise ValueError(f"No title in post for {out}")
     else:
         title = metadata["title"]
     description = ""
@@ -181,7 +181,10 @@ def main() -> int:
         else:
             od = outDir
         out = os.path.join(od, f"{post.path.name}.pdf")
-
+        metadata = post.getMetadata()
+        if not "title" in metadata and not "resources" in metadata:
+            cprint(f"Skipping post for {out}, since it has no title and resources!", "red")
+            continue
         processSingle(post, out)
 
 
