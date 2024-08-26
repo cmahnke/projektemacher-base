@@ -1,23 +1,41 @@
+{{- $manifest := "manifest.json" -}}
 {{- $pages := .Site.RegularPages -}}
   {{- range .Site.Home.Translations -}}
   {{- $pages = $pages | lang.Merge .Site.RegularPages -}}
 {{- end -}}
+{{- $pages = where $pages "Params.displayinlist" "!=" false -}}
 
-{{- $iiif := where $pages "Params.iiifContext" "!=" nil -}}
-{{- $iiif = where $iiif "Params.displayinlist" "!=" false -}}
-
-{{- $items := slice -}}
 {{/* TODO: Remove this
 * Check if page is section child and parent also has iiif Context
-* Check also for .Params.output
 */}}
-{{- range $iiif -}}
-  {{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
-    {{ $items = $items | append . }}
-  {{- else if hasPrefix .Params.iiifContext "http://iiif.io/api/image/" -}}
-    {{- warnf "[home.iiif-collection.json]- Ignorig %s" .Path -}}
+
+
+{{- $iiif := slice -}}
+{{- range $pages -}}
+  {{- $page := . -}}
+  {{- if not (isset .Params "outputs") -}}
+    {{- continue -}}
+  {{- else if reflect.IsSlice .Params.outputs -}}
+    {{- if or (in .Params.outputs "iiif") (in .Params.outputs "iiif-manifest") -}}
+      {{ $iiif = $iiif | append $page }}
+    {{- end -}}
+    {{ range .OutputFormats -}}
+      {{- if eq .Name "iiif" -}}
+        {{ $iiif = $iiif | append $page }}
+      {{- end -}}
+      {{- if eq .Name "iiif-manifest" -}}
+        {{ $iiif = $iiif | append $page }}
+      {{- end -}}
+    {{- else -}}
+      {{/* TODO: This will never happen since .OutputFormats includes default 'html' and 'rss' */}}
+      {{- warnf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
+    {{ end -}}
+    {{- continue -}}
   {{- end -}}
 {{- end -}}
+
+{{- warnf "--> %#v" $iiif -}}
+
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "id": "{{ $.Site.BaseURL }}collection.json",
@@ -37,31 +55,7 @@
     {{- end -}}
   },
   "items": [
-    {{- range $i, $item := $items -}}
-      {{- with $item.Params.outputs -}}
-        {{/* This is usually used if a output format definition isn't in config.toml - we could also fail here */}}
-        {{- if reflect.IsSlice . -}}
-          {{- if and (not (in . "iiif")) (not (in . "iiif-manifest")) -}}
-            {{- continue -}}
-          {{- end -}}
-        {{- else -}}
-          {{- $skip := true -}}
-          {{- range . -}}
-            {{- if eq .Name "iiif" -}}
-              {{- $skip = false -}}
-            {{- end -}}
-            {{- if eq .Name "iiif-manifest" -}}
-              {{- $skip = false -}}
-            {{- end -}}
-          {{- end -}}
-          {{- if $skip -}}
-            {{- continue -}}
-          {{- end -}}
-        {{- end -}}
-      {{- else -}}
-        {{- continue -}}
-      {{- end -}}
-      {{- $manifest := "manifest.json" -}}
+    {{- range $i, $item := $iiif -}}
       {{- with $item.Params.iiifManifest -}}
         {{- $manifest = path.Base . -}}
       {{- end -}}
@@ -87,7 +81,7 @@
           {{- end -}}
         }
       }
-      {{- if ne $i (sub (len $items) 1) -}}
+      {{- if ne $i (sub (len $iiif) 1) -}}
        ,
       {{- end -}}
     {{- end -}}
