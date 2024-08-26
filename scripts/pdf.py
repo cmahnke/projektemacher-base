@@ -111,7 +111,10 @@ def processSingle(post: Post, out: pathlib.Path):
     cprint(f"Starting to assemble {out}", "green")
     metadata = post.getMetadata()
     path = post.path
-    title = metadata["title"]
+    if not "title" in metadata:
+        raise ValueError(f"No title in {post}")
+    else:
+        title = metadata["title"]
     description = ""
     if "description" in metadata:
         description = metadata["description"]

@@ -13,6 +13,13 @@ class Posts:
             else:
                 self.paths.append(path)
 
+    def __str__(self):
+        if len(self.paths > 0):
+            return self.paths[0]
+        else:
+            ""
+
+
     def postList(self):
         posts = []
         files = self.listFiles()
