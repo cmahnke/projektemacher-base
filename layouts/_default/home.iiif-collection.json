@@ -33,9 +33,6 @@
     {{- continue -}}
   {{- end -}}
 {{- end -}}
-
-{{- warnf "--> %#v" $iiif -}}
-
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "id": "{{ $.Site.BaseURL }}collection.json",
