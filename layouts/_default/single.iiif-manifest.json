@@ -1,16 +1,20 @@
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
-{{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
-{{ $defaultContentPage := "" }}
-{{- if hugo.IsMultilingual -}}
-  {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
-{{- else -}}
-  {{- $defaultContentPage = . -}}
-{{ end }}
+
 
 {{- $imageIdSuffix := "" -}}
 {
+
+  {{- partial "iiif/3/common.json" . -}}
+
+  {{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
+  {{ $defaultContentPage := "" }}
+  {{- if hugo.IsMultilingual -}}
+    {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
+  {{- else -}}
+    {{- $defaultContentPage = . -}}
+  {{ end }}
   {{- $contextPath := path.Dir .File.Path -}}
   {{- $urlBase := "" -}}
   {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
@@ -18,74 +22,6 @@
     {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
   {{- else -}}
     {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
-  {{- end -}}
-
-  "@context": "http://iiif.io/api/presentation/3/context.json",
-  "type": "Manifest",
-  "id": "{{ .Permalink }}",
-  "viewingDirection": "left-to-right",
-  {{- $defaultBehavior := "paged" -}}
-
-  "behavior":
-    {{- if and (isset .Params "iiif") (isset .Params.iiif "behavior") -}}
-      {{ .Params.iiif.behavior | jsonify }}
-    {{- else -}}
-      ["{{ $defaultBehavior }}"]
-    {{- end -}}
-  ,
-
-  {{- if .Description -}}
-    {{- partial "iiif/3/manifest-summary.json" . -}},
-  {{- end -}}
-
-  {{- if and (isset .Params "iiif") (isset .Params.iiif "rights") -}}
-    {"rights", "{{ .Params.iiif.rights }}"},
-  {{- end -}}
-  {{ partial "iiif/3/required-statement.json" . }},
-
-  {{- $thumnail := trim (partial "iiif/3/thumbnail.json" .) "\n\t " -}}
-  {{- if ne $thumnail ""}}
-    {{- $thumnail -}},
-  {{- end -}}
-
-  {{- partialCached "iiif/3/provider.json" . -}},
-
-  "homepage": [
-    {
-      "id": "{{ .Permalink }}",
-      "type": "Text",
-      "format": "text/html",
-
-      "label": {
-          "{{ $.Site.Language.Lang }}": [
-            {{ printf "%s: %s" .Site.Title .Title | jsonify }}
-          ]
-        {{- if hugo.IsMultilingual -}}
-          {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
-          {{- range $translations -}}
-          ,
-            "{{ .Lang }}": [
-              {{ printf "%s: %s" .Site.Title .Title | jsonify }}
-            ]
-          {{ end }}
-        {{- end -}}
-      }
-    }
-  ],
-
-  {{- partial "iiif/3/manifest-label.json" . -}},
-  {{- if and (isset .Params "iiif") (isset .Params.iiif "metadata") -}}
-    {{- jsonify .Params.iiif.metadata -}}
-  {{- end -}}
-  {{- if isset .Params "iiifMetadata" -}}
-    {{- errorf "[single.iiii-metadata.json] .Params.iiifMetadata isn't supported anymore use .Params.iiif.metadata" -}}
-  {{- end -}}
-  {{- if and (isset .Params "iiif") (isset .Params.iiif "structure") -}}
-    "structures": {{- jsonify .Params.iiif.structure -}}
-  {{- end -}}
-
-  {{- if isset .Params "iiifStructure" -}}
-    {{- errorf "[single.iiii-metadata.json] .Params.iiifStructure isn't supported anymore use .Params.iiif.structure" -}}
   {{- end -}}
 
   {{- $firstCanvasId := "" -}}
