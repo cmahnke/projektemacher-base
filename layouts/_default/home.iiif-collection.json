@@ -60,7 +60,10 @@
         "id": "{{ printf "%s%s/%s" $.Site.BaseURL (substr $item.Path 1) $manifest }}",
         "type": "Manifest",
 
-        {{ partial "iiif/3/thumbnail.json" . }},
+        {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
+        {{- if ne $thumbnail "" -}}
+          {{- $thumbnail -}},
+        {{- end -}}
 
         "label": {
           "{{ $.Site.Language.Lang }}": [
