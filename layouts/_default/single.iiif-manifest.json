@@ -1,25 +1,25 @@
 {{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
-{{/* TODO: THis below isn't valid anymore }}
-{{/* This is a hack to get the default content language - this is a missing Hugo feature */}}
-{{- $defaultContentLanguage := partialCached "functions/i18n/default-lang" . -}}
-{{- $defaultContentPage := partial "functions/i18n/page-for-lang" (dict "context" . "lang" $defaultContentLanguage) -}}
+{{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
+{{ $defaultContentPage := "" }}
+{{- if hugo.IsMultilingual -}}
+  {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
+{{- else -}}
+  {{- $defaultContentPage = . -}}
+{{ end }}
 
 {{- $imageIdSuffix := "" -}}
 {
   {{- $contextPath := path.Dir .File.Path -}}
   {{- $urlBase := "" -}}
+  {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
   {{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
-    {{- $pl := .Permalink -}}
-    {{- if ne $.Site.Language.Lang $defaultContentLanguage -}}
-      {{- $pl = $defaultContentPage.Permalink -}}
-    {{- end -}}
-    {{- $urlBase = printf "%s/" (substr $pl 0 (sub (len $pl) 1)) -}}
+    {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
   {{- else -}}
-    {{- $localPath := (substr .RelPermalink 1 (sub (len .RelPermalink) 1)) -}}
     {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
   {{- end -}}
+
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "type": "Manifest",
   "id": "{{ .Permalink }}",
@@ -99,8 +99,9 @@
       {{- end -}}
 
       {{- $imageRes := $.Resources.Get $res.src -}}
+      {{- $mediatype := string $imageRes.MediaType -}}
       {{/* Check for JXL */}}
-      {{- if eq (string $imageRes.MediaType) "image/jxl" -}}
+      {{- if eq $mediatype "image/jxl" -}}
         {{- $previewLoc := path.Join (path.Dir $res.params.iiif) $fullResImgSuffix -}}
         {{- if $debug -}}
           {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
@@ -111,7 +112,12 @@
         {{- errorf "[single.iiif-manifest.json] failed to load from %#v" $res -}}
       {{- end -}}
 
-      {{- $manifestDir := path.Dir .params.iiif -}}
+      {{- $manifestDir := "" -}}
+      {{- if hasPrefix $mediatype "image" -}}
+        {{- $manifestDir = path.Dir .params.iiif -}}
+      {{ else if hasPrefix $mediatype "audio" }}
+        {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
+      {{- end -}}
 
       {{- $canvas := "" -}}
       {{- if .name -}}
@@ -124,8 +130,6 @@
         {
           "id":"{{ $canvasId }}",
           "type": "Canvas",
-          "height": {{ $imageRes.Height }},
-          "width": {{ $imageRes.Width }},
           {{- $pageLabel := "" -}}
           {{- if .params.label -}}
             {{- $pageLabel = dict "none" (slice .params.label) -}}
@@ -139,51 +143,68 @@
             {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
           {{- else if (hasPrefix $manifestDir "title") -}}
             {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
+          {{- else if hasPrefix $mediatype "audio" -}}
+            {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
           {{- else -}}
             {{- warnf "[single.iiif-manifest.json] Unhandled page label: %s" $manifestDir -}}
             {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
           {{- end -}}
-          "label": {{ $pageLabel | jsonify }},
 
+          "label": {{ $pageLabel | jsonify }},
           {{- if .params.hint -}}
             "behavior": ["{{ .params.hint }}"],
           {{- end -}}
 
-          "thumbnail": [
-            {{- $thumbnail := $imageRes.Resize "300x" -}}
-            {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
-              {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
-            {{- end -}}
-            {
-              "id": "{{ $thumbnail.Permalink }}",
-              "format": "image/jpeg",
-              "type":"Image",
-              "height": {{ $thumbnail.Height }},
-              "width": {{ $thumbnail.Width }}
-            }
-          ],
+          {{- if hasPrefix $mediatype "image" -}}
+            "height": {{ $imageRes.Height }},
+            "width": {{ $imageRes.Width }},
+            "thumbnail": [
+              {{- $thumbnail := $imageRes.Resize "300x" -}}
+              {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
+                {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
+              {{- end -}}
+              {
+                "id": "{{ $thumbnail.Permalink }}",
+                "format": "image/jpeg",
+                "type":"Image",
+                "height": {{ $thumbnail.Height }},
+                "width": {{ $thumbnail.Width }}
+              }
+            ],
+          {{- end -}}
           {{- $annnotationId := printf "%sannotation/%s" $urlBase $manifestDir -}}
           "items": [{
             "id": "{{ $annnotationId }}",
             "type": "AnnotationPage",
             "items":[
-            {{- $imageId := printf "%s%s%s" $urlBase $manifestDir $imageIdSuffix -}}
+            {{- $imageId := "" -}}
+            {{- if hasPrefix $mediatype "image" -}}
+              {{- $imageId = printf "%s%s%s" $urlBase $manifestDir $imageIdSuffix -}}
+            {{ else if hasPrefix $mediatype "audio" }}
+              {{- $imageId = printf "%s%s" $urlBase .src -}}
+            {{- end -}}
 
             {
-              "id": "{{ printf "%s-image" $annnotationId }}",
+              "id": "{{ printf "%s/%s" $annnotationId (index (split $mediatype "/") 0) }}",
               "type": "Annotation",
               "motivation":"painting",
               "body":{
-                "id":"{{ printf "%s%s" $imageId $fullResImgSuffix }}",
-                "type":"Image",
-                "format":"image/jpeg",
-                "height": {{ $imageRes.Height }},
-                "width": {{ $imageRes.Width }},
-                "service": [{
-                  "id":"{{ $imageId }}",
-                  "type": "ImageService2",
-                  "profile":"level0"
-                }]
+                {{- if hasPrefix $mediatype "image" -}}
+                  "id": "{{ printf "%s%s" $imageId $fullResImgSuffix }}",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": {{ $imageRes.Height }},
+                  "width": {{ $imageRes.Width }},
+                  "service": [{
+                    "id":"{{ $imageId }}",
+                    "type": "ImageService2",
+                    "profile":"level0"
+                  }]
+                {{- else if hasPrefix $mediatype "audio" -}}
+                  "id": "{{ $imageId }}",
+                  "type": "Sound",
+                  "format": {{ $mediatype | jsonify }}
+                {{- end -}}
               },
               "target":"{{ $canvasId }}"
             }]
