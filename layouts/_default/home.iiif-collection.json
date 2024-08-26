@@ -60,7 +60,7 @@
         "id": "{{ printf "%s%s/%s" $.Site.BaseURL (substr $item.Path 1) $manifest }}",
         "type": "Manifest",
 
-        {{ partial "iiif/3/thumbnail.json" . }}
+        {{ partial "iiif/3/thumbnail.json" . }},
 
         "label": {
           "{{ $.Site.Language.Lang }}": [
