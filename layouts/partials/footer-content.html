@@ -10,7 +10,7 @@
 	  {{- else if $.Sites.Default.Params.copyright -}}
 	      <p class="copyright">{{- .Sites.Default.Params.copyright | safeHTML -}}</p>
     {{- else -}}
-        <p class="copyright">&copy; {{ $.Sites.Default.LastChange.Year }} {{ $.Sites.Default.Title }}</p>
+        <p class="copyright">&copy; {{ $.Sites.Default.Lastmod.Year }} {{ $.Sites.Default.Title }}</p>
     {{- end -}}
     {{- if and $.Sites.Default.Params.cc (eq $.Sites.Default.Params.cc true) -}}
         <p class="cc">{{ i18n "cc" | safeHTML }}</p>
