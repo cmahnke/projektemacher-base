@@ -1,7 +1,7 @@
 {{- $manifest := "manifest.json" -}}
-{{- $pages := .Site.AllPages -}}
-  {{- range .Site.Home.Translations -}}
-  {{- $pages = $pages | lang.Merge .Site.RegularPages -}}
+{{- $pages := .Site.Pages -}}
+{{- range .Site.Home.Translations -}}
+  {{- $pages = $pages | lang.Merge .Site.Pages -}}
 {{- end -}}
 {{- $pages = where $pages "Params.displayinlist" "!=" false -}}
 
