@@ -77,8 +77,13 @@
     {{- $firstCanvasId = path.Dir $firstResource.params.iiif -}}
   {{- end -}}
 
+  {{- $iiifResources := where .Params.resources "params.iiif" "ne" nil -}}
   "items": [
-    {{- range $i, $res := .Params.resources -}}
+    {{- range $i, $res := $iiifResources -}}
+      {{- if not .params.iiif -}}
+        {{- continue -}}
+      {{- end -}}
+
       {{- $imageRes := $.Resources.Get $res.src -}}
       {{/* Check for JXL */}}
       {{- if eq (string $imageRes.MediaType) "image/jxl" -}}
@@ -170,7 +175,7 @@
             }]
           }]
        }
-       {{- if ne $i (sub (len $.Params.resources) 1) -}}
+       {{- if ne $i (sub (len $iiifResources) 1) -}}
         ,
        {{- end -}}
      {{- end -}}
