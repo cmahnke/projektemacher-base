@@ -32,11 +32,12 @@
     {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $previewReference.src $previewLoc .File.Path }}
   {{- end -}}
   {{- $previewImg = .Resources.Get $previewLoc -}}
+{{- else if not (hasPrefix (string $previewImg.MediaType) "image") -}}
+  {{- $previewImg = "" -}}
 {{- end -}}
 
-{{- $thumbnail := $previewImg.Resize "300x" -}}
-
-{{- if ne $thumbnail nil -}}
+{{- if and (ne $previewImg nil) (ne $previewImg "") -}}
+  {{- $thumbnail := $previewImg.Resize "300x" -}}
   "thumbnail": [{
     "id": "{{ $thumbnail.Permalink }}",
     "format": "image/jpeg",
