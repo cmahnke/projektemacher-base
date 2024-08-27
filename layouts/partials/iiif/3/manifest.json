@@ -117,6 +117,8 @@
             {{- $pageLabel = dict "none" (slice .params.label) -}}
           {{- else if findRE `page0*(\d+)` $manifestDir -}}
             {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
+          {{- else if findRE `page-(.+)` $manifestDir -}}
+            {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
           {{- else if (hasPrefix $manifestDir "cover") -}}
             {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
           {{- else if (hasPrefix $manifestDir "front") -}}
