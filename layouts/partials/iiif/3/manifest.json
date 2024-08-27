@@ -84,6 +84,8 @@
             {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
           {{- else if (hasPrefix $manifestDir "title") -}}
             {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
+          {{- else if (hasPrefix $manifestDir "end") -}}
+            {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
           {{- else if (hasPrefix $manifestDir "front-recto") -}}
             {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
           {{- else if (hasPrefix $manifestDir "front-verso") -}}
