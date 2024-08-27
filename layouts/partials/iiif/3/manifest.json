@@ -23,14 +23,14 @@
   {{- end -}}
 
   {{- $iiifResources := slice -}}
-  {{- $relPath := "" -}}
+
   {{- if eq .Kind "page" -}}
     {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
   {{- else if eq .Kind "section" -}}
     {{- $parentPath := path.Dir .RelPermalink -}}
     {{- range .CurrentSection.Pages -}}
       {{- $childPath := path.Dir .RelPermalink -}}
-      {{- $relPath = substr $childPath (add (len $parentPath) 1) -}}
+      {{- $relPath := substr $childPath (add (len $parentPath) 1) -}}
       {{- $childPage := . -}}
       {{- range (where .Params.resources "params.iiif" "ne" nil) -}}
         {{- $childSrc := .src -}}
@@ -41,7 +41,7 @@
           {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
           {{- $res = $childPage.Resources.Get $previewLoc -}}
         {{- end -}}
-        {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res) -}}
+        {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res "relpath" $relPath) -}}
 
         {{- $iiifResources = $iiifResources | append $pageResources -}}
       {{- end -}}
@@ -50,12 +50,12 @@
     {{- errorf "[singe.iiif-manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
   {{- end -}}
 
-  {{- if eq $.Kind "section" -}}
-    {{- $urlBase = printf "%s%s/" $urlBase $relPath -}}
-  {{- end -}}
-
   "items": [
     {{- range $i, $res := $iiifResources -}}
+      {{- $imageUrlBase := $urlBase -}}
+      {{- if eq $.Kind "section" -}}
+        {{- $imageUrlBase := printf "%s%s/" $urlBase $res.relpath -}}
+      {{- end -}}
       {{- if not .params.iiif -}}
         {{- continue -}}
       {{- end -}}
@@ -74,7 +74,7 @@
         {{- if (ne $.Kind "section") -}}
           {{- $previewLoc = path.Join (path.Dir $res.params.iiif) $fullResImgSuffix -}}
         {{- else -}}
-          {{- $previewLoc = path.Join $relPath (path.Dir $res.params.iiif) $fullResImgSuffix -}}
+          {{- $previewLoc = path.Join $res.relpath (path.Dir $res.params.iiif) $fullResImgSuffix -}}
         {{- end -}}
         {{- if $debug -}}
           {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
@@ -98,7 +98,7 @@
       {{- else -}}
         {{- $canvas = $manifestDir -}}
       {{- end -}}
-      {{- $canvasId := printf "%scanvas/%s" $urlBase $canvas -}}
+      {{- $canvasId := printf "%scanvas/%s" $imageUrlBase $canvas -}}
 
         {
           "id":"{{ $canvasId }}",
@@ -155,7 +155,7 @@
               }
             ],
           {{- end -}}
-          {{- $annnotationId := printf "%sannotation/%s" $urlBase $manifestDir -}}
+          {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
 
           "items": [{
             "id": "{{ $annnotationId }}",
@@ -164,9 +164,9 @@
             {{- $imageId := "" -}}
 
             {{- if hasPrefix $mediatype "image" -}}
-              {{- $imageId = printf "%s%s%s" $urlBase $manifestDir $imageIdSuffix -}}
+              {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
             {{ else if hasPrefix $mediatype "audio" }}
-              {{- $imageId = printf "%s%s" $urlBase .src -}}
+              {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
             {{- end -}}
 
             {
