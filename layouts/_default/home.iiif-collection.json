@@ -67,14 +67,14 @@
 
         "label": {
           "{{ $.Site.Language.Lang }}": [
-            "{{ $item.Title }}"
+            {{ $item.Title | jsonify }}
           ]
           {{- if hugo.IsMultilingual -}}
             {{- if .IsTranslated -}}
               {{- range .Translations -}}
                 ,
                 "{{ .Lang }}": [
-                  "{{ .Title }}"
+                  {{ .Title | jsonify }}
                 ]
               {{- end -}}
             {{- end -}}
