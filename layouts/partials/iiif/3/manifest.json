@@ -4,7 +4,6 @@
 
 {{- $imageIdSuffix := "" -}}
 {
-
   {{- partial "iiif/3/common.json" . -}}
 
   {{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
@@ -27,6 +26,14 @@
   {{- if eq .Kind "page" -}}
     {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
   {{- else if eq .Kind "section" -}}
+    {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
+      {{- $res := $.Resources.Get .src -}}
+      {{- if eq (string $res.MediaType) "image/jxl" -}}
+        {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
+        {{- $res = $.Resources.Get $previewLoc -}}
+      {{- end -}}
+      {{- $iiifResources = $iiifResources | append (merge . (dict "relpath" "" "res" $res)) -}}
+    {{- end -}}
     {{- $parentPath := path.Dir .RelPermalink -}}
     {{- range .CurrentSection.Pages -}}
       {{- $childPath := path.Dir .RelPermalink -}}
@@ -41,7 +48,7 @@
           {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
           {{- $res = $childPage.Resources.Get $previewLoc -}}
         {{- end -}}
-        {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res "relpath" $relPath) -}}
+        {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res "relpath" (printf "%s/" $relPath)) -}}
 
         {{- $iiifResources = $iiifResources | append $pageResources -}}
       {{- end -}}
@@ -54,7 +61,7 @@
     {{- range $i, $res := $iiifResources -}}
       {{- $imageUrlBase := $urlBase -}}
       {{- if eq $.Kind "section" -}}
-        {{- $imageUrlBase := printf "%s%s/" $urlBase $res.relpath -}}
+        {{- $imageUrlBase := printf "%s%s" $urlBase $res.relpath -}}
       {{- end -}}
       {{- if not .params.iiif -}}
         {{- continue -}}
