@@ -61,7 +61,7 @@
     {{- range $i, $res := $iiifResources -}}
       {{- $imageUrlBase := $urlBase -}}
       {{- if eq $.Kind "section" -}}
-        {{- $imageUrlBase := printf "%s%s" $urlBase $res.relpath -}}
+        {{- $imageUrlBase = printf "%s%s" $urlBase $res.relpath -}}
       {{- end -}}
       {{- if not .params.iiif -}}
         {{- continue -}}
