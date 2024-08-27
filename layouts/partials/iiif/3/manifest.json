@@ -26,13 +26,15 @@
   {{- if eq .Kind "page" -}}
     {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
   {{- else if eq .Kind "section" -}}
-    {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
-      {{- $res := $.Resources.Get .src -}}
-      {{- if eq (string $res.MediaType) "image/jxl" -}}
-        {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
-        {{- $res = $.Resources.Get $previewLoc -}}
+    {{- if (isset .Params "resources") -}}
+      {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
+        {{- $res := $.Resources.Get .src -}}
+        {{- if eq (string $res.MediaType) "image/jxl" -}}
+          {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
+          {{- $res = $.Resources.Get $previewLoc -}}
+        {{- end -}}
+        {{- $iiifResources = $iiifResources | append (merge . (dict "relpath" "" "res" $res)) -}}
       {{- end -}}
-      {{- $iiifResources = $iiifResources | append (merge . (dict "relpath" "" "res" $res)) -}}
     {{- end -}}
     {{- $parentPath := path.Dir .RelPermalink -}}
     {{- range .CurrentSection.Pages -}}
