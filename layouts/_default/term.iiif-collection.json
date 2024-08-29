@@ -1,3 +1,9 @@
-{{- $pages = where . "Params.displayinlist" "!=" false -}}
+{{- $pages := .Pages -}}
+{{- $pages = where $pages "Params.displayinlist" "!=" false -}}
 
-{{- partial "iiif/3/collection.json" $pages -}}
+{{- $json := trim (partial "iiif/3/collection.json" $pages) "\n\t " -}}
+{{- if ne $json "" -}}
+  {{- $json -}}
+{{- else -}}
+  {}
+{{- end -}}
