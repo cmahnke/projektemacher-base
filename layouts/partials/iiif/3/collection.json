@@ -1,0 +1,79 @@
+{{- $manifest := "manifest.json" -}}
+
+{{- $iiif := slice -}}
+{{- range . -}}
+  {{- $page := . -}}
+  {{- if not (isset .Params "outputs") -}}
+    {{- continue -}}
+  {{- else if reflect.IsSlice .Params.outputs -}}
+    {{- if or (in .Params.outputs "iiif") (in .Params.outputs "iiif-manifest") -}}
+      {{ $iiif = $iiif | append $page }}
+    {{- end -}}
+    {{ range .OutputFormats -}}
+      {{- if eq .Name "iiif" -}}
+        {{ $iiif = $iiif | append $page }}
+      {{- end -}}
+      {{- if eq .Name "iiif-manifest" -}}
+        {{ $iiif = $iiif | append $page }}
+      {{- end -}}
+    {{- else -}}
+      {{/* TODO: This will never happen since .OutputFormats includes default 'html' and 'rss' */}}
+      {{- warnf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
+    {{ end -}}
+    {{- continue -}}
+  {{- end -}}
+{{- end -}}
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "{{ site.BaseURL }}collection.json",
+  "type": "Collection",
+  "label": {
+      "{{ site.Language.Lang }}": [
+        "{{ site.Title }}"
+      ]
+    {{- if hugo.IsMultilingual -}}
+      {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
+      {{- range $translations -}}
+      ,
+        "{{ .Lang }}": [
+          "{{ .Name }}"
+        ]
+      {{ end }}
+    {{- end -}}
+  },
+  "items": [
+    {{- range $i, $item := $iiif -}}
+      {{- with $item.Params.iiifManifest -}}
+        {{- $manifest = path.Base . -}}
+      {{- end -}}
+      {
+        "id": "{{ printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest }}",
+        "type": "Manifest",
+
+        {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
+        {{- if ne $thumbnail "" -}}
+          {{- $thumbnail -}},
+        {{- end -}}
+
+        "label": {
+          "{{ site.Language.Lang }}": [
+            {{ $item.Title | jsonify }}
+          ]
+          {{- if hugo.IsMultilingual -}}
+            {{- if .IsTranslated -}}
+              {{- range .Translations -}}
+                ,
+                "{{ .Lang }}": [
+                  {{ .Title | jsonify }}
+                ]
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        }
+      }
+      {{- if ne $i (sub (len $iiif) 1) -}}
+       ,
+      {{- end -}}
+    {{- end -}}
+  ]
+}

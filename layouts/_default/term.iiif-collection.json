@@ -1,0 +1,3 @@
+{{- $pages = where . "Params.displayinlist" "!=" false -}}
+
+{{- partial "iiif/3/collection.json" $pages -}}
