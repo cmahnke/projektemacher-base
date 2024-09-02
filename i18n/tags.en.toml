@@ -130,6 +130,9 @@ other = "Signature"
 [BlindEmbossing]
 other = "Blind embossing"
 
+[Document]
+other = "Document"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
