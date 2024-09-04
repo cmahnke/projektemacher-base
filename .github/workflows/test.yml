@@ -84,7 +84,10 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/dart-sass.sh
+          ./scripts/github/jxl-0.10.3.sh
+          ./scripts/github/setup-xslt.sh
+          ./scripts/github/setup-inkscape.sh
+          ./scripts/github/setup-media.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
           ./scripts/github/setup-yarn.sh
