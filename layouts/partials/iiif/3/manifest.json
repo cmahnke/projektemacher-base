@@ -56,7 +56,7 @@
       {{- end -}}
     {{- end -}}
   {{- else -}}
-    {{- errorf "[singe.iiif-manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
+    {{- errorf "[iiif/3/manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
   {{- end -}}
 
   "items": [
@@ -73,7 +73,7 @@
         {{- $imageRes = $res.res -}}
       {{- end -}}
       {{- if and $debug (eq $imageRes nil) -}}
-        {{- errorf "Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
+        {{- errorf "[iiif/3/manifest.json] Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
       {{- end -}}
 
       {{- $mediatype := string $imageRes.MediaType -}}
@@ -86,12 +86,12 @@
           {{- $previewLoc = path.Join $res.relpath (path.Dir $res.params.iiif) $fullResImgSuffix -}}
         {{- end -}}
         {{- if $debug -}}
-          {{ warnf "[iiif/3/thumbnail.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
+          {{ warnf "[iiif/3/manifest.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
         {{- end -}}
         {{- $imageRes = $.Resources.Get $previewLoc -}}
       {{- end -}}
       {{- if eq $imageRes nil -}}
-        {{- errorf "[single.iiif-manifest.json] failed to load from %#v" $res -}}
+        {{- errorf "[iiif/3/manifest.json] failed to load from %#v" $res -}}
       {{- end -}}
 
       {{- $manifestDir := "" -}}
@@ -140,7 +140,7 @@
           {{- else if hasPrefix $mediatype "audio" -}}
             {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
           {{- else -}}
-            {{- warnf "[single.iiif-manifest.json] Unhandled page label: %s" $manifestDir -}}
+            {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
             {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
           {{- end -}}
 

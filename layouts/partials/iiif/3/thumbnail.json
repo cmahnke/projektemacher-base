@@ -8,6 +8,14 @@
   {{- $contextPath = path.Dir .File.Path -}}
 {{- end -}}
 
+{{- $urlBase := "" -}}
+{{- $localPath := printf "%s/" (substr (path.Dir .RelPermalink) 1) -}}
+{{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+  {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
+{{- else -}}
+  {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
+{{- end -}}
+
 {{- if and (isset .Params "preview") .Params.preview -}}
   {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
 {{- else if isset .Params "resources" -}}
@@ -51,5 +59,23 @@
     "type":"Image",
     "height": {{ $thumbnail.Height }},
     "width": {{ $thumbnail.Width }}
-  }]
+  }
+  {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}
+    {{- with $previewReference.params.iiif -}}
+      {{- $imageId := printf "%s%s" $urlBase (path.Dir .) -}}
+      ,{
+        "id": "{{ $previewImg.Permalink }}",
+        "format": "image/jpeg",
+        "type":"Image",
+        "height": {{ $previewImg.Height }},
+        "width": {{ $previewImg.Width }},
+        "service": [{
+          "id":"{{ $imageId }}",
+          "type": "ImageService2",
+          "profile":"level0"
+        }
+      }
+    {{- end -}}
+  {{- end -}}
+  ]
 {{- end -}}
