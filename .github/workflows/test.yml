@@ -85,6 +85,10 @@ jobs:
         run: |
           ./scripts/github/setup-dependencies.sh
           ./scripts/github/dart-sass.sh
+          ./scripts/github/jxl-0.10.3.sh
+          ./scripts/github/xslt.sh
+          ./scripts/github/inkscape.sh
+          ./scripts/github/media.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
           ./scripts/github/setup-yarn.sh
