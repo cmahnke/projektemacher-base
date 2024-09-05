@@ -73,7 +73,7 @@
           "id":"{{ $imageId }}",
           "type": "ImageService2",
           "profile":"level0"
-        }
+        }]
       }
     {{- end -}}
   {{- end -}}
