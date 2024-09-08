@@ -145,3 +145,11 @@ other = "Taken from Blogspot"
 
 [Hint]
 other = "Hint"
+
+# Photography related
+
+[Camera]
+other = "Camera"
+
+[Film]
+other = "Film"

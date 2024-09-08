@@ -145,3 +145,11 @@ other = "Aus dem ursprüglichen Blog"
 
 [Hint]
 other = "Spur"
+
+# Photography related
+
+[Camera]
+other = "Kamera"
+
+[Film]
+other = "Film"
