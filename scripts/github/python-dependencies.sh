@@ -2,6 +2,7 @@
 
 # Disable the need for pyenv and externally managed stuff - we are on a throwaway system:
 printf "[global]\nbreak-system-packages = true\n" >> ~/.config/pip/pip.conf
+find /usr/lib -name EXTERNALLY-MANAGED -exec rm -f {} \;
 
 PACKAGE_DEPENDENCIES="python3-matplotlib python3-numpy python3-pillow python3-yaml python3-pytoml python3-termcolor python3-wheel python3-cairosvg python3-icalendar cython3 python3-opencv"
 
