@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Disable the need for pyenv and externally managed stuff - we are on a throwaway system:
+printf "[global]\nbreak-system-packages = true\n" >> ~/.config/pip/pip.conf
+
 PACKAGE_DEPENDENCIES="python3-matplotlib python3-numpy python3-pillow python3-yaml python3-pytoml python3-termcolor python3-wheel python3-cairosvg python3-icalendar cython3 python3-opencv"
 
 echo "Installing '$PACKAGE_DEPENDENCIES' from distro repository"
@@ -17,7 +20,7 @@ fi
 
 python -m pip install --upgrade pip
 set -e
-# TODO: this fails if path contains a space (' ') character 
+# TODO: this fails if path contains a space (' ') character
 echo "Searching for requirements.txt in '$SEARCH_PATH'"
 for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt"`
 do
