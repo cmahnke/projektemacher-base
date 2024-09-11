@@ -16,11 +16,11 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.134.1
+  HUGO_VERSION: 0.134.2
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
