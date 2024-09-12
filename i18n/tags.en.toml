@@ -136,6 +136,9 @@ other = "Blind embossing"
 [Document]
 other = "Document"
 
+[ClimateChange]
+other = "Climate change"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

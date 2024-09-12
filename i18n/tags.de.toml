@@ -136,6 +136,9 @@ other = "Blindprägung"
 [Document]
 other = "Dokument"
 
+[ClimateChange]
+other = "Klimawandel"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
