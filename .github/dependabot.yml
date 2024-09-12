@@ -21,7 +21,7 @@ updates:
       - dependency-name: "eslint"
         versions: '>8'
   - package-ecosystem: "npm"
-    directory: "/fonts"
+    directory: "/fonts/"
     schedule:
       interval: "daily"
     groups:
