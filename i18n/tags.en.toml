@@ -139,6 +139,12 @@ other = "Document"
 [ClimateChange]
 other = "Climate change"
 
+[Media]
+other = "Media"
+
+[Geodata]
+other = "Geodata"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
