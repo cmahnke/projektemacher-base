@@ -1,0 +1,13 @@
+{{- $href := "" -}}
+{{- $title := "" -}}
+{{- $class := "" -}}
+{{- with .Get "link" -}}
+    {{- $href = . -}}
+{{- end -}}
+{{- with .Get "title" -}}
+    {{- $title = . -}}
+{{- end -}}
+{{- with .Get "class" -}}
+    {{- $class = . -}}
+{{- end -}}
+<a {{ if ne $href "" }}href="{{ $href }}"{{ end }} {{ if ne $class "" }}class="{{ $class }}"{{ end }} {{ if ne $title "" }}title="{{ $title }}"{{ end }}>{{.Inner | safeHTML}}</a>
