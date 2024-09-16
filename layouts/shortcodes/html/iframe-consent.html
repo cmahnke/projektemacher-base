@@ -11,16 +11,12 @@
 
 {{/*
 {{- $iframe := .Inner | safeHTML -}}
-
 {{- $preview := "" -}}
 {{- with .Get "preview" -}}
     {{- $preview = . -}}
 {{- end -}}
-
 {{- $cookie := md5 $iframe -}}
 {{- $id := printf "_iframe-%s" (md5 $iframe) -}}
-
-
 <div class="iframe-wrapper" id="{{ $id }}">
     <div class="iframe">
         <div class="opt-in">
@@ -39,9 +35,7 @@
             </label>
             <span class="opt-in-confirm">{{ i18n "accept" }}</span>
         </div>
-
     </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var expire = 30 * 24 * 60 * 60;
@@ -50,6 +44,5 @@
             addConsent(toggle, overlay, '{{ $cookie }}', '{{ $iframe }}');
         });
     </script>
-
 </div>
 */}}
