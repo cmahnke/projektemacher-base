@@ -54,12 +54,13 @@ def drawTitle(title, file, config):
 
 def drawSVG(title, contentFile, outFile, config):
     global namespaces
+    path = os.path.dirname(contentFile)
     template = config["svg"]["template"]
     templateBase = os.path.dirname(template)
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
     previewImg = getPreviewImg(config, contentFile)
-    cprint("Rendering '{}' from '{}'".format(outFile, template), "yellow")
+    cprint(f"Rendering '{outFile}' from '{template}', preview '{previewImg}'", "yellow")
 
     svgTree = ET.parse(template)
 
@@ -85,17 +86,20 @@ def drawSVG(title, contentFile, outFile, config):
 
     # Update image
     imageXPath = ".//*[@id = 'preview-image']"
+
     if previewImg is False:
         return
-    elif previewImg != "" and os.path.isfile(previewImg):
-        previewImg = os.path.join(
-            os.path.relpath(os.path.dirname(outFile), os.path.dirname(previewImg)),
+    if config["source"] == "post" and previewImg != "":
+        previewImg = os.path.join(path, previewImg)
+    if previewImg != "" and os.path.isfile(previewImg):
+        previewSrc = os.path.join(
+            os.path.relpath(os.path.dirname(previewImg), os.path.dirname(outFile)),
             os.path.basename(previewImg),
         )
         cprint("Setting @id='preview-image' to '{}'".format(previewImg), "yellow")
         if svgTree.findall(imageXPath, namespaces):
             previewElem = svgTree.findall(imageXPath, namespaces)[0]
-            previewElem.set(xlinkAttr, previewImg)
+            previewElem.set(xlinkAttr, previewSrc)
     elif "removeMissing" in config["svg"]:
         if config["svg"]["removeMissing"] == True:
             parents = svgTree.findall(imageXPath + "/..", namespaces)
@@ -103,7 +107,7 @@ def drawSVG(title, contentFile, outFile, config):
                 parent = parents[0]
                 previewElem = svgTree.findall(imageXPath, namespaces)[0]
                 parent.remove(previewElem)
-                cprint("Removed reference to missing image", "yellow")
+                cprint(f"Removed reference to missing image '{previewImg}'", "yellow")
             else:
                 cprint(
                     "Can't find parent for missing preview image from template '{}'".format(template),
@@ -119,7 +123,7 @@ def drawSVG(title, contentFile, outFile, config):
         try:
             img = Image.open(previewImg)
         except FileNotFoundError:
-            cprint("Can't find image file '{}', skipping!".format(previewImg), "red")
+            cprint(f"Can't find image file '{previewImg}', skipping!", "red")
             return
         imgWidth, imgHeight = img.size
 
@@ -156,8 +160,6 @@ def getPreviewImg(config, contentFile):
             preview = metadata["preview"]
             if isinstance(preview, dict) and "image" in preview:
                 preview = preview["image"]
-            else:
-                return ""
             cprint(f"Using {preview} as preview", 'yellow')
             return preview
         else:
