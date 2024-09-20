@@ -145,6 +145,9 @@ other = "Media"
 [Geodata]
 other = "Geodata"
 
+[Archives]
+other = "Archives"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
