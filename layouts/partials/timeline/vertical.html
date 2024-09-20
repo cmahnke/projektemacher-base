@@ -17,7 +17,7 @@
 
         {{- range .Params.resources -}}
             {{- if eq ($images.Get "preview") nil -}}
-                {{- if or (eq .name "front") (eq .name "cover") -}}
+                {{- if or (eq .name "front") (eq .name "cover") (eq .name "preview") -}}
                     {{- $images.Set "previewLoc" (path.Join $context .src) -}}
                     {{- $images.Set "preview" (($entry.Resources.ByType "image").GetMatch .name) -}}
                     {{- $name = .name -}}
