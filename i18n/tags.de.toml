@@ -151,6 +151,9 @@ other = "Medien"
 [Geodata]
 other = "Geodaten"
 
+[Archive]
+other = "Archiv"
+
 [Archives]
 other = "Archive"
 
