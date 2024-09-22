@@ -1,3 +1,9 @@
+[Tag]
+other = "Schlagwort"
+
+[Tags]
+other = "Schlagworte"
+
 # Tags
 [bookEndPaper]
 other = "Vorsatzpapier"

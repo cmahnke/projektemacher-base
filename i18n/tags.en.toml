@@ -1,3 +1,9 @@
+[Tag]
+other = "Tag"
+
+[Tags]
+other = "Tags"
+
 # Tags
 [bookEndPaper]
 other = "Page end paper"
