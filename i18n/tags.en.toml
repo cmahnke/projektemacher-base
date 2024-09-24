@@ -169,6 +169,9 @@ other = "Collection"
 [Collections]
 other = "Collections"
 
+[SustainableManagement]
+other = "Sustainable management"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
