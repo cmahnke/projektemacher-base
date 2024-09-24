@@ -175,6 +175,9 @@ other = "Nachhaltiges Management"
 [Interview]
 other = "Interview"
 
+[TactileFeedback]
+othjer = "Taktiles Feedback"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
