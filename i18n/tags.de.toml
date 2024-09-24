@@ -172,6 +172,9 @@ other = "Sammlungen"
 [SustainableManagement]
 other = "Nachhaltiges Management"
 
+[Interview]
+other = "Interview"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
