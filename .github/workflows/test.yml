@@ -234,14 +234,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Install required dependencies
-        run: |
-          ./scripts/setup.sh
-
-      - name: Install Dart SASS
-        run: |
-          ./scripts/github/dart-sass.sh
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -252,6 +244,14 @@ jobs:
         with:
           check-latest: true
           node-version-file: '.nvmrc'
+
+      - name: Install required dependencies
+        run: |
+          ./scripts/setup.sh
+
+      - name: Install Dart SASS
+        run: |
+          ./scripts/github/dart-sass.sh
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3.0.0
