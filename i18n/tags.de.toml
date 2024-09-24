@@ -160,6 +160,15 @@ other = "Archive"
 [Christmas]
 other = "Weihnachten"
 
+[DigitalLibrary]
+other = "Digitale Bibliothek"
+
+[Collection]
+other = "Sammlung"
+
+[Collections]
+other = "Sammlungen"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
