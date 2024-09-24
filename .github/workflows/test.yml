@@ -29,6 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4.0.4
         with:
+          check-latest: true
           node-version-file: '.nvmrc'
 
       - name: Configure npm
