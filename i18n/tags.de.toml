@@ -133,12 +133,6 @@ other = "Serigrafie"
 [Collage]
 other = "Collage"
 
-[Signature]
-other = "Signatur"
-
-[BlindEmbossing]
-other = "Blindprägung"
-
 [Document]
 other = "Dokument"
 
@@ -176,7 +170,10 @@ other = "Nachhaltiges Management"
 other = "Interview"
 
 [TactileFeedback]
-othjer = "Taktiles Feedback"
+other = "Taktiles Feedback"
+
+[SocialMedia]
+other = "Soziale Medien"
 
 # Tags for Ric
 [EBay]
@@ -187,6 +184,12 @@ other = "Aus dem ursprüglichen Blog"
 
 [Hint]
 other = "Spur"
+
+[Signature]
+other = "Signatur"
+
+[BlindEmbossing]
+other = "Blindprägung"
 
 # Photography related
 
