@@ -184,6 +184,9 @@ other = "Webseite"
 [AI]
 other = "KI"
 
+[Photogrammetry]
+other = "Photogrammetrie"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
