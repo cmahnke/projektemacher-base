@@ -1,0 +1,17 @@
+{{- $until := time.Now -}}
+{{- with .Get "until" -}}
+  {{- $until = time.AsTime . -}}
+{{- end -}}
+
+{{- $now := time.Now -}}
+{{- $latestPost := index .Site.Pages.ByDate.Reverse 0 -}}
+
+{{- if or (ge ($latestPost.Date) $now) -}}
+  {{ warnf "[shortcodes/embargo.html] Future detected!" }}
+  {{- $now = $latestPost.Date -}}
+{{- end -}}
+
+{{- if ge $now $until -}}
+  {{ warnf "[shortcodes/embargo.html] Embargo broken for %s" (path.Join .Page.Path .Page.File) }}
+  {{- .Inner | markdownify -}}
+{{- end -}}
