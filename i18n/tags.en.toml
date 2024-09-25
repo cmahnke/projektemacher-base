@@ -178,6 +178,12 @@ other = "Social media"
 [Presentation]
 other = "Presentation"
 
+[Website]
+other = "Website"
+
+[AI]
+other = "AI"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
