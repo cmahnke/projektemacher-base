@@ -187,6 +187,9 @@ other = "KI"
 [Photogrammetry]
 other = "Photogrammetrie"
 
+[Programming]
+other = "Programmierung"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

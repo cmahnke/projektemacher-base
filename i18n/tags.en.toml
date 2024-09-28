@@ -71,9 +71,6 @@ other = "Magazine"
 [Magazin]
 other = "Magazine"
 
-[Photogrammetry]
-other = "Photogrammetry"
-
 # Tags for christianmahnke.de
 
 [Light]
@@ -186,6 +183,12 @@ other = "Website"
 
 [AI]
 other = "AI"
+
+[Photogrammetry]
+other = "Photogrammetry"
+
+[Programming]
+other = "Programming"
 
 # Tags for Ric
 [EBay]
