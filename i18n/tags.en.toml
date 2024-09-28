@@ -190,6 +190,9 @@ other = "Photogrammetry"
 [Programming]
 other = "Programming"
 
+[CulturalPolicy]
+other = "Cultural policy"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
