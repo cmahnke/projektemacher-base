@@ -193,6 +193,9 @@ other = "Programming"
 [CulturalPolicy]
 other = "Cultural policy"
 
+[History]
+other = "History"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

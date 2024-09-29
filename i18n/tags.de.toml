@@ -193,6 +193,9 @@ other = "Programmierung"
 [CulturalPolicy]
 other = "Kulturpolitik"
 
+[History]
+other = "Geschichte"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
