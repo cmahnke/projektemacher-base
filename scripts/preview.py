@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, io, re, yaml, toml
+import os, io, re, yaml, toml, sys
 from termcolor import cprint
 from PIL import Image, ImageFont, ImageDraw
 import xml.etree.ElementTree as ET
@@ -16,14 +16,12 @@ namespaces = {
     "xlink": "http://www.w3.org/1999/xlink",
 }
 
-
 def loadConfig(configFile):
     config = toml.load(configFile)
     if "preview" in config["params"]:
         return config["params"]["preview"]
     else:
         return
-
 
 def readMetadata(file):
     post = io.open(file, mode="r", encoding="utf-8").read()
@@ -120,10 +118,21 @@ def drawSVG(title, contentFile, outFile, config):
     # TODO: This currently only scales to width
     # TODO: This currenly only centres
     if previewImg != "" and "scale" in config["svg"]:
+        if str(previewImg).endswith(".jxl"):
+            if "jxlpy" not in sys.modules:
+                try:
+                    import jxlpy
+                    from jxlpy import JXLImagePlugin
+                except ImportError:
+                    cprint(f"Can't load `jxlpy` module, skipping!", "red")
+                    return
         try:
             img = Image.open(previewImg)
         except FileNotFoundError:
             cprint(f"Can't find image file '{previewImg}', skipping!", "red")
+            return
+        except UnidentifiedImageError:
+            cprint(f"Can't load image file '{previewImg} since the format isn't recognized', skipping!", "red")
             return
         imgWidth, imgHeight = img.size
 
@@ -162,6 +171,13 @@ def getPreviewImg(config, contentFile):
                 preview = preview["image"]
             cprint(f"Using {preview} as preview", 'yellow')
             return preview
+        if "resources" in metadata:
+            preview = metadata["resources"]
+            if isinstance(preview, list) and "src" in preview[0]:
+                preview = preview[0]["src"]
+            cprint(f"Using {preview} as preview", 'yellow')
+            return preview
+
         else:
             return ""
     else:

@@ -69,7 +69,7 @@
                   {{- $image.Set "previewImg" ($.Resources.GetMatch $previewLoc) -}}
                  {{- end -}}
                  {{- if eq ($image.Get "previewImg") nil -}}
-                    {{- errorf "[_default/single.iiif.json] Can't find image %s" ($image.Get "previewLoc") -}}
+                    {{- errorf "[_default/single.iiif.json] Can't find image %s for %s" ($image.Get "previewLoc") $contextPath -}}
                  {{- end -}}
 
                  {{- $canvas := "" -}}
@@ -109,7 +109,7 @@
                    "width": {{ $canvasWidth }},
                    {{- $thumbnail := ($image.Get "previewImg").Resize "120x80" -}}
                    {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
-                      {{- errorf "[_default/single.iiif.json] Can't get thumbnail for %s" ($image.Get "previewLoc") -}}
+                      {{- errorf "[_default/single.iiif.json] Can't get thumbnail for %s (post %s)" ($image.Get "previewLoc") $contextPath -}}
                    {{- end -}}
                    "thumbnail": {
                        "@id": "{{ $thumbnail.Permalink }}",
