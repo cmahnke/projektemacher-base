@@ -48,7 +48,7 @@
 {{- end -}}
 
 {{- if isset .Site.Params.preview "source" -}}
-  {{- if and (ne .Site.Params.preview.source "") (eq .Site.Params.preview.source "post") -}}
+  {{- if and (ne .Site.Params.preview.source "") (or (eq .Site.Params.preview.source "post") (eq .Site.Params.preview.source "file")) -}}
     {{- $previewFile := printf "%s%s" .Site.Params.preview.outputPrefix .Site.Params.preview.outputSuffix -}}
     {{- with .Resources.Get $previewFile -}}
       {{- if $debug -}}
