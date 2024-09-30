@@ -54,7 +54,8 @@
       {{- if $debug -}}
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as preview for post %s" $previewFile $filePath -}}
       {{- end -}}
-      {{- $previewImg = . -}}
+      {{ $filter := images.Process "jpeg" }}
+      {{- $previewImg = . | images.Filter $filter -}}
     {{- end -}}
   {{- else if and (ne .Site.Params.preview.source "") (eq .Site.Params.preview.source "overlay") -}}
     {{- $overlayFile := printf "%s%s" .Site.Params.preview.outputPrefix .Site.Params.preview.outputSuffix -}}
@@ -101,6 +102,10 @@
 */}}
 
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
+  {{/*
+  {{ $filter := images.Process "jpeg" }}
+  {{- $previewImg = $previewImg | images.Filter $filter -}}
+  */}}
   <meta property="og:image" content="{{ $previewImg.Permalink }}" />
   <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
   <meta property="og:image:width" content="{{ $previewImg.Width }}" />
