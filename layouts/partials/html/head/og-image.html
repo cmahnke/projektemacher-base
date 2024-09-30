@@ -69,23 +69,27 @@
         {{- $previewImg = $previewImg.Resize (printf "%dx" $ogWidth) -}}
         {{- $previewImg = $previewImg.Crop (printf  "%dx%d top q85 lanczos" $ogWidth $ogHeight) -}}
         */}}
-        {{- $bgColor := "#ffffff" -}}
-        {{- if isset $.Site.Params.preview "background" -}}
-          {{- $bgColor = $.Site.Params.preview.background -}}
-        {{- end -}}
+        {{- if not (templates.Exists "partials/html/head/og-image-background.html") -}}
+          {{- $bgColor := "#ffffff" -}}
+          {{- if isset $.Site.Params.preview "background" -}}
+            {{- $bgColor = $.Site.Params.preview.background -}}
+          {{- end -}}
 
-        {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $ogWidth $ogHeight) -}}
-        {{- $paddingW := 0 -}}
-        {{- $paddingH := 0 -}}
-        {{- if lt $previewImg.Width $ogWidth -}}
-          {{- $paddingW = div (sub $ogWidth $previewImg.Width) 2 -}}
-        {{- end -}}
-        {{- if lt $previewImg.Height $ogHeight -}}
-          {{- $paddingH = div (sub $ogHeight $previewImg.height) 2 -}}
-        {{- end -}}
-        {{- if or (ne $paddingW 0) (ne $paddingH 0) -}}
-          {{- $filter := images.Padding $paddingH $paddingW $bgColor -}}
-          {{- $previewImg = $previewImg | images.Filter $filter -}}
+          {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $ogWidth $ogHeight) -}}
+          {{- $paddingW := 0 -}}
+          {{- $paddingH := 0 -}}
+          {{- if lt $previewImg.Width $ogWidth -}}
+            {{- $paddingW = div (sub $ogWidth $previewImg.Width) 2 -}}
+          {{- end -}}
+          {{- if lt $previewImg.Height $ogHeight -}}
+            {{- $paddingH = div (sub $ogHeight $previewImg.Height) 2 -}}
+          {{- end -}}
+          {{- if or (ne $paddingW 0) (ne $paddingH 0) -}}
+            {{- $filter := images.Padding $paddingH $paddingW $bgColor -}}
+            {{- $previewImg = $previewImg | images.Filter $filter -}}
+          {{- end -}}
+        {{- else -}}
+          {{- $previewImg = partial "partials/html/head/og-image-background.html" (dict "context" . "previewImg" $previewImg "height" $ogHeight "width" $ogWidth) -}}
         {{- end -}}
         {{- $previewImg = $previewImg | images.Filter $filter -}}
       {{- end -}}
