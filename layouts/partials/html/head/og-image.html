@@ -34,11 +34,56 @@
 {{- end -}}
 */}}
 
+{{- if and (ne $previewImg "") (ne (printf "%T" $previewImg) "*resources.resourceAdapter") -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Trying to load (%s) for %s since it's of wrong type (%T)" $previewImg $filePath $previewImg -}}
+  {{- end -}}
+  {{- $previewImg = .Resources.Get $previewImg -}}
+{{- end -}}
+
 {{- if ne (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
   {{- if $debug -}}
     {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg $filePath $previewImg -}}
   {{- end -}}
 {{- end -}}
+
+{{- if isset .Site.Params.preview "source" -}}
+  {{- if and (ne .Site.Params.preview.source "") (eq .Site.Params.preview.source "overlay") -}}
+    {{- $overlayFile := printf "%s%s" .Site.Params.preview.outputPrefix .Site.Params.preview.outputSuffix -}}
+    {{- with .Resources.Get $overlayFile -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/html/head/og-image.html] Using image (%s) as overlay for %s (post %s)" $overlayFile $previewImg $filePath -}}
+      {{- end -}}
+      {{- $filter := images.Overlay . 0 0 -}}
+      {{- if eq (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
+        {{/*
+        {{- $previewImg = $previewImg.Resize (printf "%dx" $.Site.Params.preview.size.width) -}}
+        {{- $previewImg = $previewImg.Crop (printf  "%dx%d top q85 lanczos" $.Site.Params.preview.size.width $.Site.Params.preview.size.height) -}}
+        */}}
+        {{- $bgColor := "#ffffff" -}}
+        {{- if isset $.Site.Params.preview "background" -}}
+          {{- $bgColor = $.Site.Params.preview.background -}}
+        {{- end -}}
+
+        {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $.Site.Params.preview.size.width $.Site.Params.preview.size.height $bgColor) -}}
+        {{- $paddingW := 0 -}}
+        {{- $paddingH := 0 -}}
+        {{- if lt $previewImg.Width $.Site.Params.preview.size.width -}}
+          {{- $paddingW = div (sub $.Site.Params.preview.size.width $previewImg.Width) 2 -}}
+        {{- end -}}
+        {{- if lt $previewImg.Height $.Site.Params.preview.size.height -}}
+          {{- $paddingH = div (sub $.Site.Params.preview.size.height $previewImg.height) 2 -}}
+        {{- end -}}
+        {{- if or (ne $paddingW 0) (ne $paddingH 0) -}}
+          {{- $filter := images.Padding $paddingH $paddingW $bgColor -}}
+          {{- $previewImg = $previewImg | images.Filter $filter -}}
+        {{- end -}}
+        {{- $previewImg = $previewImg | images.Filter $filter -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{/*
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{- if $debug -}}
