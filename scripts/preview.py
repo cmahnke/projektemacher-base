@@ -91,6 +91,19 @@ def drawSVG(title, contentFile, outFile, config):
     if config["source"] == "post" and previewImg != "":
         previewImg = os.path.join(path, previewImg)
     if previewImg != "" and os.path.isfile(previewImg):
+        if str(previewImg).endswith(".jxl"):
+            if "jxlpy" not in sys.modules:
+                try:
+                    import jxlpy
+                    from jxlpy import JXLImagePlugin
+                except ImportError:
+                    cprint(f"Can't load `jxlpy` module, skipping!", "red")
+                    return
+            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", prefix="ogPreview-tmp", dir=path, delete=False, delete_on_close=False)
+            cprint(f"Preview image '{previewImg} is JXL creating JPEG variant {tmp.name} for further processing", "yellow")
+            img = Image.open(previewImg)
+            img.save(tmp.name)
+            previewImg = tmp.name
         previewSrc = os.path.join(
             os.path.relpath(os.path.dirname(previewImg), os.path.dirname(outFile)),
             os.path.basename(previewImg),
@@ -119,19 +132,6 @@ def drawSVG(title, contentFile, outFile, config):
     # TODO: This currently only scales to width
     # TODO: This currenly only centres
     if previewImg != "" and "scale" in config["svg"]:
-        if str(previewImg).endswith(".jxl"):
-            if "jxlpy" not in sys.modules:
-                try:
-                    import jxlpy
-                    from jxlpy import JXLImagePlugin
-                except ImportError:
-                    cprint(f"Can't load `jxlpy` module, skipping!", "red")
-                    return
-            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", prefix="ogPreview-tmp", dir=path, delete=False, delete_on_close=False)
-            cprint(f"Preview image '{previewImg} is JXL creating JPEG variant {tmp.name} for further processing", "yellow")
-            img = Image.open(previewImg)
-            img.save(tmp.name)
-            previewImg = tmp.name
         try:
             img = Image.open(previewImg)
         except FileNotFoundError:
