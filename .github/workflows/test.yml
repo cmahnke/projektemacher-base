@@ -125,6 +125,10 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
+#      - neme: Pull Docker images
+#        run: |
+#          ./scripts/github/docker-images.sh
+
       - name: Setup Node.js
         uses: actions/setup-node@v4.0.4
         with:
@@ -133,6 +137,10 @@ jobs:
       - name: Install fonts
         run: |
           ./scripts/fonts.sh
+
+      - name: Install system fonts
+        run: |
+          ./scripts/github/setup-system-fonts.sh
 
   lint_fonts:
     runs-on: ubuntu-22.04
