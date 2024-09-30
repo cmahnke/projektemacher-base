@@ -99,7 +99,8 @@ def drawSVG(title, contentFile, outFile, config):
                 except ImportError:
                     cprint(f"Can't load `jxlpy` module, skipping!", "red")
                     return
-            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", prefix="ogPreview-tmp", dir=path, delete=False, delete_on_close=False)
+            # Only on 3.12: , delete_on_close=False
+            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", prefix="ogPreview-tmp", dir=path, delete=False)
             cprint(f"Preview image '{previewImg} is JXL creating JPEG variant {tmp.name} for further processing", "yellow")
             img = Image.open(previewImg)
             img.save(tmp.name)
