@@ -13,3 +13,6 @@ public
 docs
 .hugo_build.lock
 resources
+static/fonts/*.woff
+static/fonts/*.woff2
+tmp/fonts*
