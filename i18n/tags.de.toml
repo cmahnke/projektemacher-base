@@ -142,6 +142,9 @@ other = "Klimawandel"
 [Media]
 other = "Medien"
 
+[HybridMedia]
+other = "Hybride Medien"
+
 [Geodata]
 other = "Geodaten"
 
