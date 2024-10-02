@@ -2,20 +2,22 @@
 
 import os, io, re, yaml, toml, sys
 from termcolor import cprint
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import tempfile
 
-
 configFile = "./config/_default/config.toml"
 contentPath = "./content"
 filePattern = "(_?)index(\.([a-zA-Z-]){2,5})?\.md"
+maxImageDimension = 17500
 
 namespaces = {
     "svg": "http://www.w3.org/2000/svg",
     "xlink": "http://www.w3.org/1999/xlink",
 }
+
+Image.MAX_IMAGE_PIXELS = maxImageDimension * maxImageDimension
 
 def loadConfig(configFile):
     config = toml.load(configFile)
@@ -137,6 +139,9 @@ def drawSVG(title, contentFile, outFile, config):
             img = Image.open(previewImg)
         except FileNotFoundError:
             cprint(f"Can't find image file '{previewImg}', skipping!", "red")
+            return
+        except DecompressionBombError:
+            cprint(f"Can't load image file '{previewImg}' since it's to large, skipping!", "red")
             return
         except UnidentifiedImageError:
             cprint(f"Can't load image file '{previewImg} since the format isn't recognized', skipping!", "red")
