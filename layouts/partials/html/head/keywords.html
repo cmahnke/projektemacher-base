@@ -1,5 +1,11 @@
 {{- if not .IsHome -}}
+  {{- $tags := "" -}}
+  {{- with .Params.tags -}}
+    {{- range $tag := . -}}
+      {{- $tags = printf "%s, %s" $tags . -}}
+    {{- end -}}
+  {{- end -}}
   {{- with .Params.keywords -}}
-    <meta name="keywords" content="{{ . }}">
+    <meta name="keywords" content="{{ . }}{{ if ne $tags `` }}, {{ $tags }}{{ end }}">
   {{- end -}}
 {{- end -}}
