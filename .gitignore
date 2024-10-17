@@ -16,3 +16,4 @@ resources
 static/fonts/*.woff
 static/fonts/*.woff2
 tmp/fonts*
+hugo_stats.json
