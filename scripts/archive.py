@@ -113,11 +113,15 @@ def build_url_list(dir):
 
 
 async def main() -> int:
+    global max_age
     parser = argparse.ArgumentParser(prog="archive.py")
     parser.add_argument("--dir", "-d", type=pathlib.Path, help="Path to posts to process")
     parser.add_argument("--exclude", "-e", nargs="+", help="Host names to exclude")
+    parser.add_argument("--age", "-a", type=int, default=max_age, help=f"Maximum age (default {max_age})")
 
     args = parser.parse_args()
+
+    max_age = args.age
 
     if args.dir is not None:
         dir = args.dir
