@@ -3,7 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   {{ $pages := where .Pages "Params.news" "!=" false -}}
   {{- $pages = where $pages "Params.archive" "!=" false -}}
-{{- $pages = .Pages -}}
   {{- $tags := where $pages "Path" "like" `\/tags.*` -}}
   {{- $pages = complement $tags $pages -}}
   {{ range where $pages "Sitemap.Disable" "ne" true }}
