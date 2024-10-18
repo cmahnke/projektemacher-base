@@ -12,28 +12,6 @@
   {{- $description = .Summary -}}
 {{- end -}}
 
-{{- $keywords := "" -}}
-{{- if $.Site.Params.keywords -}}
-  {{- if reflect.IsSlice $.Site.Params.keywords -}}
-    {{- $keywords = delimit $.Site.Params.keywords "," -}}
-  {{- else -}}
-    {{- $keywords = $.Site.Params.keywords -}}
-  {{- end -}}
-{{- end -}}
-{{- if .Params.keywords -}}
-  {{- $keywords = .Params.keywords -}}
-{{- end -}}
-{{- if .Keywords -}}
-  {{- if reflect.IsSlice $.Site.Params.keywords -}}
-    {{- $keywords = delimit .Keywords "," -}}
-  {{- else -}}
-    {{- $keywords = .Keywords -}}
-  {{- end -}}
-{{- end -}}
-
 {{- if ne $description "" -}}
   <meta name="description" content="{{ $description }}">
-{{- end -}}
-{{- if ne $keywords "" -}}
-  <meta name="keywords" content="{{ $keywords }}">
 {{- end -}}

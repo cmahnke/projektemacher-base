@@ -1,11 +1,42 @@
-{{- if not .IsHome -}}
-  {{- $tags := "" -}}
-  {{- with .Params.tags -}}
-    {{- range $tag := . -}}
+{{- $keywords := "" -}}
+{{- $tags := "" -}}
+
+{{- with .Params.keywords -}}
+  {{- $keywords = . -}}
+  {{- if reflect.IsSlice $keywords -}}
+    {{- $keywords = delimit $keywords " " -}}
+  {{- end -}}
+{{- else -}}
+  {{- if $.Site.Params.keywords -}}
+    {{- if reflect.IsSlice $.Site.Params.keywords -}}
+      {{- $keywords = delimit $.Site.Params.keywords "," -}}
+    {{- else -}}
+      {{- $keywords = $.Site.Params.keywords -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if .Keywords -}}
+  {{- if reflect.IsSlice $.Site.Params.keywords -}}
+    {{- $keywords = printf "%s%s" $keywords (delimit .Keywords ",") -}}
+  {{- else -}}
+    {{- $keywords = printf "%s%s" $keywords .Keywords -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with .Params.tags -}}
+  {{- range $tag := . -}}
+    {{- if hasPrefix . "hidden_" -}}
+      {{- continue -}}
+    {{- end -}}
+    {{- if ne . "" -}}
       {{- $tags = printf "%s, %s" $tags . -}}
     {{- end -}}
   {{- end -}}
-  {{- with .Params.keywords -}}
-    <meta name="keywords" content="{{ . }}{{ if ne $tags `` }}, {{ $tags }}{{ end }}">
-  {{- end -}}
+{{- end -}}
+{{- if ne $tags "" -}}
+  {{- $keywords = printf "%s%s" $keywords $tags -}}
+{{- end -}}
+{{- if ne $keywords "" -}}
+  <meta name="keywords" content="{{ $keywords }}">
 {{- end -}}
