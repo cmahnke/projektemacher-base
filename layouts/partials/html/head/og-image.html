@@ -97,19 +97,7 @@
   {{- end -}}
 {{- end -}}
 
-{{/*
-{{- if eq (string $previewImg.MediaType) "image/jxl" -}}
-  {{- if $debug -}}
-    {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" $filePath -}}
-  {{- end -}}
-{{- end -}}
-*/}}
-
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
-  {{/*
-  {{ $filter := images.Process "jpeg" }}
-  {{- $previewImg = $previewImg | images.Filter $filter -}}
-  */}}
   <meta property="og:image" content="{{ $previewImg.Permalink }}" />
   <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
   <meta property="og:image:width" content="{{ $previewImg.Width }}" />
