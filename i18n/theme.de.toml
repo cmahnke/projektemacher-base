@@ -63,7 +63,7 @@ other = "Hier geht es zurück zur <a href=\"{{ . }}\">Startseite</a>."
 other = "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"Creative Commons Lizenzvertrag\" style=\"border-width:0\" src=\"/images/cc.png\" /></a><br />Dieses Werk ist lizenziert unter einer <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Namensnennung - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz</a>."
 
 [projektemacher]
-other = "ist ein <a href=\"https://projektemacher.org/\">Projektemacher</a> Blog<img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\">"
+other = "ist ein <a href=\"https://projektemacher.org/\">Projektemacher</a> Blog <a title=\Christian Mahnke\" class=\"footer-link-cm\" href=\"https://christianmahnke.de/\"><img src=\"/images/cm.svg\" style=\"height: 16px; margin-left: .5rem;\"></a>"
 
 [powered_by]
 other = "Angetrieben von"

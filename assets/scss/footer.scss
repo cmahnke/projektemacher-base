@@ -23,4 +23,14 @@
             padding-bottom: 0.4em;
         }
     }
+
+  .footer-link-cm {
+    color: inherit;
+    text-decoration: inherit;
+
+    &:hover {
+      color: inherit;
+      text-decoration: inherit;
+    }
+  }
 }
