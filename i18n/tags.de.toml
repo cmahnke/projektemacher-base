@@ -205,6 +205,9 @@ other = "Geschichte"
 [MediaInstallation]
 other = "Medieninstallation"
 
+[Project]
+other = "Projekt"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
