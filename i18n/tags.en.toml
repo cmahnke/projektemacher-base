@@ -175,6 +175,9 @@ other = "Interview"
 [TactileFeedback]
 other = "Tactile feedback"
 
+[HapticFeedback]
+other = "Haptic feedback"
+
 [SocialMedia]
 other = "Social media"
 
