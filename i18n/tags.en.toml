@@ -199,6 +199,9 @@ other = "Cultural policy"
 [History]
 other = "History"
 
+[MediaInstallation]
+other = "Media station"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
