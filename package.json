@@ -10,6 +10,7 @@
   "jquery": "^3.6.0",
   "jquery-ui": "^1.13.2",
   "js-cookie": "^3.0.0",
+  "manifesto.js": "^4.2.18",
   "mirador": "ProjectMirador/mirador#5cb692ed31480c1e130f4a8715726688cb35796d",
   "normalize.css": "^8.0.1",
   "ol": "^10.0.0",
