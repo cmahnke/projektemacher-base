@@ -1,3 +1,5 @@
+@use "icons";
+
 .iiif {
     .viewer {
         width: 100%;
@@ -95,7 +97,7 @@
 
 .presentation-api.download {
     a.pdf-download::after {
-        content: url($pdf-light);
+        content: url(icons.$pdf-light);
         display: inline-block;
         vertical-align: bottom;
         margin-top: 1rem;
