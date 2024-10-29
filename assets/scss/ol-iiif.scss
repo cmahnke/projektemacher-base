@@ -5,8 +5,8 @@
  * Converted using https://yoksel.github.io/url-encoder/
  * These are just the undo-alt and redo-alt icons
  */
-@import "ol";
-@import "functions/color";
+@use "ol";
+@use "functions/color";
 
 /* $icon-fill: #fff; */
 $icon-fill: #666;
