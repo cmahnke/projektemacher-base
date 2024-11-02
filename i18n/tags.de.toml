@@ -133,6 +133,12 @@ other = "Serigrafie"
 [Collage]
 other = "Collage"
 
+[ArtBrut]
+other = "Art Brut"
+
+[Drawing]
+other = "Zeichnung"
+
 [Document]
 other = "Dokument"
 
