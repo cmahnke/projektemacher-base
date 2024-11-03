@@ -14,6 +14,7 @@
     "scss/dollar-variable-empty-line-before": [null, {"severity": "warning"}],
     "block-no-empty": [null, {"severity": "warning"}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
+    "at-rule-empty-line-before": [null, {"severity": "warning"}],
     "color-function-notation": "legacy",
     "alpha-value-notation": "number",
     "selector-class-pattern": [null, {"severity": "warning"}],
@@ -21,6 +22,8 @@
     "scss/no-global-function-names": [null, {"severity": "warning"}],
     "function-no-unknown": [null, {"ignoreFunctions": ["lighten", "darken"]}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
-    "comment-whitespace-inside": [null, {"severity": "warning"}]
+    "comment-whitespace-inside": [null, {"severity": "warning"}],
+    "scss/at-use-no-unnamespaced": null,
+    "scss/partial-no-import": [null, {"severity": "warning"}]
   }
 }
