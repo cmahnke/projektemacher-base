@@ -1,4 +1,7 @@
-@import "functions/color";
+@use "functions/color" as *;
+/*
+@use "vars" as *
+*/
 
 $color-dark: #333 !default;
 $color-light: #d3d3d3 !default;
