@@ -17,6 +17,11 @@ const localFilePrefix = 'file:./';
 const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/'];
+const waitMs = 10000;
+var headless = true;
+if (process.env.PUPPETEER_DEBUG) {
+  headless = false;
+}
 
 const argv = yargs().option('force', {
     alias: 'f',
@@ -112,12 +117,17 @@ console.log('Wrote preference file to %s', prefFile);
         console.log('Webserver started, serving \'%s\'', webRoot);
     });
 
+    var headlessMode = "new";
+    if (!headless) {
+      headlessMode = 'false';
+    }
+
     const browser = await puppeteer.launch ({
         /*userDataDir: path.resolve(__dirname, './puppeteerTmp'),*/
         /*  https://developer.chrome.com/articles/new-headless/
         headless: true,
         */
-        headless: 'new',
+        headless: headlessMode,
         devtools: false,
         args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
@@ -183,15 +193,27 @@ console.log('Wrote preference file to %s', prefFile);
                 for (const m of checkMesages) {
                   console.log('Checking for "%s"', m);
                   if (msg.text().includes(m)) {
-                    console.log('[console] Failing on message %s since it includes "%s"', msg.text(), m);
-                    process.exit(122);
+                    console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
+                    if (headless) {
+                      process.exit(122);
+                    } else {
+                      setTimeout(() => {
+                        console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+                      }, waitMs)
+                    }
                   }
                 }
               }
             })
             .on('pageerror', error => {
-              console.log('[pageerror] ' + error.message + 'on path / file:', localFile);
-              process.exit(123);
+              console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+              if (headless) {
+                process.exit(123);
+              } else {
+                setTimeout(() => {
+                  console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+                }, waitMs)
+              }
             })
             .on('requestfailed', request => {
               console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
@@ -202,7 +224,13 @@ console.log('Wrote preference file to %s', prefFile);
               } else if (request.url().toLowerCase().endsWith("pdf")) {
                   console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
               } else {
+                if (headless) {
                   process.exit(124);
+                } else {
+                  setTimeout(() => {
+                    console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+                  }, waitMs)
+                }
               }
             });
 
