@@ -87,5 +87,8 @@
   },
   "overrides": {
     "canvas": "../_EXCLUDED_"
+  },
+  "resolutions": {
+    "canvas": "npm:empty-npm-package"
   }
 }
