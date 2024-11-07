@@ -36,7 +36,7 @@ SITE_FONTS=static/fonts/
 
 echo "Installing Fonts to $BASE"
 
-( cd $BASE && $DEPENDENCY_MANAGER --no-audit install --omit=dev )
+( cd $BASE && $DEPENDENCY_MANAGER $INSTALL_OPTS install --omit=dev )
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 

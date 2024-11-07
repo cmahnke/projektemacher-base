@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 if ! command -v npm 2>&1 >/dev/null
 then
     echo "npm could not be found"
@@ -20,4 +21,9 @@ DEPENDENCY_MANAGER=pnpm
 
 if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
   npm i -g pnpm
+fi
+
+INSTALL_OPTS=""
+if [ "$DEPENDENCY_MANAGER" = 'npm' ] ; then
+  INSTALL_OPTS="--no-audit"
 fi
