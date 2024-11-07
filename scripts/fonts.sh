@@ -36,7 +36,15 @@ SITE_FONTS=static/fonts/
 
 echo "Installing Fonts to $BASE"
 
-( cd $BASE && $DEPENDENCY_MANAGER $INSTALL_OPTS install --omit=dev )
+if [ "$DEPENDENCY_MANAGER" = 'npm' ] ; then
+  INSTALL_OPTS="--omit=dev"
+fi
+
+if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
+  INSTALL_OPTS="-P"
+fi
+
+( cd $BASE && $DEPENDENCY_MANAGER $MANAGER_OPTS install $INSTALL_OPTS )
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
