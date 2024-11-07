@@ -230,7 +230,7 @@ jobs:
           version: 9
       - name: Install with pnpm
         run: |
-          pnpm install --ignore-scripts​
+          pnpm install --ignore-scripts
           ls node_modules
 
 
