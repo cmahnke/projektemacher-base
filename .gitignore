@@ -17,3 +17,4 @@ static/fonts/*.woff
 static/fonts/*.woff2
 tmp/fonts*
 hugo_stats.json
+fonts/pnpm-lock.yaml

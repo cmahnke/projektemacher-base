@@ -25,7 +25,7 @@ if [ -z "$THEME_PATH" ] ; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-$SCRIPT_DIR/node/dependency-management.sh
+. $SCRIPT_DIR/node/dependency-management.sh
 
 BASE=$THEME_PATH/fonts
 FONT_BASE="$BASE/node_modules"
@@ -48,7 +48,7 @@ fi
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
-for FONT in `find "$FONT_BASE" -mindepth 2 -maxdepth 2 -type d` ;
+for FONT in `find "$FONT_BASE" -not -path '*/.*' -mindepth 2 -maxdepth 2 -type d` ;
 do
   FONT_NAME=$(basename $FONT)
   echo "Extracting $FONT_NAME from $FONT"
