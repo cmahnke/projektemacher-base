@@ -215,6 +215,22 @@ jobs:
         run: |
           ./scripts/github/pyhugolib.sh
 
+  test_pnpm:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install with pnpm
+        run: |
+          pnpm install --ignore-scripts​
+          ls node_modules
+
+
   test_hugo_versions:
     runs-on: ubuntu-22.04
     continue-on-error: ${{ matrix.can-fail }}
