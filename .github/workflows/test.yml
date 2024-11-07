@@ -168,6 +168,8 @@ jobs:
 
       - name: Lint fonts
         run: |
+          cd fonts
+          npm i
           npx stylelint --config .stylelintrc-postbuild.yaml 'assets/css/fonts/*'
 
   test_inkscape_install:
