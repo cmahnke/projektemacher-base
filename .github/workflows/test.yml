@@ -168,11 +168,7 @@ jobs:
 
       - name: Lint fonts
         run: |
-          cd fonts
-          npm --no-audit install
-          cd ..
-          ln -s fonts/node_modules ./node_modules
-          yarn run stylelint --config .stylelintrc-postbuild.yaml 'assets/css/fonts/*'
+          npx stylelint --config .stylelintrc-postbuild.yaml 'assets/css/fonts/*'
 
   test_inkscape_install:
     runs-on: ubuntu-22.04

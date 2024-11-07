@@ -18,3 +18,8 @@ static/fonts/*.woff2
 tmp/fonts*
 hugo_stats.json
 fonts/pnpm-lock.yaml
+fonts/out/**
+assets/css/fonts/*
+.DS_Store
+#static/fonts/*
+pnpm-lock.yaml

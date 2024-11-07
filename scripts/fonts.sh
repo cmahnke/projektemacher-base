@@ -48,7 +48,7 @@ fi
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
-for FONT in `find "$FONT_BASE" -not -path '*/.*' -mindepth 2 -maxdepth 2 -type d` ;
+for FONT in `find "$FONT_BASE" -mindepth 2 -maxdepth 2 -not -path '*/.*' \( -type l -o -type d \)` ;
 do
   FONT_NAME=$(basename $FONT)
   echo "Extracting $FONT_NAME from $FONT"
@@ -56,6 +56,7 @@ do
   $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
   cp $FONT/files/*.woff* $FONT_DIR
 done
+rm fonts/out/css/@*
 echo "Copying CSS to '$SITE_CSS'"
 cp -n $CSS_DIR/* $SITE_CSS ||/usr/bin/true
 echo "Copying Fonts to '$SITE_FONTS'"
