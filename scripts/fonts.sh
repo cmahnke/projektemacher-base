@@ -56,7 +56,7 @@ do
   $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
   cp $FONT/files/*.woff* $FONT_DIR
 done
-rm fonts/out/css/@*
+rm -f fonts/out/css/@*
 echo "Copying CSS to '$SITE_CSS'"
 cp -n $CSS_DIR/* $SITE_CSS ||/usr/bin/true
 echo "Copying Fonts to '$SITE_FONTS'"
