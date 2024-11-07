@@ -86,7 +86,7 @@
   "validate": "yarn run validate-iiif && yarn run validate-gjson"
   },
   "overrides": {
-    "canvas": "../_EXCLUDED_"
+    "canvas": "npm:dry-uninstall"
   },
   "resolutions": {
     "canvas": "npm:empty-npm-package"
