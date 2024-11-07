@@ -27,3 +27,5 @@ INSTALL_OPTS=""
 if [ "$DEPENDENCY_MANAGER" = 'npm' ] ; then
   INSTALL_OPTS="--no-audit"
 fi
+
+export DEPENDENCY_MANAGER INSTALL_OPTS
