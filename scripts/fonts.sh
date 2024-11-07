@@ -24,6 +24,9 @@ if [ -z "$THEME_PATH" ] ; then
   THEME_PATH=.
 fi
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+$SCRIPT_DIR/../node/dependency-management.sh
+
 BASE=$THEME_PATH/fonts
 FONT_BASE="$BASE/node_modules"
 CSS_DIR="$BASE/out/css"
@@ -33,7 +36,7 @@ SITE_FONTS=static/fonts/
 
 echo "Installing Fonts to $BASE"
 
-( cd $BASE && npm --no-audit install --omit=dev )
+( cd $BASE && $DEPENDENCY_MANAGER --no-audit install --omit=dev )
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 

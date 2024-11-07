@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+. $SCRIPT_DIR/../node/dependency-management.sh
+
 #NPM dependencies
 echo "Generating package.json"
 if ! which jq &> /dev/null ; then
