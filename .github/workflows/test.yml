@@ -225,6 +225,9 @@ jobs:
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: '.nvmrc'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: Install with pnpm
         run: |
           pnpm install --ignore-scripts​
