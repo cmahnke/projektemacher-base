@@ -17,3 +17,7 @@ then
 fi
 
 DEPENDENCY_MANAGER=pnpm
+
+if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
+  npm i -g pnpm
+fi
