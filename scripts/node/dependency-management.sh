@@ -27,7 +27,11 @@ INSTALL_OPTS=""
 EXECUTOR=""
 if [ "$DEPENDENCY_MANAGER" = 'npm' ] ; then
   MANAGER_OPTS="--no-audit"
-  EXECUTOR=npm
+  EXECUTOR=npx
+fi
+
+if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
+  EXECUTOR=pnpx
 fi
 
 export DEPENDENCY_MANAGER MANAGER_OPTS EXECUTOR
