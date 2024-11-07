@@ -28,21 +28,38 @@ case "$OS" in
     ;;
 esac
 
-YARN=`which yarn`
-if [ -z "$YARN" ] ; then
-  #Try /usr/local/bin/yarn
-  if [ -x /usr/local/bin/yarn ] ; then
-    YARN=/usr/local/bin/yarn
-  elif [ -x `npm root -g`/yarn/bin/yarn ] ; then
-    YARN=`npm root -g`/yarn/bin/yarn
-  else
-    npm install -g yarn
-    YARN='npm run yarn'
+DEPENDENCY_MANAGER=yarn
+if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  YARN=`which yarn`
+  if [ -z "$YARN" ] ; then
+    #Try /usr/local/bin/yarn
+    if [ -x /usr/local/bin/yarn ] ; then
+      YARN=/usr/local/bin/yarn
+    elif [ -x `npm root -g`/yarn/bin/yarn ] ; then
+      YARN=`npm root -g`/yarn/bin/yarn
+    else
+      npm install -g yarn
+      YARN='npm run yarn'
+    fi
   fi
+  echo "Using 'yarn' from '$YARN'"
 fi
-echo "Using 'yarn' from '$YARN'"
 
-echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', yarn is '$YARN'"
+#YARN=`which yarn`
+#if [ -z "$YARN" ] ; then
+#  #Try /usr/local/bin/yarn
+#  if [ -x /usr/local/bin/yarn ] ; then
+#    YARN=/usr/local/bin/yarn
+#  elif [ -x `npm root -g`/yarn/bin/yarn ] ; then
+#    YARN=`npm root -g`/yarn/bin/yarn
+#  else
+#    npm install -g yarn
+#    YARN='npm run yarn'
+#  fi
+#fi
+#echo "Using 'yarn' from '$YARN'"
+
+echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', dependency manager is '$DEPENDENCY_MANAGER'"
 
 CTX_PATH="$(dirname $($REALPATH $0))"
 THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
@@ -82,8 +99,14 @@ if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
   cp ./themes/projektemacher-base/purgecss.config.js .
 fi
 
-$YARN install --ignore-engines
-ERR=$?
+if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  INSTALL_OPTS="--ignore-engines"
+  $YARN install $INSTALL_OPTS
+  ERR=$?
+else
+  $DEPENDENCY_MANAGER install
+fi
+
 if [ $ERR -ne 0 ] ; then
     echo "yarn install failed with $ERR"
     cat package.json | jq -C .
