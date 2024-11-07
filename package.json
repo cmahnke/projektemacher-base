@@ -85,7 +85,9 @@
   "validate-gjson": "case $OSTYPE in darwin*) yarn run validate-gjson-bsd ;; linux*) yarn run validate-gjson-gnu ;; bsd*) yarn run validate-gjson-bsd ;; *)  exit 100 ;; esac",
   "validate": "yarn run validate-iiif && yarn run validate-gjson"
   },
-  "overrides": { "canvas": "../_EXCLUDED_" }
+  "overrides": {
+    "canvas": "../_EXCLUDED_"
+  },
   "resolutions": {
     "canvas": "npm:empty-npm-package"
   }
