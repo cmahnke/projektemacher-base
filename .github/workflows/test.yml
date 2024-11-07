@@ -170,7 +170,7 @@ jobs:
         run: |
           cd fonts
           npm i
-          npx stylelint --config .stylelintrc-postbuild.yaml 'assets/css/fonts/*'
+          npx stylelint --config ../.stylelintrc-postbuild.yaml '../assets/css/fonts/*'
 
   test_inkscape_install:
     runs-on: ubuntu-22.04
