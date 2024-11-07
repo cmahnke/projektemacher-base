@@ -25,7 +25,7 @@ if [ -z "$THEME_PATH" ] ; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-$SCRIPT_DIR/../node/dependency-management.sh
+$SCRIPT_DIR/node/dependency-management.sh
 
 BASE=$THEME_PATH/fonts
 FONT_BASE="$BASE/node_modules"
