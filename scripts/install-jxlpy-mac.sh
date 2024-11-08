@@ -10,5 +10,8 @@ echo "Using $PYTHON, at $PYTHON_PATH, version $PYTHON_VERSION"
 
 brew install jpeg-xl
 
+# pip install --upgrade --force-reinstall
+#LDFLAGS="-L/opt/homebrew/lib/" CPPFLAGS="-I/opt/homebrew/include/" pip3 install --upgrade --force-reinstall --no-binary :all: --break-system-packages jxlpy
 $PYTHON_PATH/pip$PYTHON_VERSION install --break-system-packages Pillow
+
 LDFLAGS="-L/opt/homebrew/lib/" CPPFLAGS="-I/opt/homebrew/include/" $PYTHON_PATH/pip$PYTHON_VERSION install --break-system-packages $JXLPY
