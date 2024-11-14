@@ -39,6 +39,9 @@ other = "View the post"
 [readmore]
 other = "Read More..."
 
+[morePosts]
+other = "Further posts"
+
 [publishedOn]
 other = "published on"
 
