@@ -1,0 +1,5 @@
+[doiPrefix]
+other = "DOI of the presentation"
+
+[doiLink]
+other = "Link to the DOI resolver"
