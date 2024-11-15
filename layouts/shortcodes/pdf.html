@@ -3,8 +3,12 @@
 {{- $permalink_prefix := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
 {{- $pdf_permalink := printf "%s%s" $permalink_prefix $pdf -}}
 
-{{/* Include PDF viewer */}}
+{{- $download := true -}}
+{{ if (.Get "download") }}
+  {{- $download = eq (.Get "download") "true" -}}
+{{- end -}}
 
+{{/* Include PDF viewer */}}
 {{ $divId := printf "pdf-viewer-%s" (md5 $pdf_permalink) }}
 <div class="pdf-viewer">
     <div id="{{- $divId | safeHTML -}}"></div>
@@ -12,6 +16,9 @@
         addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf_permalink | safeJS }}')
     </script>
 </div>
-<div class="share">
+
+{{- if $download -}}
+  <div class="share">
     <a href="{{ $pdf_permalink }}" class="pdf-link">PDF Download</a>
-</div>
+  </div>
+{{- end -}}
