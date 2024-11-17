@@ -43,6 +43,9 @@ fi
 if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
   INSTALL_OPTS="-P"
 fi
+if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  INSTALL_OPTS="--prod"
+fi
 
 ( cd $BASE && $DEPENDENCY_MANAGER $MANAGER_OPTS install $INSTALL_OPTS )
 
