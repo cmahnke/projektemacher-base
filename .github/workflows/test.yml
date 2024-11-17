@@ -118,7 +118,7 @@ jobs:
         run: |
           sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss
 
-  test_fonts:
+  test_fonts_pnpm:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -137,6 +137,32 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9
+
+      - name: Install fonts
+        run: |
+          ./scripts/fonts.sh
+
+      - name: Install system fonts
+        run: |
+          ./scripts/github/setup-system-fonts.sh
+
+  test_fonts_yarn:
+    runs-on: ubuntu-22.04
+    env:
+      DEPENDENCY_MANAGER: yarn
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+
+#      - neme: Pull Docker images
+#        run: |
+#          ./scripts/github/docker-images.sh
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: '.nvmrc'
 
       - name: Install fonts
         run: |
