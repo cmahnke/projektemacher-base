@@ -28,7 +28,10 @@ case "$OS" in
     ;;
 esac
 
-DEPENDENCY_MANAGER=yarn
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=yarn
+fi
+
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
   YARN=`which yarn`
   if [ -z "$YARN" ] ; then

@@ -17,7 +17,9 @@ then
     exit 1
 fi
 
-DEPENDENCY_MANAGER=pnpm
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=pnpm
+fi
 
 if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
   npm i -g pnpm
