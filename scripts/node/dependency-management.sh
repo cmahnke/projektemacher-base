@@ -36,4 +36,6 @@ if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
   EXECUTOR=pnpx
 fi
 
+echo "Set dependecy manager to $DEPENDENCY_MANAGER"
+
 export DEPENDENCY_MANAGER MANAGER_OPTS EXECUTOR
