@@ -6,23 +6,25 @@ then
     echo "npm could not be found"
     exit 1
 fi
-if ! command -v pnpm 2>&1 >/dev/null
-then
-    echo "pnpm could not be found"
-    exit 1
-fi
-if ! command -v yarn 2>&1 >/dev/null
-then
-    echo "yarn could not be found"
-    exit 1
-fi
 
 if [ -z "$DEPENDENCY_MANAGER" ] ; then
   DEPENDENCY_MANAGER=pnpm
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
-  npm i -g pnpm
+  if ! command -v pnpm 2>&1 >/dev/null
+  then
+      echo "pnpm could not be found"
+      npm i -g pnpm
+  fi
+fi
+
+if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  if ! command -v yarn 2>&1 >/dev/null
+  then
+      echo "yarn could not be found"
+      exit 1
+  fi
 fi
 
 INSTALL_OPTS=""
