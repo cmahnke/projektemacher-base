@@ -21,6 +21,7 @@ case "$OS" in
   'Darwin')
     SED=gsed
     REALPATH=grealpath
+    DEPENDENCY_MANAGER=yarn
     ;;
   'Linux')
     SED=sed
