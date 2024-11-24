@@ -1,19 +1,42 @@
-{{- $tag := "" -}}
+{{- $tags := slice -}}
 {{- with .Get "tag" -}}
-    {{- $tag = . -}}
+  {{- $tags = slice . -}}
+{{- end -}}
+
+{{ warnf "=> %s" . }}
+
+{{- with .Get "tags" -}}
+  {{- $tags = split . ","  -}}
 {{- end -}}
 
 {{- $section := "post" -}}
 {{- with .Get "section" -}}
-    {{- $section = . -}}
+  {{- $section = . -}}
 {{- end -}}
 
 {{- $excludeSelf := true -}}
 
-{{- if ne $tag "" -}}
-  {{- $pages := where .Site.Pages "Section" $section -}}
-  {{- $t := slice $tag -}}
-  {{- $pages := where $pages "Params.tags" "intersect" $t -}}
+{{- if gt (len $tags) 0 -}}
+  {{- $pages := slice -}}
+  {{- $sectionPages := where .Site.Pages "Section" $section -}}
+  {{- $tagPages := where $sectionPages "Params.tags" "intersect" $tags -}}
+  {{- if gt (len $tags) 1 -}}
+    {{- range $tagPages -}}
+      {{- $page := . -}}
+      {{- $keep := 0 -}}
+      {{- range $tags -}}
+        {{- if in $page.Params.tags . -}}
+          {{- $keep = add $keep 1 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if eq $keep (len $tags) -}}
+        {{- $pages = $pages | append $page -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $pages = $tagPages -}}
+  {{- end -}}
+  {{- $tag := delimit $tags " " -}}
   <ul class="tagged-posts {{ $tag | safeCSS }}">
     {{- range $pages -}}
       {{- if not (and $excludeSelf (eq .RelPermalink $.Page.RelPermalink)) -}}
