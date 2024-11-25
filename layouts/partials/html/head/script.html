@@ -1,14 +1,18 @@
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
 
-{{- $isServer := hugo.IsServer -}}
+{{- $defaultScriptEntrypoint := "js/main.js" -}}
 
-{{- if $isServer -}}
+{{- with $.Page.Params.defaultScriptEntrypoint -}}
+    {{- $defaultScriptEntrypoint = . -}}
+{{- end -}}
+
+{{- if hugo.IsServer -}}
   {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
 {{- end -}}
 
 {{- $externals := slice "domain" -}}
 {{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
-{{- $main := resources.Get "js/main.js" | js.Build $mainOpts -}}
+{{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
 
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
@@ -50,7 +54,7 @@
         {{- end -}}
     {{- end -}}
 {{- else -}}
-    {{- warnf "[partials/html/head/script.html] Called without params - just using js/main.js" -}}
+    {{- warnf "[partials/html/head/script.html] Called without params - just using %s" $defaultScriptEntrypoint -}}
 {{- end -}}
 
 {{- $jsResources = union (slice $main) $jsResources -}}
@@ -62,7 +66,7 @@
 {{- $fileName = md5 $fileName -}}
 
 {{- $mainJs := "" -}}
-{{- if not $isServer -}}
+{{- if not hugo.IsServer -}}
     {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | minify | fingerprint -}}
 {{- else -}}
     {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | fingerprint -}}
