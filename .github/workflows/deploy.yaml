@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.139.2
+  HUGO_VERSION: 0.139.3
 
 jobs:
   deploy_exampleSite:
