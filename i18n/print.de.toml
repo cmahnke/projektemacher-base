@@ -1,0 +1,5 @@
+[PrintPreview]
+other = "Druckansicht"
+
+[PDFPreview]
+other = "PDF Dateien werden in der Druckvorschau nicht angezeigt"

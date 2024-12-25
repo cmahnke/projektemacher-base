@@ -214,6 +214,9 @@ other = "Medieninstallation"
 [Project]
 other = "Projekt"
 
+[Music]
+other = "Musik"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

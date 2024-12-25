@@ -1,0 +1,5 @@
+[PrintPreview]
+other = "Print preview"
+
+[PDFPreview]
+other = "PDF files are not displayed in the print preview"

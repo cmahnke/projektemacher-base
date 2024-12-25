@@ -214,6 +214,9 @@ other = "Media station"
 [Project]
 other = "Project"
 
+[Music]
+other = "Music"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
