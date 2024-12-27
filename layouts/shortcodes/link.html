@@ -10,4 +10,9 @@
 {{- with .Get "class" -}}
     {{- $class = . -}}
 {{- end -}}
-<a {{ if ne $href "" }}href="{{ $href }}"{{ end }} {{ if ne $class "" }}class="{{ $class }}"{{ end }} {{ if ne $title "" }}title="{{ $title }}"{{ end }}>{{.Inner | safeHTML}}</a>
+{{- $external := false -}}
+{{- if and (or (hasPrefix $href "http") (hasPrefix $href "//")) (not (hasPrefix $href .Site.BaseURL)) -}}
+  {{- $class = printf "%s %s" $class "external" -}}
+  {{- $external = true -}}
+{{- end -}}
+<a {{ if ne $href "" }}href="{{ $href }}"{{ end }} {{ if ne $class "" }}class="{{ $class }}"{{ end }} {{ if ne $title "" }}title="{{ $title }}"{{ end }} {{ if $external }}target="_blank"{{ end }} >{{.Inner | safeHTML}}</a>
