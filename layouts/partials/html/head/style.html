@@ -10,6 +10,10 @@
 {{- $includesCSS := index $includes "css" -}}
 {{- $includesSCSS := index $includes "scss" -}}
 
+{{- if and (len $includesCSS) (len $includesSCSS) $debug -}}
+    {{ warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink }}
+{{- end -}}
+
 {{- $css := slice -}}
 {{- if isset . "css" -}}
   {{- if reflect.IsSlice .css -}}
@@ -51,7 +55,7 @@
   {{- $pageSCSS = union $pageSCSS $includesSCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageSCSS nil) (len $pageSCSS) -}}
-  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS .File.Dir -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS $context.RelPermalink -}}
 {{- end -}}
 
 {{- if and (ne $pageSCSS nil) (len $pageSCSS) -}}
@@ -61,13 +65,17 @@
 {{/* Process SCSS file */}}
 {{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "enableSourceMap" (not hugo.IsProduction) "includePaths" $includes) -}}
 
-{{- $scssStyle := slice -}}
+{{- $scssResources := slice -}}
 {{- range $file := $scss -}}
   {{- if $debug -}}
-    {{- warnf "[partials/html/head/style.html] Processing SCSS script %s" $file -}}
+    {{- warnf "[partials/html/head/style.html] Processing SCSS script %s for %s" $file $context.RelPermalink -}}
   {{- end -}}
   {{- $scssTemplate := resources.Get $file -}}
-  {{- $scssStyle = $scssStyle | append ($scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options) -}}
+  {{- $scssProcesed := $scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options -}}
+  {{/*
+  {{- $scssResources = $scssResources | append ($scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options) -}}
+  */}}
+  {{- $scssResources = $scssResources | append $scssProcesed -}}
 {{- end -}}
 
 {{- $pageCSS := $context.Params.css -}}
@@ -83,7 +91,7 @@
   {{- $pageCSS = union $pageCSS $includesCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageCSS nil) (len $pageCSS) -}}
-  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS .File.Dir -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS $context.RelPermalink -}}
 {{- end -}}
 
 {{- if and (ne $pageCSS nil) (len $pageCSS) -}}
@@ -114,24 +122,37 @@
 {{- $cssResources := partial "partials/functions/arrays/filter-nil.html" (dict "slice" $cssResources) -}}
 
 {{- if (len $cssResources) -}}
-  {{- $scssStyle = union $cssResources $scssStyle -}}
+  {{/* TODO: Union doesn't work anymore here, certainly a Hugo bug.
+       There had been a change of behaviour here in the past, appending a slice to a slice used to create a sub slice (an array element with type of slice)
+  {{- $scssResources = union $scssResources $cssResources -}}
+  */}}
+  {{- $scssResources = $scssResources | append $cssResources -}}
+
+  {{- $scssResourcesNames := "" -}}
+  {{- range $scssResources -}}
+    {{- $scssResourcesNames = printf "%s %s" $scssResourcesNames .Name -}}
+  {{- end -}}
+  {{- $scssResourcesNames = trim $scssResourcesNames " " -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/style.html] Merged SCSS and CSS for '%s': %#v (%s)" $context.RelPermalink $scssResources $scssResourcesNames -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $fileName := "" -}}
-{{- range $file := $scssStyle -}}
+{{- range $file := $scssResources -}}
   {{- $fileName = printf "%s%s" $fileName $file.Name -}}
 {{- end -}}
 {{- $fileName = md5 $fileName -}}
 
-{{- if ne (printf "%T" $scssStyle) "resource.Resources" -}}
-  {{- warnf "[partials/html/head/style.html] Collected styles for %s are of wrong type (%T) instead of resource.Resources - this will fail!" $context.File.Path $scssStyle -}}
+{{- if ne (printf "%T" $scssResources) "resource.Resources" -}}
+  {{- warnf "[partials/html/head/style.html] Collected styles for %s are of wrong type (%T) instead of resource.Resources - this will fail!" $context.File.Path $scssResources -}}
 {{- end -}}
 
 {{- $style := "" -}}
 {{- if not $isServer -}}
-  {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
+  {{- $style = $scssResources | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
 {{- else -}}
-  {{- $style = $scssStyle | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}
+  {{- $style = $scssResources | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}
 {{- end -}}
 
 <link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">
