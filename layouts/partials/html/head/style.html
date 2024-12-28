@@ -10,6 +10,10 @@
 {{- $includesCSS := index $includes "css" -}}
 {{- $includesSCSS := index $includes "scss" -}}
 
+{{- if and (len $includesCSS) (len $includesSCSS) $debug -}}
+    {{ warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink }}
+{{- end -}}
+
 {{- $css := slice -}}
 {{- if isset . "css" -}}
   {{- if reflect.IsSlice .css -}}
@@ -51,7 +55,7 @@
   {{- $pageSCSS = union $pageSCSS $includesSCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageSCSS nil) (len $pageSCSS) -}}
-  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS .File.Dir -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific SCSS styles %#v for %s" $pageSCSS $context.RelPermalink -}}
 {{- end -}}
 
 {{- if and (ne $pageSCSS nil) (len $pageSCSS) -}}
@@ -83,7 +87,7 @@
   {{- $pageCSS = union $pageCSS $includesCSS -}}
 {{- end -}}
 {{- if and $debug (ne $pageCSS nil) (len $pageCSS) -}}
-  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS .File.Dir -}}
+  {{- warnf "[partials/html/head/style.html] Include shortcode and site specific CSS styles %#v for %s" $pageCSS $context.RelPermalink -}}
 {{- end -}}
 
 {{- if and (ne $pageCSS nil) (len $pageCSS) -}}
