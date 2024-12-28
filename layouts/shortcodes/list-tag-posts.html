@@ -3,8 +3,6 @@
   {{- $tags = slice . -}}
 {{- end -}}
 
-{{ warnf "=> %s" . }}
-
 {{- with .Get "tags" -}}
   {{- $tags = split . ","  -}}
 {{- end -}}
