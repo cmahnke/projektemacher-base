@@ -9,7 +9,7 @@
 {{- if or (not $.Site.Params.skipShortcodeAssets) (and $.Site.Params.skipShortcodeAssets (eq $.Site.Params.skipShortcodeAssets true)) -}}
   {{- $includes := unmarshal (partialCached "shortcodes/shortcode-helper-cache.html" .) -}}
   {{- if $debug -}}
-    {{- warnf "[partials/shortcode-helper.html] Include cache is %#v (type %T)" $includes $includes -}}
+    {{- warnf "[partials/shortcodes/shortcode-helper.html] Include cache is %#v (type %T)" $includes $includes -}}
   {{- end -}}
 
   {{- if reflect.IsMap $includes -}}
@@ -26,12 +26,12 @@
           {{- $scss = $scss | append (index $refs "scss") -}}
         {{- end -}}
         {{- if $debug -}}
-          {{- warnf "[partials/shortcode-helper.html] Found %s with css %#v, js %#v, scss %#v" $shortcodeName $css $js $scss -}}
+          {{- warnf "[partials/shortcodes/shortcode-helper.html] Found %s with css %#v, js %#v, scss %#v for page %s" $shortcodeName $css $js $scss $context.RelPermalink -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- else -}}
-    {{- warnf "[partials/shortcode-helper.html] Include Map is of wrong type: %#v (type %T)" $includes $includes -}}
+    {{- warnf "[partials/shortcodes/shortcode-helper.html] Include Map is of wrong type: %#v (type %T)" $includes $includes -}}
   {{- end -}}
 {{- end -}}
 {{- (dict "js" $js "scss" $scss "css" $css)  | jsonify -}}
