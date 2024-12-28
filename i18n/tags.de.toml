@@ -217,6 +217,9 @@ other = "Projekt"
 [Music]
 other = "Musik"
 
+[Digitization]
+other = "Digitalisierung"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
