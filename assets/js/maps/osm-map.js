@@ -95,6 +95,23 @@ export function initMap(element, url, source, cluster, marker) {
     return clusterMemberStyle(originalFeature);
   }
 
+  function mergeFeatures (featureArray) {
+    //console.log(featureArray);
+
+    var title = "";
+    var popupContent = "";
+
+    featureArray.forEach(feature => {
+      title += feature.get("title") + ", ";
+      popupContent += feature.get("popupContent") + ", ";
+    });
+
+    featureArray[0].set("title", title);
+    featureArray[0].set("popupContent", popupContent);
+
+    return featureArray[0];
+  }
+
   // Languages
   var lang = 'en';
   if (document.documentElement.lang !== undefined) {
@@ -199,7 +216,11 @@ export function initMap(element, url, source, cluster, marker) {
                                 (getWidth(extent) < resolution && getHeight(extent) < resolution)
                               ) {
                                 // Show an expanded view of the cluster members.
-                                clickFeature = features[0];
+                                if (features[0].get('features').length == 1) {
+                                  clickFeature = features[0];
+                                } else {
+                                  clickFeature = mergeFeatures(features[0].get('features'));
+                                }
                                 featurePopUp(clickFeature);
                                 clickResolution = resolution;
                                 //TODO: check for what this is needed
