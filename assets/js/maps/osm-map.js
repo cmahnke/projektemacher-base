@@ -38,6 +38,7 @@ export function initMap(element, url, source, cluster, marker) {
     try {
         marker = JSON.parse(marker);
     } catch (e) {
+      console.warn(`Can't parse marker ${marker}`);
     }
     iconStyle = new Style({image: new Icon(marker)});
     markerOptions = {hitTolerance: 10};
@@ -51,7 +52,8 @@ export function initMap(element, url, source, cluster, marker) {
       });
     } else {
       return new Style({
-        geometry: clusterMember.getGeometry()
+        geometry: clusterMember.getGeometry(),
+        image: innerCircle,
       });
     }
   }
