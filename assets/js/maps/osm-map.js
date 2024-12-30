@@ -103,7 +103,7 @@ export function initMap(element, url, source, cluster, marker) {
 
     featureArray.forEach(feature => {
       title += feature.get("title") + ", ";
-      popupContent += feature.get("popupContent") + ", ";
+      popupContent += feature.get("popupContent");
     });
 
     featureArray[0].set("title", title);
