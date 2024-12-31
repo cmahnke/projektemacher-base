@@ -220,6 +220,9 @@ other = "Music"
 [Digitisation]
 other = "Digitisation"
 
+[Architecture]
+other = "Architecture"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
