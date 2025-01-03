@@ -73,6 +73,9 @@ other = "Magazine"
 
 # Tags for christianmahnke.de
 
+[Status]
+other = "Status"
+
 [Light]
 other = "Light"
 
