@@ -1,0 +1,38 @@
+{{- $defaultRelation := "related" -}}
+{{- $entityBase := "http://www.wikidata.org/entity/" -}}
+
+{{- with .Params.wikidata -}}
+
+  {{- $primaryLang := $.Language.Lang -}}
+  {{- $langs := slice $primaryLang -}}
+  {{- range $.Translations -}}
+    {{- $langs = $langs | append .Language.Lang -}}
+  {{- end -}}
+
+  {{- $entries := dict -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- $list := slice -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $list = slice . -}}
+    {{- else  -}}
+      {{- $list = . -}}
+    {{- end -}}
+    {{- range $list -}}
+      {{- $entries = merge $entries (dict . $defaultRelation) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $entries = . -}}
+  {{- end -}}
+
+  <ul class="wikidata">
+    <div class="wikidata-title">{{ i18n "WikidataEntries" }}</div>
+    {{- range $url, $relation := $entries -}}
+      {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
+      {{- $uri := printf "%s%s" $entityBase $id -}}
+      <li class="wikidata-entry">
+        {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id "langs" $langs) -}}
+        <a href="{{ $uri }}" title="{{ $name }}" rel="{{ $relation }}">{{ printf "%s: " (i18n "WikidataEntry") }}{{ $name }}</a>
+      </li>
+    {{- end -}}
+  </ul>
+{{- end -}}
