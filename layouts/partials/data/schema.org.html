@@ -1,0 +1,12 @@
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+
+{{- if and .IsHome (templates.Exists "partials/schema.org/home.html") -}}
+  {{- partial "schema.org/home.html" . -}}
+{{- else -}}
+  {{- $schemaTemplate := printf "schema.org/%s.html" .Kind -}}
+  {{- if templates.Exists (printf "partials/%s" $schemaTemplate) -}}
+    {{- partial $schemaTemplate . -}}
+  {{- else if $debug -}}
+    {{- warnf "[data/schema.org.html] Can't find %s" $schemaTemplate -}}
+  {{- end -}}
+{{- end -}}
