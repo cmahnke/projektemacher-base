@@ -229,6 +229,9 @@ other = "Digitisation"
 [Architecture]
 other = "Architecture"
 
+[Collecting]
+other = "Sammeln"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
