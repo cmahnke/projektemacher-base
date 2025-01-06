@@ -1,0 +1,18 @@
+{{/* Based on https://github.com/gohugoio/hugo/issues/10434#issuecomment-2033349559 */}}
+{{- with .Get 0 }}
+  <iframe
+    src="{{ . }}/embed"
+    class="mastodon-embed" style="max-width: 100%; border: 0"
+    width="400"
+    allowfullscreen="allowfullscreen">
+  </iframe>
+  <!--
+    <script src="https://fosstodon.org/embed.js" async="async"></script>
+  -->
+{{- else }}
+  {{- errorf "The %q shortcode requires a positional parameter: the url of the post. See %s" .Name .Position }}
+{{- end }}
+
+{{- define "partials/shortcodes/mastodon-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "https://fosstodon.org/embed.js") "scss" slice) | jsonify -}}
+{{- end -}}
