@@ -39,3 +39,4 @@ opencv-python
 opencv-contrib-python-headless
 docker
 pyexiv2
+academic
