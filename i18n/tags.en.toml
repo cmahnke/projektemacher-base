@@ -232,6 +232,9 @@ other = "Architecture"
 [Collecting]
 other = "Sammeln"
 
+[Talk]
+other = "Talk"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
