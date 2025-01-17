@@ -31,10 +31,10 @@
   {{- warnf "[data/functions/wikidata-label.html] Getting label for %s from %s" $id $jsonURL -}}
 {{- end -}}
 
-{{- with resources.GetRemote $jsonURL (dict "headers" (dict "Accept" "application/json")) -}}
+{{- with try (resources.GetRemote $jsonURL (dict "headers" (dict "Accept" "application/json"))) -}}
   {{- with .Err -}}
     {{ errorf "%s" . -}}
-  {{- else -}}
+  {{ else with .Value }}
     {{ $data = .Content | transform.Unmarshal -}}
   {{- end -}}
 {{- else -}}
