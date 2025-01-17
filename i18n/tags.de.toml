@@ -235,6 +235,9 @@ other = "Collecting"
 [Talk]
 other = "Vortrag"
 
+[Recording]
+other = "Aufzeichnung"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
