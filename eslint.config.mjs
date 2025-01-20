@@ -1,6 +1,6 @@
 import globals from "globals";
-import parser from "toml-eslint-parser";
-import parser from "eslint-plugin-json-es";
+import tomlParser from "toml-eslint-parser";
+import jsParser from "eslint-plugin-json-es";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
@@ -36,7 +36,7 @@ export default [{
     files: ["**/*.toml"],
 
     languageOptions: {
-        parser: parser,
+        parser: tomlParser,
     },
 }, ...compat.extends("plugin:eslint-plugin-json-es/recommended").map(config => ({
     ...config,
@@ -45,7 +45,7 @@ export default [{
     files: ["**/*.gjson", "**/*.geojson", "**/*.json"],
 
     languageOptions: {
-        parser: parser,
+        parser: jsParser,
     },
 }, {
     files: ["scripts/*.cjs", "scripts/*.mjs"],
