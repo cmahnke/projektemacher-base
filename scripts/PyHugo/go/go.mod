@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gohugoio/hugo v0.110.0
-	github.com/spf13/afero v1.11.0
+	github.com/spf13/afero v1.12.0
 	github.com/spf13/jwalterweatherman v1.1.0
 )
 
@@ -39,7 +39,7 @@ require (
 	github.com/gohugoio/go-i18n/v2 v2.1.3-0.20210430103248-4c28c89f8013 // indirect
 	github.com/gohugoio/locales v0.14.0 // indirect
 	github.com/gohugoio/localescompressed v1.0.1 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/hairyhenderson/go-codeowners v0.2.3-0.20201026200250-cdc7c0759690 // indirect
 	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/jdkato/prose v1.2.1 // indirect
@@ -67,12 +67,12 @@ require (
 	github.com/yuin/goldmark v1.5.3 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/image v0.10.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
+	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
