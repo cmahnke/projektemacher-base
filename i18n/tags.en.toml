@@ -238,6 +238,9 @@ other = "Talk"
 [Recording]
 other = "Aufzeichnung"
 
+[Audio]
+other = "Audio"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
