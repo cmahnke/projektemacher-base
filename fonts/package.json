@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@fontsource-variable/comfortaa": "^5.1.1",
+    "@fontsource/dejavu-mono": "5.1.0",
     "@fontsource-variable/dosis": "^5.1.1",
     "@fontsource-variable/eb-garamond": "^5.1.2",
     "@fontsource-variable/exo-2": "^5.1.1",
