@@ -45,8 +45,7 @@
     "@fontsource/press-start-2p": "^5.1.1",
     "@fontsource/purple-purse": "^5.1.1",
     "@fontsource/roboto": "^5.1.1",
-    "@fontsource/special-elite": "^5.1.1",
-    "hack-font": "^3.3.0"
+    "@fontsource/special-elite": "^5.1.1"
   },
   "devDependencies": {
     "stylelint": "^16.14.1",
