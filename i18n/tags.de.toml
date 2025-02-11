@@ -241,6 +241,9 @@ other = "Aufzeichnung"
 [Audio]
 other = "Audio"
 
+[Alps]
+other = "Alpen"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
