@@ -244,6 +244,9 @@ other = "Audio"
 [Alps]
 other = "Alps"
 
+[UrbanPlanning]
+other = "Urban planning"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
