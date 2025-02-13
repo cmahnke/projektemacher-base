@@ -1,6 +1,6 @@
 {{/* Include PDF viewer */}}
-{{ with .Page.Resources.GetMatch "pdf-viewer" }}
-    {{ $divId := printf "viewer-%s" (delimit (shuffle (seq 1 9)) "") }}
+{{- with .Page.Resources.GetMatch "pdf-viewer" -}}
+    {{- $divId := printf "viewer-%s" (delimit (shuffle (seq 1 9)) "") -}}
     <div class="pdf-viewer">
         <div id="{{- $divId -}}"></div>
         <script type="text/javascript">
@@ -8,6 +8,6 @@
         </script>
     </div>
     <div class="share">
-        <a href="{{ .Name }}" class="pdf-link">PDF Download</a>
+      <a href="{{ .Name }}" class="pdf-link">PDF Download</a>
     </div>
-{{ end }}
+{{- end -}}

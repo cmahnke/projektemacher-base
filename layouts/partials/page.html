@@ -1,4 +1,4 @@
-{{ $class := .Params.type }}
+{{- $class := .Params.type -}}
 <div class="post {{ $class }}">
     <div class="content">
       <h1 class="post-title">{{ .Title }}</h1>
@@ -9,13 +9,11 @@
     {{- if not .Params.metaPage -}}
         <div class="meta">
           <div class="date">
-              <a href="{{ .RelPermalink }}">
-                {{- .Date | time.Format ":date_full" -}}
-                {{/*
-                  {{- partial "date.html" (dict "date" .Date "language" $.Page.Language "months" $.Site.Data.months) -}}</a>
-                */}}
+            <a href="{{ .RelPermalink }}">
+              {{- .Date | time.Format ":date_full" -}}
+            </a>
           </div>
-          {{ partial "meta/tags.html" . }}
+          {{- partial "meta/tags.html" . -}}
         </div>
-    {{ end }}
+    {{- end -}}
 </div>
