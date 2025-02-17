@@ -247,6 +247,12 @@ other = "Alps"
 [UrbanPlanning]
 other = "Urban planning"
 
+[ProjectIdea]
+other = "Projekt idea"
+
+[SoftwareDevelopment]
+other = "Software development"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
