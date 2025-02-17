@@ -40,6 +40,9 @@
   {{- errorf "[iiif/3/thumbnail.json] Couldn't resolve preview for %s from %s" $contextPath (jsonify .Params.resources) -}}
 {{- end -}}
 {{- $previewImg = $loaderCtx.Resources.Get $previewReference.src -}}
+{{- if and $debug (and (eq $previewImg nil) (eq $previewReference nil)) -}}
+  {{- warnf "[iiif/3/thumbnail.json] Couldn't load %#v (<- this should never be nil)" $previewReference -}}
+{{- end -}}
 {{/* Check for JXL */}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{- $previewLoc := path.Join (path.Dir $previewReference.params.iiif) $fullResImgSuffix -}}
