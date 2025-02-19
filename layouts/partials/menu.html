@@ -17,7 +17,7 @@
             {{- $class = printf "current %s" $class -}}
           {{- end -}}
           <li class="navigation-item {{ $class }}">
-            <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}</a>
+            <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}<i class="link-icon"></i></a>
           </li>
         {{- end -}}
       {{- end -}}
