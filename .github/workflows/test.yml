@@ -63,7 +63,7 @@ jobs:
           #npx eslint scripts
 
   test_install:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,7 +94,7 @@ jobs:
           ./scripts/github/setup-yarn.sh
 
   test_install_scss:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -119,7 +119,7 @@ jobs:
           sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss
 
   test_fonts_pnpm:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -147,7 +147,7 @@ jobs:
           ./scripts/github/setup-system-fonts.sh
 
   test_fonts_yarn:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       DEPENDENCY_MANAGER: yarn
     steps:
@@ -173,7 +173,7 @@ jobs:
           ./scripts/github/setup-system-fonts.sh
 
   lint_fonts:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -199,7 +199,7 @@ jobs:
           npx stylelint --config ../.stylelintrc-postbuild.yaml '../assets/css/fonts/*'
 
   test_inkscape_install:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -212,7 +212,7 @@ jobs:
           ./scripts/github/setup-inkscape.sh
 
   test_xslt_install:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -228,7 +228,7 @@ jobs:
           ls -al /opt/saxon
 
   test_PyHugolib_install:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -248,7 +248,7 @@ jobs:
           ./scripts/github/pyhugolib.sh
 
   test_pnpm:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -267,7 +267,7 @@ jobs:
 
 
   test_hugo_versions:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.can-fail }}
     strategy:
       fail-fast: false
