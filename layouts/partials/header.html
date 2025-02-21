@@ -6,6 +6,9 @@
   {{- $headerImage := "" -}}
   {{- if ne $.Site.Params.headerimage "" -}}
     {{- $headerImage = $.Site.Params.headerimage -}}
+    {{ if and (eq (printf "%T" $.Site.Params.headerimage) "bool") (not $.Site.Params.headerimage) }}
+      {{- $headerImage = "" -}}
+    {{- end -}}
   {{- else -}}
     {{- $headerImage = $defaultHeaderImage -}}
   {{- end -}}
