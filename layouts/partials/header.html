@@ -17,6 +17,9 @@
       <img class="header-logo" alt="{{ .Site.Title }}" src="{{ $headerImage }}"></a>
     {{- end -}}
     <h1 class="header-title">{{ .Title }}</h1>
+    {{- if eq $headerImage "" -}}
+      </a>
+    {{- end -}}
     {{- $subtitle := .Params.subtitle | default "" -}}
     {{- if ne $subtitle "" -}}
       <h2 class="header-subtitle">{{ $subtitle }}</h2>
