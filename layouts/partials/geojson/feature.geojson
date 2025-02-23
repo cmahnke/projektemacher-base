@@ -23,7 +23,7 @@
     {{- $coordinates = apply $coordinates "partial" "format-coords" "." -}}
 */}}
 {{- else -}}
-    {{- errorf "No coordinates for %s" .File.Path -}}
+    {{- errorf "[partials/geojson/feature.geojson] No coordinates for %s" .File.Path -}}
 {{- end -}}
 
 {
