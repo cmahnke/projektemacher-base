@@ -29,7 +29,7 @@
 {
   "type": "Feature",
   "properties": {
-      "name": "{{ .Title }}",
+      "name": "{{ htmlEscape .Title }}",
       "popupContent": {{ $popupContent }}
   },
   "geometry": {
