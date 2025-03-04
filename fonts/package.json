@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@fontsource-utils/scss": "^0.2.1",
     "@fontsource-variable/comfortaa": "^5.2.5",
     "@fontsource-variable/dosis": "^5.2.5",
     "@fontsource-variable/eb-garamond": "^5.2.5",
@@ -53,6 +52,7 @@
     "@fontsource/special-elite": "^5.2.5"
   },
   "devDependencies": {
+    "@fontsource-utils/scss": "^0.2.1",
     "stylelint": "^16.15.0",
     "stylelint-config-standard": "^37.0.0",
     "stylelint-config-standard-scss": "^14.0.0",
