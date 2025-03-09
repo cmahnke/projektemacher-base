@@ -12,7 +12,7 @@
 
 {{- $pageScripts := $context.Params.js -}}
 {{- if and (ne $pageScripts nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
-  {{- warnf "[partials/html/head/style.html] Ignoring page SCSS includes for %s" $context.File.Dir -}}
+  {{- warnf "[partials/html/head/page-scripts.html] Ignoring page SCSS includes for %s" $context.File.Dir -}}
   {{- $pageScripts = slice -}}
 {{- end -}}
 
