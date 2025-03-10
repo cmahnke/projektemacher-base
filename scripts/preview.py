@@ -41,6 +41,10 @@ def readMetadata(file):
     except Exception as inst:
         cprint("Error in %s".format(file), "red")
 
+    if "params" in post:
+        for key in post["params"]:
+            post[key] = post["params"][key]
+
     return post
 
 
@@ -181,6 +185,14 @@ def getPreviewImg(config, contentFile):
             preview = metadata["preview"]
             if isinstance(preview, dict) and "image" in preview:
                 preview = preview["image"]
+            cprint(f"Using {preview} as preview", 'yellow')
+            if "." in preview:
+                return preview
+        if "cover" in metadata:
+            #preview = os.path.join(path, metadata["preview"])
+            preview = metadata["cover"]
+            if isinstance(preview, list) and preview[0]:
+                preview = preview[0]
             cprint(f"Using {preview} as preview", 'yellow')
             return preview
         if "resources" in metadata:
