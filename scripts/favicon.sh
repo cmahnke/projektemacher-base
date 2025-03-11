@@ -6,12 +6,12 @@ echo "Generating favicons from $SOURCE"
 # See https://gist.github.com/pfig/1808188
 case "$SOURCE" in
   *.svg)
-    CMD="convert -define registry:temporary-path=/tmp -background none -density 2400 \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
+    CMD="convert -define registry:temporary-path=/tmp -limit memory 128mb -background none -density 2400 \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
   *)
     CMD="convert \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
 esac
 
-
+echo "Creating Favicon master: $CMD"
 eval $CMD
 #
 convert static/images/favicon.png -resize 512x512 static/images/favicon-512.png
