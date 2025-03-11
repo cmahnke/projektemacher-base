@@ -11,12 +11,16 @@ case "$SOURCE" in
     CMD="convert \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
 esac
 
-xmlstarlet ed --inplace -d '//policy[@domain="resource"]' /etc/ImageMagick-6/policy.xml
-xmlstarlet ed --inplace -d '//policy[@domain="system"]' /etc/ImageMagick-6/policy.xml
+IMAGEMAGIC_POLICY=/etc/ImageMagick-6/policy.xml
 
-echo "Updated policy:"
-cat /etc/ImageMagick-6/policy.xml
-echo "---"
+if [ -f "$IMAGEMAGIC_POLICY" ]; then
+  xmlstarlet ed --inplace -d '//policy[@domain="resource"]' "$IMAGEMAGIC_POLICY"
+  xmlstarlet ed --inplace -d '//policy[@domain="system"]' "$IMAGEMAGIC_POLICY"
+
+  echo "Updated policy:"
+  cat "$IMAGEMAGIC_POLICY"
+  echo "---"
+fi
 
 echo "Creating Favicon master: $CMD"
 eval $CMD
