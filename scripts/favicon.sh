@@ -12,6 +12,7 @@ case "$SOURCE" in
 esac
 
 xmlstarlet ed --inplace -d '//policy[@domain="resource"]' /etc/ImageMagick-6/policy.xml
+xmlstarlet ed --inplace -d '//policy[@domain="system"]' /etc/ImageMagick-6/policy.xml
 
 echo "Updated policy:"
 cat /etc/ImageMagick-6/policy.xml
