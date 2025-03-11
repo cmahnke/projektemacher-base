@@ -11,7 +11,9 @@ case "$SOURCE" in
     CMD="convert \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
 esac
 
-echo "Using policy:"
+xmlstarlet ed --inplace -d '//policy[@domain="resource"]' /etc/ImageMagick-6/policy.xml
+
+echo "Updated policy:"
 cat /etc/ImageMagick-6/policy.xml
 echo "---"
 
