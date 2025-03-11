@@ -6,10 +6,14 @@ echo "Generating favicons from $SOURCE"
 # See https://gist.github.com/pfig/1808188
 case "$SOURCE" in
   *.svg)
-    CMD="convert -define registry:temporary-path=/tmp -limit memory 128mb -limit disk 1gb -background none -density 2400 \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
+    CMD="convert -define registry:temporary-path=/tmp  -background none -density 2400 \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
   *)
     CMD="convert \"$SOURCE\" $OPTIONS static/images/favicon.png" ;;
 esac
+
+echo "Using policy:"
+cat /etc/ImageMagick-6/policy.xml
+echo "---"
 
 echo "Creating Favicon master: $CMD"
 eval $CMD
