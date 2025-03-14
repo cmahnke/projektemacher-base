@@ -102,9 +102,15 @@
         {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
         {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }});
         {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
+        if (!("projektemacher" in window)) {
+          window.projektemacher = {};
+        }
+        if (!("iiif" in window.projektemacher)) {
+          window.projektemacher.iiif = {};
+        }
+        window.projektemacher.iiif[{{ $mapName | safeJS }}_Div] = {{ $mapName | safeJS }};
     </script>
     <div class="share">
-
         <a href="{{ $downloadURL }}" class="image-download">{{ i18n "fullResolution" }}</a> |
         <a href="{{ $infoJson }}" class="iiif-link"><span class="iiif-iiif">{{ i18n "iiif" }}</span> <span class="iiif-manifest">{{ i18n "manifest" }}</span></a> |
         <a href="{{ $pageURL }}#{{ $mapName }}" class="image-link">{{ i18n "imageLink" }}</a>
