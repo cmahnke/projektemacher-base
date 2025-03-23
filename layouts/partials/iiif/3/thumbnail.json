@@ -66,8 +66,9 @@
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}
     {{- with $previewReference.params.iiif -}}
       {{- $imageId := printf "%s%s" $urlBase (path.Dir .) -}}
+      {{- $thumbServicePreview := printf "%s%s%s" $urlBase (path.Dir .) $fullResImgSuffix -}}
       ,{
-        "id": "{{ $previewImg.Permalink }}",
+        "id": "{{ $thumbServicePreview }}",
         "format": "image/jpeg",
         "type":"Image",
         "height": {{ $previewImg.Height }},
