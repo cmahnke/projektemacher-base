@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.144.2
+  HUGO_VERSION: 0.145.0
 
 jobs:
   deploy_exampleSite:
@@ -31,7 +31,7 @@ jobs:
           python-version: '3.10'
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'

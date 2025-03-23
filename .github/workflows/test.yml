@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.144.2
+  HUGO_VERSION: 0.145.0
 
 jobs:
   lint:
@@ -27,7 +27,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
@@ -70,7 +70,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
 
@@ -105,7 +105,7 @@ jobs:
           ./scripts/github/dart-sass.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
 
@@ -130,7 +130,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
 
@@ -160,7 +160,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
 
@@ -180,7 +180,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
 
@@ -254,7 +254,7 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v4
@@ -272,7 +272,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.141.0', '0.142.0', '0.143.1', 'latest']
+        version: ['0.141.0', '0.142.0', '0.143.1', '0.144.2', '0.145.0', 'latest']
         can-fail: [false]
         include:
           - version: 0.141.0
@@ -280,6 +280,10 @@ jobs:
           - version: 0.142.0
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.143.1
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.144.2
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.145.0
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
@@ -295,7 +299,7 @@ jobs:
           python-version: '3.10'
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v4.3.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
