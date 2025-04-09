@@ -32,7 +32,7 @@ python -m pip install --upgrade pip
 set -e
 # TODO: this fails if path contains a space (' ') character
 echo "Searching for requirements.txt in '$SEARCH_PATH'"
-for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt" -not -path "./Source Files/*"`
+for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt" -not -path "*/Source Files/*"`
 do
     PYTHON_DEPENDENCIES=`cat "$REQUIREMENTS" | tr '\n' ' '`
     echo "Installing Python modules '$PYTHON_DEPENDENCIES' from '$REQUIREMENTS'"
