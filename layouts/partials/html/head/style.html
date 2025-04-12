@@ -5,7 +5,7 @@
   {{- $context = .context -}}
 {{- end -}}
 
-{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 {{- $includes := unmarshal (partial "shortcodes/shortcode-helper.html" $context) -}}
 {{- $includesCSS := index $includes "css" -}}
 {{- $includesSCSS := index $includes "scss" -}}
@@ -119,7 +119,7 @@
   {{- end -}}
 {{- end -}}
 {{/* TODO: Check why this is nessecary and if we lose some CSS styles */}}
-{{- $cssResources := partial "partials/functions/arrays/filter-nil.html" (dict "slice" $cssResources) -}}
+{{- $cssResources := partial "functions/arrays/filter-nil.html" (dict "slice" $cssResources) -}}
 
 {{- if (len $cssResources) -}}
   {{/* TODO: Union doesn't work anymore here, certainly a Hugo bug.

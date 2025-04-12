@@ -1,5 +1,5 @@
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $previewImg := "" -}}
 {{- $previewReference := "" -}}
 {{- $contextPath := "" -}}

@@ -1,12 +1,12 @@
 {{/* This file builds a cache of the used shortcodes and the required SCSS, CSS and JS Files. */}}
 {{- $includes := dict -}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $shortcodeTags := slice -}}
 {{/* Get all pages and extract used shortcodes with a regular expression */}}
 {{- range $page := $.Site.Pages -}}
   {{- with $page.File -}}
     {{- $matches := findRESubmatch `{{[<%]\s*([^\s]*)\b.*\s*[%>]}}` $page.RawContent -}}
-    {{- $matches = (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+    {{- $matches = (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
     {{- if $matches -}}
       {{- if $debug -}}
         {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Found shortcodes %s in %s" $matches .Filename -}}
@@ -36,7 +36,7 @@
     {{- $shortcodeContent := readFile $shortcodeFile -}}
     {{/* Get the inline partial returning the required metadata for the shortcode */}}
     {{- $matches := findRESubmatch `{{-?\s*define\s*"(.*-metadata.*)"\s*-?}}` $shortcodeContent -}}
-    {{- $template := (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+    {{- $template := (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
     {{- if (len $template) -}}
       {{- $template = index $template 0 -}}
       {{- if $debug -}}
@@ -87,7 +87,7 @@
 {{/* Return a JSON containing all shortcodes and their required includes */}}
 {{- $includes | jsonify }}
 
-{{- define "partials/shortcodes/shortcode-helper-extract-matches.html" -}}
+{{- define "shortcodes/shortcode-helper-extract-matches.html" -}}
   {{- $matches := .matches -}}
   {{- $rMatches := slice -}}
   {{- range $matches -}}
@@ -97,7 +97,7 @@
 {{- end -}}
 
 {{/*
-{{- define "partials/shortcodes/shortcode-helper-find.html" -}}
+{{- define "shortcodes/shortcode-helper-find.html" -}}
   {{- $pattern := .pattern -}}
   {{- $input := .input -}}
   {{- $limit := 0 -}}
@@ -105,6 +105,6 @@
     {{- $limit := .limit -}}
   {{- end -}}
   {{- $matches := findRESubmatch $pattern $input $limit -}}
-  {{- return (partial "partials/shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
+  {{- return (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
 {{- end -}}
 */}}

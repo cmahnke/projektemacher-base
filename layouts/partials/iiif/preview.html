@@ -7,7 +7,7 @@
 {{- $name := $defaultFrontName -}}
 {{- $src := "" -}}
 {{- $context := . -}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 
 {{/* Check if parameters have been given */}}
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}

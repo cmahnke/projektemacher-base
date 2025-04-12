@@ -1,7 +1,7 @@
 {{/* Just set the Site parameter 'skipShortcodeAssets' to true to disable processing of shortcode specific assets.  */}}
 
 {{- $context := . -}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $js := slice -}}
 {{- $css := slice -}}
 {{- $scss := slice -}}

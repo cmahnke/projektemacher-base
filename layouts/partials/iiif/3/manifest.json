@@ -1,4 +1,4 @@
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 

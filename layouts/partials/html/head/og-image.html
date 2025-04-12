@@ -2,7 +2,7 @@
     Pinterest sizes: https://louisem.com/228434/pinterest-pin-size
     Open Graph sizes: https://iamturns.com/open-graph-image-size/
     */}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $filePath := "" -}}
 {{- if and (ne .File nil) (ne .File.Path nil) -}}
@@ -21,7 +21,7 @@
 {{- end -}}
 
 {{- $previewImg := "" -}}
-{{- if (templates.Exists "partials/preview/image.html") -}}
+{{- if (templates.Exists "preview/image.html") -}}
     {{- $previewImg = partial "preview/image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
 {{- else -}}
     {{- $previewImg = partial "preview/prerendered.html" (dict "context" .) -}}
@@ -69,7 +69,7 @@
         {{- $previewImg = $previewImg.Resize (printf "%dx" $ogWidth) -}}
         {{- $previewImg = $previewImg.Crop (printf  "%dx%d top q85 lanczos" $ogWidth $ogHeight) -}}
         */}}
-        {{- if not (templates.Exists "partials/html/head/og-image-background.html") -}}
+        {{- if not (templates.Exists "html/head/og-image-background.html") -}}
           {{- $bgColor := "#ffffff" -}}
           {{- if isset $.Site.Params.preview "background" -}}
             {{- $bgColor = $.Site.Params.preview.background -}}
@@ -89,7 +89,7 @@
             {{- $previewImg = $previewImg | images.Filter $filter -}}
           {{- end -}}
         {{- else -}}
-          {{- $previewImg = partial "partials/html/head/og-image-background.html" (dict "context" . "previewImg" $previewImg "height" $ogHeight "width" $ogWidth) -}}
+          {{- $previewImg = partial "html/head/og-image-background.html" (dict "context" . "previewImg" $previewImg "height" $ogHeight "width" $ogWidth) -}}
         {{- end -}}
         {{- $previewImg = $previewImg | images.Filter $filter -}}
       {{- end -}}

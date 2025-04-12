@@ -1,7 +1,7 @@
 {{- $entityBase := "http://www.wikidata.org/entity/" -}}
 {{- $defaultLangs := slice "en" "de" -}}
 
-{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $url := .url -}}
 {{- with .langs -}}

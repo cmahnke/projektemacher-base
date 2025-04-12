@@ -1,6 +1,6 @@
 {{- $files := .files -}}
 {{- $context := .context -}}
-{{- $debug := partialCached "partials/functions/debug/enabled.html" $context -}}
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 {{- $outFiles := slice -}}
 {{- range $file := $files -}}
   {{ with resources.Get $file }}
