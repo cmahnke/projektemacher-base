@@ -1,4 +1,5 @@
 {{/* This file builds a cache of the used shortcodes and the required SCSS, CSS and JS Files. */}}
+
 {{- $includes := dict -}}
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $shortcodeTags := slice -}}
@@ -86,25 +87,3 @@
 {{- end -}}
 {{/* Return a JSON containing all shortcodes and their required includes */}}
 {{- $includes | jsonify }}
-
-{{- define "shortcodes/shortcode-helper-extract-matches.html" -}}
-  {{- $matches := .matches -}}
-  {{- $rMatches := slice -}}
-  {{- range $matches -}}
-    {{- $rMatches = $rMatches | append (index . 1) -}}
-  {{- end -}}
-  {{- return $rMatches -}}
-{{- end -}}
-
-{{/*
-{{- define "shortcodes/shortcode-helper-find.html" -}}
-  {{- $pattern := .pattern -}}
-  {{- $input := .input -}}
-  {{- $limit := 0 -}}
-  {{- if isset . "limit" -}}
-    {{- $limit := .limit -}}
-  {{- end -}}
-  {{- $matches := findRESubmatch $pattern $input $limit -}}
-  {{- return (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
-{{- end -}}
-*/}}

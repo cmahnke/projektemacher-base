@@ -1,0 +1,6 @@
+{{- $matches := .matches -}}
+{{- $rMatches := slice -}}
+{{- range $matches -}}
+  {{- $rMatches = $rMatches | append (index . 1) -}}
+{{- end -}}
+{{- return $rMatches -}}
