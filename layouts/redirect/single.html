@@ -1,2 +1,15 @@
 {{/* See https://dannorth.net/hugo-redirects/ */}}
 {{- template "_internal/alias.html" (dict "Permalink" .Params.target) -}}
+
+{{- define "_internal/alias.html" -}}
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode }}">
+  <head>
+    <title>{{ .Permalink }}</title>
+    <link rel="canonical" href="{{ .Permalink }}">
+    <meta name="robots" content="noindex">
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url={{ .Permalink }}">
+  </head>
+</html>
+{{- end -}}
