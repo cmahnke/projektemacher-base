@@ -13,6 +13,6 @@
     </script>
 </div>
 
-{{- define "partials/shortcodes/audioplayer-metadata.html" -}}
+{{- define "_partials/shortcodes/audioplayer-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "js/audioplayer.js") "scss" (slice "scss/audioplayer.scss")) | jsonify -}}
 {{- end -}}

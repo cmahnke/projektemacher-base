@@ -1,6 +1,6 @@
 name = "Projektemacher Base"
 # Some features require 0.141.0 to include https://gohugo.io/functions/go-template/try/
-min_version = 0.141
+min_version = "0.146.3"
 
 [author]
   name = "Christian Mahnke"

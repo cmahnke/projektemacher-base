@@ -13,6 +13,6 @@
   {{- errorf "The %q shortcode requires a positional parameter: the url of the post. See %s" .Name .Position }}
 {{- end }}
 
-{{- define "partials/shortcodes/mastodon-metadata.html" -}}
+{{- define "_partials/shortcodes/mastodon-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "https://fosstodon.org/embed.js") "scss" slice) | jsonify -}}
 {{- end -}}

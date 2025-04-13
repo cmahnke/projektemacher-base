@@ -13,6 +13,6 @@
   browserDisableSelector(selector, browsers);
 </script>
 
-{{- define "partials/shortcodes/audioplayer-metadata.html" -}}
+{{- define "_partials/shortcodes/audioplayer-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "js/browser-banner.js") "scss" (slice "scss/browser-banner.scss")) | jsonify -}}
 {{- end -}}
