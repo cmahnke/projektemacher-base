@@ -44,6 +44,9 @@
   {{- warnf "[iiif/3/thumbnail.json] Couldn't load %#v (<- this should never be nil)" $previewReference -}}
 {{- end -}}
 {{/* Check for JXL */}}
+{{- if or (eq $previewImg nil) (eq $previewImg.MediaType nil) -}}
+  {{- errorf "[iiif/3/thumbnail.json] MediaType for %s (referenced from %s) is nil" $previewReference.src $contextPath -}}
+{{- end -}}
 {{- if eq (string $previewImg.MediaType) "image/jxl" -}}
   {{- $previewLoc := path.Join (path.Dir $previewReference.params.iiif) $fullResImgSuffix -}}
   {{- if $debug -}}
