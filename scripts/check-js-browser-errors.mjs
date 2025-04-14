@@ -17,6 +17,7 @@ const localFilePrefix = 'file:./';
 const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/'];
+//const localBaseURLs = ["https://localhost:3000", "http://localhost:3000"];
 const waitMs = 10000;
 var headless = true;
 if (process.env.PUPPETEER_DEBUG) {
@@ -145,6 +146,15 @@ console.log('Wrote preference file to %s', prefFile);
         }
         if (request.url().startsWith(baseURL)) {
             newRequestUrl = request.url().replace(baseURL, remotePrefix)
+            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
+            request.continue({
+                url: newRequestUrl,
+                headers : headers
+            });
+            return;
+        }
+        if (request.url().startsWith("https://localhost:3000")) {
+            newRequestUrl = request.url().replace("https://localhost:3000", "http://localhost:3000")
             console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
             request.continue({
                 url: newRequestUrl,
