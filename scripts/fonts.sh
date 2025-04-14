@@ -33,6 +33,7 @@ CSS_DIR="$BASE/out/css"
 FONT_DIR="$BASE/out/fonts"
 SITE_CSS=assets/css/fonts/
 SITE_FONTS=static/fonts/
+PACKAGE_JSON=package.json
 
 echo "Installing Fonts to $BASE"
 
@@ -51,12 +52,24 @@ fi
 
 mkdir -p $CSS_DIR $FONT_DIR $SITE_CSS $SITE_FONTS
 
+DEFINITION=$BASE/$PACKAGE_JSON
+
 for FONT in `find "$FONT_BASE" -mindepth 2 -maxdepth 2 -not -path '*/.*' \( -type l -o -type d \)` ;
 do
   FONT_NAME=$(basename $FONT)
+  PACKAGE_SOURCE=$(grep "$FONT_NAME" $DEFINITION)
+  #if [ "$PACKAGE_SOURCE" == *"variable"* ] ; then
+  if grep -q "variable" <<< "$PACKAGE_SOURCE"; then
+    echo "Font is variable"
+    ALIAS="-variable"
+  fi
   echo "Extracting $FONT_NAME from $FONT"
   cat $FONT/*.css >> $CSS_DIR/$FONT_NAME.css
   $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
+  if [ -n "$ALIAS" ] ; then
+    echo "Creating copy of $FONT_NAME as $CSS_DIR/$FONT_NAME$ALIAS.css"
+    cp "$CSS_DIR/$FONT_NAME.css" "$CSS_DIR/$FONT_NAME$ALIAS.css"
+  fi
   cp $FONT/files/*.woff* $FONT_DIR
 done
 rm -f fonts/out/css/@*
