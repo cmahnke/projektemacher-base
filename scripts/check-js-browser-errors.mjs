@@ -98,11 +98,14 @@ if (fs.existsSync(testFile)) {
 }
 
 if (argv.experimental) {
+  console.log("Enabling experimental plattform features");
   additionalBrowserArgs = ['--enable-experimental-web-platform-features'];
 }
 if (!argv.gpu) {
+  console.log("Disabling 3D APIs");
   additionalBrowserArgs = [...additionalBrowserArgs, '--disable-3d-apis'];
 } else {
+  console.log("Enable unsafe shader");
   additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader'];
 }
 
@@ -284,6 +287,7 @@ console.log('Wrote preference file to %s', prefFile);
         if (argv.gpu) {
           timeout = waitMs;
         }
+        console.log(`Opening ${checkURL} with time out ${timeout}`);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
 
         if ('click' in tests[i]) {
