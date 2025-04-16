@@ -92,7 +92,9 @@ if (fs.existsSync(testFile)) {
 }
 
 if (!argv.gpu) {
-  let additionalBrowserArgs = ['--disable-3d-apis']
+  let additionalBrowserArgs = ['--disable-3d-apis'];
+} else {
+  let additionalBrowserArgs = ['--enable-unsafe-swiftshader'];
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
