@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import toml from 'toml';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import express from 'express';
 import cors from 'cors';
 import mktemp from 'mktemp';
@@ -41,7 +44,7 @@ const argv = yargs().option('f', {
     type: 'boolean'
   })
   .help()
-  .alias('help', 'h').argv;
+  .alias('help', 'h').parse(hideBin(process.argv));
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
