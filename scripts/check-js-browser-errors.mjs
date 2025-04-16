@@ -25,22 +25,20 @@ if (process.env.PUPPETEER_DEBUG) {
   headless = false;
 }
 
-const argv = yargs().option('force', {
-    alias: 'f',
+const argv = yargs().option('f', {
+    alias: 'force',
     description: 'Don\'t ignore mising files',
     type: 'boolean'
   })
-  .option('gpu', {
-    alias: 'g',
+  .option('g', {
+    alias: 'gpu',
     description: 'Enable 3D Apis',
-    type: 'boolean',
-    default: false
+    type: 'boolean'
   })
-  .option('experimental', {
-    alias: 'e',
+  .option('e', {
+    alias: 'experimental',
     description: 'Enable experimental plattform features',
-    type: 'boolean',
-    default: false
+    type: 'boolean'
   })
   .help()
   .alias('help', 'h').argv;
@@ -251,6 +249,10 @@ console.log('Wrote preference file to %s', prefFile);
           })
           .on('pageerror', error => {
             console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            if (!argv.gpu && error.message.includes('Error creating WebGL context')) {
+              console.log(`Ignoring 3D error: ${error.message}`)
+              return
+            }
             if (headless) {
               process.exit(123);
             } else {
