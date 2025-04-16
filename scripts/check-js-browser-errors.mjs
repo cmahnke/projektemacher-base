@@ -209,67 +209,71 @@ console.log('Wrote preference file to %s', prefFile);
         }
         //var response;
         page.on('console', msg => {
-              console.log('Browser console:', msg.text());
-              if (argv.gpu && msg.text().includes('GPU stall due to ReadPixels')) {
-                console.log("Got GPU relateted error message: " + msg.text())
-                page.setDefaultTimeout(60*1000);
-                /*
-                setTimeout(() => {
+            console.log('Browser console:', msg.text());
+            if (msg.text().includes('GPU stall due to ReadPixels')) {
+              console.log("Got GPU relateted error message: " + msg.text())
+              page.setDefaultTimeout(60*1000);
+              /*
+              setTimeout(() => {
 
-                }, 60*1000)
-                */
-              }
-              if (checkMesages.length) {
-                for (const m of checkMesages) {
-                  console.log('Checking for "%s"', m);
-                  if (msg.text().includes(m)) {
-                    console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
-                    if (headless) {
-                      process.exit(122);
-                    } else {
-                      setTimeout(() => {
-                        console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                      }, waitMs)
-                    }
+              }, 60*1000)
+              */
+            }
+            if (checkMesages.length) {
+              for (const m of checkMesages) {
+                console.log('Checking for "%s"', m);
+                if (msg.text().includes(m)) {
+                  console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
+                  if (headless) {
+                    process.exit(122);
+                  } else {
+                    setTimeout(() => {
+                      console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+                    }, waitMs)
                   }
                 }
               }
-            })
-            .on('pageerror', error => {
-              console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            }
+          })
+          .on('pageerror', error => {
+            console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            if (headless) {
+              process.exit(123);
+            } else {
+              setTimeout(() => {
+                console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+              }, waitMs)
+            }
+          })
+          .on('requestfailed', request => {
+            console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
+            if (request.resourceType() == 'media') {
+                console.log('[requestfailed] Ignoring failed media request for %s', request.url());
+            } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
+                console.log('[requestfailed] Ignoring request for %s', request.url());
+            } else if (request.url().toLowerCase().endsWith("pdf")) {
+                console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
+            } else {
               if (headless) {
-                process.exit(123);
+                process.exit(124);
               } else {
                 setTimeout(() => {
                   console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
                 }, waitMs)
               }
-            })
-            .on('requestfailed', request => {
-              console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
-              if (request.resourceType() == 'media') {
-                  console.log('[requestfailed] Ignoring failed media request for %s', request.url());
-              } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
-                  console.log('[requestfailed] Ignoring request for %s', request.url());
-              } else if (request.url().toLowerCase().endsWith("pdf")) {
-                  console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
-              } else {
-                if (headless) {
-                  process.exit(124);
-                } else {
-                  setTimeout(() => {
-                    console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                  }, waitMs)
-                }
-              }
-            });
+            }
+        });
 
         var checkURL = baseURL + localFile;
         if (fragment !== undefined && fragment != "") {
           checkURL = checkURL + '#' + fragment;
         }
         console.log('-> Opening file %s', checkURL);
-        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
+        let timeout = 0;
+        if (argv.gpu) {
+          timeout = waitMs;
+        }
+        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
 
         if ('click' in tests[i]) {
             for (let j in tests[i]['click']) {
