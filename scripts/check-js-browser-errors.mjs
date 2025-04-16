@@ -36,6 +36,12 @@ const argv = yargs().option('force', {
     type: 'boolean',
     default: false
   })
+  .option('experimental', {
+    alias: 'e',
+    description: 'Enable experimental plattform features',
+    type: 'boolean',
+    default: false
+  })
   .help()
   .alias('help', 'h').argv;
 
@@ -91,10 +97,13 @@ if (fs.existsSync(testFile)) {
     urls = ['/'];
 }
 
+if (argv.experimental) {
+  additionalBrowserArgs = ['--enable-experimental-web-platform-features'];
+}
 if (!argv.gpu) {
-  let additionalBrowserArgs = ['--disable-3d-apis'];
+  additionalBrowserArgs = [...additionalBrowserArgs, '--disable-3d-apis'];
 } else {
-  let additionalBrowserArgs = ['--enable-unsafe-swiftshader'];
+  additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader'];
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
