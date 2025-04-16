@@ -64,6 +64,9 @@
 
 {{/* Process SCSS file */}}
 {{- $options := (dict "transpiler" "dartsass" "targetPath" "base.css" "outputStyle" "compressed" "enableSourceMap" (not hugo.IsProduction) "includePaths" $includes) -}}
+{{- if isset . "vars" -}}
+  {{- $options = merge $options (dict "vars" .vars) -}}
+{{- end -}}
 
 {{- $scssResources := slice -}}
 {{- range $file := $scss -}}
