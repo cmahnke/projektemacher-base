@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import toml from 'toml';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import express from 'express';
 import cors from 'cors';
 import mktemp from 'mktemp';
@@ -18,19 +21,30 @@ const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/'];
 //const localBaseURLs = ["https://localhost:3000", "http://localhost:3000"];
-const waitMs = 10000;
+const waitMs = 20000;
 var headless = true;
+let additionalBrowserArgs = [];
 if (process.env.PUPPETEER_DEBUG) {
   headless = false;
 }
 
-const argv = yargs().option('force', {
-    alias: 'f',
+const argv = yargs().option('f', {
+    alias: 'force',
     description: 'Don\'t ignore mising files',
     type: 'boolean'
   })
+  .option('g', {
+    alias: 'gpu',
+    description: 'Enable 3D Apis',
+    type: 'boolean'
+  })
+  .option('e', {
+    alias: 'experimental',
+    description: 'Enable experimental plattform features',
+    type: 'boolean'
+  })
   .help()
-  .alias('help', 'h').argv;
+  .alias('help', 'h').parse(hideBin(process.argv));
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -84,6 +98,18 @@ if (fs.existsSync(testFile)) {
     urls = ['/'];
 }
 
+if (argv.experimental) {
+  console.log("Enabling experimental plattform features");
+  additionalBrowserArgs = ['--enable-experimental-web-platform-features'];
+}
+if (!argv.gpu) {
+  console.log("Disabling 3D APIs");
+  additionalBrowserArgs = [...additionalBrowserArgs, '--disable-gpu']; //--disable-3d-apis
+} else {
+  console.log("Enable unsafe shader");
+  additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader', '--enable-unsafe-webgpu'];
+}
+
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 var baseURL = hugoConfig.baseURL;
 const remotePrefix = 'http://localhost:' + localPort + '/';
@@ -130,7 +156,7 @@ console.log('Wrote preference file to %s', prefFile);
         */
         headless: headlessMode,
         devtools: false,
-        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
+        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`, ...additionalBrowserArgs]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
@@ -198,58 +224,76 @@ console.log('Wrote preference file to %s', prefFile);
         }
         //var response;
         page.on('console', msg => {
-              console.log('Browser console:', msg.text());
-              if (checkMesages.length) {
-                for (const m of checkMesages) {
-                  console.log('Checking for "%s"', m);
-                  if (msg.text().includes(m)) {
-                    console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
-                    if (headless) {
-                      process.exit(122);
-                    } else {
-                      setTimeout(() => {
-                        console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                      }, waitMs)
-                    }
+            console.log('Browser console:', msg.text());
+            if (msg.text().includes('GPU stall due to ReadPixels')) {
+              console.log("Got GPU relateted error message: " + msg.text())
+              page.setDefaultTimeout(60*1000);
+              /*
+              setTimeout(() => {
+
+              }, 60*1000)
+              */
+            }
+            if (checkMesages.length) {
+              for (const m of checkMesages) {
+                console.log('Checking for "%s"', m);
+                if (msg.text().includes(m)) {
+                  console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
+                  if (headless) {
+                    process.exit(122);
+                  } else {
+                    setTimeout(() => {
+                      console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+                    }, waitMs)
                   }
                 }
               }
-            })
-            .on('pageerror', error => {
-              console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            }
+          })
+          .on('pageerror', error => {
+            console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            if (!argv.gpu && (error.message.includes('Error creating WebGL context') || error.message.includes('Unable to create WebGPU adapter'))) {
+              console.log(`Ignoring 3D error: ${error.message}`)
+              return
+            }
+            if (headless) {
+              process.exit(123);
+            } else {
+              setTimeout(() => {
+                console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
+              }, waitMs)
+            }
+          })
+          .on('requestfailed', request => {
+            console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
+            if (request.resourceType() == 'media') {
+                console.log('[requestfailed] Ignoring failed media request for %s', request.url());
+            } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
+                console.log('[requestfailed] Ignoring request for %s', request.url());
+            } else if (request.url().toLowerCase().endsWith("pdf")) {
+                console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
+            } else {
               if (headless) {
-                process.exit(123);
+                process.exit(124);
               } else {
                 setTimeout(() => {
                   console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
                 }, waitMs)
               }
-            })
-            .on('requestfailed', request => {
-              console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
-              if (request.resourceType() == 'media') {
-                  console.log('[requestfailed] Ignoring failed media request for %s', request.url());
-              } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
-                  console.log('[requestfailed] Ignoring request for %s', request.url());
-              } else if (request.url().toLowerCase().endsWith("pdf")) {
-                  console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
-              } else {
-                if (headless) {
-                  process.exit(124);
-                } else {
-                  setTimeout(() => {
-                    console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                  }, waitMs)
-                }
-              }
-            });
+            }
+        });
 
         var checkURL = baseURL + localFile;
         if (fragment !== undefined && fragment != "") {
           checkURL = checkURL + '#' + fragment;
         }
         console.log('-> Opening file %s', checkURL);
-        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
+        let timeout = 0;
+        if (argv.gpu) {
+          timeout = waitMs;
+        }
+        console.log(`Opening ${checkURL} with time out ${timeout}`);
+        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
 
         if ('click' in tests[i]) {
             for (let j in tests[i]['click']) {
@@ -288,6 +332,7 @@ console.log('Wrote preference file to %s', prefFile);
         await new Promise(r => setTimeout(r, 6000));
         //await page.waitForNavigation();
     }
+    console.log('Test loop finished, awaiting browser and server to stop')
     await browser.close();
     await server.close();
 })();
