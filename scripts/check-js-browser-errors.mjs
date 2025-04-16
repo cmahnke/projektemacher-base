@@ -21,7 +21,7 @@ const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/'];
 //const localBaseURLs = ["https://localhost:3000", "http://localhost:3000"];
-const waitMs = 10000;
+const waitMs = 20000;
 var headless = true;
 let additionalBrowserArgs = [];
 if (process.env.PUPPETEER_DEBUG) {
@@ -107,7 +107,7 @@ if (!argv.gpu) {
   additionalBrowserArgs = [...additionalBrowserArgs, '--disable-gpu']; //--disable-3d-apis
 } else {
   console.log("Enable unsafe shader");
-  additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader'];
+  additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader', '--enable-unsafe-webgpu'];
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
@@ -332,6 +332,7 @@ console.log('Wrote preference file to %s', prefFile);
         await new Promise(r => setTimeout(r, 6000));
         //await page.waitForNavigation();
     }
+    console.log('Test loop finished, awaiting browser and server to stop')
     await browser.close();
     await server.close();
 })();
