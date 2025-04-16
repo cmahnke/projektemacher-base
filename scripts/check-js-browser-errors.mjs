@@ -20,6 +20,7 @@ const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://
 //const localBaseURLs = ["https://localhost:3000", "http://localhost:3000"];
 const waitMs = 10000;
 var headless = true;
+let additionalBrowserArgs = [];
 if (process.env.PUPPETEER_DEBUG) {
   headless = false;
 }
@@ -28,6 +29,12 @@ const argv = yargs().option('force', {
     alias: 'f',
     description: 'Don\'t ignore mising files',
     type: 'boolean'
+  })
+  .option('gpu', {
+    alias: 'g',
+    description: 'Enable 3D Apis',
+    type: 'boolean',
+    default: false
   })
   .help()
   .alias('help', 'h').argv;
@@ -84,6 +91,10 @@ if (fs.existsSync(testFile)) {
     urls = ['/'];
 }
 
+if (!argv.gpu) {
+  let additionalBrowserArgs = ['--disable-3d-apis']
+}
+
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
 var baseURL = hugoConfig.baseURL;
 const remotePrefix = 'http://localhost:' + localPort + '/';
@@ -130,7 +141,7 @@ console.log('Wrote preference file to %s', prefFile);
         */
         headless: headlessMode,
         devtools: false,
-        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`]
+        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`, ...additionalBrowserArgs]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
     const page = await browser.newPage();
@@ -199,6 +210,15 @@ console.log('Wrote preference file to %s', prefFile);
         //var response;
         page.on('console', msg => {
               console.log('Browser console:', msg.text());
+              if (argv.gpu && msg.text().includes('GPU stall due to ReadPixels')) {
+                console.log("Got GPU relateted error message: " + msg.text())
+                page.setDefaultTimeout(60*1000);
+                /*
+                setTimeout(() => {
+
+                }, 60*1000)
+                */
+              }
               if (checkMesages.length) {
                 for (const m of checkMesages) {
                   console.log('Checking for "%s"', m);
