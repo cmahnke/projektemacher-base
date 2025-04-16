@@ -104,7 +104,7 @@ if (argv.experimental) {
 }
 if (!argv.gpu) {
   console.log("Disabling 3D APIs");
-  additionalBrowserArgs = [...additionalBrowserArgs, '--disable-3d-apis'];
+  additionalBrowserArgs = [...additionalBrowserArgs, '--disable-gpu']; //--disable-3d-apis
 } else {
   console.log("Enable unsafe shader");
   additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader'];
