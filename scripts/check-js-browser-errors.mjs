@@ -241,6 +241,12 @@ console.log('Wrote preference file to %s', prefFile);
         console.log('-> Opening file %s', checkURL);
         const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: 0 });
 
+        const refreshSelector = "meta[http-equiv=refresh]";
+        if (await page.$(refreshSelector) !== null) {
+          console.log("Found refresh meta tag, skipping");
+          continue;
+        }
+
         if ('click' in tests[i]) {
             for (let j in tests[i]['click']) {
                 const [response] = await Promise.all([
