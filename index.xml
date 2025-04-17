@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projektemacher Base template on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/</link>
+    <description>Recent content in Projektemacher Base template on Projektemacher Base</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://theme.projektemacher.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>November 1961</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>October 1972</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Privacy policy</title>
+      <link>https://theme.projektemacher.org/privacy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/privacy/</guid>
+      <description>&lt;h2 id=&#34;hosting&#34;&gt;Hosting&lt;/h2&gt;
+&lt;p&gt;The hoster collects the following data transmitted by your browser in log files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IP address&lt;/li&gt;
+&lt;li&gt;The address of the previously visited website (Referer [sic!] request header)&lt;/li&gt;
+&lt;li&gt;Date and time of the enquiry&lt;/li&gt;
+&lt;li&gt;Time zone difference to Greenwich Mean Time&lt;/li&gt;
+&lt;li&gt;Content of the request&lt;/li&gt;
+&lt;li&gt;HTTP status code&lt;/li&gt;
+&lt;li&gt;Amount of data transferred&lt;/li&gt;
+&lt;li&gt;Website from which the request originates&lt;/li&gt;
+&lt;li&gt;Information about the browser and operating system&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is necessary to display the website and to ensure stability and security. This corresponds to a legitimate interest within the meaning of &lt;a href=&#34;https://gdpr-info.eu/art-6-gdpr/&#34; target=&#34;_blank&#34;&gt;Art. 6 para. 1 sentence 1 lit. f GDPR&lt;/a&gt;.&lt;/p&gt;</description>
+      </item>
+    
+    <item>
+      <title>Tags 1</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 2</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 3</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 4</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>ToDo</title>
+      <link>https://theme.projektemacher.org/todo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/todo/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;There are several sources for issues:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;a href=&#34;&#34;&gt;GitHub Issues&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The annotations / tags in various files&lt;/li&gt;
+&lt;li&gt;This file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;general-goals&#34;&gt;General goals&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Finish this site as documentation&lt;/li&gt;
+&lt;li&gt;Deprecate Hugo versions before 0.123&lt;/li&gt;
+&lt;li&gt;Remove duplicate functionality&lt;/li&gt;
+&lt;li&gt;Use shortcode metadata for every shortcode&lt;/li&gt;
+&lt;/ul&gt;</description>
+      </item>
+    
+  </channel>
+</rss>
