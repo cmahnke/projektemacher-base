@@ -18,8 +18,8 @@ updates:
         patterns:
         - '*'
     ignore:
-      - dependency-name: "eslint"
-        versions: '>8'
+      - dependency-name: "express"
+        versions: '>5'
   - package-ecosystem: "npm"
     directory: "/fonts/"
     schedule:
