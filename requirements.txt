@@ -6,7 +6,7 @@ toml
 iiif
 icalendar
 pylint
-qrcode ~=8.1
+qrcode ~=8.2
 cairosvg
 svgutils
 #svgutils @ git+https://github.com/btel/svg_utils@1cc5b888f265407d2ea3b1f93c95b2efd29c611c
