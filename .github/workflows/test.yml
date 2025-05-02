@@ -272,7 +272,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.146.7', '0.147.0', 'latest']
+        version: ['0.146.7', '0.147.1', 'latest']
         can-fail: [false]
         include:
           - version: 0.146.7
