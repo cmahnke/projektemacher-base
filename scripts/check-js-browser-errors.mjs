@@ -13,7 +13,7 @@ const app = express();
 
 /* Settings */
 const urlsFile = 'test-urls.txt';
-const testFile = 'test-urls.json';
+let testFile = 'test-urls.json';
 var configFile = ['config.toml', 'hugo.toml'];
 const contentDir = 'docs'
 const localFilePrefix = 'file:./';
@@ -43,8 +43,17 @@ const argv = yargs().option('f', {
     description: 'Enable experimental plattform features',
     type: 'boolean'
   })
+  .option('c', {
+    alias: 'config',
+    description: 'Configuration file',
+    type: 'string'
+  })
   .help()
   .alias('help', 'h').parse(hideBin(process.argv));
+
+if (argv.config) {
+  testFile = argv.config
+}
 
 if (!fs.existsSync(contentDir)) {
     console.log('Directory %s doesn\'t exist!', contentDir);
@@ -200,6 +209,7 @@ console.log('Wrote preference file to %s', prefFile);
             console.log('Browser: Got response for %s', response.url());
         });
 
+    const checkedUrls = [];
     for (var i in tests) {
         var localFile, fragment;
         if (typeof tests[i] === 'object' && tests[i] !== null && tests[i].hasOwnProperty('url')) {
@@ -343,8 +353,9 @@ console.log('Wrote preference file to %s', prefFile);
         //await page.waitForTimeout(5000);
         await new Promise(r => setTimeout(r, 6000));
         //await page.waitForNavigation();
+        checkedUrls.push(tests[i]['url'])
     }
-    console.log('Test loop finished, awaiting browser and server to stop')
+    console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`)
     await browser.close();
     await server.close();
 })();
