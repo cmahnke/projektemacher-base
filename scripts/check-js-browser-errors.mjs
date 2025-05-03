@@ -156,6 +156,7 @@ console.log('Wrote preference file to %s', prefFile);
         */
         headless: headlessMode,
         devtools: false,
+        //'--allow-running-insecure-content',
         args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`, ...additionalBrowserArgs]
          /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
     })
@@ -167,6 +168,11 @@ console.log('Wrote preference file to %s', prefFile);
         var newRequestUrl;
         if (request.url().toLowerCase().endsWith("pdf")) {
           console.log('Warning: Response would hang Puppeteer, aborting!');
+          request.abort();
+          return;
+        }
+        if (request.url().includes("livereload.js")) {
+          console.error('Got request for watcher, this happens if you try to check a development build!');
           request.abort();
           return;
         }

@@ -10,6 +10,7 @@ defaultName = "Projektmacher"
 paths = ["blogs/*/content", "content"]
 posts = Posts.Posts(paths).postList()
 
+
 def blogName(post):
     global defaultName
     path, file = os.path.split(post["__source"])
@@ -19,10 +20,11 @@ def blogName(post):
     else:
         return path[1].title()
 
+
 # See https://icalendar.readthedocs.io/en/latest/usage.html
 cal = Calendar()
-cal.add('prodid', '-//Projektemacher Calendar//projektemacher.org//')
-cal.add('version', '2.0')
+cal.add("prodid", "-//Projektemacher Calendar//projektemacher.org//")
+cal.add("version", "2.0")
 
 for post in posts:
     if "displayInList" in posts and post["displayInList"] == False:
@@ -42,9 +44,9 @@ for post in posts:
             cprint("Ignoring {}: {}".format(post["__source"], post["date"]), "red")
         else:
             postDate = post["date"].date()
-            event.add('dtstart', datetime.combine(postDate, time()))
+            event.add("dtstart", datetime.combine(postDate, time()))
             postDate += timedelta(days=1)
-            event.add('dtend', datetime.combine(postDate, time()))
+            event.add("dtend", datetime.combine(postDate, time()))
 
             cal.add_component(event)
 
