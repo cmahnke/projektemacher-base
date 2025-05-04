@@ -10,6 +10,10 @@
     <ul class="navigation-list">
       {{- with .Site.Menus.main -}}
         {{- range sort . -}}
+          {{- if and .Params.draft (not hugo.IsDevelopment) -}}
+            {{- warnf "[partials/menu.html] Draft menu entry skipped - fix this when hugo can report draft mode!" -}}
+            {{- continue -}}
+          {{- end -}}
           {{- $class := trim (path.Base .URL) "/" -}}
           {{- $class = replaceRE "^/$" "root" $class -}}
           {{- $class = printf "navto-%s" $class -}}
