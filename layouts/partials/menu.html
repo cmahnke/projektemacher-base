@@ -10,7 +10,7 @@
     <ul class="navigation-list">
       {{- with .Site.Menus.main -}}
         {{- range sort . -}}
-          {{- if and .Params.draft (not .Site.BuildDrafts) -}}
+          {{- if and .Params.draft (not site.BuildDrafts) -}}
             {{- continue -}}
           {{- end -}}
           {{- $class := trim (path.Base .URL) "/" -}}
