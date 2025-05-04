@@ -10,8 +10,7 @@
     <ul class="navigation-list">
       {{- with .Site.Menus.main -}}
         {{- range sort . -}}
-          {{- if and .Params.draft (not hugo.IsDevelopment) -}}
-            {{- warnf "[partials/menu.html] Draft menu entry skipped - fix this when hugo can report draft mode!" -}}
+          {{- if and .Params.draft (not .Site.BuildDrafts) -}}
             {{- continue -}}
           {{- end -}}
           {{- $class := trim (path.Base .URL) "/" -}}
