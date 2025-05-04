@@ -1,0 +1,38 @@
+{{- $src := .Get "src" -}}
+{{- $class := "" -}}
+{{ if isset .Params "class" }}
+  {{- $class = .Get "class" -}}
+{{- end -}}
+
+{{- $urlInput := false -}}
+{{ if isset .Params "urlInput" }}
+  {{- $urlInput = .Get "urlInput" -}}
+{{- end -}}
+{{- $resize := true -}}
+{{ if isset .Params "resize" }}
+  {{- $urlInput = .Get "resize" -}}
+{{- end -}}
+{{- $download := true -}}
+{{ if isset .Params "download" }}
+  {{- $urlInput = .Get "download" -}}
+{{- end -}}
+
+{{- $id := printf "_lucienne-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+
+{{- if and (ne $src "") (ne $src nil) }}
+  <div class="lucienne-container">
+      <div class="lucienne" id="{{ $id }}">
+      </div>
+      <script type="text/javascript">
+          var elem = document.getElementById('{{ $id }}');
+          lucienne(elem, {{ $urlInput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, "{{ $src | safeJS }}")
+          //audioplayer(player, '{{ $src }}', player.querySelector('button.audioplayer-button'));
+      </script>
+  </div>
+{{- else }}
+  {{- errorf "The %q shortcode requires an (initial) IIIF source" .Name}}
+{{- end }}
+
+{{- define "_partials/shortcodes/lucienne-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/lucienne/lucienne.js") "scss" (slice "scss/lucienne/lucienne.scss")) | jsonify -}}
+{{- end -}}
