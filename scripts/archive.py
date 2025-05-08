@@ -21,6 +21,7 @@ exclude = [
     "gohugo.io",
     "archive.org",
     "www.worldcat.org",
+    "www.wikidata.org",
 ]
 # Maximal age in days
 max_age = 60
@@ -118,6 +119,7 @@ async def main() -> int:
     parser.add_argument("--dir", "-d", type=pathlib.Path, help="Path to posts to process")
     parser.add_argument("--exclude", "-e", nargs="+", help="Host names to exclude")
     parser.add_argument("--age", "-a", type=int, default=max_age, help=f"Maximum age (default {max_age})")
+    parser.add_argument("--output", "-o", type=string, help=f"Output URL list file name")
 
     args = parser.parse_args()
 
@@ -139,6 +141,11 @@ async def main() -> int:
     async_reqs = await archive(urls, client)
     await asyncio.gather(*async_reqs)
     await client.aclose()
+    if args.output is not None:
+        with open(args.output, "w") as url_file:
+            for url in urls:
+                url_file.write(line + "\n")
+        cprint(f"Saved URLs to {args.output}", "green")
     cprint(f"Saved {len(async_reqs)} URLs", "green")
 
 
