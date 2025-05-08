@@ -144,7 +144,7 @@ async def main() -> int:
     if args.output is not None:
         with open(args.output, "w") as url_file:
             for url in urls:
-                url_file.write(line + "\n")
+                url_file.write(url + "\n")
         cprint(f"Saved URLs to {args.output}", "green")
     cprint(f"Saved {len(async_reqs)} URLs", "green")
 
