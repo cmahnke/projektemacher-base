@@ -119,7 +119,7 @@ async def main() -> int:
     parser.add_argument("--dir", "-d", type=pathlib.Path, help="Path to posts to process")
     parser.add_argument("--exclude", "-e", nargs="+", help="Host names to exclude")
     parser.add_argument("--age", "-a", type=int, default=max_age, help=f"Maximum age (default {max_age})")
-    parser.add_argument("--output", "-o", type=string, help=f"Output URL list file name")
+    parser.add_argument("--output", "-o", type=str, help=f"Output URL list file name")
 
     args = parser.parse_args()
 
