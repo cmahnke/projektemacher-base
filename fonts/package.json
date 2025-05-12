@@ -55,7 +55,7 @@
     "@fontsource-utils/scss": "^0.2.1",
     "stylelint": "^16.18.0",
     "stylelint-config-standard": "^38.0.0",
-    "stylelint-config-standard-scss": "^14.0.0",
+    "stylelint-config-standard-scss": "^15.0.0",
     "stylelint-prettier": "^5.0.3",
     "stylelint-scss": "^6.11.1"
   }
