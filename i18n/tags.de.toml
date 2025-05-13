@@ -253,6 +253,9 @@ other = "Projekt Idee"
 [SoftwareDevelopment]
 other = "Software Entwicklung"
 
+[Metadata]
+other = "Metadaten"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
