@@ -256,6 +256,9 @@ other = "Software Entwicklung"
 [Metadata]
 other = "Metadaten"
 
+[Merchandise]
+other = "Werbeartikel"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
