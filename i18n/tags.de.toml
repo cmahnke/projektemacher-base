@@ -259,6 +259,9 @@ other = "Metadaten"
 [Merchandise]
 other = "Werbeartikel"
 
+[Watercolor]
+other = "Aquarell"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

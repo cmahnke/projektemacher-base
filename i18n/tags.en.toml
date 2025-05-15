@@ -259,6 +259,9 @@ other = "Metadata"
 [Merchandise]
 other = "Merchandise"
 
+[Watercolor]
+other = "Watercolor"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
