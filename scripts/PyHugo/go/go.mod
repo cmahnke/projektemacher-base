@@ -1,6 +1,6 @@
 module projektemacher.org/hugo/python
 
-go 1.19
+go 1.22.5
 
 require (
 	github.com/gohugoio/hugo v0.110.0
@@ -30,10 +30,10 @@ require (
 	github.com/evanw/esbuild v0.17.0 // indirect
 	github.com/frankban/quicktest v1.14.4 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/getkin/kin-openapi v0.110.0 // indirect
+	github.com/getkin/kin-openapi v0.131.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-openapi/jsonpointer v0.19.5 // indirect
-	github.com/go-openapi/swag v0.19.5 // indirect
+	github.com/go-openapi/jsonpointer v0.21.0 // indirect
+	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/gobuffalo/flect v0.3.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gohugoio/go-i18n/v2 v2.1.3-0.20210430103248-4c28c89f8013 // indirect
@@ -41,12 +41,12 @@ require (
 	github.com/gohugoio/localescompressed v1.0.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hairyhenderson/go-codeowners v0.2.3-0.20201026200250-cdc7c0759690 // indirect
-	github.com/invopop/yaml v0.1.0 // indirect
 	github.com/jdkato/prose v1.2.1 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji/v2 v2.2.10 // indirect
-	github.com/mailru/easyjson v0.0.0-20190626092158-b2ccc519800e // indirect
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/marekm4/color-extractor v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
@@ -55,9 +55,12 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/muesli/smartcrop v0.3.0 // indirect
 	github.com/niklasfasching/go-org v1.6.5 // indirect
+	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
+	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
-	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/perimeterx/marshmallow v1.1.5 // indirect
+	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -67,6 +70,7 @@ require (
 	github.com/yuin/goldmark v1.5.3 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/image v0.10.0 // indirect
+	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
