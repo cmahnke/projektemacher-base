@@ -259,6 +259,12 @@ other = "Metadaten"
 [Merchandise]
 other = "Werbeartikel"
 
+[Paper]
+other = "Papier"
+
+[Upcycling]
+other = "Upcycling"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
