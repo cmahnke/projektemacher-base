@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.147.3
+  HUGO_VERSION: 0.147.4
 
 jobs:
   lint:
