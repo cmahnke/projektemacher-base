@@ -271,6 +271,15 @@ other = "Upcycling"
 [Game]
 other = "Game"
 
+[Search]
+other = "Search"
+
+[Wikidata]
+other = "Wikidata"
+
+[Visualisation]
+other = "Visualisation"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
