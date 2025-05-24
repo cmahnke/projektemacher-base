@@ -20,7 +20,11 @@
             {{- $class = printf "current %s" $class -}}
           {{- end -}}
           <li class="navigation-item {{ $class }}">
-            <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}<i class="link-icon"></i></a>
+            {{- if not .Params.html -}}
+              <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}<i class="link-icon"></i></a>
+            {{- else -}}
+              {{ .Name }}
+            {{- end -}}
           </li>
         {{- end -}}
       {{- end -}}
