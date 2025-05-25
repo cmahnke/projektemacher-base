@@ -16,6 +16,7 @@
   {{- $pageScripts = slice -}}
 {{- end -}}
 
+{{/* TODO this fails, since $scripts is not defined */}}
 {{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
   {{- $scripts = slice $pageScripts -}}
 {{- end -}}
