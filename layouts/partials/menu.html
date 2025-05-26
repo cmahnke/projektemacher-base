@@ -23,7 +23,7 @@
             {{- if not .Params.html -}}
               <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}<i class="link-icon"></i></a>
             {{- else -}}
-              {{ .Name }}
+              {{- .Name | safeHTML -}}
             {{- end -}}
           </li>
         {{- end -}}
