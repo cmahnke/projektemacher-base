@@ -16,6 +16,7 @@
   {{- $pageScripts = slice -}}
 {{- end -}}
 
+{{/* TODO this fails, since $scripts is not defined */}}
 {{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
   {{- $scripts = slice $pageScripts -}}
 {{- end -}}
@@ -45,7 +46,11 @@
     {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
     {{- $main := "" -}}
     {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
-      {{- $main = resources.Get $script | js.Build $mainOpts -}}
+      {{- $scriptRes := resources.Get $script -}}
+      {{- if eq $scriptRes nil -}}
+        {{- errorf "[partials/html/head/page-scripts.html] Failed to load %s" $script -}}
+      {{- end -}}
+      {{- $main = $scriptRes | js.Build $mainOpts -}}
     {{- else -}}
       {{- $main = resources.GetRemote $script | js.Build $mainOpts -}}
     {{- end -}}

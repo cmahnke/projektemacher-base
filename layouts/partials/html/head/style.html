@@ -74,6 +74,9 @@
     {{- warnf "[partials/html/head/style.html] Processing SCSS script %s for %s" $file $context.RelPermalink -}}
   {{- end -}}
   {{- $scssTemplate := resources.Get $file -}}
+  {{- if eq $scssTemplate nil -}}
+    {{- errorf "[partials/html/head/style.html] Failed to load %s, make sure to add the scss path as well!" $file -}}
+  {{- end -}}
   {{- $scssProcesed := $scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options -}}
   {{/*
   {{- $scssResources = $scssResources | append ($scssTemplate | resources.ExecuteAsTemplate $file . | toCSS $options) -}}
