@@ -24,7 +24,7 @@
     {{- $entries = . -}}
   {{- end -}}
 
-  <ul class="wikidata">
+  <ul class="wikidata-summary">
     <div class="wikidata-title">{{ i18n "WikidataEntries" }}</div>
     {{- range $url, $relation := $entries -}}
       {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
