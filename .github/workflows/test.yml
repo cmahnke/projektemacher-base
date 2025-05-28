@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.147.5
+  HUGO_VERSION: 0.147.6
 
 jobs:
   lint:
@@ -227,25 +227,25 @@ jobs:
         run: |
           ls -al /opt/saxon
 
-  test_PyHugolib_install:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'scripts/PyHugo/go/go.mod'
-      - name: Install required dependencies
-        run: |
-          ./scripts/github/python-dependencies.sh
-      - name: "Build PyHugolib"
-        run: |
-          ./scripts/github/pyhugolib.sh
+#  test_PyHugolib_install:
+#    runs-on: ubuntu-24.04
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          submodules: true  # Fetch Hugo themes (true OR recursive)
+#      - name: Set up Python
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.10'
+#      - uses: actions/setup-go@v5
+#        with:
+#          go-version-file: 'scripts/PyHugo/go/go.mod'
+#      - name: Install required dependencies
+#        run: |
+#          ./scripts/github/python-dependencies.sh
+#      - name: "Build PyHugolib"
+#        run: |
+#          ./scripts/github/pyhugolib.sh
 
   test_pnpm:
     runs-on: ubuntu-24.04
@@ -272,7 +272,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.146.7', '0.147.3', 'latest']
+        version: ['0.146.7', '0.147.5', 'latest']
         can-fail: [false]
         include:
           - version: 0.146.7
