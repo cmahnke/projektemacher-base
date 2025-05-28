@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.147.5
+  HUGO_VERSION: 0.147.6
 
 jobs:
   lint:
@@ -272,7 +272,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.146.7', '0.147.3', 'latest']
+        version: ['0.146.7', '0.147.5', 'latest']
         can-fail: [false]
         include:
           - version: 0.146.7
