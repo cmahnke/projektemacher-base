@@ -280,6 +280,15 @@ other = "Wikidata"
 [Visualisation]
 other = "Visualisierung"
 
+[JSON]
+other = "JSON"
+
+[LOD]
+other = "Linked Open Data"
+
+[SPARQL]
+other = "SPARQL"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
