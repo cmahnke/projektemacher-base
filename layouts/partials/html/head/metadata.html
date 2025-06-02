@@ -1,4 +1,16 @@
-{{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
+{{- with .Site.Params.author -}}
+  {{- $author := . -}}
+  {{- if reflect.IsMap . -}}
+    {{/*
+    {{- if and (isset . "name") (isset . "email") -}}
+      {{- $author = printf "%s <%s>" (index . "name") (index . "email") -}}
+    */}}
+    {{- if (isset . "name") -}}
+        {{- $author = index . "name" -}}
+    {{- end -}}
+  {{- end -}}
+  <meta name="author" content="{{ $author }}">
+{{- end -}}
 {{/*
 <meta name="description" content="{{ .Description | default (.Summary | default .Site.Params.description ) }}">
 */}}
