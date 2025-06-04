@@ -63,7 +63,8 @@ async def archive(urls, client):
                         httpx.HTTPStatusError,
                         httpcore.ReadTimeout,
                     ) as error:
-                        cprint(f"", "red")
+
+                        cprint(f"HTTP Error {error.__class__.__name__}: {str(error)}", "red")
 
                 async_reqs.append(req(archive_url))
                 print(f"Saving {archive_url}")
