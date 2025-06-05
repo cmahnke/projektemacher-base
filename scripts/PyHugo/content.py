@@ -89,7 +89,9 @@ class Post:
         return None
 
     def getMetadata(self, lang=None):
-        return self.post[lang].metadata
+        if hasattr(self, "post"):
+            return self.post[lang].metadata
+        return None
 
     def getResources(self, lang=None):
         if len(self.resources[lang]) == 0:
