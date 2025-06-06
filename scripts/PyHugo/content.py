@@ -124,6 +124,9 @@ class Post:
                 tags[tag] = Tag(tag, lang, path)
         return tags
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(files='{self.files}')"
+
 class Content:
     def __init__(self, path="content"):
         self.path = path
@@ -172,8 +175,9 @@ class Tag (Post):
     def __init__(self, tag, lang=None, ctx = None):
         self.tag = tag
         self.lang = lang
+        self.files = {}
         if ctx is not None:
             self.site = Site(ctx)
-            self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag)
+            self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag.replace(" ", "-"))
             if os.path.exists(self.tag_dir):
                 super().__init__(self.tag_dir, self.lang)
