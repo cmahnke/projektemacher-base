@@ -19,6 +19,7 @@ namespaces = {
 
 Image.MAX_IMAGE_PIXELS = maxImageDimension * maxImageDimension
 
+# TODO: Move to PyHugo
 def loadConfig(configFile):
     config = toml.load(configFile)
     if "preview" in config["params"]:
@@ -26,6 +27,7 @@ def loadConfig(configFile):
     else:
         return
 
+# TODO: Move to PyHugo
 def readMetadata(file):
     post = io.open(file, mode="r", encoding="utf-8").read()
     header = re.sub(r"^---$.(.*?)^---$.*", "\\1", post, 0, re.MULTILINE | re.DOTALL)

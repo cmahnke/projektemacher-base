@@ -1,9 +1,37 @@
-import os, io, re, glob, pathlib, mimetypes
+import os, io, re, glob, pathlib, mimetypes, toml
+from pathlib import Path
 import frontmatter
+
+class Site:
+    _content_path = "./content/"
+    config_files = ["config.toml", "hugo.toml"]
+
+    def __init__(self, base_dir):
+        config_file = self.guess_base(base_dir)
+        self.base_dir = os.path.dirname(config_file)
+        self.config = toml.load(config_file)
+
+    def guess_base(self, start_dir, configs = config_files):
+        current_dir = os.path.abspath(start_dir)
+
+        while True:
+            for filename in configs:
+                config_path = os.path.join(current_dir, filename)
+                if os.path.exists(config_path) and os.path.isfile(config_path):
+                    return config_path
+
+            parent_dir = os.path.dirname(current_dir)
+            if parent_dir == current_dir:
+                break
+            current_dir = parent_dir
+        return None
+
+    def content_dir(self):
+        return os.path.join(self.base_dir, self._content_path)
 
 
 class Post:
-    filePattern = "(_?)index(\.([a-zA-Z-]){2,5})?\.md"
+    filePattern = r"(_?)index(\.([a-zA-Z-]){2,5})?\.md"
     filePatternMatcher = re.compile(filePattern)
 
     def __init__(self, path, lang=None):
@@ -14,7 +42,7 @@ class Post:
         if isinstance(path, dict):
             self._fromDict(path)
         elif isinstance(path, str):
-            self._load(self, lang, path)
+            self._load(path, lang)
         elif isinstance(path, pathlib.Path) and lang is None:
             files = Post._findContentFiles(path)
             self._fromDict(files)
@@ -31,7 +59,7 @@ class Post:
     def _fromDict(self, dict):
         for lang, file in dict.items():
             self.files[lang] = file
-            self._load(lang, file)
+            self._load(file, lang)
 
     def _findContentFiles(path: pathlib.Path):
         postFiles = {}
@@ -49,15 +77,21 @@ class Post:
             for resource in self.post[lang].metadata["resources"]:
                 self.resources[lang].append(resource)
 
-    def _load(self, lang, path):
+    def _load(self, path, lang):
+        if os.path.isdir(path):
+            raise Exception(f"{path} is a directory")
         with open(path) as f:
             self.post[lang] = frontmatter.load(f)
 
     def getContent(self, lang=None):
-        return self.post[lang].content
+        if hasattr(self, "post"):
+            return self.post[lang].content
+        return None
 
     def getMetadata(self, lang=None):
-        return self.post[lang].metadata
+        if hasattr(self, "post"):
+            return self.post[lang].metadata
+        return None
 
     def getResources(self, lang=None):
         if len(self.resources[lang]) == 0:
@@ -77,10 +111,26 @@ class Post:
             return None
         return retRes
 
+    def getTags(self, lang=None):
+        tags = {}
+        if "tags" in self.post[lang].metadata:
+            tag_names = self.post[lang].metadata["tags"]
+            for tag in tag_names:
+                if tag == "":
+                    continue
+                path = self.path
+                if isinstance(path, str):
+                    path = Path(path)
+                tags[tag] = Tag(tag, lang, path)
+        return tags
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(files='{self.files}')"
 
 class Content:
     def __init__(self, path="content"):
         self.path = path
+        self.site = Site(Path(self.path).absolute().parent)
         self.posts = []
         self.iterPos = -1
         postsPaths = self._findPosts()
@@ -114,3 +164,20 @@ class Content:
                     postFiles[subdir].append((lang, file))
 
         return postFiles
+
+class Tags(Content):
+    def __init__(self, path="tags"):
+        super(path)
+
+class Tag (Post):
+    _tag_path = "./tags/"
+
+    def __init__(self, tag, lang=None, ctx = None):
+        self.tag = tag
+        self.lang = lang
+        self.files = {}
+        if ctx is not None:
+            self.site = Site(ctx)
+            self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag.replace(" ", "-"))
+            if os.path.exists(self.tag_dir):
+                super().__init__(self.tag_dir, self.lang)
