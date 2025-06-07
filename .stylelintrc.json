@@ -15,7 +15,6 @@
     "block-no-empty": [null, {"severity": "warning"}],
     "comment-empty-line-before": [null, {"severity": "warning"}],
     "at-rule-empty-line-before": [null, {"severity": "warning"}],
-    "color-function-notation": "legacy",
     "alpha-value-notation": "number",
     "selector-class-pattern": [null, {"severity": "warning"}],
     "value-keyword-case": ["lower", {"ignoreProperties": ["font-family"]}],

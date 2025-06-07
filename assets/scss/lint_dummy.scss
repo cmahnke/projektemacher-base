@@ -6,7 +6,7 @@ $color-link-text: #333 !default;
 $color-link-hover: #333 !default;
 $color-link-active: #333 !default;
 $color-header-text: #333 !default;
-$color-paper: hsl(48deg, 93%, 89%);
+$color-paper: hsl(48deg 93% 89%);
 $color-paper-dark: darken($color-paper, 4%);
 $color-paper-light: lighten($color-paper, 4%);
 
