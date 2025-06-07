@@ -13,7 +13,7 @@
   {{- end -}}
 
   {{- if reflect.IsMap $includes -}}
-    {{/* Loop throu the shortcode cache, check if one is used in the current page and collect the nessescary requirements (includes) */}}
+    {{/* Loop through the shortcode cache, check if one is used in the current page and collect the necessary requirements (includes) */}}
     {{- range $shortcodeName, $refs := $includes  -}}
       {{- if $context.HasShortcode $shortcodeName -}}
         {{- if isset $refs "js" -}}
