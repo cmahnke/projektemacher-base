@@ -1,6 +1,6 @@
 import { CuttingTable } from "./lucienne-0.1.0.js";
 
-function lucienne(element, urlInput, gridSelector, download, urls) {
+function lucienne(element, urlInput, gridSelector, download, autoLoad, urls, shifts) {
 
   let obj;
   if (typeof urls === 'object') {
@@ -12,12 +12,12 @@ function lucienne(element, urlInput, gridSelector, download, urls) {
       try {
         obj = new URL(urls);
       } catch {
-        obj = new URL(document.baseURI + urls);
+        obj = new URL(window.location).origin + urls;
       }
     }
   }
 
-  return new CuttingTable(element, urlInput, gridSelector, download, obj);
+  return new CuttingTable(element, urlInput, gridSelector, download, autoLoad, obj, shifts);
 }
 
 window.lucienne = lucienne;

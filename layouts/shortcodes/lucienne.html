@@ -4,18 +4,24 @@
   {{- $class = .Get "class" -}}
 {{- end -}}
 
-{{- $urlInput := false -}}
-{{ if isset .Params "urlInput" }}
-  {{- $urlInput = .Get "urlInput" -}}
+{{- $urlinput := false -}}
+{{ if isset .Params "urlinput" }}
+  {{- $urlinput = .Get "urlinput" -}}
 {{- end -}}
 {{- $resize := true -}}
 {{ if isset .Params "resize" }}
-  {{- $urlInput = .Get "resize" -}}
+  {{- $resize = .Get "resize" -}}
 {{- end -}}
 {{- $download := true -}}
 {{ if isset .Params "download" }}
-  {{- $urlInput = .Get "download" -}}
+  {{- $download = .Get "download" -}}
 {{- end -}}
+
+{{- $autoLoad := true -}}
+{{ if isset .Params "autoLoad" }}
+  {{- $autoLoad = .Get "autoLoad" -}}
+{{- end -}}
+
 {{- $shifts := false -}}
 {{ if isset .Params "shifts" }}
   {{- $shifts = .Get "shifts" -}}
@@ -29,7 +35,7 @@
       </div>
       <script type="text/javascript">
           var elem = document.getElementById('{{ $id }}');
-          lucienne(elem, {{ $urlInput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, "{{ $src | safeJS }}", {{ $shifts | safeJS }})
+          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, "{{ $src | safeJS }}", {{ $shifts | safeJS }})
       </script>
   </div>
 {{- else }}
@@ -37,5 +43,5 @@
 {{- end }}
 
 {{- define "_partials/shortcodes/lucienne-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/lucienne/lucienne.js") "scss" (slice "scss/lucienne/lucienne.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "js/lucienne/lucienne.js") "scss" (slice "scss/lucienne/lucienne-vorsatzpapier-0.1.0.css")) | jsonify -}}
 {{- end -}}
