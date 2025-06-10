@@ -16,6 +16,10 @@
 {{ if isset .Params "download" }}
   {{- $urlInput = .Get "download" -}}
 {{- end -}}
+{{- $shifts := false -}}
+{{ if isset .Params "shifts" }}
+  {{- $shifts = .Get "shifts" -}}
+{{- end -}}
 
 {{- $id := printf "_lucienne-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
 
@@ -25,8 +29,7 @@
       </div>
       <script type="text/javascript">
           var elem = document.getElementById('{{ $id }}');
-          lucienne(elem, {{ $urlInput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, "{{ $src | safeJS }}")
-          //audioplayer(player, '{{ $src }}', player.querySelector('button.audioplayer-button'));
+          lucienne(elem, {{ $urlInput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, "{{ $src | safeJS }}", {{ $shifts | safeJS }})
       </script>
   </div>
 {{- else }}
