@@ -38,7 +38,7 @@
       </div>
       <script type="text/javascript">
           var elem = document.getElementById('{{ $id }}');
-          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, "{{ $src | safeJS }}", {{ $shifts | safeJS }})
+          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, {{ partial "js/type.html" $src | htmlUnescape | safeJS }}, {{ $shifts | safeJS }})
       </script>
   </div>
 {{- else }}
