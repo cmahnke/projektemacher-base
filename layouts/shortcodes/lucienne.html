@@ -5,6 +5,9 @@
 {{- end -}}
 
 {{- $urlinput := false -}}
+{{ if isset .Params "urlInput" }}
+  {{- $urlinput = .Get "urlinput" -}}
+{{- end -}}
 {{ if isset .Params "urlinput" }}
   {{- $urlinput = .Get "urlinput" -}}
 {{- end -}}
