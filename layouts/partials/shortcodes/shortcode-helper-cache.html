@@ -40,7 +40,11 @@
     {{- $template := (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}
     {{- if (len $template) -}}
       {{- $template = index $template 0 -}}
-      {{/* Changed for Hugo 0.146.0 */}}
+      {{/* Changed for Hugo 0.146.0
+        {{- if gt hugo.Version "0.146.0" -}}
+          {{- $template = replace $template "_partials/" "" -}}
+        {{- end -}}
+      */}}
       {{- $template = replace $template "_partials/" "" -}}
       {{- if $debug -}}
         {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Trying to load metadata partial for shortcode %s" $template -}}
