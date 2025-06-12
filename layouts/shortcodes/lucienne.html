@@ -20,6 +20,15 @@
   {{- $download = .Get "download" -}}
 {{- end -}}
 
+{{- $useLocation := true -}}
+{{ if isset .Params "useLocation" }}
+  {{- $useLocation = .Get "useLocation" -}}
+{{- end -}}
+{{- $useLocation := false -}}
+{{ if isset .Params "uselocation" }}
+  {{- $useLocation = .Get "uselocation" -}}
+{{- end -}}
+
 {{- $autoLoad := true -}}
 {{ if isset .Params "autoLoad" }}
   {{- $autoLoad = .Get "autoLoad" -}}
@@ -37,8 +46,18 @@
       <div class="lucienne" id="{{ $id }}">
       </div>
       <script type="text/javascript">
+          var url = {{ partial "js/type.html" $src | htmlUnescape | safeJS }};
+          {{ if $useLocation }}
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("url")) {
+              const u = urlParams.get("url");
+              if (u !== null) {
+                url = new URL(u);
+              }
+            }
+          {{ end }}
           var elem = document.getElementById('{{ $id }}');
-          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, {{ partial "js/type.html" $src | htmlUnescape | safeJS }}, {{ $shifts | safeJS }})
+          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, url, {{ $shifts | safeJS }})
       </script>
   </div>
 {{- else }}
