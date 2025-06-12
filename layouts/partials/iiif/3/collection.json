@@ -11,16 +11,18 @@
     {{- end -}}
     {{ range .OutputFormats -}}
       {{- if eq .Name "iiif" -}}
-        {{ $iiif = $iiif | append $page }}
+        {{- $iiif = $iiif | append $page -}}
+        {{- break -}}
       {{- end -}}
       {{- if eq .Name "iiif-manifest" -}}
-        {{ $iiif = $iiif | append $page }}
+        {{- $iiif = $iiif | append $page -}}
+        {{- break -}}
       {{- end -}}
     {{- else -}}
       {{/* TODO: This will never happen since .OutputFormats includes default 'html' and 'rss' */}}
       {{- warnf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
+       {{- continue -}}
     {{ end -}}
-    {{- continue -}}
   {{- end -}}
 {{- end -}}
 {
