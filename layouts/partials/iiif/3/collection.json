@@ -1,30 +1,37 @@
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $manifest := "manifest.json" -}}
 
 {{- $iiif := slice -}}
 {{- range . -}}
   {{- $page := . -}}
+  {{- $formats := slice -}}
   {{- if not (isset .Params "outputs") -}}
+    {{- if $debug -}}
+      {{- warnf "[iiif/3/collection.json] Skipping %s since no explicit output is set" .RelPermalink -}}
+    {{- end -}}
     {{- continue -}}
   {{- else if reflect.IsSlice .Params.outputs -}}
-    {{- if or (in .Params.outputs "iiif") (in .Params.outputs "iiif-manifest") -}}
-      {{ $iiif = $iiif | append $page }}
+    {{- if or (in .Params.outputs "iiif") -}}
+      {{- $iiif = $iiif | append $page -}}
+      {{- $formats = $formats | append $formats -}}
+    {{- else if (in .Params.outputs "iiif-manifest") -}}
+      {{- $iiif = $iiif | append $page -}}
+      {{- $formats = $formats | append $formats -}}
     {{- end -}}
     {{ range .OutputFormats -}}
-      {{- if eq .Name "iiif" -}}
-        {{- $iiif = $iiif | append $page -}}
-        {{- break -}}
-      {{- end -}}
-      {{- if eq .Name "iiif-manifest" -}}
-        {{- $iiif = $iiif | append $page -}}
-        {{- break -}}
+      {{- if or (eq .Name "iiif") (eq .Name "iiif-manifest") -}}
+        {{- if not (in $formats .Name) -}}
+          {{- $iiif = $iiif | append $page -}}
+          {{- break -}}
+        {{- end -}}
       {{- end -}}
     {{- else -}}
       {{/* TODO: This will never happen since .OutputFormats includes default 'html' and 'rss' */}}
       {{- warnf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
-       {{- continue -}}
     {{ end -}}
   {{- end -}}
 {{- end -}}
+{{- $iiif = $iiif | uniq  -}}
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "id": "{{ site.BaseURL }}collection.json",
