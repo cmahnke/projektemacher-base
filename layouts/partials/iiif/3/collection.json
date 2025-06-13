@@ -31,7 +31,7 @@
     {{ end -}}
   {{- end -}}
 {{- end -}}
-{{- $iiif = $iiif | uniq  -}}
+{{- $iiif = ($iiif | uniq).ByDate.Reverse  -}}
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
   "id": "{{ site.BaseURL }}collection.json",
