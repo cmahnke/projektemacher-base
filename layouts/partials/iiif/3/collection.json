@@ -1,6 +1,5 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $manifest := "manifest.json" -}}
-
 {{- $iiif := slice -}}
 {{- range . -}}
   {{- $page := . -}}
@@ -10,6 +9,7 @@
       {{- warnf "[iiif/3/collection.json] Skipping %s since no explicit output is set" .RelPermalink -}}
     {{- end -}}
     {{- continue -}}
+  {{/* This is needed to rendering of collections for tag pages */}}
   {{- else if reflect.IsSlice .Params.outputs -}}
     {{- if or (in .Params.outputs "iiif") -}}
       {{- $iiif = $iiif | append $page -}}
@@ -31,58 +31,64 @@
     {{ end -}}
   {{- end -}}
 {{- end -}}
-{{- $iiif = ($iiif | uniq).ByDate.Reverse  -}}
-{
-  "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "{{ site.BaseURL }}collection.json",
-  "type": "Collection",
-  "label": {
-      "{{ site.Language.Lang }}": [
-        "{{ site.Title }}"
-      ]
-    {{- if hugo.IsMultilingual -}}
-      {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
-      {{- range $translations -}}
-      ,
-        "{{ .Lang }}": [
-          "{{ .Name }}"
+{{- if or (eq 0 (len $iiif)) (ne "page.Pages" (printf "%T" $iiif)) -}}
+  {{- if $debug -}}
+    {{- warnf "[iiif/3/collection.json] Skipping generation of IIIF collection since given pages don't contain manifest sources - certainly called via layouts/_default/term.iiif-collection.json" -}}
+  {{- end -}}
+{{- else -}}
+  {{- $iiif = ($iiif | uniq).ByDate.Reverse  -}}
+  {
+    "@context": "http://iiif.io/api/presentation/3/context.json",
+    "id": "{{ site.BaseURL }}collection.json",
+    "type": "Collection",
+    "label": {
+        "{{ site.Language.Lang }}": [
+          "{{ site.Title }}"
         ]
-      {{ end }}
-    {{- end -}}
-  },
-  "items": [
-    {{- range $i, $item := $iiif -}}
-      {{- with $item.Params.iiifManifest -}}
-        {{- $manifest = path.Base . -}}
-      {{- end -}}
-      {
-        "id": "{{ printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest }}",
-        "type": "Manifest",
-
-        {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
-        {{- if ne $thumbnail "" -}}
-          {{- $thumbnail -}},
-        {{- end -}}
-
-        "label": {
-          "{{ site.Language.Lang }}": [
-            {{ $item.Title | jsonify }}
+      {{- if hugo.IsMultilingual -}}
+        {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
+        {{- range $translations -}}
+        ,
+          "{{ .Lang }}": [
+            "{{ .Name }}"
           ]
-          {{- if hugo.IsMultilingual -}}
-            {{- if .IsTranslated -}}
-              {{- range .Translations -}}
-                ,
-                "{{ .Lang }}": [
-                  {{ .Title | jsonify }}
-                ]
+        {{ end }}
+      {{- end -}}
+    },
+    "items": [
+      {{- range $i, $item := $iiif -}}
+        {{- with $item.Params.iiifManifest -}}
+          {{- $manifest = path.Base . -}}
+        {{- end -}}
+        {
+          "id": "{{ printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest }}",
+          "type": "Manifest",
+
+          {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
+          {{- if ne $thumbnail "" -}}
+            {{- $thumbnail -}},
+          {{- end -}}
+
+          "label": {
+            "{{ site.Language.Lang }}": [
+              {{ $item.Title | jsonify }}
+            ]
+            {{- if hugo.IsMultilingual -}}
+              {{- if .IsTranslated -}}
+                {{- range .Translations -}}
+                  ,
+                  "{{ .Lang }}": [
+                    {{ .Title | jsonify }}
+                  ]
+                {{- end -}}
               {{- end -}}
             {{- end -}}
-          {{- end -}}
+          }
         }
-      }
-      {{- if ne $i (sub (len $iiif) 1) -}}
-       ,
+        {{- if ne $i (sub (len $iiif) 1) -}}
+         ,
+        {{- end -}}
       {{- end -}}
-    {{- end -}}
-  ]
-}
+    ]
+  }
+{{- end -}}
