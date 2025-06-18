@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BASEDIR="$(pwd)/$(dirname "$0")/../../"
+BASEDIR="$(readlink -f "$0")/../../"
 DECOMPRESS_DIR=./tmp/fonts/
 FONT_LIST=../fonts.lst
 JOBS=`nproc --all`
