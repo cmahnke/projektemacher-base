@@ -4,7 +4,8 @@ echo "Installing Docker"
 sudo apt install docker
 
 # Format ["TAG"]="GLOBAL NAME"
-declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:v8.16.1-jxl-uploader"]="ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"
+# TAG is just the local name, not the name in  the registry!
+declare -A DOCKER_IMAGES=( ["ghcr.io/cmahnke/iiif-action:latest-jxl-uploader"]="ghcr.io/cmahnke/iiif-action:v8.16.1-jxl-uploader"
                            ["ghcr.io/cmahnke/font-action:latest"]="ghcr.io/cmahnke/font-action:latest"
                            ["ghcr.io/cmahnke/jpeg-xl-action/imagemagick:latest"]="ghcr.io/cmahnke/jpeg-xl-action/imagemagick:latest" )
 
