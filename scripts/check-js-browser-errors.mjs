@@ -8,7 +8,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import express from 'express';
 import cors from 'cors';
-import * as mktemp from 'mktemp';
+import mktemp from 'mktemp';
 const app = express();
 
 /* Settings */
