@@ -71,3 +71,11 @@ The [example site](https://cmahnke.github.io/projektemacher-base/) is currently 
 # Tools
 
 * [IIIF validator](https://presentation-validator.iiif.io/)
+
+
+# Python Modules
+
+# JXLPy
+```
+LDFLAGS="-L/opt/homebrew/opt/jpeg-xl/lib" CPPFLAGS="-I/opt/homebrew/opt/jpeg-xl/include" pip install  --force-reinstall --no-binary :all: jxlpy
+```
