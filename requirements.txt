@@ -4,6 +4,7 @@ termcolor
 pyyaml
 toml
 iiif
+iiif_prezi3
 icalendar
 pylint
 qrcode ~=8.2
@@ -38,5 +39,7 @@ ffmpeg-python
 opencv-python
 opencv-contrib-python-headless
 docker
+# Metadata for JXL
 pyexiv2
+# BibTex and Citation
 academic
