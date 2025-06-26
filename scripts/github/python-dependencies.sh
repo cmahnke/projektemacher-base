@@ -36,5 +36,5 @@ for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt" -not -pa
 do
     PYTHON_DEPENDENCIES=`cat "$REQUIREMENTS" | tr '\n' ' '`
     echo "Installing Python modules '$PYTHON_DEPENDENCIES' from '$REQUIREMENTS'"
-    pip install -r "$REQUIREMENTS"
+    pip install --resume-retries 5 -r "$REQUIREMENTS"
 done
