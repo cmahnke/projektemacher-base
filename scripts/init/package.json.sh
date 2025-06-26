@@ -90,6 +90,7 @@ if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  yarn config set ignore-engines true
   INSTALL_OPTS="--ignore-engines"
   $YARN install $INSTALL_OPTS
   ERR=$?
