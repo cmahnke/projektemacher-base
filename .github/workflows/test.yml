@@ -272,12 +272,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.146.7', '0.147.6', '0.147.9', 'latest']
+        version: ['0.146.7', '0.147.9', 'latest']
         can-fail: [false]
         include:
           - version: 0.146.7
-            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
-          - version: 0.147.6
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.147.9
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
