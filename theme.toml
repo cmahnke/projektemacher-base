@@ -32,3 +32,7 @@ min_version = "0.146.7"
       isHTML = false
       baseName = "map"
       notAlternative = true
+
+[security]
+  [security.http]
+    mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
