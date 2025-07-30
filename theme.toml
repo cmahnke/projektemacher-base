@@ -6,32 +6,38 @@ min_version = "0.146.7"
   name = "Christian Mahnke"
   homepage = "//christianmahnke.de"
 
-  [mediaTypes]
-    [mediaTypes."application/geo+json"]
-      suffixes = ["geojson", "gjson"]
-    [mediaTypes."application/ld+json"]
-      suffixes = ["json"]
-    [mediaTypes."application/x-qrcode-template"]
-      suffixes = ["json"]
-  # See https://www.loc.gov/preservation/digital/formats/fdd/fdd000538.shtml
-    [mediaTypes."image/jxl"]
-      suffixes = ["jxl"]
+[mediaTypes]
+  [mediaTypes."application/geo+json"]
+    suffixes = ["geojson", "gjson"]
+  [mediaTypes."application/ld+json"]
+    suffixes = ["json"]
+  [mediaTypes."application/x-qrcode-template"]
+    suffixes = ["json"]
+# See https://www.loc.gov/preservation/digital/formats/fdd/fdd000538.shtml
+  [mediaTypes."image/jxl"]
+    suffixes = ["jxl"]
 
-  [outputFormats]
+[outputFormats]
 
-    [outputFormats.qrcode]
-      mediaType = "application/x-qrcode-template"
-      isPlainText = true
-      isHTML = false
-      baseName = "qrcode"
-      notAlternative = true
+  [outputFormats.qrcode]
+    mediaType = "application/x-qrcode-template"
+    isPlainText = true
+    isHTML = false
+    baseName = "qrcode"
+    notAlternative = true
 
-    [outputFormats.geojson]
-      mediaType = "application/geo+json"
-      isPlainText = true
-      isHTML = false
-      baseName = "map"
-      notAlternative = true
+  [outputFormats.geojson]
+    mediaType = "application/geo+json"
+    isPlainText = true
+    isHTML = false
+    baseName = "map"
+    notAlternative = true
+
+
+#[module]
+#  [module.hugoVersion]
+#    extended = true
+#    min = '0.146.7'
 
 [security]
   [security.http]
