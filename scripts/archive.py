@@ -138,7 +138,9 @@ async def main() -> int:
 
     urls = build_url_list(dir)
 
-    client = httpx.AsyncClient(timeout=120)
+    # Try to avoid "Too many requests" see https://www.python-httpx.org/advanced/resource-limits/
+    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    client = httpx.AsyncClient(timeout=120, limits=limits)
     async_reqs = await archive(urls, client)
     await asyncio.gather(*async_reqs)
     await client.aclose()
