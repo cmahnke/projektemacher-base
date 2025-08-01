@@ -1,5 +1,7 @@
 #!/bin/sh
 
+mkdir -p ~/.config/pip
+
 # Disable the need for pyenv and externally managed stuff - we are on a throwaway system:
 printf "[global]\nbreak-system-packages = true\n" >> ~/.config/pip/pip.conf
 sudo find /usr/lib -name EXTERNALLY-MANAGED -exec rm -f {} \;
