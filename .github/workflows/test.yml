@@ -268,12 +268,12 @@ jobs:
 
   test_python_versions:
     runs-on: ubuntu-24.04
-    continue-on-error: ${{ matrix.can-fail }}
+    #continue-on-error: ${{ matrix.can-fail }}
     strategy:
       fail-fast: false
       matrix:
         version: ['3.10', '3.11', '3.12', '3.13', '3.14-dev']
-        can-fail: [false, false, false, true, true]
+        #can-fail: [false, false, false, true, true]
 
     steps:
       - uses: actions/checkout@v4
@@ -286,6 +286,14 @@ jobs:
           python-version: ${{ matrix.version }}
 
       - name: Install python dependencies
+        if: "!endsWith(matrix.version, '-dev') && !endsWith(matrix.version, '13')"
+        continue-on-error: false
+        run: |
+          ./scripts/github/python-dependencies.sh
+
+      - name: Install python dependencies
+        if: "endsWith(matrix.version, '-dev') || endsWith(matrix.version, '13')"
+        continue-on-error: true
         run: |
           ./scripts/github/python-dependencies.sh
 
