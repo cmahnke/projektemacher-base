@@ -285,6 +285,10 @@ jobs:
         with:
           python-version: ${{ matrix.version }}
 
+      - name: Install JXL
+        run: |
+          ./scripts/github/jxl-0.11.1.sh
+
       - name: Install python dependencies
         if: "!endsWith(matrix.version, '-dev') && !endsWith(matrix.version, '13')"
         continue-on-error: false
