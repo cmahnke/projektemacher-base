@@ -272,7 +272,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        version: ['3.10', '3.11', '3.12', '3.13', '3.14-dev']
         can-fail: [false, false, false, true, true]
 
     steps:
