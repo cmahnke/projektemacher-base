@@ -1,5 +1,5 @@
 {{- $target := .Destination -}}
-{{- if not $.Site.Params.wikidata -}}
+{{- if not site.Params.wikidata -}}
   <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
 {{- else -}}
   {{- $wikidataID := "" -}}
