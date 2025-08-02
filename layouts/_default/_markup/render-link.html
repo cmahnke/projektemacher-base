@@ -1,52 +1,55 @@
 {{- $target := .Destination -}}
-{{- $wikidataID := "" -}}
-{{- if findRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` $target -}}
-  {{- $queryURL := replaceRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` "https://$1.wikipedia.org/w/api.php?action=query&prop=pageprops&titles=$2&format=json" $target -}}
-  {{- with try (resources.GetRemote $queryURL) -}}
-    {{- with .Err -}}
-      {{- errorf "Unable to get remote resource %s: %s"  $queryURL . -}}
-    {{- else with .Value -}}
-      {{- $data := .Content | transform.Unmarshal -}}
-      {{ $keys := slice }}
-      {{ range $k, $_ := $data.query.pages }}
-        {{ $keys = $keys | append $k }}
-      {{ end }}
-      {{- $pageMeta := index $data.query.pages (first 1 $keys) -}}
-      {{- $wikidataID = $pageMeta.pageprops.wikibase_item -}}
-    {{- else -}}
-      {{- errorf "Unable to get remote resource %s" $queryURL -}}
-    {{- end -}}
-  {{- end -}}
-{{- else if hasPrefix $target "http" -}}
-  {{- $queryURL := "https://query.wikidata.org/sparql" -}}
-  {{- $queryOpts := dict
-    "method" "get"
-    "headers" (dict "Accept" "application/sparql-results+json")
-  -}}
-  {{- $query := printf `SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
-      ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
-      OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
-    }` $target -}}
-  {{- $queryURL = printf "%s?query=%s" $queryURL (urlquery $query) -}}
-  {{- with try (resources.GetRemote $queryURL $queryOpts) -}}
-    {{- with .Err -}}
-      {{- errorf "Unable to get remote resource %s: %s"  $queryURL . -}}
-    {{- else with .Value -}}
-      {{- $data := .Content | transform.Unmarshal -}}
-      {{- if and (reflect.IsMap $data.results) (isset $data.results "bindings") (reflect.IsSlice $data.results.bindings) (gt (len $data.results.bindings) 0) -}}
-        {{- $result := index $data.results.bindings 0 -}}
-        {{- $wikidataID = replaceRE `(?m)http://www.wikidata.org/entity/(.*)` "$1" $result.item.value -}}
-      {{- end -}}
-    {{- else -}}
-      {{- errorf "Unable to get remote resource %s" $queryURL -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- if or (hasPrefix $target "https://www.wikidata.org/wiki/") (hasPrefix $target "https://www.wikidata.org/entity/") -}}
-{{- $wikidataID = replaceRE `(?m)https://www.wikidata.org/wiki/(.*)` "$1" $target -}}
-<a class="wikidata" {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
-{{- "" -}}
+{{- if not $.Site.Params.wikidata -}}
+  <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
 {{- else -}}
-<a {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
-{{- "" -}}
+  {{- $wikidataID := "" -}}
+  {{- if findRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` $target -}}
+    {{- $queryURL := replaceRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` "https://$1.wikipedia.org/w/api.php?action=query&prop=pageprops&titles=$2&format=json" $target -}}
+    {{- with try (resources.GetRemote $queryURL) -}}
+      {{- with .Err -}}
+        {{- errorf "Unable to get remote resource %s: %s"  $queryURL . -}}
+      {{- else with .Value -}}
+        {{- $data := .Content | transform.Unmarshal -}}
+        {{ $keys := slice }}
+        {{ range $k, $_ := $data.query.pages }}
+          {{ $keys = $keys | append $k }}
+        {{ end }}
+        {{- $pageMeta := index $data.query.pages (first 1 $keys) -}}
+        {{- $wikidataID = $pageMeta.pageprops.wikibase_item -}}
+      {{- else -}}
+        {{- errorf "Unable to get remote resource %s" $queryURL -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if hasPrefix $target "http" -}}
+    {{- $queryURL := "https://query.wikidata.org/sparql" -}}
+    {{- $queryOpts := dict
+      "method" "get"
+      "headers" (dict "Accept" "application/sparql-results+json")
+    -}}
+    {{- $query := printf `SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
+        ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
+        OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
+      }` $target -}}
+    {{- $queryURL = printf "%s?query=%s" $queryURL (urlquery $query) -}}
+    {{- with try (resources.GetRemote $queryURL $queryOpts) -}}
+      {{- with .Err -}}
+        {{- errorf "Unable to get remote resource %s: %s"  $queryURL . -}}
+      {{- else with .Value -}}
+        {{- $data := .Content | transform.Unmarshal -}}
+        {{- if and (reflect.IsMap $data.results) (isset $data.results "bindings") (reflect.IsSlice $data.results.bindings) (gt (len $data.results.bindings) 0) -}}
+          {{- $result := index $data.results.bindings 0 -}}
+          {{- $wikidataID = replaceRE `(?m)http://www.wikidata.org/entity/(.*)` "$1" $result.item.value -}}
+        {{- end -}}
+      {{- else -}}
+        {{- errorf "Unable to get remote resource %s" $queryURL -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if or (hasPrefix $target "https://www.wikidata.org/wiki/") (hasPrefix $target "https://www.wikidata.org/entity/") -}}
+    {{- $wikidataID = replaceRE `(?m)https://www.wikidata.org/wiki/(.*)` "$1" $target -}}
+    <a class="wikidata" {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
+  {{- else -}}
+    <a {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
+  {{- end -}}
 {{- end -}}
+{{- "" -}}
