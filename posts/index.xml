@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/posts/</link>
+    <description>Recent content in Posts on Projektemacher Base</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <atom:link href="https://theme.projektemacher.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/post-specific-assets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://theme.projektemacher.org/posts/post-specific-assets/</guid>
+      <description>&lt;p&gt;Make sure the &lt;code&gt;assets&lt;/code&gt; directory is mounted (in &lt;code&gt;hugo.toml&lt;/code&gt; or &lt;code&gt;config.toml&lt;/code&gt;)&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[module]&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/scss&amp;#34;&#xA;      target = &amp;#34;assets/scss&amp;#34;&#xA;&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/js&amp;#34;&#xA;      target = &amp;#34;assets/js&amp;#34;&#xA;&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/ts&amp;#34;&#xA;      target = &amp;#34;assets/ts&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a reference to the front matter&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scss: scss/tag-ring/tag-ring.scss&#xA;js:&#xA;  - ts/tag-ring/tag-ring.ts&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>
