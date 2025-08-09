@@ -289,6 +289,9 @@ other = "Linked Open Data"
 [SPARQL]
 other = "SPARQL"
 
+[Linux]
+other = "Linux"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
