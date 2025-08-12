@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projektemacher Base template on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/</link>
+    <description>Recent content in Projektemacher Base template on Projektemacher Base</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://theme.projektemacher.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/git/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/git/</guid>
+      <description>&lt;h1 id=&#34;git-related-notes&#34;&gt;Git related notes&lt;/h1&gt;
+&lt;h1 id=&#34;fixing-wrong-github-user&#34;&gt;Fixing wrong GitHub user&lt;/h1&gt;
+&lt;p&gt;Make sure the remote is configured with the right user name:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git remote set-url origin https://cmahnke@github.com/cmahnke/hugo-13878.git
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;setting-the-mail-address-for-a-push&#34;&gt;Setting the mail address for a push&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git config user.email 194820+cmahnke@users.noreply.github.com
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;populating-a-git-repository-for-github-error-reports&#34;&gt;Populating a Git Repository for GitHub error reports&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git remote add hugo-github-issue-13878 https://github.com/jmooring/hugo-testing
+git fetch hugo-github-issue-13878 hugo-github-issue-13878
+git checkout -B main
+git merge hugo-github-issue-13878/hugo-github-issue-13878
+git push --set-upstream origin main
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/post-specific-assets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/posts/post-specific-assets/</guid>
+      <description>&lt;p&gt;Make sure the &lt;code&gt;assets&lt;/code&gt; directory is mounted (in &lt;code&gt;hugo.toml&lt;/code&gt; or &lt;code&gt;config.toml&lt;/code&gt;)&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[module]
+  [[module.mounts]]
+      source = &amp;#34;assets/scss&amp;#34;
+      target = &amp;#34;assets/scss&amp;#34;
+
+  [[module.mounts]]
+      source = &amp;#34;assets/js&amp;#34;
+      target = &amp;#34;assets/js&amp;#34;
+
+  [[module.mounts]]
+      source = &amp;#34;assets/ts&amp;#34;
+      target = &amp;#34;assets/ts&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a reference to the front matter&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scss: scss/tag-ring/tag-ring.scss
+js:
+  - ts/tag-ring/tag-ring.ts
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>Menu</title>
+      <link>https://theme.projektemacher.org/config/menu/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/config/menu/</guid>
+      <description>&lt;h1 id=&#34;adding-html-or-draft-menu-entries&#34;&gt;Adding HTML or draft menu entries&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[[languages.en.menu.main]]
+    name = &amp;#39;&amp;lt;input type=&amp;#34;text&amp;#34; placeholder=&amp;#34;Search&amp;#34; class=&amp;#34;search-input&amp;#34;&amp;gt;&amp;lt;button type=&amp;#34;submit&amp;#34; class=&amp;#34;search-button&amp;#34;&amp;gt;Search&amp;lt;/button&amp;gt;&amp;#39;
+    weight = 7
+    url = &amp;#34;search&amp;#34;
+
+    [[languages.en.menu.main.params]]
+        html = true
+        draft = true
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>November 1961</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>October 1972</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Privacy policy</title>
+      <link>https://theme.projektemacher.org/privacy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/privacy/</guid>
+      <description>&lt;h2 id=&#34;hosting&#34;&gt;Hosting&lt;/h2&gt;
+&lt;p&gt;The hoster collects the following data transmitted by your browser in log files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IP address&lt;/li&gt;
+&lt;li&gt;The address of the previously visited website (Referer [sic!] request header)&lt;/li&gt;
+&lt;li&gt;Date and time of the enquiry&lt;/li&gt;
+&lt;li&gt;Time zone difference to Greenwich Mean Time&lt;/li&gt;
+&lt;li&gt;Content of the request&lt;/li&gt;
+&lt;li&gt;HTTP status code&lt;/li&gt;
+&lt;li&gt;Amount of data transferred&lt;/li&gt;
+&lt;li&gt;Website from which the request originates&lt;/li&gt;
+&lt;li&gt;Information about the browser and operating system&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is necessary to display the website and to ensure stability and security. This corresponds to a legitimate interest within the meaning of &lt;a href=&#34;https://gdpr-info.eu/art-6-gdpr/&#34; target=&#34;_blank&#34;&gt;Art. 6 para. 1 sentence 1 lit. f GDPR&lt;/a&gt;.&lt;/p&gt;</description>
+      </item>
+    
+    <item>
+      <title>Tags 1</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 2</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 3</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 4</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>ToDo</title>
+      <link>https://theme.projektemacher.org/todo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/todo/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;There are several sources for issues:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;a href=&#34;&#34;&gt;GitHub Issues&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The annotations / tags in various files&lt;/li&gt;
+&lt;li&gt;This file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;general-goals&#34;&gt;General goals&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Finish this site as documentation&lt;/li&gt;
+&lt;li&gt;Deprecate Hugo versions before 0.123&lt;/li&gt;
+&lt;li&gt;Remove duplicate functionality&lt;/li&gt;
+&lt;li&gt;Use shortcode metadata for every shortcode&lt;/li&gt;
+&lt;/ul&gt;</description>
+      </item>
+    
+    <item>
+      <title>Wikidata</title>
+      <link>https://theme.projektemacher.org/meta/wikidata/index.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/meta/wikidata/index.json</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Wikidata</title>
+      <link>https://theme.projektemacher.org/wikidata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://theme.projektemacher.org/wikidata/</guid>
+      <description>&lt;h1 id=&#34;templates&#34;&gt;Templates&lt;/h1&gt;
+&lt;p&gt;The most important part of the Wikidata integration is the enhanced link handling in &lt;code&gt;layouts/_default/_markup/render-link.html&lt;/code&gt;&lt;/p&gt;
+&lt;h1 id=&#34;security&#34;&gt;Security&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[security]
+  [security.http]
+    mediaTypes = [&amp;#39;^application/json$&amp;#39;, &amp;#39;^application/json;\s?charset=[uU][tT][fF]-8$&amp;#39;, &amp;#39;^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$&amp;#39;]
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;example-query&#34;&gt;Example query&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -X GET -H &amp;#34;Accept: application/sparql-results+json&amp;#34; &amp;#34;https://query.wikidata.org/sparql?query=SELECT+%3Fitem+%3FitemLabel+%3FofficialWebsite+%3FofficialBlog+%3FonlineDatabaseURL+WHERE+%7B%0A++++++%3Fitem+wdt%3AP856+%3Chttps%3A%2F%2Fdsgvo-gesetz.de%2Fart-6-dsgvo%2F%3E+.+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22%5BAUTO_LANGUAGE%5D%2Cen%22+.+%7D%0A++++++OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3FofficialWebsite+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1581+%3FofficialBlog+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1316+%3FonlineDatabaseURL+.+%7D%0A++++%7D&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+  </channel>
+</rss>
