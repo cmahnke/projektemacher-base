@@ -1,0 +1,65 @@
+{{- $lang := "" -}}
+{{- $class := "" -}}
+{{- $guessSyntax := true -}}
+{{- $title := "" -}}
+{{- $lineNumbers := true -}}
+{{- $lineNumbersIDPrefix  := "" -}}
+
+{{- with .Get "lang" -}}
+  {{- $lang = . -}}
+  {{- $guessSyntax = false -}}
+{{- end -}}
+{{- with .Get "title" -}}
+  {{- $title = . -}}
+{{- end -}}
+{{- with .Get "class" -}}
+  {{- $class = . -}}
+{{- end -}}
+
+{{- if and (ne (.Get "lineNumbers") nil) (ne (.Get "lineNumbers") "") -}}
+  {{- $lineNumbers = .Get "lineNumbers" -}}
+{{- end -}}
+
+{{- with .Get "lineNumbersIDPrefix" -}}
+  {{- $lineNumbersIDPrefix = . -}}
+{{- end -}}
+
+{{- $input := "" -}}
+{{- if len .Inner -}}
+  {{- $input = substr .Inner 1 -}}
+{{- end -}}
+
+{{- $id := md5 (printf "%s-%s" $input now.UnixNano) -}}
+
+{{- $opts := dict "guessSyntax" $guessSyntax -}}
+
+{{- if $lineNumbers -}}
+  {{- $lineNumbersOpts := dict "lineNos" "inline" "anchorLineNos" "true" -}}
+
+  {{- if ne $lineNumbersIDPrefix "" -}}
+    {{/* See also https://github.com/alecthomas/chroma/blob/master/formatters/html/html.go#L113 */}}
+    {{- $lineNumbersOpts = merge $lineNumbersOpts (dict "lineAnchors" $lineNumbersIDPrefix)  -}}
+  {{- end -}}
+
+  {{- $opts = merge $opts $lineNumbersOpts -}}
+{{- end -}}
+
+<div class="highlight-container" id="container_{{ $id }}">
+  <div class="highlight-head">
+    <span class="highlight-title">{{ $title }}</span>
+    <i class="copy" id="button_{{ $id }}"></i>
+    <label class="collapse" for="collapse_{{ $id }}"></label>
+  </div>
+  <input type="checkbox" style="display: none;" name="collapse_{{ $id }}" id="collapse_{{ $id }}">
+  {{- transform.Highlight $input $lang $opts -}}
+  <textarea id="content_{{ $id }}" style="display:none;">{{ $input }}</textarea>
+  <script type="text/javascript">
+      var button = document.getElementById('button_{{ $id }}');
+      var content = document.getElementById('content_{{ $id }}');
+      addCopyToClipboard(button, content);
+  </script>
+</div>
+
+{{- define "_partials/shortcodes/code-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/shortcodes/code.js") "scss" (slice "scss/shortcodes/code.scss")) | jsonify -}}
+{{- end -}}

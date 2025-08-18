@@ -2,6 +2,9 @@
 <html lang="{{ .Site.Language.Lang }}">
 <head>
     {{ partial "head.html" . }}
+    {{- partial "html/head/style.html" (dict "context" . "css" "css/style.css") -}}
+    {{- partial "html/head/script.html" (dict "context" . "js" (partial "html/head/iiif-js.html" .)) -}}
+    {{- partial "html/head/page-scripts.html" . -}}
 </head>
 {{ block "body" . }}
     {{- $class := "" -}}
@@ -29,6 +32,8 @@
     <main id="main" class="main" role="main">
 
       {{ block "main" . }}
+      {{ end }}
+      {{ block "content" . }}
       {{ end }}
     </main>
 
