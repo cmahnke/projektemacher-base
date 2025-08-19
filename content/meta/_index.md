@@ -5,6 +5,8 @@ displayinlist: false
 archive: false
 news: false
 sectionContent: false
+sitemap_exclude: true
+robotsdisallow: true
 cascade:
   - _target:
       kind: '{page,section}'
@@ -13,6 +15,8 @@ cascade:
     params:
       archive: false
       news: false
+      sitemap_exclude: true
+      robotsdisallow: true
       sitemap:
         disable: true
 ---

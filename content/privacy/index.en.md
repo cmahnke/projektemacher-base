@@ -2,6 +2,8 @@
 title: "Privacy policy"
 metaPage: true
 displayinlist: false
+sitemap_exclude: true
+robotsdisallow: true
 ---
 
 ## Hosting
