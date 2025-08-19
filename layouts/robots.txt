@@ -1,6 +1,16 @@
 User-agent: *
 {{/* See https://discourse.gohugo.io/t/custom-robots-txt-and-sitemap-xml-templates/11869 */}}
-{{ range where .Data.Pages "Params.robotsdisallow" true }}
+{{- $disallowed := union (where .Data.Pages "Params.robotsdisallow" true) (where .Pages "Params.sitemap_exclude" "eq" true) -}}
+
+{{ range $disallowed }}
 Disallow: {{ .RelPermalink }}
 {{ end }}
 Sitemap: {{ "sitemap.xml" | absLangURL }}
+{{/* See https://discourse.gohugo.io/t/support-for-llms-txt-standard-for-ai-crawlers/53782/3 */}}
+
+{{/* LLMS */}}
+{{- $llmsGoTXT := resources.Get "llms.go.txt" -}}
+{{- if and $llmsGoTXT .Site.Params.robots.llmsTXT -}}
+  {{- $llmsTXT := $llmsGoTXT | resources.ExecuteAsTemplate "llms.txt" . -}}
+  llms-txt: {{ $llmsTXT.Permalink }}
+{{- end -}}
