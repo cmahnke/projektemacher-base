@@ -1,6 +1,14 @@
 {{- $section := .Get "section" -}}
-{{- $type := .Get "type" -}}
+{{- $type := "" -}}
+{{- with (.Get "type") -}}
+  {{- $type = . -}}
+{{- end -}}
 
-{{- $posts := (where (where .Site.Pages "Section" $section) "Params.type" $type).Reverse -}}
+{{- $posts := slice -}}
+{{- if ne $type "" -}}
+  {{- $posts = (where (where .Site.Pages "Section" $section) "Params.type" $type).Reverse -}}
+{{- else -}}
+  {{- $posts = (where .Site.Pages "Section" $section) -}}
+{{- end -}}
 
 {{- len $posts -}}
