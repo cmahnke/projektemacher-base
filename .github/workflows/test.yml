@@ -28,7 +28,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
@@ -71,12 +71,12 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -106,7 +106,7 @@ jobs:
           ./scripts/github/dart-sass.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -131,7 +131,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -161,7 +161,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -181,7 +181,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -235,7 +235,7 @@ jobs:
 #        with:
 #          submodules: true  # Fetch Hugo themes (true OR recursive)
 #      - name: Set up Python
-#        uses: actions/setup-python@v5
+#        uses: actions/setup-python@v6
 #        with:
 #          python-version: '3.10'
 #      - uses: actions/setup-go@v5
@@ -255,7 +255,7 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v4
@@ -281,7 +281,7 @@ jobs:
           submodules: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.version }}
 
@@ -327,12 +327,12 @@ jobs:
           submodules: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
