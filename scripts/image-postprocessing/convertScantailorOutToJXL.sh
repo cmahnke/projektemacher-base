@@ -24,7 +24,7 @@ do
   # Resample: -set units PixelsPerInch -density 300
 
   if [ ! -f "$DIR/jpg/$FILENAME.jpg" ] ; then
-    convert "$IMAGE" -interlace JPEG -quality 85% "$DIR/jpg/$FILENAME.jpg"
+    magick "$IMAGE" -interlace JPEG -quality 85% "$DIR/jpg/$FILENAME.jpg"
   fi
   if [ ! -f "$DIR/jxl/$FILENAME.jxl" ] ; then
       #exiv2 can currently only read
@@ -37,9 +37,9 @@ do
     	echo "Added generation of $DIR/jxl/$FILENAME.jxl to queue"
 
       #
-    	#convert "$IMAGE" -define jxl:effort=9 -define jxl:brotli_effort=11 -define jxl:distance=1 "$DIR/jxl/$FILENAME.jxl"
-      #convert "$IMAGE" -define jxl:quality=90 -define jxl:brotli_effort=11 -define jxl:effort=9 "$DIR/jxl/$FILENAME.jxl"
-      #convert "$IMAGE" "$DIR/jxl/$FILENAME.jxl"
+    	#magick "$IMAGE" -define jxl:effort=9 -define jxl:brotli_effort=11 -define jxl:distance=1 "$DIR/jxl/$FILENAME.jxl"
+      #magick "$IMAGE" -define jxl:quality=90 -define jxl:brotli_effort=11 -define jxl:effort=9 "$DIR/jxl/$FILENAME.jxl"
+      #magick "$IMAGE" "$DIR/jxl/$FILENAME.jxl"
 
       # exiv2 can currently only read
       #echo "'vips copy \"$IMAGE\" \"$DIR/jxl/$FILENAME.jxl[distance=1,effort=9]\" && $EXIF -M\"set Exif.Image.XResolution Rational $PPIX\" -M\"set Exif.Image.XResolution Rational $PPIY\" \"$DIR/jxl/$FILENAME.jxl\"'" >> $JOBFILE
