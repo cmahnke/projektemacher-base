@@ -29,7 +29,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: Install Node dependencies
+      - name: Install dependencies
         run: |
           bun install --ignore-scripts
       - name: Run linters
@@ -46,9 +46,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - name: Install Node dependencies
+      - name: Install dependencies
         run: |
-          deno install --ignore-scripts
+          deno install
       - name: Run linters
         run: |
           deno run lint
