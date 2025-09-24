@@ -3,6 +3,20 @@
 {{- $context := "" -}}
 {{- $isServer := hugo.IsServer -}}
 
+{{- $iiifImageViewerJS := "js/iiif-image-viewer.js" -}}
+{{- with $.Site.Params.iiif.imageViewer -}}
+  {{- if ne . "" -}}
+    {{- $iiifImageViewerJS = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $iiifPresentationViewerJS := "js/iiif-presentation-viewer.js" -}}
+{{- with $.Site.Params.iiif.presentationViewer -}}
+  {{- if ne . "" -}}
+    {{- $iiifPresentationViewerJS = . -}}
+  {{- end -}}
+{{- end -}}
+
 {{- if in . "context" -}}
   {{- if .context -}}
     {{ $context = .context }}
@@ -31,13 +45,13 @@
 {{- $iiifJs := slice -}}
 
 {{- if (hasPrefix $prefix "http://iiif.io/api/image/") -}}
-  {{- $iiifOpts := dict "targetPath" "js/iiif-image-viewer.js" "defines" $defines "minify" $minify -}}
-  {{- $iiifJs = $iiifJs | append (resources.Get "js/iiif-image-viewer.js" | js.Build $iiifOpts) -}}
+  {{- $iiifOpts := dict "targetPath" $iiifImageViewerJS "defines" $defines "minify" $minify -}}
+  {{- $iiifJs = $iiifJs | append (resources.Get $iiifImageViewerJS | js.Build $iiifOpts) -}}
 {{- end -}}
 
 {{- if (hasPrefix $prefix "http://iiif.io/api/presentation/") -}}
-  {{- $iiifOpts := dict "targetPath" "js/iiif-presentation-viewer.js" "defines" $defines "minify" $minify -}}
-  {{- $iiifJs = $iiifJs | append (resources.Get "js/iiif-presentation-viewer.js" | js.Build $iiifOpts) -}}
+  {{- $iiifOpts := dict "targetPath" $iiifPresentationViewerJS "defines" $defines "minify" $minify -}}
+  {{- $iiifJs = $iiifJs | append (resources.Get $iiifPresentationViewerJS | js.Build $iiifOpts) -}}
 {{- end -}}
 
 {{- return $iiifJs -}}
