@@ -1,0 +1,55 @@
+name: Check JS Runtimes
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+  contents: write
+
+env:
+  HUGO_VERSION: 0.150.0
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  bun:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install Node dependencies
+        run: |
+          bun install --ignore-scripts
+      - name: Run linters
+        run: |
+          bun run lint
+          bun run eslint scripts/
+
+  deno:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Install Node dependencies
+        run: |
+          deno install --ignore-scripts
+      - name: Run linters
+        run: |
+          deno run lint
+          deno run eslint scripts/
