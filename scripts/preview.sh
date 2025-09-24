@@ -27,7 +27,7 @@ echo "Generating previews for $FILENAME from $SOURCE - background $BACKGROUND"
 python3 $BASEDIR/preview.py
 
 if [ $TARGETFORMAT != "png" ] ; then
-    find $SOURCE -name "$FILENAME" -print -exec bash -c 'inkscape "{}" --export-filename=$(dirname "{}")/$(basename -s .svg "{}").png; convert $(dirname "{}")/$(basename -s .svg "{}").png -background '$BACKGROUND' -flatten $(dirname "{}")/$(basename -s .svg "{}").'$TARGETFORMAT'; rm "{}"' \;
+    find $SOURCE -name "$FILENAME" -print -exec bash -c 'inkscape "{}" --export-filename=$(dirname "{}")/$(basename -s .svg "{}").png; magick $(dirname "{}")/$(basename -s .svg "{}").png -background '$BACKGROUND' -flatten $(dirname "{}")/$(basename -s .svg "{}").'$TARGETFORMAT'; rm "{}"' \;
 else
     find $SOURCE -name "$FILENAME" -print -exec bash -c 'inkscape "{}" --export-filename=$(dirname "{}")/$(basename -s .svg "{}").png' \;
 fi
