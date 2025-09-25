@@ -2,7 +2,7 @@
 
 echo "Trying to set up Dart Sass"
 # Last known working is 1.89.2
-DARTSASS_VERSION=1.90.0
+DARTSASS_VERSION=1.92.1
 BIN_DIR=/usr/local/bin
 
 case "`uname`" in
