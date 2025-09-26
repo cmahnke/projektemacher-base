@@ -1,12 +1,14 @@
 /* don't for get to include node_modules/tify/dist to make this work and add @import "tify"; before loding this */
 
 .tify {
+  background: unset;
 
   .tify-header {
-    border-bottom-width: unset;
+    border-bottom-width: 1px !important;
   }
 
   .tify-media {
-    background: unset;
+    border-bottom: 1px solid var(--tify-border-color, light-dark(oklch(from var(--tify-base-color, #06b) calc(l / 2) calc(c * 0.1) h / 15%), oklch(from var(--tify-base-color-dark, oklch(from var(--tify-base-color, #06b) calc(l * 1.5) c h)) calc(l * 2) calc(c * 0.1) h / 15%)));
+    border-bottom-width: 1px !important;
   }
 }
