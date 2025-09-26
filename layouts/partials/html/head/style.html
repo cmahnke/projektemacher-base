@@ -1,5 +1,13 @@
 {{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" "assets/css/fonts" -}}
 
+{{- with site.Params.css.includeDirs -}}
+  {{- if ne . "" -}}
+    {{- $buildinIncludes = $buildinIncludes | append . -}}
+    {{- $buildinIncludes = $buildinIncludes | uniq -}}
+    {{- warnf "[partials/html/head/style.html] Updated buildin includes from config to: '%s'" $buildinIncludes -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $context := "" -}}
 {{- if isset . "context" -}}
   {{- $context = .context -}}
@@ -11,7 +19,7 @@
 {{- $includesSCSS := index $includes "scss" -}}
 
 {{- if and (len $includesCSS) (len $includesSCSS) $debug -}}
-    {{ warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink }}
+    {{- warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink -}}
 {{- end -}}
 
 {{- $css := slice -}}
