@@ -1,4 +1,4 @@
-{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" "assets/css/fonts" -}}
+{{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" "assets/css/fonts" "node_modules/tify/dist/" -}}
 
 {{- with site.Params.css.includeDirs -}}
   {{- if ne . "" -}}
