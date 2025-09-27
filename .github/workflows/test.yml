@@ -43,7 +43,7 @@ jobs:
 # Needed to check if the JXL Python plugin builds
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.0.sh
+          ./scripts/github/jxl-0.11.1.sh
 
 # Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
@@ -86,7 +86,6 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/jxl-0.10.3.sh
           ./scripts/github/jxl-0.11.1.sh
           ./scripts/github/setup-xslt.sh
           ./scripts/github/setup-inkscape.sh
