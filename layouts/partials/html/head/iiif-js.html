@@ -10,7 +10,10 @@
   {{- end -}}
 {{- end -}}
 
+{{/*
 {{- $iiifPresentationViewerJS := "js/iiif-presentation-viewer.js" -}}
+*/}}
+{{- $iiifPresentationViewerJS := "js/iiif/tify.js" -}}
 {{- with $.Site.Params.iiif.presentationViewer -}}
   {{- if ne . "" -}}
     {{- $iiifPresentationViewerJS = . -}}
