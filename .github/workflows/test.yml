@@ -92,7 +92,6 @@ jobs:
           ./scripts/github/setup-media.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
-          ./scripts/github/setup-yarn.sh
 
   test_install_scss:
     runs-on: ubuntu-24.04
