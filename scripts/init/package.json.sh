@@ -30,7 +30,7 @@ case "$OS" in
 esac
 
 if [ -z "$DEPENDENCY_MANAGER" ] ; then
-  DEPENDENCY_MANAGER=yarn
+  DEPENDENCY_MANAGER=npm
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
