@@ -77,15 +77,15 @@
   "lint-scss": "stylelint 'assets/scss/*'",
   "lint-js": "eslint 'assets/js/*'",
   "lint-toml": "eslint i18n",
-  "lint": "yarn run lint-scss && yarn run lint-js && yarn run lint-toml",
-  "postbuild-lint": "yarn run check-generated-css",
-  "validate-iiif-gnu": "find docs -name manifest.json -print0 | xargs -r -0 -n1 yarn run eslint -c themes/projektemacher-base/eslint.config.mjs",
-  "validate-gjson-gnu": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -r -0 -n1 yarn run eslint -c themes/projektemacher-base/eslint.config.mjs",
-  "validate-iiif-bsd": "find docs -name manifest.json -print0 | xargs -0 -n1 yarn run eslint -c themes/projektemacher-base/eslint.config.mjs",
-  "validate-gjson-bsd": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 yarn run eslint -c themes/projektemacher-base/eslint.config.mjs",
-  "validate-iiif": "case $OSTYPE in darwin*) yarn run validate-iiif-bsd ;; linux*) yarn run validate-iiif-gnu ;; bsd*) yarn run validate-iiif-bsd ;; *)  exit 100 ;; esac",
-  "validate-gjson": "case $OSTYPE in darwin*) yarn run validate-gjson-bsd ;; linux*) yarn run validate-gjson-gnu ;; bsd*) yarn run validate-gjson-bsd ;; *)  exit 100 ;; esac",
-  "validate": "yarn run validate-iiif && yarn run validate-gjson"
+  "lint": "npm run lint-scss && npm run lint-js && npm run lint-toml",
+  "postbuild-lint": "npm run check-generated-css",
+  "validate-iiif-gnu": "find docs -name manifest.json -print0 | xargs -r -0 -n1 npm run eslint -c themes/projektemacher-base/eslint.config.mjs",
+  "validate-gjson-gnu": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -r -0 -n1 npm run eslint -c themes/projektemacher-base/eslint.config.mjs",
+  "validate-iiif-bsd": "find docs -name manifest.json -print0 | xargs -0 -n1 npm run eslint -c themes/projektemacher-base/eslint.config.mjs",
+  "validate-gjson-bsd": "find docs -name '*.gjson' -o -name '*.geojson' -print0 | xargs -0 -n1 npm run eslint -c themes/projektemacher-base/eslint.config.mjs",
+  "validate-iiif": "case $OSTYPE in darwin*) npm run validate-iiif-bsd ;; linux*) npm run validate-iiif-gnu ;; bsd*) npm run validate-iiif-bsd ;; *)  exit 100 ;; esac",
+  "validate-gjson": "case $OSTYPE in darwin*) npm run validate-gjson-bsd ;; linux*) npm run validate-gjson-gnu ;; bsd*) npm run validate-gjson-bsd ;; *)  exit 100 ;; esac",
+  "validate": "npm run validate-iiif && npm run validate-gjson"
  },
  "overrides": {
   "canvas": "npm:dry-uninstall"
