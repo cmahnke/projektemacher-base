@@ -90,6 +90,7 @@ jobs:
           ./scripts/github/setup-xslt.sh
           ./scripts/github/setup-inkscape.sh
           ./scripts/github/setup-media.sh
+          ./scripts/github/setup-osm.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
 
