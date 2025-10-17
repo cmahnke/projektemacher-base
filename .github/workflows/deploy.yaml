@@ -61,6 +61,7 @@ jobs:
 
       - name: Index
         run: |
+          ./scripts/github/jxl-0.11.1.sh
           pip install -r requirements.txt
           python scripts/indexer.py -c pagefind-index.yaml
 
