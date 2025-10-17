@@ -9,18 +9,6 @@ files:
     - 'en/tags/**'
     - 'post/page/*/**'
     - 'en/post/page/*/**'
-    - 'search/**'
-    - 'en/search/**'
-    - 'tagline/**'
-    - 'en/tagline/**'
-    - 'cm/**'
-    - 'en/cm/**'
-    - 'applications/**'
-    - 'en/applications/**'
-    - 'meta/**'
-    - 'en/meta/**'
-    - 'privacy/**'
-    - 'en/privacy/**'
     - '404.html'
 content:
   ignore:
