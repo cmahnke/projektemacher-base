@@ -44,6 +44,8 @@ jobs:
       - name: Install Dart SASS
         run: |
           ./scripts/github/dart-sass.sh
+          ./scripts/github/jxl-0.11.1.sh
+          pip install -r requirements.txt
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3.0.0
@@ -61,8 +63,6 @@ jobs:
 
       - name: Index
         run: |
-          ./scripts/github/jxl-0.11.1.sh
-          pip install -r requirements.txt
           python scripts/indexer.py -c pagefind-index.yaml
 
       - name: Deploy site
