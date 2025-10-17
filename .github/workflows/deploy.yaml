@@ -60,7 +60,9 @@ jobs:
         run: hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
 
       - name: Index
-        run: python scripts/indexer.py -c pagefind-index.yaml
+        run: |
+          pip install -r requirements.txt
+          python scripts/indexer.py -c pagefind-index.yaml
 
       - name: Deploy site
         uses: peaceiris/actions-gh-pages@v4.0.0
