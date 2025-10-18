@@ -17,6 +17,7 @@ updates:
       npm:
         patterns:
         - '*'
+    versioning-strategy: increase
     ignore:
       - dependency-name: "express"
         versions: '>5'
@@ -34,6 +35,7 @@ updates:
       fonts:
         patterns:
         - '*'
+    versioning-strategy: increase
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
