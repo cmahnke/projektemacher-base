@@ -1,5 +1,6 @@
 {{- $filename := "" -}}
 {{- $content := "" -}}
+{{- $class := "link" -}}
 {{- if (.Get "file") -}}
   {{- $filename = (.Get "file") -}}
 {{- end -}}
@@ -8,12 +9,15 @@
 {{- else -}}
   {{- $content = $filename -}}
 {{- end -}}
+{{- if (.Get "class") -}}
+  {{- $filename = (.Get "class") -}}
+{{- end -}}
 
 {{- $base := substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
 {{- $filename = printf "%s%s" $base $filename -}}
 
 <div class="download-link">
   {{ if $content }}
-    <a class="link" href="{{ $filename }}" target="_blank">{{ $content | safeHTML }}</a>
+    <a class="{{ $class }}" href="{{ $filename }}" target="_blank">{{ $content | safeHTML }}</a>
   {{ end }}
 </div>
