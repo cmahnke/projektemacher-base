@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
 OBJ_PREFIX=content
-CONVERT_SCRIPT="yarn run obj2gltf"
-COMPRESS_SCRIPT="yarn run gltf-pipeline"
-METADATA_SCRIPT="yarn run gltf-transform xmp"
+
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=npm
+fi
+
+CONVERT_SCRIPT="$DEPENDENCY_MANAGER run obj2gltf"
+COMPRESS_SCRIPT="$DEPENDENCY_MANAGER run gltf-pipeline"
+METADATA_SCRIPT="$DEPENDENCY_MANAGER run gltf-transform xmp"
 DRACO=false
 
 for FILE in `find $OBJ_PREFIX -iname '*.obj'`
