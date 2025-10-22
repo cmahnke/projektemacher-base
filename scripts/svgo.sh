@@ -6,6 +6,11 @@ if [ -z "$IMAGES" ] ; then
   IMAGES=$(find content -name '*.svg')
 fi
 
+if [ -z "$IMAGES" ] ; then
+  echo "No SVG Files found!"
+  exit 0
+fi
+
 if [ -z "`which jq`" ] ; then
   echo "jq is needed for sanity check"
   exit 2
