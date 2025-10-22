@@ -19,7 +19,18 @@ if [ -z "$CORES" ] ; then
     CORES=$(getconf _NPROCESSORS_ONLN)
   fi
 fi
-JOBFILE=$(mktemp -t 3D_JOBS)
+
+MKTEMP=mktemp
+OS="`uname`"
+case "$OS" in
+  'Darwin')
+    MKTEMP=gmktemp
+    ;;
+  'Linux')
+    MKTEMP=mktemp
+    ;;
+esac
+JOBFILE=$($MKTEMP) # The GNU version of the tool is a step backwards, on BSD this works as well: -t 3D_JOBS
 
 if [ -z "$SKIP_IIIF" ] ; then
 
