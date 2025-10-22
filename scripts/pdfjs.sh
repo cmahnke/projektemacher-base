@@ -5,6 +5,10 @@ PDFJS_URL=https://github.com/mozilla/pdf.js
 TMP_DIR=tmp-pdfjs
 CWD=`pwd`
 
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=npm
+fi
+
 if test -r yarn.lock ; then
     PDFJS_VERSION=$(grep /pdfjs-dist yarn.lock |sed -E 's/.*pdfjs-dist-(.*).tgz.*/\1/g')
 else
@@ -20,8 +24,8 @@ mkdir -p "$PDFJS_STATIC_DIR" "$TMP_DIR"
 git clone --depth 1 --branch "v$PDFJS_VERSION" https://github.com/mozilla/pdf.js "$TMP_DIR"
 
 cd "$TMP_DIR"
-yarn install --ignore-scripts
-yarn run gulp generic
+$DEPENDENCY_MANAGER install --ignore-scripts
+$DEPENDENCY_MANAGER run gulp generic
 
 cd "$CWD"
 rm -rf static/pdfjs/*

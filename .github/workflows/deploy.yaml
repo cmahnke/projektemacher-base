@@ -15,8 +15,8 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.150.1
-  PYTHON_VERSION: '3.12'
+  HUGO_VERSION: 0.152.0
+  PYTHON_VERSION: '3.13'
 
 jobs:
   deploy_exampleSite:
@@ -32,7 +32,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
@@ -44,6 +44,8 @@ jobs:
       - name: Install Dart SASS
         run: |
           ./scripts/github/dart-sass.sh
+          ./scripts/github/jxl-0.11.1.sh
+          pip install -r requirements.txt
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3.0.0
@@ -58,6 +60,10 @@ jobs:
       - name: Build Hugo site
         working-directory: exampleSite
         run: hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
+
+      - name: Index
+        run: |
+          python scripts/indexer.py -c pagefind-index.yaml
 
       - name: Deploy site
         uses: peaceiris/actions-gh-pages@v4.0.0

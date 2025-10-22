@@ -17,6 +17,7 @@ updates:
       npm:
         patterns:
         - '*'
+    versioning-strategy: increase
     ignore:
       - dependency-name: "express"
         versions: '>5'
@@ -26,6 +27,8 @@ updates:
         versions: '>3'
       - dependency-name: "ol-mapbox-style"
         versions: '>12'
+      - dependency-name: "cesium"
+        versions: '<1.134'
   - package-ecosystem: "npm"
     directory: "/fonts/"
     schedule:
@@ -34,6 +37,7 @@ updates:
       fonts:
         patterns:
         - '*'
+    versioning-strategy: increase
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

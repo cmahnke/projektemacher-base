@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.150.1
+  HUGO_VERSION: 0.152.0
   PYTHON_VERSION: '3.12'
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
@@ -43,7 +43,7 @@ jobs:
 # Needed to check if the JXL Python plugin builds
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.0.sh
+          ./scripts/github/jxl-0.11.1.sh
 
 # Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
@@ -71,7 +71,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -86,14 +86,13 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/jxl-0.10.3.sh
           ./scripts/github/jxl-0.11.1.sh
           ./scripts/github/setup-xslt.sh
           ./scripts/github/setup-inkscape.sh
           ./scripts/github/setup-media.sh
+          ./scripts/github/setup-osm.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
-          ./scripts/github/setup-yarn.sh
 
   test_install_scss:
     runs-on: ubuntu-24.04
@@ -107,14 +106,13 @@ jobs:
           ./scripts/github/dart-sass.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
 
       - name: Install Yarn and Node modules
         run: |
-          ./scripts/github/setup-yarn.sh
-          yarn install --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Run Dart SASS
         run: |
@@ -132,7 +130,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -162,7 +160,7 @@ jobs:
 #          ./scripts/github/docker-images.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -182,7 +180,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
 
@@ -256,7 +254,7 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v4
@@ -308,16 +306,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.147.9', '0.148.2', '0.149.1', '0.150.0', 'latest']
+        version: ['0.148.2', '0.149.1', '0.150.1', '0.151.1', 'latest']
         can-fail: [false]
         include:
-          - version: 0.147.9
-            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.148.2
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.149.1
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
-          - version: 0.150.0
+          - version: 0.150.1
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.151.1
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
@@ -333,7 +331,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.0.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'

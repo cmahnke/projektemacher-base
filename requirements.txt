@@ -43,3 +43,6 @@ docker
 pyexiv2
 # BibTex and Citation
 academic
+# Indexer
+pagefind[bin]
+beautifulsoup4

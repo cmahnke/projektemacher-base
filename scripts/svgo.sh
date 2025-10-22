@@ -6,6 +6,11 @@ if [ -z "$IMAGES" ] ; then
   IMAGES=$(find content -name '*.svg')
 fi
 
+if [ -z "$IMAGES" ] ; then
+  echo "No SVG Files found!"
+  exit 0
+fi
+
 if [ -z "`which jq`" ] ; then
   echo "jq is needed for sanity check"
   exit 2
@@ -21,8 +26,12 @@ if [ -n "$1" ] ; then
   echo "Using $OUTDIR as output directory"
 fi
 
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=npm
+fi
+
 if [ -z "$SVGO" ] ; then
-  SVGO=`yarn bin svgo`
+  SVGO=`$DEPENDENCY_MANAGER bin svgo`
 fi
 
 IFS=$(echo -en "\n\b")
