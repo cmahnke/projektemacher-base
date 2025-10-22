@@ -39,6 +39,7 @@
   "@gltf-transform/core": "^4.2.1",
   "@gltf-transform/extensions": "^4.2.1",
   "@gltf-transform/functions": "^4.2.1",
+  "cesium": "1.133.1",
   "cors": "^2.8.5",
   "doiuse": "^6.0.5",
   "eslint": "~9.38.0",

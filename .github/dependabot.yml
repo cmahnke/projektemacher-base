@@ -27,6 +27,8 @@ updates:
         versions: '>3'
       - dependency-name: "ol-mapbox-style"
         versions: '>12'
+      - dependency-name: "cesium"
+        versions: '<1.134'
   - package-ecosystem: "npm"
     directory: "/fonts/"
     schedule:
