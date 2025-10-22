@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=npm
+fi
+
 if [ -z "$IMAGES" ] ; then
   IMAGES=$(find content -name '*.svg')
 fi
@@ -30,8 +34,9 @@ if [ -z "$DEPENDENCY_MANAGER" ] ; then
   DEPENDENCY_MANAGER=npm
 fi
 
-if [ -z "$SVGO" ] ; then
-  SVGO=`$DEPENDENCY_MANAGER bin svgo`
+if [ -n "$SVGO" ] ; then
+  echo "Setting svgo binary externally has been disabled"
+  exit 1
 fi
 
 IFS=$(echo -en "\n\b")
@@ -45,7 +50,15 @@ do
     fi
 
     echo "Processing '$IMAGE' to '$TMP_FILE'"
-    $SVGO --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
+
+    if [ "$DEPENDENCY_MANAGER" = "npm" ] ; then
+      npx svgo --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
+    else
+      SVGO=`$DEPENDENCY_MANAGER bin svgo`
+      $SVGO --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
+    fi
+
+
     if [ -z "$OUTDIR" ] ; then
       rm "$IMAGE"
       mv "$TMP_FILE" "$IMAGE"
