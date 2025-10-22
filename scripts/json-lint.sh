@@ -14,7 +14,7 @@ for FILE in `find $JSON_PREFIX -iname '*.json'`
 do
   echo "Checking $FILE"
   if [ "$DEPENDENCY_MANAGER" = "npm" ] ; then
-    $npx eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
+    npx eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
   else
     $DEPENDENCY_MANAGER run eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
   fi
