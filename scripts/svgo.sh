@@ -21,8 +21,12 @@ if [ -n "$1" ] ; then
   echo "Using $OUTDIR as output directory"
 fi
 
+if [ -z "$DEPENDENCY_MANAGER" ] ; then
+  DEPENDENCY_MANAGER=npm
+fi
+
 if [ -z "$SVGO" ] ; then
-  SVGO=`yarn bin svgo`
+  SVGO=`$DEPENDENCY_MANAGER bin svgo`
 fi
 
 IFS=$(echo -en "\n\b")
