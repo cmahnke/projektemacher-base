@@ -42,6 +42,7 @@ if [ "$DEPENDENCY_MANAGER" = 'npm' ] ; then
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
+  rm -rf $BASE/node_modules
   INSTALL_OPTS="-P"
 fi
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
