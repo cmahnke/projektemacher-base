@@ -13,5 +13,9 @@ set -e -o pipefail
 for FILE in `find $JSON_PREFIX -iname '*.json'`
 do
   echo "Checking $FILE"
-  $DEPENDENCY_MANAGER run eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
+  if [ "$DEPENDENCY_MANAGER" = "npm" ] ; then
+    $npx eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
+  else
+    $DEPENDENCY_MANAGER run eslint -c themes/projektemacher-base/eslint.config.mjs $FILE
+  fi
 done
