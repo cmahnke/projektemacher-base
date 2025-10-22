@@ -27,7 +27,7 @@ Parameters:
         {{- $orientation = "landscape" -}}
     {{- end -}}
 */}}
-
+{{- errorf "The 'iiif/presentation.html' shortcode is deprected use Tify instead!" -}}
 <div class="iiif">
     <div id="iiif-presentation" class="viewer presentation-api {{ $orientation }}"></div>
     <script type="text/javascript">
