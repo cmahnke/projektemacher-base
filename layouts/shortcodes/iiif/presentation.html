@@ -27,12 +27,14 @@ Parameters:
         {{- $orientation = "landscape" -}}
     {{- end -}}
 */}}
-{{- errorf "The 'iiif/presentation.html' shortcode is deprected use Tify instead!" -}}
+
+{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s-%s" $manifestUrl now.UnixNano)) -}}
+
 <div class="iiif">
-    <div id="iiif-presentation" class="viewer presentation-api {{ $orientation }}"></div>
-    <script type="text/javascript">
-        var viewer = iiifPresentationViewer('iiif-presentation', '{{ $manifestUrl }}');
-    </script>
+  <div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>
+  <script type="text/javascript">
+    var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
+  </script>
 </div>
 
 {{- define "_partials/shortcodes/iiif/presentation.html" -}}
