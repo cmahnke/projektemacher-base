@@ -1,17 +1,12 @@
-//import * as Tify from 'tify';
 import 'tify';
 
-function addTify (id, uri, lang = 'en') {
+function addTify (selector, uri, lang = 'en') {
   if (document.documentElement.lang !== undefined) {
     lang = document.documentElement.lang;
   }
 
-  if (!id.startsWith("#")) {
-    id = '#' + id;
-  }
-
   const tify = new Tify({
-    container: id,
+    container: selector,
     manifestUrl: uri,
     language: lang,
     translationsDirUrl: '/tify/translations/'

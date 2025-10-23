@@ -267,7 +267,7 @@ console.log('Wrote preference file to %s', prefFile);
             }
           })
           .on('pageerror', error => {
-            console.log('[pageerror] "' + error.message + '" on path / file:', localFile);
+            console.log('[pageerror] "' + error.message + '" on path / file:', localFile, error);
             if (!argv.gpu && (error.message.includes('Error creating WebGL context') || error.message.includes('Unable to create WebGPU adapter'))) {
               console.log(`Ignoring 3D error: ${error.message}`)
               return

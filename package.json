@@ -27,7 +27,7 @@
   "pdfjs-dist": "^5.4.296",
   "pdfobject": "^2.3.1",
   "stickybits": "^3.7.11",
-  "tify": "^0.34.4",
+  "tify": "^0.34.5",
   "yargs": "^18.0.0"
  },
  "devDependencies": {
@@ -39,6 +39,7 @@
   "@gltf-transform/core": "^4.2.1",
   "@gltf-transform/extensions": "^4.2.1",
   "@gltf-transform/functions": "^4.2.1",
+  "cesium": "1.133.1",
   "cors": "^2.8.5",
   "doiuse": "^6.0.5",
   "eslint": "~9.38.0",
@@ -60,7 +61,7 @@
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
   "prettier": "^3.6.2",
-  "puppeteer": "^24.25.0",
+  "puppeteer": "^24.26.0",
   "purgecss": "^7.0.2",
   "react": "^19.2.0",
   "react-dom": "^19.2.0",

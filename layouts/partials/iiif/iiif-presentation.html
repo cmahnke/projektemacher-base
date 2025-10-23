@@ -46,9 +46,10 @@
 {{- else -}}
     {{- $orientation = "landscape" -}}
 {{- end -}}
+{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s-%s" $manifestUrl now.UnixNano)) -}}
 
-<div id="iiif-presentation" class="viewer presentation-api {{ $orientation }}"></div>
+<div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>
 
 <script type="text/javascript">
-  var viewer = iiifPresentationViewer('iiif-presentation', '{{ $manifestUrl }}');
+  var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
 </script>

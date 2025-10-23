@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 CONTENT_DIR="./content"
 
 FILES=`find $CONTENT_DIR -iname '*.mp4'`
