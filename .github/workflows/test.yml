@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.152.1
+  HUGO_VERSION: 0.152.2
   PYTHON_VERSION: '3.12'
 
 jobs:
@@ -306,7 +306,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.148.2', '0.149.1', '0.150.1', '0.151.1', 'latest']
+        version: ['0.148.2', '0.149.1', '0.150.1', '0.151.1', '0.152.1', 'latest']
         can-fail: [false]
         include:
           - version: 0.148.2
@@ -316,6 +316,8 @@ jobs:
           - version: 0.150.1
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.151.1
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.152.1
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
