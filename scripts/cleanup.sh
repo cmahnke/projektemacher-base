@@ -18,6 +18,8 @@ else
 
   rm -rf node_modules
 
+  ./themes/projektemacher-base/scripts/cleanup-externals.sh
+
   if [ -d themes/projektemacher-base/node_modules ] ; then
       echo "The directory contains 'node_modules' directory, you certainly are using this tree for theme development, this can have side effects, deleting!"
       rm -rf themes/projektemacher-base/node_modules
