@@ -38,6 +38,15 @@ updates:
         patterns:
         - '*'
     versioning-strategy: increase
+  - package-ecosystem: "npm"
+    directory: "/flags/"
+    schedule:
+      interval: "daily"
+    groups:
+      fonts:
+        patterns:
+        - '*'
+    versioning-strategy: increase
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

@@ -118,16 +118,40 @@ jobs:
         run: |
           sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss
 
-  test_fonts_pnpm:
+  test_external_npm:
     runs-on: ubuntu-24.04
+    env:
+      DEPENDENCY_MANAGER: npm
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
 
-#      - neme: Pull Docker images
-#        run: |
-#          ./scripts/github/docker-images.sh
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install flags
+        run: |
+          ./scripts/flags.sh
+
+      - name: Install fonts
+        run: |
+          ./scripts/fonts.sh
+
+      - name: Install system fonts
+        run: |
+          ./scripts/github/setup-system-fonts.sh
+
+  test_external_pnpm:
+    runs-on: ubuntu-24.04
+    env:
+      DEPENDENCY_MANAGER: pnpm
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.0.0
@@ -138,6 +162,10 @@ jobs:
         with:
           version: 9
 
+      - name: Install flags
+        run: |
+          ./scripts/flags.sh
+
       - name: Install fonts
         run: |
           ./scripts/fonts.sh
@@ -146,23 +174,23 @@ jobs:
         run: |
           ./scripts/github/setup-system-fonts.sh
 
-  test_fonts_yarn:
+  test_external_yarn:
     runs-on: ubuntu-24.04
     env:
       DEPENDENCY_MANAGER: yarn
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-
-#      - neme: Pull Docker images
-#        run: |
-#          ./scripts/github/docker-images.sh
+          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.0.0
         with:
           node-version-file: '.nvmrc'
+
+      - name: Install flags
+        run: |
+          ./scripts/flags.sh
 
       - name: Install fonts
         run: |
