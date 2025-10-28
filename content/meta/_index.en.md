@@ -8,16 +8,18 @@ sectionContent: false
 cascade:
   - _target:
       kind: '{page,section}'
-      lang: de
+      lang: en
       path: '**'
     params:
       archive: false
+      sitemap_exclude: true
+      robotsdisallow: true
       news: false
       sitemap:
         disable: true
 ---
 
-Diese Seite bietet einige statistische Auswertungen und Daten über die Beiträge als JSON Dateien
+This page provides some statistical analyses and data about the posts as JSON files
 
-* [Tags](./tags/index.json) des Blogs
-* [Wikidata URIs](./wikidata/index.json) für Beiträge im Blog
+* [Tags](./tags/index.json) of the blog
+* [Wikidata URIs](./wikidata/index.json) for posts in the blog

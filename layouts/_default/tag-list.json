@@ -1,0 +1,62 @@
+{{- $pages := where .Site.AllPages "Params.displayinlist" "!=" false -}}
+{{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
+
+{{- $pageList := slice -}}
+{{- $tagList := dict -}}
+{{- range $page := $pages -}}
+  {{- $pageUrl := .RelPermalink -}}
+  {{- with .OutputFormats.Get "html" -}}
+    {{- $pageUrl = .RelPermalink -}}
+  {{- end -}}
+  {{- $tags := dict -}}
+  {{- range $tag := .Params.tags -}}
+    {{- $tagPageMissing := false -}}
+    {{- if ne $tag "" -}}
+      {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
+      {{- $sameAs := "" -}}
+      {{- with $.Site.GetPage $tagUrl -}}
+        {{- if .Params.wikidata -}}
+          {{- if not (reflect.IsSlice .Params.wikidata) -}}
+            {{- $sameAs = .Params.wikidata -}}
+          {{- end -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $tagPageMissing = true -}}
+      {{- end -}}
+
+      {{- $tagTranslations := dict -}}
+      {{- if hugo.IsMultilingual -}}
+        {{- range $.Site.Languages -}}
+          {{- $i18nTag := $tag -}}
+
+          {{- if eq .Lang $.Sites.Default.Language.Lang -}}
+            {{- $i18nTag = i18n $tag  -}}
+          {{- end -}}
+          {{/* See https://github.com/gohugoio/hugo/issues/7844#issuecomment-1843854396
+            {{ $i18nTag := index $.Site.Data .Lang $tag }}
+          */}}
+          {{- if or (eq $i18nTag "") (eq $i18nTag nil) -}}
+            {{- $i18nTag = $tag -}}
+          {{- end -}}
+
+          {{- $tagTranslations =  merge $tagTranslations (dict .Lang $i18nTag) -}}
+        {{- end -}}
+
+      {{- end -}}
+
+      {{- if isset $tagList $tag -}}
+        {{- $tagPages := index (index $tagList $tag) "posts" -}}
+        {{- $tagPages = $tagPages | append $pageUrl -}}
+        {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" $tagPages "count" (len $tagPages) "translations" $tagTranslations -}}
+        {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
+      {{- else -}}
+        {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" (slice $pageUrl) "count" 1 "translations" $tagTranslations -}}
+        {{- if $tagPageMissing -}}
+          {{- $tagMeta = merge $tagMeta (dict "listHeaderMissing" $tagPageMissing) -}}
+        {{- end -}}
+        {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $tagList | jsonify -}}
