@@ -1,18 +1,21 @@
 {{- $pages := where .Site.AllPages "Params.displayinlist" "!=" false -}}
 {{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
+
+{{ $taxonomy := "tags" }}
 
 {{- $pageList := slice -}}
 {{- $tagList := dict -}}
-{{- range $page := $pages -}}
+{{- range $page := $pages.ByTitle -}}
   {{- $pageUrl := .RelPermalink -}}
   {{- with .OutputFormats.Get "html" -}}
     {{- $pageUrl = .RelPermalink -}}
   {{- end -}}
   {{- $tags := dict -}}
   {{- range $tag := .Params.tags -}}
-    {{- $tagPageMissing := false -}}
+    {{- $definitionMissing := false -}}
     {{- if ne $tag "" -}}
-      {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
+      {{- $tagUrl := printf "%s%s" ((printf "%s/" $taxonomy) | relLangURL) ($tag | urlize) -}}
       {{- $sameAs := "" -}}
       {{- with $.Site.GetPage $tagUrl -}}
         {{- if .Params.wikidata -}}
@@ -20,8 +23,15 @@
             {{- $sameAs = .Params.wikidata -}}
           {{- end -}}
         {{- end -}}
+        {{- $termPage := printf "content%s" $tagUrl -}}
+        {{- if not (fileExists $termPage) -}}
+          {{- if eq $debug true -}}
+            {{- warnf "[tag-list.json] Missing page %s for term %s" $termPage .Data.Term -}}
+          {{- end -}}
+          {{- $definitionMissing = true -}}
+        {{- end -}}
       {{- else -}}
-        {{- $tagPageMissing = true -}}
+        {{- $definitionMissing = true -}}
       {{- end -}}
 
       {{- $tagTranslations := dict -}}
@@ -51,8 +61,8 @@
         {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
       {{- else -}}
         {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" (slice $pageUrl) "count" 1 "translations" $tagTranslations -}}
-        {{- if $tagPageMissing -}}
-          {{- $tagMeta = merge $tagMeta (dict "listHeaderMissing" $tagPageMissing) -}}
+        {{- if $definitionMissing -}}
+          {{- $tagMeta = merge $tagMeta (dict "definitionMissing" $definitionMissing) -}}
         {{- end -}}
         {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
       {{- end -}}
