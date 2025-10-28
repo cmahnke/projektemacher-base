@@ -55,7 +55,7 @@ THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $C
 
 # The order matters here - first all themes, then the file from this theme and then the one from the site itself
 THEMES_PACKAGE_FILES="$(find themes -name package.hugo.json)"
-THEME_PACKAGE_FILE="$(find $THEME_PATH -name package.json -not \( -path '*/node_modules/*' -o -path '*/fonts/*' \))"
+THEME_PACKAGE_FILE="$(find $THEME_PATH -name package.json -not \( -path '*/node_modules/*' -o -path '*/fonts/*' -o -path '*/flags/*' \))"
 SITE_PACKAGE_FILE="$(find .  -maxdepth 1 -name package.json -type f -size +0c)"
 PACKAGE_FILES=$(echo $THEMES_PACKAGE_FILES $THEME_PACKAGE_FILE $SITE_PACKAGE_FILE | tr '\n' ' ')
 echo "Merging $PACKAGE_FILES"
