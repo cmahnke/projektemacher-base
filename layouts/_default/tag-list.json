@@ -65,7 +65,13 @@
       {{- if isset $tagList $tag -}}
         {{- $tagPages := index (index $tagList $tag) "posts" -}}
         {{- $tagPages = $tagPages | append $pageUrl -}}
-        {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" $tagPages "count" (len $tagPages) "translations" $tagTranslations -}}
+        {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" $tagPages "count" (len $tagPages) "translations" $tagTranslations "termTitle" $termTitle -}}
+        {{- if $definitionMissing -}}
+          {{- $tagMeta = merge $tagMeta (dict "definitionMissing" $definitionMissing) -}}
+        {{- end -}}
+        {{- if ne $tagUrl $tagPath -}}
+          {{- $tagMeta = merge $tagMeta (dict "tagPath" $tagPath) -}}
+        {{- end -}}
         {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
       {{- else -}}
         {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" (slice $pageUrl) "count" 1 "translations" $tagTranslations -}}
