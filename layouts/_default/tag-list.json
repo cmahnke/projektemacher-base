@@ -13,17 +13,22 @@
   {{- end -}}
   {{- $tags := dict -}}
   {{- range $tag := .Params.tags -}}
+  {{/* {{- range $tag := .Site.Taxonomies.tags -}} */}}
+    {{- $termTitle := "" -}}
     {{- $definitionMissing := false -}}
     {{- if ne $tag "" -}}
       {{- $tagUrl := printf "%s%s" ((printf "%s/" $taxonomy) | relLangURL) ($tag | urlize) -}}
+      {{/* TODO: Check if this still works if .Site.BaseURL contains a path at the end - probably not */}}
+      {{- $tagPath := (urls.Parse $tagUrl).Path -}}
       {{- $sameAs := "" -}}
-      {{- with $.Site.GetPage $tagUrl -}}
+      {{- with $.Site.GetPage $tagPath -}}
+        {{- $termTitle = .Title -}}
         {{- if .Params.wikidata -}}
           {{- if not (reflect.IsSlice .Params.wikidata) -}}
             {{- $sameAs = .Params.wikidata -}}
           {{- end -}}
         {{- end -}}
-        {{- $termPage := printf "content%s" $tagUrl -}}
+        {{- $termPage := printf "content%s/_index.md" $tagPath -}}
         {{- if not (fileExists $termPage) -}}
           {{- if eq $debug true -}}
             {{- warnf "[tag-list.json] Missing page %s for term %s" $termPage .Data.Term -}}
@@ -32,6 +37,9 @@
         {{- end -}}
       {{- else -}}
         {{- $definitionMissing = true -}}
+        {{- if eq $debug true -}}
+          {{- warnf "[tag-list.json] can't load file %s" $tagPath -}}
+        {{- end -}}
       {{- end -}}
 
       {{- $tagTranslations := dict -}}
@@ -63,6 +71,10 @@
         {{- $tagMeta := dict "sameAs" $sameAs "url" $tagUrl "posts" (slice $pageUrl) "count" 1 "translations" $tagTranslations -}}
         {{- if $definitionMissing -}}
           {{- $tagMeta = merge $tagMeta (dict "definitionMissing" $definitionMissing) -}}
+        {{- end -}}
+        {{- $tagMeta = merge $tagMeta (dict "termTitle" $termTitle) -}}
+        {{- if ne $tagUrl $tagPath -}}
+          {{- $tagMeta = merge $tagMeta (dict "tagPath" $tagPath) -}}
         {{- end -}}
         {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
       {{- end -}}
