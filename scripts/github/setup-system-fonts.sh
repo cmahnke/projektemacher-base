@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
 if [ -n "$1" ] ; then
-  if [ "$1" = "." ] ; then
-    BASEDIR=`realpath .`
-  else
-    BASEDIR="$1"
-  fi
+  BASEDIR="$1"
 else
-  BASEDIR="$(readlink -f "$0")/../../"
+  BASEDIR="$(dirname "$0")/../../"
+  #BASEDIR="$(readlink -f "$0")/../../"
 fi
+
+if [[ ${var:0:1} != / ]]  ; then
+  BASEDIR=`realpath $BASEDIR`
+fi 
+
+echo "BASEDIR is set to $BASEDIR"
 
 DECOMPRESS_DIR=./tmp/fonts/
 FONT_LIST=../fonts.lst
