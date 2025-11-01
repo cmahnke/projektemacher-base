@@ -52,6 +52,7 @@
     "@fontsource/press-start-2p": "^5.2.7",
     "@fontsource/purple-purse": "^5.2.8",
     "@fontsource/roboto": "^5.2.8",
+    "@fontsource/space-mono": "^5.2.9",
     "@fontsource/special-elite": "^5.2.8"
   },
   "devDependencies": {
