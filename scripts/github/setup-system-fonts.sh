@@ -24,6 +24,10 @@ do
   #docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress "$file" ;
 done
 cat $FONT_LIST | xargs -P $JOBS -n 1 docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress
+
+echo "Created files:"
+find . -name "*.ttf" -print
+
 cd $BASEDIR
 
 SYSTEM_FONT_DIR=/usr/local/share/fonts
@@ -35,6 +39,7 @@ case "$OS" in
     find $BASEDIR -path "*static/fonts/*.ttf" -print
     ;;
   'Linux')
+    echo "The following files would be copied to $SYSTEM_FONT_DIR"
     sudo find "$DECOMPRESS_DIR" -name "*.ttf" -print -exec cp {} $SYSTEM_FONT_DIR \;
     sudo find $BASEDIR -path "*static/fonts/*.ttf" -print -exec cp {} $SYSTEM_FONT_DIR \;
     fc-cache -f -v
