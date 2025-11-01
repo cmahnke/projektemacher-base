@@ -2,6 +2,7 @@
 
 if [ -n "$1" ] ; then
   if [ "$1" = "." ] ; then
+    BASEDIR=`realpath .`
   else
     BASEDIR="$1"
   fi
