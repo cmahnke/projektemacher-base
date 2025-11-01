@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 if [ -n "$1" ] ; then
-  BASEDIR="$1"
+  if [ "$1" = "." ] ; then
+  else
+    BASEDIR="$1"
+  fi
 else
   BASEDIR="$(readlink -f "$0")/../../"
 fi
@@ -25,7 +28,7 @@ do
 done
 cat $FONT_LIST | xargs -P $JOBS -n 1 docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress
 
-echo "Created files:"
+echo "Created files (in $DECOMPRESS_DIR):"
 find . -name "*.ttf" -print
 
 cd $BASEDIR
@@ -34,12 +37,12 @@ SYSTEM_FONT_DIR=/usr/local/share/fonts
 OS="`uname`"
 case "$OS" in
   'Darwin')
-    echo "The following files would be copied to $SYSTEM_FONT_DIR"
+    echo "The following files have been copied to $SYSTEM_FONT_DIR"
     find "$DECOMPRESS_DIR" -name "*.ttf" -print
     find $BASEDIR -path "*static/fonts/*.ttf" -print
     ;;
   'Linux')
-    echo "The following files would be copied to $SYSTEM_FONT_DIR"
+    echo "The following files have been copied to $SYSTEM_FONT_DIR"
     sudo find "$DECOMPRESS_DIR" -name "*.ttf" -print -exec cp {} $SYSTEM_FONT_DIR \;
     sudo find $BASEDIR -path "*static/fonts/*.ttf" -print -exec cp {} $SYSTEM_FONT_DIR \;
     fc-cache -f -v
