@@ -82,7 +82,15 @@
         {{- if ne $tagUrl $tagPath -}}
           {{- $tagMeta = merge $tagMeta (dict "tagPath" $tagPath) -}}
         {{- end -}}
-        {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
+
+        {{- if eq (printf "%T" $tag) "uint64" -}}
+          {{- $tag = string $tag -}}
+        {{- end -}}
+        {{- if ne $tag nil -}}
+          {{- $tagList = merge $tagList (dict $tag $tagMeta) -}}
+        {{- else -}}
+          {{- warnf "[taglist.json] Tag is nil for %s!" $page.RelPermalink -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
