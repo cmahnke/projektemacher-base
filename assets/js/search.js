@@ -2,11 +2,7 @@ import { Instance, Input, ResultList, FilterPills } from "@pagefind/modular-ui";
 import i18next from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-//export function setupSearch(elem, lang) {
-//  new PagefindUI({ element: "#search", showSubResults: true });
-//}
-
-translations = {
+const translations = {
   "en": {
     "search-filter": {
       "section": "Section",
