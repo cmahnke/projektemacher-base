@@ -16,7 +16,7 @@
   "js-cookie": "^3.0.5",
   "manifesto.js": "^4.2.24",
   "normalize.css": "^8.0.1",
-  "ol": "^10.6.1",
+  "ol": "^10.7.0",
   "ol-mapbox-style": "^12.5.0",
   "openseadragon": "^5.0.1",
   "openseadragon-fabric": "^1.0.8",
