@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, argparse, pathlib, sys, asyncio, httpcore
+import os, argparse, pathlib, sys, asyncio, httpcore, time
 from urllib.parse import urlparse
 from dateutil.parser import parse
 from datetime import datetime
@@ -29,20 +29,27 @@ max_age = 60
 
 def check_availability(url):
     available_url = f"{available_prefix}{url}"
-    req = httpx.get(available_url)
-    json = req.json()
-    if req.status_code == 200 and "archived_snapshots" in json and json["archived_snapshots"]:
-        last = json["archived_snapshots"]["closest"]["timestamp"]
-        last = parse(last, fuzzy=True)
-        age = datetime.now() - last
-        if age.days > max_age:
-            cprint(f"URL {url} snapshot is older then {max_age}!", "yellow")
+    try:
+        req = httpx.get(available_url)
+        req.raise_for_status()
+        json = req.json()
+        if "archived_snapshots" in json and json["archived_snapshots"]:
+            last = json["archived_snapshots"]["closest"]["timestamp"]
+            last = parse(last, fuzzy=True)
+            age = datetime.now() - last
+            if age.days > max_age:
+                cprint(f"URL {url} snapshot is older then {max_age}!", "yellow")
+                return False
+            cprint(f"URL {url} has been archived within the last {max_age} days!", "green")
+            return True
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 429:
+            cprint(f"Rate limited checking availability for {url}. Assuming not archived.", "yellow")
             return False
-        cprint(f"URL {url} has been archived within the last {max_age} days!", "green")
-        return True
-    else:
-        cprint(f"URL {url} is not archived!", "yellow")
-        return False
+        cprint(f"HTTP Error checking availability for {url}: {e}", "red")
+
+    cprint(f"URL {url} is not archived!", "yellow")
+    return False
 
 
 async def archive(urls, client):
@@ -54,8 +61,19 @@ async def archive(urls, client):
 
                 async def req(url):
                     try:
-                        resp = await client.get(url)
-                        resp.raise_for_status()
+                        retries = 3
+                        for i in range(retries):
+                            try:
+                                resp = await client.get(url)
+                                resp.raise_for_status()
+                                return  # Success
+                            except httpx.HTTPStatusError as e:
+                                if e.response.status_code == 429 and i < retries - 1:
+                                    retry_after = int(e.response.headers.get("Retry-After", "5"))
+                                    cprint(f"Rate limited saving {url}. Retrying after {retry_after} seconds...", "yellow")
+                                    await asyncio.sleep(retry_after)
+                                else:
+                                    raise
                     except (
                         httpx.ReadTimeout,
                         httpx.TimeoutException,
@@ -63,7 +81,6 @@ async def archive(urls, client):
                         httpx.HTTPStatusError,
                         httpcore.ReadTimeout,
                     ) as error:
-
                         cprint(f"HTTP Error {error.__class__.__name__}: {str(error)}", "red")
 
                 async_reqs.append(req(archive_url))
