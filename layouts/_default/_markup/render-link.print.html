@@ -1,0 +1,2 @@
+{{- $target := .Destination -}}
+<a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a><span class="footnote link"><span class="footnote link-title">{{ .Text }}</span><span class="footnote link-url">{{ $target }}</span></span>
