@@ -23,7 +23,7 @@ jobs:
   bun:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - uses: oven-sh/setup-bun@v2
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-24.04
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - uses: denoland/setup-deno@v2

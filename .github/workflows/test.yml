@@ -23,7 +23,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
@@ -66,7 +66,7 @@ jobs:
   test_install:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
@@ -97,7 +97,7 @@ jobs:
   test_install_scss:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
@@ -123,7 +123,7 @@ jobs:
     env:
       DEPENDENCY_MANAGER: npm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -149,7 +149,7 @@ jobs:
     env:
       DEPENDENCY_MANAGER: pnpm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -179,7 +179,7 @@ jobs:
     env:
       DEPENDENCY_MANAGER: yarn
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -203,7 +203,7 @@ jobs:
   lint_fonts:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
@@ -229,7 +229,7 @@ jobs:
   test_inkscape_install:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Install required dependencies
@@ -242,7 +242,7 @@ jobs:
   test_xslt_install:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Install required dependencies
@@ -258,7 +258,7 @@ jobs:
 #  test_PyHugolib_install:
 #    runs-on: ubuntu-24.04
 #    steps:
-#      - uses: actions/checkout@v5
+#      - uses: actions/checkout@v6
 #        with:
 #          submodules: true  # Fetch Hugo themes (true OR recursive)
 #      - name: Set up Python
@@ -278,7 +278,7 @@ jobs:
   test_pnpm:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Setup Node.js
@@ -303,7 +303,7 @@ jobs:
         #can-fail: [false, false, false, true, true]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -351,7 +351,7 @@ jobs:
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
