@@ -1,3 +1,7 @@
+{{- $relative := 0 -}}
+{{- with .Site.Params.print.relative -}}
+  {{- $relative = . -}}
+{{- end -}}
 <!DOCTYPE html>
 <html lang="{{ .Site.Language.Lang }}">
   <head>
@@ -27,15 +31,15 @@
       }}
       {{ with . | js.Build $opts }}
         {{ if hugo.IsDevelopment }}
-          <script src="{{ .RelPermalink }}"></script>
+          <script src="{{ substr .RelPermalink $relative }}"></script>
         {{ else }}
           {{ with . | fingerprint }}
-            <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+            <script src="{{ substr .RelPermalink $relative }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
           {{ end }}
         {{ end }}
       {{ end }}
     {{ end }}
-    <link rel="stylesheet" href="{{ $css.RelPermalink }}" type="text/css" integrity="{{ $css.Data.Integrity }}">
+    <link rel="stylesheet" href="{{ substr $css.RelPermalink $relative }}" type="text/css" integrity="{{ $css.Data.Integrity }}">
   </head>
   <body>
     {{ block "content" . }}{{ end }}
