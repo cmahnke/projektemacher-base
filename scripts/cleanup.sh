@@ -30,3 +30,6 @@ else
   git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base clean -x -f i18n
   git --git-dir themes/projektemacher-base/.git --work-tree themes/projektemacher-base checkout -f i18n
 fi
+
+rm -rf assets/css/flags/* assets/css/fonts/* fonts/out/* assets/scss/npm-fonts/*
+git clean -f assets/scss/fonts/

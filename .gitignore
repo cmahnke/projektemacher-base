@@ -27,3 +27,4 @@ pnpm-lock.yaml
 assets/scss/lucienne/lucienne-*
 assets/js/lucienne/lucienne-*
 assets/scss/flags/flags.scss
+assets/scss/npm-fonts/*.scss
