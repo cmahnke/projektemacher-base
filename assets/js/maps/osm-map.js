@@ -149,9 +149,13 @@ export function initMap(element, url, source, cluster, marker) {
         baseLayer = layers['osm'];
     }
 
+    const attribution = new Attribution({
+      collapsible: true,
+    });
+
     var map = new Map({
             controls: [new Zoom({zoomInTipLabel: toolTips[lang]['zoomIn'], zoomOutTipLabel: toolTips[lang]['zoomOut']}),
-                       new FullScreen({tipLabel: toolTips[lang]['fullscreen']})],
+                       new FullScreen({tipLabel: toolTips[lang]['fullscreen']}), attribution],
             layers: [baseLayer],
             target: element,
         }),
