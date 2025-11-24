@@ -3,6 +3,7 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import View from 'ol/View';
 import GeoJSON from 'ol/format/GeoJSON';
 import Overlay from 'ol/Overlay';
+import Attribution from 'ol/control/Attribution.js';
 import {OSM, XYZ, Cluster, Vector as VectorSource} from 'ol/source';
 import {createEmpty, extend, getHeight, getWidth} from 'ol/extent.js';
 import {Control, FullScreen, Zoom} from 'ol/control';
