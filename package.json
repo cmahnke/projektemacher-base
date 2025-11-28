@@ -1,6 +1,6 @@
 {
  "dependencies": {
-  "@allmaps/iiif-parser": "^1.0.0-beta.46",
+  "@allmaps/iiif-parser": "^1.0.0-beta.47",
   "aframe": "^1.7.1",
   "aframe-orbit-controls": "^1.3.2",
   "bootstrap": "^5.3.8",
@@ -61,7 +61,7 @@
   "postcss-import": "^16.1.1",
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
-  "prettier": "^3.7.0",
+  "prettier": "^3.7.1",
   "puppeteer": "^24.31.0",
   "purgecss": "^7.0.2",
   "react": "^19.2.0",
