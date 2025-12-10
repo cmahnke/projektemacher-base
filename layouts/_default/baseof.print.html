@@ -23,11 +23,14 @@
     <meta name="date" content="{{ $t.Format $format }}"/>
     {{- $cssOptions := dict "outputStyle" "compressed" "transpiler" "dartsass" "targetPath" "css/print.css" "includePaths" (slice "assets/css") -}}
     {{- $css := resources.Get "scss/print.scss" | toCSS $cssOptions | fingerprint -}}
+    {{- warnf "[layouts/_default/baseof.print.html] The print base is using different loaders, this can fail the regular build due to different dependency resolution" -}}
     {{ with resources.Get "js/print.js" }}
       {{$opts := dict
         "minify" (not hugo.IsDevelopment)
         "sourceMap" (cond hugo.IsDevelopment "external" "")
         "targetPath" "js/print.js"
+        "loaders" (dict ".json" "json" ".css" "text")
+        "target" "es2018"
       }}
       {{ with . | js.Build $opts }}
         {{ if hugo.IsDevelopment }}

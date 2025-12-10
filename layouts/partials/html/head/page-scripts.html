@@ -2,6 +2,13 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $context := . -}}
+{{- $additionalOpts := dict -}}
+{{- if ne (printf "%T" .) "*hugolib.pageState" -}}
+    {{- $context = .context -}}
+    {{- if (isset . "opts") -}}
+      {{- $additionalOpts = .opts -}}
+    {{- end -}}
+{{- end -}}
 
 {{- $isServer := hugo.IsServer -}}
 {{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" .)) "js" -}}
@@ -44,6 +51,7 @@
       {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
     {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
+    {{- $mainOpts = merge $mainOpts $additionalOpts -}}
     {{- $main := "" -}}
     {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
       {{- $scriptRes := resources.Get $script -}}
