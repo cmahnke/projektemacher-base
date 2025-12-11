@@ -295,6 +295,9 @@ other = "SPARQL"
 [Linux]
 other = "Linux"
 
+[Printing]
+other = "Printing"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
