@@ -1,5 +1,4 @@
 {{/* TODO: Merge this into script.html */}}
-{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $context := . -}}
 {{- $additionalOpts := dict -}}
@@ -10,8 +9,10 @@
     {{- end -}}
 {{- end -}}
 
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
+
 {{- $isServer := hugo.IsServer -}}
-{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" .)) "js" -}}
+{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
 
 {{- if and $debug (len $includes) -}}
   {{- warnf "[partials/html/head/page-scripts.html] Got JS script(s) %#v for %s" $includes .File.Dir -}}
