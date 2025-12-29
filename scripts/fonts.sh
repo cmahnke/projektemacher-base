@@ -65,7 +65,11 @@ do
   if grep -q "variable" <<< "$PACKAGE_SOURCE"; then
     echo "Font is variable"
     ALIAS="-variable"
+  else
+    echo "Font is not variable"
+    ALIAS=""
   fi
+
   echo "Extracting $FONT_NAME from $FONT"
   cat $FONT/*.css >> $CSS_DIR/$FONT_NAME.css
   $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
