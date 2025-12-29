@@ -298,6 +298,9 @@ other = "Linux"
 [Printing]
 other = "Drucken"
 
+[Stereoscopy]
+other = "Stereoskopie"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
