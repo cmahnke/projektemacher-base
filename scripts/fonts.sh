@@ -81,6 +81,7 @@ do
   cat $FONT/*.css >> $SCSS_DIR/$FONT_NAME.scss
   $SED -i -E 's/\.\/files/#{$font-base-path}fonts/g' $SCSS_DIR/$FONT_NAME.scss
   $SED -i '1s;^;$font-base-path: \"/\" !default\;\n;' $SCSS_DIR/$FONT_NAME.scss
+  $SED -i '$!N; /^\(.*\)\n\1$/!P; D' $SCSS_DIR/$FONT_NAME.scss
   if [ -n "$ALIAS" ] ; then
     echo "Creating copy of $FONT_NAME as $SCSS_DIR/$FONT_NAME$ALIAS.scss"
     cp "$SCSS_DIR/$FONT_NAME.scss" "$SCSS_DIR/$FONT_NAME$ALIAS.scss"
