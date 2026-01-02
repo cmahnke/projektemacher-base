@@ -6,7 +6,7 @@ archive: false
 news: false
 sectionContent: false
 cascade:
-  - _target:
+  - target:
       kind: '{page,section}'
       lang: de
       path: '**'
