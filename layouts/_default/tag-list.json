@@ -37,8 +37,10 @@
         {{- end -}}
       {{- else -}}
         {{- $definitionMissing = true -}}
-        {{- if eq $debug true -}}
-          {{- warnf "[tag-list.json] can't load file %s" $tagPath -}}
+        {{- if eq $.Lang $.Sites.Default.Language.Lang -}}
+          {{- if eq $debug true -}}
+            {{- warnf "[tag-list.json] Can't load file %s" $tagPath -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
 
