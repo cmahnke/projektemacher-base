@@ -10,8 +10,10 @@
     {{- end -}}
   {{- end -}}
   <meta name="author" content="{{ $author }}">
+  <meta name="dc.creator" content="{{ $author }}">
 {{- end -}}
 {{/*
 <meta name="description" content="{{ .Description | default (.Summary | default .Site.Params.description ) }}">
 */}}
 <meta http-equiv="Content-Language" content="{{ .Site.Language.Lang }}">
+<meta name="dc.type" content="Text">
