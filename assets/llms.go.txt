@@ -6,12 +6,19 @@
 > {{ . }}
 {{- end }}
 
-{{ range (where (sort ((.Site.GetPage "/").Pages) "Weight" "asc" "Date" "desc" "Lastmod" "desc") "Params.sitemap_exclude" "ne" true) -}}
+{{- $pages := where (sort ((.Site.GetPage "/").Pages) "Weight" "asc" "Date" "desc" "Lastmod" "desc") "Params.sitemap_exclude" "ne" true -}}
+{{- $pages = where $pages "Sitemap.Disable" "ne" true -}}
+
+{{ range $pages -}}
+  {{ if .Title -}}
     - [{{ .Title }}]({{ .Permalink }}): {{ .Description }}
+  {{- end }}
 {{ end -}}
 
 {{/* Sections */}}
-{{ range (where (sort ((.Site.GetPage "/").Sections) "Weight" "asc" "Date" "desc" "Lastmod" "desc") "Params.sitemap_exclude" "ne" true) -}}
+{{ $pages := where (sort ((.Site.GetPage "/").Sections) "Weight" "asc" "Date" "desc" "Lastmod" "desc") "Params.sitemap_exclude" "ne" true -}}
+{{- $pages = where $pages "Sitemap.Disable" "ne" true -}}
+{{ range $pages -}}
 {{ with .Title -}}
     ## {{ . }}
 {{- end }}
