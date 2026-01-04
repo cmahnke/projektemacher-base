@@ -12,6 +12,9 @@
   <meta name="author" content="{{ $author }}">
   <meta name="dc.creator" content="{{ $author }}">
 {{- end -}}
+{{ with .Site.Params.orcid }}
+  <link rel="me" href="https://orcid.org/{{ . }}">
+{{ end }}
 {{/*
 <meta name="description" content="{{ .Description | default (.Summary | default .Site.Params.description ) }}">
 */}}
