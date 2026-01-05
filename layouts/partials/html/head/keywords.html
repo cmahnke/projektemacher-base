@@ -39,4 +39,11 @@
 {{- end -}}
 {{- if ne $keywords "" -}}
   <meta name="keywords" content="{{ $keywords }}">
+  {{- if strings.Contains $keywords "," -}}
+    {{- range (split $keywords ",") -}}
+      {{- if ne . "" -}}
+        <meta name="dc.subject" content="{{ trim . " " }}">
+      {{- end -}}
+    {{- end -}} 
+  {{- end -}}
 {{- end -}}

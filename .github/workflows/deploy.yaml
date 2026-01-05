@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.154.0
+  HUGO_VERSION: 0.154.2
   PYTHON_VERSION: '3.13'
 
 jobs:
