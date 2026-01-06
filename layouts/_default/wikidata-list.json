@@ -20,6 +20,9 @@
           {{- if not (reflect.IsSlice .Params.wikidata) -}}
             {{- $links = slice .Params.wikidata -}}
             {{- $sameAs = merge $sameAs (dict .Permalink .Params.wikidata) -}}
+          {{- else -}}
+            {{- $links = .Params.wikidata -}}
+            {{- $sameAs = merge $sameAs (dict .Permalink .Params.wikidata) -}}
           {{- end -}}
         {{- else -}}
           {{- $unmapped = $unmapped | append $tag -}}
