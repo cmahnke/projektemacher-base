@@ -58,10 +58,10 @@
   },
   "devDependencies": {
     "@fontsource-utils/scss": "^0.2.2",
-    "stylelint": "^16.26.0",
+    "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
     "stylelint-config-standard-scss": "^16.0.0",
     "stylelint-prettier": "^5.0.3",
-    "stylelint-scss": "^6.12.1"
+    "stylelint-scss": "^6.14.0"
   }
 }
