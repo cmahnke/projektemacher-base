@@ -1,0 +1,45 @@
+{{- $pdf := "" -}}
+{{- with .Get "pdf" -}}
+  {{- $pdf = . -}}
+{{- end -}}
+
+{{- $page := 1 -}}
+{{- with .Get "page" -}}
+  {{- $page = . -}}
+{{- end -}}
+
+{{- $class := "pdf-preview" -}}
+{{- with .Get "class" -}}
+  {{- $class = . -}}
+{{- end -}}
+
+{{- $download := false -}}
+
+{{- $pdflink := printf "%s/%s" .Page.Permalink $pdf -}}
+
+{{- $file := path.Join .Page.Path $pdf -}}
+{{- if not (fileExists $file) -}}
+  {{- warnf "File %s doens't exist!" $file -}}
+{{- end -}}
+
+{{- $id := printf "_pdf-%s" (md5 $pdf) -}}
+
+{{- if ne $pdf "" -}}
+  <div id="{{ $id | safeHTML }}" class="{{ $class }}"></div>
+  <div id="{{ printf `%s-download` $id | safeHTML }}" class="{{ printf `%s-download` $class }}"></div>
+  <script>
+    {{/* See https://pdfobject.com/api/ */}}
+    let options_{{ replace $id "-" "" | safeJS }} = {
+      page: {{ $page }},
+      pdfOpenParams: {
+        zoom: '100%'
+      },
+      fallbackLink: "<p class='{{ printf `%s-download-fallback` $class }}'><a href='{{ $pdflink }}'>{{ i18n "InlinePDFNotSupported" }}: PDF Download</a></p>"
+    };
+    PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
+  </script>
+{{- end -}}
+
+{{- define "_partials/shortcodes/pdf-preview-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/pdf-preview.js") "scss" (slice "scss/pdf-preview.scss")) | jsonify -}}
+{{- end -}}
