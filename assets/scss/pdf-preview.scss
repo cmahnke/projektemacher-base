@@ -1,6 +1,6 @@
 .pdf-preview {
-  &:has(iframe),
-  &:has(embed) {
-    aspect-ratio: 1 / 1.414;
-  }
+    &:has(iframe),
+    &:has(embed) {
+        aspect-ratio: 1 / 1.414;
+    }
 }
