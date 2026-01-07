@@ -1,10 +1,18 @@
 {{/* TODO: Merge this into script.html */}}
-{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $context := . -}}
+{{- $additionalOpts := dict -}}
+{{- if ne (printf "%T" .) "*hugolib.pageState" -}}
+    {{- $context = .context -}}
+    {{- if (isset . "opts") -}}
+      {{- $additionalOpts = .opts -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 
 {{- $isServer := hugo.IsServer -}}
-{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" .)) "js" -}}
+{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
 
 {{- if and $debug (len $includes) -}}
   {{- warnf "[partials/html/head/page-scripts.html] Got JS script(s) %#v for %s" $includes .File.Dir -}}
@@ -16,9 +24,8 @@
   {{- $pageScripts = slice -}}
 {{- end -}}
 
-{{/* TODO this fails, since $scripts is not defined */}}
 {{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
-  {{- $scripts = slice $pageScripts -}}
+  {{- $pageScripts = slice $pageScripts -}}
 {{- end -}}
 
 {{- $scripts := $pageScripts -}}
@@ -44,6 +51,7 @@
       {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
     {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
+    {{- $mainOpts = merge $mainOpts $additionalOpts -}}
     {{- $main := "" -}}
     {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
       {{- $scriptRes := resources.Get $script -}}

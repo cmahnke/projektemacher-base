@@ -14,7 +14,7 @@ var layers = {};
 layers['wiki'] = new TileLayer({
     source: new XYZ({
         attributions: [
-            OSM.ATTRIBUTION, 'Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'],
+            OSM.ATTRIBUTION, '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'],
         url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=en'
     })
 });

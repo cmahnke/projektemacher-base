@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.152.2
+  HUGO_VERSION: 0.154.3
   PYTHON_VERSION: '3.12'
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'
@@ -71,7 +71,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -106,7 +106,7 @@ jobs:
           ./scripts/github/dart-sass.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -128,7 +128,7 @@ jobs:
           submodules: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -154,7 +154,7 @@ jobs:
           submodules: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -184,7 +184,7 @@ jobs:
           submodules: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -208,7 +208,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
 
@@ -282,7 +282,7 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v4
@@ -295,12 +295,10 @@ jobs:
 
   test_python_versions:
     runs-on: ubuntu-24.04
-    #continue-on-error: ${{ matrix.can-fail }}
     strategy:
       fail-fast: false
       matrix:
-        version: ['3.10', '3.11', '3.12', '3.13', '3.14-dev']
-        #can-fail: [false, false, false, true, true]
+        version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
       - uses: actions/checkout@v6
@@ -334,7 +332,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.148.2', '0.149.1', '0.150.1', '0.151.1', '0.152.1', 'latest']
+        version: ['0.148.2', '0.149.1', '0.150.1', '0.151.1', '0.152.2', '0.153.5', 'latest']
         can-fail: [false]
         include:
           - version: 0.148.2
@@ -345,7 +343,9 @@ jobs:
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.151.1
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
-          - version: 0.152.1
+          - version: 0.152.2
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.153.5
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: latest
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
@@ -361,7 +361,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           check-latest: true
           node-version-file: '.nvmrc'

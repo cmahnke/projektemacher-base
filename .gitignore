@@ -23,6 +23,7 @@ assets/css/fonts/*
 .DS_Store
 #static/fonts/*
 pnpm-lock.yaml
+images.tmp/
 
 assets/scss/lucienne/lucienne-*
 assets/js/lucienne/lucienne-*

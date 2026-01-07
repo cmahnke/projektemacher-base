@@ -193,6 +193,9 @@ other = "Haptisches Feedback"
 [SocialMedia]
 other = "Soziale Medien"
 
+[StreetArt]
+other = "Streetart"
+
 [Presentation]
 other = "Präsentation"
 
@@ -291,6 +294,12 @@ other = "SPARQL"
 
 [Linux]
 other = "Linux"
+
+[Printing]
+other = "Drucken"
+
+[Stereoscopy]
+other = "Stereoskopie"
 
 # Tags for Ric
 [EBay]

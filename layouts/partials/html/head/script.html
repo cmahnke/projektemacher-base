@@ -11,24 +11,10 @@
 {{- end -}}
 
 {{- $externals := slice "domain" -}}
-{{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
-{{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
-
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
-
-{{/*
-{{- with .context -}}
-    {{ if .Params.js }}
-        {{- warnf "[partials/html/head/script.html] Including %s for post %s" (.Params.js) (.File.Path) -}}
-        {{- if reflect.IsSlice .Params.js -}}
-            {{- $js = .Params.js -}}
-        {{- else if ne .js "" -}}
-            {{- $js = .Params.js -}}
-        {{- end -}}
-    {{- end -}}
-{{- end -}}
-*/}}
+{{- $additionalOpts := dict -}}
+{{- $context := . -}}
 
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
     {{- if (isset . "js") -}}
@@ -53,10 +39,23 @@
             {{- end -}}
         {{- end -}}
     {{- end -}}
+    {{- if (isset . "opts") -}}
+        {{- $additionalOpts = .opts -}}
+        {{ warnf "[partials/html/head/script.html] Using additional JS Opts: %#v" $additionalOpts -}}
+    {{- end -}}
+    {{- if (isset . "ctx") -}}
+        {{- $context = .ctx -}}
+    {{- end -}}
+    {{- if (isset . "context") -}}
+        {{- $context = .context -}}
+    {{- end -}}
 {{- else -}}
     {{- warnf "[partials/html/head/script.html] Called without params - just using %s" $defaultScriptEntrypoint -}}
 {{- end -}}
 
+{{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
+{{- $mainOpts = merge $mainOpts $additionalOpts -}}
+{{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
 {{- $jsResources = union (slice $main) $jsResources -}}
 
 {{- $fileName := "" -}}

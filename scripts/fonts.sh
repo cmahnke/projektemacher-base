@@ -65,7 +65,11 @@ do
   if grep -q "variable" <<< "$PACKAGE_SOURCE"; then
     echo "Font is variable"
     ALIAS="-variable"
+  else
+    echo "Font is not variable"
+    ALIAS=""
   fi
+
   echo "Extracting $FONT_NAME from $FONT"
   cat $FONT/*.css >> $CSS_DIR/$FONT_NAME.css
   $SED -i -E 's/\.\/files/\/fonts/g' $CSS_DIR/$FONT_NAME.css
@@ -77,6 +81,7 @@ do
   cat $FONT/*.css >> $SCSS_DIR/$FONT_NAME.scss
   $SED -i -E 's/\.\/files/#{$font-base-path}fonts/g' $SCSS_DIR/$FONT_NAME.scss
   $SED -i '1s;^;$font-base-path: \"/\" !default\;\n;' $SCSS_DIR/$FONT_NAME.scss
+  $SED -i '$!N; /^\(.*\)\n\1$/!P; D' $SCSS_DIR/$FONT_NAME.scss
   if [ -n "$ALIAS" ] ; then
     echo "Creating copy of $FONT_NAME as $SCSS_DIR/$FONT_NAME$ALIAS.scss"
     cp "$SCSS_DIR/$FONT_NAME.scss" "$SCSS_DIR/$FONT_NAME$ALIAS.scss"

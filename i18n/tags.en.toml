@@ -103,7 +103,7 @@ other = "Travel"
 [Photo]
 other = "Photo"
 
-[exhibition]
+[Exhibition]
 other = "Exhibition"
 
 [Object]
@@ -192,6 +192,9 @@ other = "Haptic feedback"
 
 [SocialMedia]
 other = "Social media"
+
+[StreetArt]
+other = "Street art"
 
 [Presentation]
 other = "Presentation"
@@ -291,6 +294,12 @@ other = "SPARQL"
 
 [Linux]
 other = "Linux"
+
+[Printing]
+other = "Printing"
+
+[Stereoscopy]
+other = "Stereoscopy"
 
 # Tags for Ric
 [EBay]
