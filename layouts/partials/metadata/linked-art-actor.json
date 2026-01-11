@@ -1,0 +1,25 @@
+{{- $labelLangs := slice "de" "en" -}}
+{{- $id := . -}}
+{{- if hasPrefix $id "http" -}}
+  {{- $id = replaceRE `^.*/([^/]+)$` "$1" $id -}}
+{{- end -}}
+{{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $id -}}
+{{- $actor := dict "id" (printf "http://www.wikidata.org/entity/%s" $id) -}}
+{{- $type := "Group" -}}
+{{- with resources.GetRemote $url -}}
+  {{- with .Content | transform.Unmarshal -}}
+    {{- $entity := index .entities $id -}}
+    {{- $name := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
+    {{- $claims := $entity.claims -}}
+    {{- if isset $claims "P31" -}}
+      {{- range (index $claims "P31") }}
+        {{- if eq .mainsnak.datavalue.value.id "Q5" -}}
+          {{- $type = "Person" -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $actor = $actor | merge (dict "_label" (trim $name " ") "type" $type) -}}
+  {{ end }}
+{{ end }}
+{{- return $actor -}}
