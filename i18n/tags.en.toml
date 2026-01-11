@@ -301,6 +301,9 @@ other = "Printing"
 [Stereoscopy]
 other = "Stereoscopy"
 
+[UnknownArtist]
+other = "Unknown artist"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
