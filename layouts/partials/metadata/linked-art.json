@@ -1,5 +1,7 @@
 {{- $httpOptions := dict "headers" (dict "Accept" "application/ld+json") -}}
 {{- $iiifFullResolution := "/full/full/0/default.jpg" -}}
+{{- $anonymousWikidata := "http://www.wikidata.org/entity/Q4233718" -}}
+{{- $anonymousLabel := "anonymous" -}}
 {{- $ignoreTags := slice  "Art" "Christmas" -}}
 {{- $tagsWikidata := slice -}}
 {{- range $tag := $.Params.tags -}}
@@ -57,10 +59,11 @@
   {{- else -}}
     {{- $linkedArt = $linkedArt | merge (dict "_label" $.Title) -}}
   {{- end -}}
+
+  {{- $producedBy := dict "type" "Production" -}}
+  {{- $actor := dict "type" "Person" -}}
+  {{- $wikidataID := "" -}}
   {{- with .artist -}}
-    {{- $producedBy := dict "type" "Production" -}}
-    {{- $actor := dict "type" "Person" -}}
-    {{- $wikidataID := "" -}}
     {{- with .wikidata -}}
       {{- $wikidataID = replaceRE `^.*/([^/]+)$` "$1" . -}}
       {{- $actor = $actor | merge (dict "id" (printf "http://www.wikidata.org/entity/%s" $wikidataID)) -}}
@@ -69,32 +72,21 @@
       {{- $actor = $actor | merge (dict "_label" .name) -}}
     {{- else -}}
       {{- with .wikidata -}}
-        {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $wikidataID -}}
-        {{ with resources.GetRemote $url }}
-          {{ with .Content | transform.Unmarshal }}
-            {{ $entity := index .entities $wikidataID }}
-            {{ $name := "" }}
-            {{ if $entity.labels.de }}
-              {{ $name = $entity.labels.de.value }}
-            {{ else if $entity.labels.en }}
-              {{ $name = $entity.labels.en.value }}
-            {{ else }}
-              {{ range $entity.labels }}
-                {{ $name = .value }}
-                {{ break }}
-              {{ end }}
-            {{ end }}
-            {{- $actor = $actor | merge (dict "_label" (trim $name " ")) -}}
-          {{ end }}
-        {{ end }}
+        {{- $a := partial "metadata/linked-art-actor.json" . }} -}}
+        {{- if gt (len $a) 0 -}}
+          {{- $actor = $actor | merge ($a) -}}
+        {{- end -}}
       {{- end -}}
       {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
-      {{- if gt ($classification | len) 0 -}}
-        {{- $producedBy = $producedBy | merge (dict "technique" $classification) -}}
-      {{- end -}}
     {{- end -}}
-    {{- $linkedArt = $linkedArt | merge (dict "produced_by" $producedBy) -}}
+  {{- else -}}
+    {{- $actor = $actor | merge (dict "_label" $anonymousLabel "id" $anonymousWikidata "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300404670" "type" "Type" "_label" $anonymousLabel))) -}}
+    {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
   {{- end -}}
+  {{- if gt ($classification | len) 0 -}}
+    {{- $producedBy = $producedBy | merge (dict "technique" $classification) -}}
+  {{- end -}}
+  {{- $linkedArt = $linkedArt | merge (dict "produced_by" $producedBy) -}}
 
   {{- if gt ($classification | len) 0 -}}
     {{- $linkedArt = $linkedArt | merge (dict "classified_as" $classification) -}}
@@ -185,42 +177,51 @@
   {{- end -}}
 
   {{- with .owner -}}
-    {{- with .wikidata -}}
-      {{- $owner := dict "id" . -}}
-      {{- $wikidataID := replaceRE `^.*/([^/]+)$` "$1" . -}}
-      {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $wikidataID -}}
-      {{- with resources.GetRemote $url -}}
-        {{- with .Content | transform.Unmarshal -}}
-          {{- $entity := index .entities $wikidataID -}}
-          {{- $label := "" -}}
-          {{- if $entity.labels.de -}}
-            {{- $label = $entity.labels.de.value -}}
-          {{- else if $entity.labels.en -}}
-            {{- $label = $entity.labels.en.value -}}
-          {{- else -}}
-            {{- range $entity.labels -}}
-              {{- $label = .value -}}
-              {{- break -}}
-            {{- end -}}
+    {{- $owners := . -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $owners = slice . -}}
+    {{- end -}}
+    {{- $currentOwner := (index $owners 0) -}}
+    {{- if and (reflect.IsMap $currentOwner) (isset $currentOwner "wikidata") -}}
+      {{- $currentOwner = $currentOwner.wikidata -}}
+    {{- end -}}
+    {{- if eq $currentOwner nil -}}
+      {{- errorf "[metadata/linked-art.json] No owner found for %s" $.Permalink -}}
+    {{- end -}}
+    {{- $owner := dict "id" $currentOwner -}}
+    {{- $a := partial "metadata/linked-art-actor.json" $currentOwner }} -}}
+    {{- if gt (len $a) 0 -}}
+      {{- $owner = $owner | merge ($a) -}}
+    {{- end -}}
+    {{- $linkedArt = $linkedArt | merge (dict "current_owner" (slice $owner)) -}}
+    {{- if gt ($owners | len) 1 -}}
+      {{- $changedOwnershipThrough := slice -}}
+      {{- $owners := (partial "functions/arrays/reverse-slice.html" $owners) -}}
+      {{- range $i, $prevOwner := $owners -}}
+        {{- $acquisition := dict "type" "Acquisition" -}}
+        {{- if eq $i 0 -}}
+          {{- $to := partial "metadata/linked-art-actor.json" .wikidata -}}
+          {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "transferred_title_to" (slice $to)) -}}
+        {{- else -}}
+          {{- $prevOwner := (index $owners (sub $i 1)) -}}
+          {{- if not (reflect.IsMap $prevOwner) -}}
+            {{- errorf "[metadata/linked-art.json] Malformed ownership entry in %s" .RelPermalink -}}
+            {{- continue -}}
           {{- end -}}
-
-          {{- $type := "Group" -}}
-          {{- $claims := $entity.claims -}}
-          {{- if isset $claims "P31" -}}
-            {{- range (index $claims "P31") }}
-              {{- if eq .mainsnak.datavalue.value.id "Q5" -}}
-                {{- $type = "Person" -}}
-                {{- break -}}
-              {{- end -}}
-            {{- end -}}
+          {{- $until := time.AsTime $prevOwner.until -}}
+          {{- $from := partial "metadata/linked-art-actor.json" $prevOwner.wikidata -}}
+          {{- if and (reflect.IsMap .) (isset . "wikidata") -}}
+            {{- $currentOwner = .wikidata -}}
           {{- end -}}
-          {{- $owner = $owner | merge (dict "_label" $label "type" $type) -}}
+          {{- $to := partial "metadata/linked-art-actor.json" $currentOwner -}}
+          {{- $timespan := dict "type" "TimeSpan" "begin_of_the_begin" ($until.Format "2006-01-02T15:04:05Z") "end_of_the_end" ($until.Format "2006-01-02T15:04:05Z") "_label" (time.Format ":date_long" $until) -}}
+          {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "timespan" $timespan "transferred_title_from" (slice $from) "transferred_title_to" (slice $to)) -}}
         {{- end -}}
+        {{- $changedOwnershipThrough = $changedOwnershipThrough | append $acquisition -}}
       {{- end -}}
-      {{- $linkedArt = $linkedArt | merge (dict "current_owner" (slice $owner)) -}}
+      {{- $linkedArt = $linkedArt | merge (dict "changed_ownership_through" $changedOwnershipThrough) -}}
     {{- end -}}
   {{- end -}}
-
 
   {{- with site.Params.linkedart -}}
     {{ range $key, $struct := . }}
@@ -230,3 +231,40 @@
 
 {{- end -}}
 {{- return $linkedArt -}}
+
+{{- define "_partials/metadata/linked-art-actor.json" -}}
+  {{- $id := . -}}
+  {{- if hasPrefix $id "http" -}}
+    {{- $id = replaceRE `^.*/([^/]+)$` "$1" $id -}}
+  {{- end -}}
+  {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $id -}}
+  {{- $actor := dict "id" (printf "http://www.wikidata.org/entity/%s" $id) -}}
+  {{- $type := "Group" -}}
+  {{ with resources.GetRemote $url }}
+    {{ with .Content | transform.Unmarshal }}
+      {{ $entity := index .entities $id }}
+      {{ $name := "" }}
+      {{ if $entity.labels.de }}
+        {{ $name = $entity.labels.de.value }}
+      {{ else if $entity.labels.en }}
+        {{ $name = $entity.labels.en.value }}
+      {{ else }}
+        {{ range $entity.labels }}
+          {{ $name = .value }}
+          {{ break }}
+        {{ end }}
+      {{ end }}
+      {{- $claims := $entity.claims -}}
+      {{- if isset $claims "P31" -}}
+        {{- range (index $claims "P31") }}
+          {{- if eq .mainsnak.datavalue.value.id "Q5" -}}
+            {{- $type = "Person" -}}
+            {{- break -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $actor = $actor | merge (dict "_label" (trim $name " ") "type" $type) -}}
+    {{ end }}
+  {{ end }}
+  {{- return $actor -}}
+{{- end -}}
