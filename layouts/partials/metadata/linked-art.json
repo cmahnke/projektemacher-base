@@ -1,8 +1,9 @@
 {{- $httpOptions := dict "headers" (dict "Accept" "application/ld+json") -}}
 {{- $iiifFullResolution := "/full/full/0/default.jpg" -}}
+{{- $labelLangs := slice "de" "en" -}}
 {{- $anonymousWikidata := "http://www.wikidata.org/entity/Q4233718" -}}
 {{- $anonymousLabel := "anonymous" -}}
-{{- $ignoreTags := slice  "Art" "Christmas" -}}
+{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" -}}
 {{- $tagsWikidata := slice -}}
 {{- range $tag := $.Params.tags -}}
   {{- if and (ne $tag "") (not (in $ignoreTags $tag)) -}}
@@ -31,17 +32,7 @@
       {{- $entity := index .entities $wikidataID -}}
       {{/* P1014 : Getty AAT-ID Property */}}
       {{- $aatClaims := index $entity.claims "P1014" -}}
-      {{- $label := "" -}}
-      {{- if $entity.labels.de -}}
-        {{- $label = $entity.labels.de.value -}}
-      {{- else if $entity.labels.en -}}
-        {{- $label = $entity.labels.en.value -}}
-      {{- else -}}
-        {{- range $entity.labels -}}
-          {{- $label = .value -}}
-          {{- break -}}
-        {{- end -}}
-      {{- end -}}
+      {{- $label := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
       {{- if $aatClaims -}}
         {{- $aatID := (index $aatClaims 0).mainsnak.datavalue.value -}}
         {{- $aatURL := printf "https://vocab.getty.edu/aat/%s.json" $aatID -}}
@@ -80,7 +71,10 @@
       {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
     {{- end -}}
   {{- else -}}
+    {{- $actor = $actor | merge ( partial "metadata/linked-art-actor.json" $anonymousWikidata) -}}
+    {{/*
     {{- $actor = $actor | merge (dict "_label" $anonymousLabel "id" $anonymousWikidata "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300404670" "type" "Type" "_label" $anonymousLabel))) -}}
+    */}}
     {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
   {{- end -}}
   {{- if gt ($classification | len) 0 -}}
@@ -109,7 +103,7 @@
           {{- $infoJsonURL = printf "%s%s" $postBaseUrl $infoJsonURL -}}
         {{- end -}}
         {{- $digitalObject := dict "type" "DigitalObject" "id" $infoJsonURL "format" "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"" -}}
-        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "digital images"))) -}}
+        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
         {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
       {{- end -}}
       {{- $representation := dict "type" "VisualItem" "digitally_shown_by" $digitallyShownBy -}}
@@ -133,11 +127,11 @@
       {{- $fullRes := printf "%s%s" $path $iiifFullResolution -}}
       {{- with $page.Resources.Get $fullRes -}}
         {{- $digitalObject := dict "type" "DigitalObject" "id" .Permalink "format" .MediaType.Type -}}
-        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "digital images"))) -}}
+        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
         {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
       {{- end -}}
       {{- $digitalObject := dict "type" "DigitalObject" "id" $infoJsonURL "format" "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"" -}}
-      {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "digital images"))) -}}
+      {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
       {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
       {{- $representation := dict "type" "VisualItem" "digitally_shown_by" $digitallyShownBy -}}
       {{- $representations = $representations | append $representation -}}
@@ -153,7 +147,7 @@
             {{- errorf "[metadata/linked-art.json] Image is JXL: %s and iiif context not set!" $.Permalink -}}
           {{- end -}}
           {{- $digitalObject := dict "type" "DigitalObject" "id" .Permalink "format" .MediaType.Type -}}
-          {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "digital images"))) -}}
+          {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
           {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
         {{- end -}}
       {{- end -}}
@@ -222,17 +216,16 @@
       {{- $linkedArt = $linkedArt | merge (dict "changed_ownership_through" $changedOwnershipThrough) -}}
     {{- end -}}
   {{- end -}}
-
   {{- with site.Params.linkedart -}}
     {{ range $key, $struct := . }}
       {{- $linkedArt = $linkedArt | merge (dict $key $struct) -}}
     {{- end -}}
   {{- end -}}
-
 {{- end -}}
 {{- return $linkedArt -}}
 
 {{- define "_partials/metadata/linked-art-actor.json" -}}
+  {{- $labelLangs := slice "de" "en" -}}
   {{- $id := . -}}
   {{- if hasPrefix $id "http" -}}
     {{- $id = replaceRE `^.*/([^/]+)$` "$1" $id -}}
@@ -240,20 +233,10 @@
   {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $id -}}
   {{- $actor := dict "id" (printf "http://www.wikidata.org/entity/%s" $id) -}}
   {{- $type := "Group" -}}
-  {{ with resources.GetRemote $url }}
-    {{ with .Content | transform.Unmarshal }}
-      {{ $entity := index .entities $id }}
-      {{ $name := "" }}
-      {{ if $entity.labels.de }}
-        {{ $name = $entity.labels.de.value }}
-      {{ else if $entity.labels.en }}
-        {{ $name = $entity.labels.en.value }}
-      {{ else }}
-        {{ range $entity.labels }}
-          {{ $name = .value }}
-          {{ break }}
-        {{ end }}
-      {{ end }}
+  {{- with resources.GetRemote $url -}}
+    {{- with .Content | transform.Unmarshal -}}
+      {{- $entity := index .entities $id -}}
+      {{- $name := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
       {{- $claims := $entity.claims -}}
       {{- if isset $claims "P31" -}}
         {{- range (index $claims "P31") }}
@@ -267,4 +250,35 @@
     {{ end }}
   {{ end }}
   {{- return $actor -}}
+{{- end -}}
+
+{{- define "_partials/metadata/linked-art-wikidata-label.json" -}}
+  {{- $params := . -}}
+  {{- if not (reflect.IsMap $params) -}}
+    {{- errorf "[metadata/linked-art-wikidata-label.json] expects params as dict" -}}
+  {{- end -}}
+  {{- $langs := .langs -}}
+  {{- $labels := .labels -}}
+  {{- $preferedLang := site.Language.Lang -}}
+  {{- $name := "" -}}
+  {{- if isset $labels $preferedLang -}}
+    {{- $name = (index $labels $preferedLang).value -}}
+  {{- else -}}
+    {{- range $langs -}}
+      {{- if eq . $preferedLang -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- $pl := . -}}
+      {{- range $labels -}}
+        {{- if eq $pl .language -}}
+          {{- $name = .value -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (eq $name "") (isset $labels "mul") -}}
+      {{- $name = (index $labels "mul").value -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $name -}}
 {{- end -}}
