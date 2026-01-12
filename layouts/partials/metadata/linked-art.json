@@ -226,5 +226,18 @@
       {{- $linkedArt = $linkedArt | merge (dict $key $struct) -}}
     {{- end -}}
   {{- end -}}
+  {{- with .rights -}}
+    {{- $rightName := .name -}}
+    {{- $rightURL := .url -}}
+    {{- $rights := dict "type" "Right"  -}}
+    {{- $rights = $rights | merge (dict "classified_as" (slice (dict "id" $rightURL "type" "Type" "_label" $rightName))) -}}
+    {{- $rights = $rights | merge (dict "identified_by" (slice (dict "type" "Name" "content" $rightName))) -}}
+    {{- if isset $linkedArt "subject_to" -}}
+      {{- with $linkedArt.subject_to -}}
+        {{- $rights = $rights | append (slice .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $linkedArt = $linkedArt | merge (dict "subject_to" $rights) -}}
+  {{- end -}}
 {{- end -}}
 {{- return $linkedArt -}}
