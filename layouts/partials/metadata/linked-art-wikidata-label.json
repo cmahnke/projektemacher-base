@@ -1,0 +1,28 @@
+  {{- $params := . -}}
+  {{- if not (reflect.IsMap $params) -}}
+    {{- errorf "[metadata/linked-art-wikidata-label.json] expects params as dict" -}}
+  {{- end -}}
+  {{- $langs := .langs -}}
+  {{- $labels := .labels -}}
+  {{- $preferedLang := site.Language.Lang -}}
+  {{- $name := "" -}}
+  {{- if isset $labels $preferedLang -}}
+    {{- $name = (index $labels $preferedLang).value -}}
+  {{- else -}}
+    {{- range $langs -}}
+      {{- if eq . $preferedLang -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- $pl := . -}}
+      {{- range $labels -}}
+        {{- if eq $pl .language -}}
+          {{- $name = .value -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (eq $name "") (isset $labels "mul") -}}
+      {{- $name = (index $labels "mul").value -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $name -}}
