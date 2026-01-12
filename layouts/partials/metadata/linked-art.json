@@ -142,6 +142,11 @@
     {{- with $.Resources -}}
       {{- $digitallyShownBy := slice -}}
       {{- range .ByType "image" -}}
+        {{- with .Params.linkedart.skip -}}
+          {{- if eq . true -}}
+            {{- continue -}}
+          {{- end -}}
+        {{- end -}}
         {{- if and (eq .MediaType.MainType "image") (not (hasPrefix .Name "og")) -}}
           {{- if eq .MediaType.SubType "jxl" -}}
             {{- errorf "[metadata/linked-art.json] Image is JXL: %s and iiif context not set!" $.Permalink -}}
