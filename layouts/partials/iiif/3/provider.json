@@ -1,15 +1,18 @@
+{{- $labels := dict "en" (slice "Projektemacher") "de" (slice "Projektemacher") -}}
 "provider": [
   {
     "id": "https://projektemacher.org/",
     "type": "Agent",
-    "label": { "en": [ "Projektemacher" ], "de": [ "Projektemacher" ] },
+    "label": {{ $labels | jsonify }},
+    {{- $homepage := dict "id" "https://projektemacher.org/" "type" "Text" "label" $labels -}}
     "homepage": [
       {
         "id": "https://projektemacher.org/",
         "type": "Text",
-        "label": { "en": [ "Projektemacher" ], "de": [ "Projektemacher" ] },
+        "label": {{ $labels | jsonify }},
         "format": "text/html"
     }
+    {{- $provider := dict "provider" (slice (dict "id" "https://projektemacher.org/" "type" "Agent" "label" $labels "homepage" (slice $homepage))) -}}
   ],
   "logo": [
     {
@@ -33,6 +36,7 @@
       {{- end -}}
     }
   ],
+  {{- $seeAlso := dict "seeAlso" (slice (dict "id" "https://projektemacher.org/projektemacher.json" "type" "Dataset" "format" "application/ld+json" "profile" "https://schema.org/")) -}}
   "seeAlso": [
     {
       "id": "https://projektemacher.org/projektemacher.json",

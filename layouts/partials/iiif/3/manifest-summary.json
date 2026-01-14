@@ -1,4 +1,13 @@
-{{/* Check if we need to escape - | jsonify */}}
+{{/* TODO: Check if we need to escape - | jsonify */}}
+         
+{{- $summary := dict $.Site.Language.Lang (slice .Description) -}}
+{{- if hugo.IsMultilingual -}}
+  {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
+  {{- range $translations -}}
+    {{- $summary = $summary | merge (dict .Lang (slice .Description)) -}}
+  {{- end -}}
+{{- end -}}
+
 "summary": {
     "{{ $.Site.Language.Lang }}": [
       {{ .Description | jsonify }}

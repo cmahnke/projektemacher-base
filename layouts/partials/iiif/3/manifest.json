@@ -2,6 +2,11 @@
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
+{{- $seeAlso := dict -}}
+{{- with .Params.linkedart -}}
+  {{- $seeAlso := dict "seeAlso" (slice (dict "id" $.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata"))) -}}
+{{- end -}}
+
 {{- $imageIdSuffix := "" -}}
 {
   {{- partial "iiif/3/common.json" . -}}

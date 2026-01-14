@@ -28,6 +28,16 @@
 
 {{- partialCached "iiif/3/provider.json" . -}},
 
+
+{{- $label := dict $.Site.Language.Lang (slice (printf "%s: %s" .Site.Title .Title)) -}}
+{{- if hugo.IsMultilingual -}}
+  {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
+  {{- range $translations -}}
+    {{- $label = $label | merge (dict .Lang (slice (printf "%s: %s" .Site.Title .Title))) -}}
+  {{- end -}}
+{{- end -}}
+{{- $homepage := dict "id" .Permalink "type" "Text" "label" $label  -}}
+
 "homepage": [
   {
     "id": "{{ .Permalink }}",

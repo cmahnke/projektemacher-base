@@ -1,3 +1,10 @@
+{{- $label := dict $.Site.Language.Lang (slice .Title) -}}
+{{- if hugo.IsMultilingual -}}
+  {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
+  {{- range $translations -}}
+    {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
+  {{- end -}}
+{{- end -}}
 "label": {
     "{{ $.Site.Language.Lang }}": [
       {{ .Title | jsonify }}
