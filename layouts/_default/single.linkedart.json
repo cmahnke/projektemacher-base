@@ -1,0 +1,1 @@
+{{- (partial "metadata/linked-art.json" .) | jsonify -}}

@@ -1,0 +1,243 @@
+{{- $httpOptions := dict "headers" (dict "Accept" "application/ld+json") -}}
+{{- $iiifFullResolution := "/full/full/0/default.jpg" -}}
+{{- $labelLangs := slice "de" "en" -}}
+{{- $anonymousWikidata := "http://www.wikidata.org/entity/Q4233718" -}}
+{{- $anonymousLabel := "anonymous" -}}
+{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" -}}
+{{- $tagsWikidata := slice -}}
+{{- range $tag := $.Params.tags -}}
+  {{- if and (ne $tag "") (not (in $ignoreTags $tag)) -}}
+    {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
+    {{- $links := slice -}}
+    {{- with $.Site.GetPage $tagUrl -}}
+      {{- if .Params.wikidata -}}
+        {{- if not (reflect.IsSlice .Params.wikidata) -}}
+          {{- $tagsWikidata = $tagsWikidata | append (slice .Params.wikidata) -}}
+        {{- else -}}
+          {{- $tagsWikidata = $tagsWikidata | append .Params.wikidata -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $tagsWikidata = $tagsWikidata | uniq -}}
+{{- $page := . -}}
+
+{{- $classification := slice -}}
+{{- range $wikidataURL := $tagsWikidata -}}
+  {{- $wikidataID := replaceRE `^.*/([^/]+)$` "$1" $wikidataURL -}}
+  {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $wikidataID -}}
+  {{- with resources.GetRemote $url -}}
+    {{- with .Content | transform.Unmarshal -}}
+      {{- $entity := index .entities $wikidataID -}}
+      {{/* P1014 : Getty AAT-ID Property */}}
+      {{- $aatClaims := index $entity.claims "P1014" -}}
+      {{- $label := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
+      {{- if $aatClaims -}}
+        {{- $aatID := (index $aatClaims 0).mainsnak.datavalue.value -}}
+        {{- $aatURL := printf "https://vocab.getty.edu/aat/%s.json" $aatID -}}
+        {{- $classification = $classification | append (dict "id" (printf "http://vocab.getty.edu/aat/%s" $aatID) "type" "Type" "_label" $label) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $linkedArt := dict -}}
+{{- with .Params.linkedart -}}
+  {{- $linkedArt = dict "id" ($.OutputFormats.Get "linkedart").Permalink "@context" "https://linked.art/ns/v1/linked-art.json" "type" "HumanMadeObject" -}}
+  {{- if .title -}}
+    {{- $linkedArt = $linkedArt | merge (dict "_label" .title)  -}}
+  {{- else -}}
+    {{- $linkedArt = $linkedArt | merge (dict "_label" $.Title) -}}
+  {{- end -}}
+
+  {{- $producedBy := dict "type" "Production" -}}
+  {{- $actor := dict "type" "Person" -}}
+  {{- $wikidataID := "" -}}
+  {{- with .artist -}}
+    {{- with .wikidata -}}
+      {{- $wikidataID = replaceRE `^.*/([^/]+)$` "$1" . -}}
+      {{- $actor = $actor | merge (dict "id" (printf "http://www.wikidata.org/entity/%s" $wikidataID)) -}}
+    {{- end -}}
+    {{- if .name -}}
+      {{- $actor = $actor | merge (dict "_label" .name) -}}
+    {{- else -}}
+      {{- with .wikidata -}}
+        {{- $a := partial "metadata/linked-art-actor.json" . }} -}}
+        {{- if gt (len $a) 0 -}}
+          {{- $actor = $actor | merge ($a) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $actor = $actor | merge ( partial "metadata/linked-art-actor.json" $anonymousWikidata) -}}
+    {{/*
+    {{- $actor = $actor | merge (dict "_label" $anonymousLabel "id" $anonymousWikidata "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300404670" "type" "Type" "_label" $anonymousLabel))) -}}
+    */}}
+    {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
+  {{- end -}}
+  {{- if gt ($classification | len) 0 -}}
+    {{- $producedBy = $producedBy | merge (dict "technique" $classification) -}}
+  {{- end -}}
+  {{- $linkedArt = $linkedArt | merge (dict "produced_by" $producedBy) -}}
+
+  {{- if gt ($classification | len) 0 -}}
+    {{- $linkedArt = $linkedArt | merge (dict "classified_as" $classification) -}}
+  {{- end -}}
+
+  {{- $representations := slice -}}
+  {{- $useResource := true -}}
+  {{- with .iiif -}}
+    {{- with .image -}}
+      {{- $infoJson := . -}}
+      {{- if not (reflect.IsSlice $infoJson) -}}
+        {{- $infoJson = slice $infoJson -}}
+      {{- end -}}
+      {{- $digitallyShownBy := slice -}}
+      {{- range $infoJson -}}
+      {{- $infoJsonURL := . -}}
+        {{- if not (hasPrefix $infoJsonURL "https://") -}}
+          {{- $parsed := urls.Parse $page.Permalink -}}
+          {{- $postBaseUrl := printf "%s://%s%s/" $parsed.Scheme $parsed.Host (path.Dir $parsed.Path) -}}
+          {{- $infoJsonURL = printf "%s%s" $postBaseUrl $infoJsonURL -}}
+        {{- end -}}
+        {{- $digitalObject := dict "type" "DigitalObject" "id" $infoJsonURL "format" "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"" -}}
+        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
+        {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
+      {{- end -}}
+      {{- $representation := dict "type" "VisualItem" "digitally_shown_by" $digitallyShownBy -}}
+      {{- $representations = $representations | append $representation -}}
+    {{- end -}}
+    {{/* Just use a empty IIIF key to diable Resource processing */}}
+    {{- $useResource = false -}}
+  {{- end -}}
+
+  {{- if and (isset $.Params "iiifcontext") (isset $.Params "resources") -}}
+    {{- $digitallyShownBy := slice -}}
+    {{- range $.Params.resources -}}
+      {{- $infoJson := .params.iiif -}}
+      {{- $path := path.Dir $infoJson -}}
+      {{- $infoJsonURL := .params.iiif -}}
+      {{- if not (hasPrefix $infoJsonURL "https://") -}}
+        {{- $parsed := urls.Parse $page.Permalink -}}
+        {{- $postBaseUrl := printf "%s://%s%s/" $parsed.Scheme $parsed.Host (path.Dir $parsed.Path) -}}
+        {{- $infoJsonURL = printf "%s%s" $postBaseUrl $infoJsonURL -}}
+      {{- end -}}
+      {{- $fullRes := printf "%s%s" $path $iiifFullResolution -}}
+      {{- with $page.Resources.Get $fullRes -}}
+        {{- $digitalObject := dict "type" "DigitalObject" "id" .Permalink "format" .MediaType.Type -}}
+        {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
+        {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
+      {{- end -}}
+      {{- $digitalObject := dict "type" "DigitalObject" "id" $infoJsonURL "format" "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"" -}}
+      {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
+      {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
+      {{- $representation := dict "type" "VisualItem" "digitally_shown_by" $digitallyShownBy -}}
+      {{- $representations = $representations | append $representation -}}
+    {{- end -}}
+    {{- $useResource = false -}}
+  {{- end -}}
+  {{- if $useResource -}}
+    {{- with $.Resources -}}
+      {{- $digitallyShownBy := slice -}}
+      {{- range .ByType "image" -}}
+        {{- with .Params.linkedart.skip -}}
+          {{- if eq . true -}}
+            {{- continue -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if and (eq .MediaType.MainType "image") (not (hasPrefix .Name "og")) -}}
+          {{- if eq .MediaType.SubType "jxl" -}}
+            {{- errorf "[metadata/linked-art.json] Image is JXL: %s and iiif context not set!" $.Permalink -}}
+          {{- end -}}
+          {{- $digitalObject := dict "type" "DigitalObject" "id" .Permalink "format" .MediaType.Type -}}
+          {{- $digitalObject = $digitalObject | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300215302" "type" "Type" "_label" "Digital image"))) -}}
+          {{- $digitallyShownBy = $digitallyShownBy | append $digitalObject -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $representation := dict "type" "VisualItem" "digitally_shown_by" $digitallyShownBy -}}
+      {{- $representations = $representations | append $representation -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if gt ($representations | len) 0 -}}
+    {{- $linkedArt = $linkedArt | merge (dict "representation" $representations) -}}
+  {{- end -}}
+
+  {{- $subjectOf := slice -}}
+  {{- $digitallyCarriedBy := dict "type" "DigitalObject" "format" "text/html" -}}
+  {{- $digitallyCarriedBy = $digitallyCarriedBy | merge (dict "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300264578" "type" "Type" "_label" "Web page"))) -}}
+  {{- $digitallyCarriedBy = $digitallyCarriedBy | merge (dict "access_point" (slice (dict "id" ($.OutputFormats.Get "html").Permalink "type" "DigitalObject"))) -}}
+  {{- $subjectOf := dict "type" "LinguisticObject" "digitally_carried_by" (slice $digitallyCarriedBy) -}}
+
+  {{- if gt ($subjectOf | len) 0 -}}
+    {{- $linkedArt = $linkedArt | merge (dict "subject_of" (slice $subjectOf)) -}}
+  {{- end -}}
+
+  {{- with .owner -}}
+    {{- $owners := . -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $owners = slice . -}}
+    {{- end -}}
+    {{- $currentOwner := (index $owners 0) -}}
+    {{- if and (reflect.IsMap $currentOwner) (isset $currentOwner "wikidata") -}}
+      {{- $currentOwner = $currentOwner.wikidata -}}
+    {{- end -}}
+    {{- if eq $currentOwner nil -}}
+      {{- errorf "[metadata/linked-art.json] No owner found for %s" $.Permalink -}}
+    {{- end -}}
+    {{- $owner := dict "id" $currentOwner -}}
+    {{- $a := partial "metadata/linked-art-actor.json" $currentOwner }} -}}
+    {{- if gt (len $a) 0 -}}
+      {{- $owner = $owner | merge ($a) -}}
+    {{- end -}}
+    {{- $linkedArt = $linkedArt | merge (dict "current_owner" (slice $owner)) -}}
+    {{- if gt ($owners | len) 1 -}}
+      {{- $changedOwnershipThrough := slice -}}
+      {{- $owners := (partial "functions/arrays/reverse-slice.html" $owners) -}}
+      {{- range $i, $prevOwner := $owners -}}
+        {{- $acquisition := dict "type" "Acquisition" -}}
+        {{- if eq $i 0 -}}
+          {{- $to := partial "metadata/linked-art-actor.json" .wikidata -}}
+          {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "transferred_title_to" (slice $to)) -}}
+        {{- else -}}
+          {{- $prevOwner := (index $owners (sub $i 1)) -}}
+          {{- if not (reflect.IsMap $prevOwner) -}}
+            {{- errorf "[metadata/linked-art.json] Malformed ownership entry in %s" .RelPermalink -}}
+            {{- continue -}}
+          {{- end -}}
+          {{- $until := time.AsTime $prevOwner.until -}}
+          {{- $from := partial "metadata/linked-art-actor.json" $prevOwner.wikidata -}}
+          {{- if and (reflect.IsMap .) (isset . "wikidata") -}}
+            {{- $currentOwner = .wikidata -}}
+          {{- end -}}
+          {{- $to := partial "metadata/linked-art-actor.json" $currentOwner -}}
+          {{- $timespan := dict "type" "TimeSpan" "begin_of_the_begin" ($until.Format "2006-01-02T15:04:05Z") "end_of_the_end" ($until.Format "2006-01-02T15:04:05Z") "_label" (time.Format ":date_long" $until) -}}
+          {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "timespan" $timespan "transferred_title_from" (slice $from) "transferred_title_to" (slice $to)) -}}
+        {{- end -}}
+        {{- $changedOwnershipThrough = $changedOwnershipThrough | append $acquisition -}}
+      {{- end -}}
+      {{- $linkedArt = $linkedArt | merge (dict "changed_ownership_through" $changedOwnershipThrough) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with site.Params.linkedart -}}
+    {{ range $key, $struct := . }}
+      {{- $linkedArt = $linkedArt | merge (dict $key $struct) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with .rights -}}
+    {{- $rightName := .name -}}
+    {{- $rightURL := .url -}}
+    {{- $rights := dict "type" "Right"  -}}
+    {{- $rights = $rights | merge (dict "classified_as" (slice (dict "id" $rightURL "type" "Type" "_label" $rightName))) -}}
+    {{- $rights = $rights | merge (dict "identified_by" (slice (dict "type" "Name" "content" $rightName))) -}}
+    {{- if isset $linkedArt "subject_to" -}}
+      {{- with $linkedArt.subject_to -}}
+        {{- $rights = $rights | append (slice .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $linkedArt = $linkedArt | merge (dict "subject_to" $rights) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $linkedArt -}}

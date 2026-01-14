@@ -26,6 +26,8 @@
         {{- if .Params.wikidata -}}
           {{- if not (reflect.IsSlice .Params.wikidata) -}}
             {{- $sameAs = .Params.wikidata -}}
+          {{- else -}}
+            {{- $sameAs = index .Params.wikidata 0 -}}
           {{- end -}}
         {{- end -}}
         {{- $termPage := printf "content%s/_index.md" $tagPath -}}
@@ -37,8 +39,10 @@
         {{- end -}}
       {{- else -}}
         {{- $definitionMissing = true -}}
-        {{- if eq $debug true -}}
-          {{- warnf "[tag-list.json] can't load file %s" $tagPath -}}
+        {{- if eq $.Lang $.Sites.Default.Language.Lang -}}
+          {{- if eq $debug true -}}
+            {{- warnf "[tag-list.json] Can't load file %s" $tagPath -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
 

@@ -103,7 +103,7 @@ other = "Travel"
 [Photo]
 other = "Photo"
 
-[exhibition]
+[Exhibition]
 other = "Exhibition"
 
 [Object]
@@ -294,6 +294,15 @@ other = "SPARQL"
 
 [Linux]
 other = "Linux"
+
+[Printing]
+other = "Printing"
+
+[Stereoscopy]
+other = "Stereoscopy"
+
+[UnknownArtist]
+other = "Unknown artist"
 
 # Tags for Ric
 [EBay]

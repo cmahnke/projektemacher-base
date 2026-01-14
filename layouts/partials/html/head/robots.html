@@ -1,2 +1,6 @@
-<meta name="robots" content="all,follow">
-<meta name="googlebot" content="index,follow,snippet,archive">
+{{ if or (eq .Kind "taxonomy") (eq .Kind "term") (eq .Section "search") }}
+  <meta name="robots" content="noindex, follow">
+{{ else }}
+  <meta name="robots" content="index, follow">
+{{ end }}
+<meta name="robots" content="max-image-preview:large">
