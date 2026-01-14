@@ -6,6 +6,14 @@
     {{- $defaultScriptEntrypoint = . -}}
 {{- end -}}
 
+{{- with $.Page.Params.defaultscriptentrypoint -}}
+    {{- $defaultScriptEntrypoint = . -}}
+{{- else -}}
+    {{- with resources.Get "ts/main.ts" -}}
+        {{- $defaultScriptEntrypoint = .Name -}}
+    {{- end -}}
+{{- end -}}
+
 {{- if hugo.IsServer -}}
   {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
 {{- end -}}
