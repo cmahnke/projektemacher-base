@@ -29,6 +29,8 @@ updates:
         versions: '>12'
       - dependency-name: "cesium"
         versions: '>1.133'
+      - dependency-name: "eslint-plugin-toml"
+        versions: '>1'
   - package-ecosystem: "npm"
     directory: "/fonts/"
     schedule:
