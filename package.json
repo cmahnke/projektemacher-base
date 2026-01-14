@@ -76,7 +76,9 @@
   "svgo": "^3.3.2",
   "three": "^0.182.0",
   "toml": "^3.0.0",
-  "xslt3": "^2.7.0"
+  "xslt3": "^2.7.0",
+  "node-addon-api": "^8.5.0",
+  "node-gyp": "^12.1.0"
  },
  "scripts": {
   "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.yaml 'docs/css/*.css'",

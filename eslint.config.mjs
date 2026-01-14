@@ -1,5 +1,5 @@
 import globals from "globals";
-import tomlParser from "toml-eslint-parser";
+//import tomlParser from "toml-eslint-parser";
 import jsParser from "eslint-plugin-json-es";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,7 +36,7 @@ export default [{
     files: ["**/*.toml"],
 
     languageOptions: {
-        parser: tomlParser,
+        parser: "toml-eslint-parser",
     },
 }, ...compat.extends("plugin:eslint-plugin-json-es/recommended").map(config => ({
     ...config,
