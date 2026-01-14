@@ -37,6 +37,15 @@
   {{- end -}}
 {{- else -}}
   {{- $iiif = ($iiif | uniq).ByDate.Reverse  -}}
+  {{- $collection := dict "@context" "http://iiif.io/api/presentation/3/context.json" "id" (printf "%s%s" site.BaseURL "collection.json") "type" "Collection" -}}
+  {{- $label := dict site.Language.Lang (slice site.Title) -}}
+  {{- if hugo.IsMultilingual -}}
+    {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
+    {{- range $translations -}}
+      {{- $label = $label | merge (dict .Lang (slice .Name)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $collection = merge $collection (dict "label" $label) -}}
   {
     "@context": "http://iiif.io/api/presentation/3/context.json",
     "id": "{{ site.BaseURL }}collection.json",

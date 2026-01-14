@@ -1,3 +1,4 @@
+{{- $common := dict "@context" "http://iiif.io/api/presentation/3/context.json" "type" "Manifest" "id" .Permalink "viewingDirection" "left-to-right" -}}
 "@context": "http://iiif.io/api/presentation/3/context.json",
 "type": "Manifest",
 "id": "{{ .Permalink }}",
