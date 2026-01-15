@@ -3,6 +3,8 @@
   ,"attribution":"{{ .Params.iiifAttribution }}",
 {{- end -}}
 
+{{- $label := dict "en" (slice "Attribution") "de" (slice "Namensnennung") -}}
+
 "requiredStatement": {
   "label": { "en": [ "Attribution" ],
     "de": [ "Namensnennung" ]

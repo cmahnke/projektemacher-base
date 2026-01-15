@@ -46,6 +46,27 @@
     {{- end -}}
   {{- end -}}
   {{- $collection = merge $collection (dict "label" $label) -}}
+  {{- $items := slice -}}
+  {{- range $i, $item := $iiif -}}
+    {{- with $item.Params.iiifManifest -}}
+      {{- $manifest = path.Base . -}}
+    {{- end -}}
+    {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest) "type" "Manifest" -}}
+    {{- $thumbnail := (partial "iiif/3/thumbnail.json" .) -}}
+    {{/* TODO: This won't work until the partial returns a dict
+    {{- $item = $item | merge $thumbnail -}}
+    */}}
+    {{- $label := dict site.Language.Lang (slice .Title) -}}
+    {{- if hugo.IsMultilingual -}}
+      {{- $translations := where .Translations ".Lang" "!=" site.Language.Lang -}}
+      {{- range $translations -}}
+        {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $item = $item | merge (dict "label" $label) -}}
+
+    {{- $items = $items | append $item -}}
+  {{- end -}}
   {
     "@context": "http://iiif.io/api/presentation/3/context.json",
     "id": "{{ site.BaseURL }}collection.json",
