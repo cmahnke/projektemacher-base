@@ -8,17 +8,4 @@
   {{- end -}}
 {{- end -}}
 
-"summary": {
-    "{{ $.Site.Language.Lang }}": [
-      {{ .Description | jsonify }}
-    ]
-  {{- if hugo.IsMultilingual -}}
-    {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
-    {{- range $translations -}}
-    ,
-      "{{ .Lang }}": [
-        {{ .Description | jsonify }}
-      ]
-    {{ end }}
-  {{- end -}}
-}
+{{ return $summary}}

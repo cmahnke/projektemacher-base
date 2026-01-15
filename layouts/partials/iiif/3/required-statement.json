@@ -3,7 +3,24 @@
   ,"attribution":"{{ .Params.iiifAttribution }}",
 {{- end -}}
 
-{{- $label := dict "en" (slice "Attribution") "de" (slice "Namensnennung") -}}
+
+{{ $value := dict }}
+{{ $translations := .AllTranslations }}
+{{ range $translations }}
+  {{ $lang := .Lang }}
+  {{ $attrValue := "" }}
+  {{ if isset .Params "iiifattribution" }}
+      {{ errorf "[iiif/3/provider.json] .Params.iiifAttribution isn't supported anymore use .Params.iiif.attribution" }}
+  {{ end }}
+  {{ if and (isset .Params "iiif") (isset .Params.iiif "attribution") }}
+      {{ $attrValue = .Params.iiif.attribution }}
+  {{ else }}
+      {{ $attrValue = index $defaultAttribution $lang }}
+  {{ end }}
+  {{ $value = merge $value (dict $lang (slice $attrValue)) }}
+{{ end }}
+
+{{- $requiredStatement := dict "label" (dict "en" (slice "Attribution") "de" (slice "Namensnennung")) "value" $value -}}
 
 "requiredStatement": {
   "label": { "en": [ "Attribution" ],

@@ -13,8 +13,16 @@
   {{- end -}}
 ,
 
+{{- $behavior := dict -}}
+{{- if and (isset .Params "iiif") (isset .Params.iiif "behavior") -}}
+  {{- $behavior = .Params.iiif.behavior -}}
+{{- else -}}
+  {{- $behavior = slice $defaultBehavior -}}
+{{- end -}}
+
 {{- if .Description -}}
-  {{- partial "iiif/3/manifest-summary.json" . -}},
+  {{- $summary := partial "iiif/3/manifest-summary.json" . -}}
+  "summary": {{- $summary | jsonify -}},
 {{- end -}}
 
 {{- if and (isset .Params "iiif") (isset .Params.iiif "rights") -}}
@@ -29,7 +37,6 @@
 
 {{- partialCached "iiif/3/provider.json" . -}},
 
-
 {{- $label := dict $.Site.Language.Lang (slice (printf "%s: %s" .Site.Title .Title)) -}}
 {{- if hugo.IsMultilingual -}}
   {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
@@ -37,32 +44,12 @@
     {{- $label = $label | merge (dict .Lang (slice (printf "%s: %s" .Site.Title .Title))) -}}
   {{- end -}}
 {{- end -}}
-{{- $homepage := dict "id" .Permalink "type" "Text" "label" $label -}}
+{{- $homepage := slice (dict "id" .Permalink "type" "Text" "format" "text/html" "label" $label) -}}
 
-"homepage": [
-  {
-    "id": "{{ .Permalink }}",
-    "type": "Text",
-    "format": "text/html",
+"homepage": {{ $homepage | jsonify }},
 
-    "label": {
-        "{{ $.Site.Language.Lang }}": [
-          {{ printf "%s: %s" .Site.Title .Title | jsonify }}
-        ]
-      {{- if hugo.IsMultilingual -}}
-        {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
-        {{- range $translations -}}
-        ,
-          "{{ .Lang }}": [
-            {{ printf "%s: %s" .Site.Title .Title | jsonify }}
-          ]
-        {{ end }}
-      {{- end -}}
-    }
-  }
-],
-
-{{- partial "iiif/3/manifest-label.json" . -}},
+{{- $label := partial "iiif/3/manifest-label.json" . -}}
+"label": {{ $label | jsonify }},
 {{- if and (isset .Params "iiif") (isset .Params.iiif "metadata") -}}
   {{- jsonify .Params.iiif.metadata -}}
 {{- end -}}
