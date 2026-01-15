@@ -94,9 +94,15 @@
           "id": "{{ printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest }}",
           "type": "Manifest",
 
+          {{/*
           {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
           {{- if ne $thumbnail "" -}}
             {{- $thumbnail -}},
+          {{- end -}}
+          */}}
+          {{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
+          {{- if gt ($thumnails | len) 0 -}}
+            "thumbnail": {{ $thumnails | jsonify }},
           {{- end -}}
 
           "label": {

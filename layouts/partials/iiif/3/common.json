@@ -28,12 +28,19 @@
 {{- if and (isset .Params "iiif") (isset .Params.iiif "rights") -}}
   {"rights", "{{ .Params.iiif.rights }}"},
 {{- end -}}
-{{ partial "iiif/3/required-statement.json" . }},
+"requiredStatement":{{ (partial "iiif/3/required-statement.json" .) | jsonify }},
 
+{{/*
 {{- $thumnail := trim (partial "iiif/3/thumbnail.json" .) "\n\t " -}}
 {{- if ne $thumnail ""}}
   {{- $thumnail -}},
 {{- end -}}
+*/}}
+{{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
+{{- if gt ($thumnails | len) 0 -}}
+  "thumbnail": {{ $thumnails | jsonify }},
+{{- end -}}
+
 
 {{- partialCached "iiif/3/provider.json" . -}},
 
