@@ -157,7 +157,7 @@
             "behavior": ["{{ .params.hint }}"],
           {{- end -}}
 
-          {{- if hasPrefix $mediatype "image" -}}
+          {{- if eq $imageRes.MediaType.MainType "image" -}}
             "height": {{ $imageRes.Height }},
             "width": {{ $imageRes.Width }},
             "thumbnail": [
@@ -190,19 +190,20 @@
               {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
             {{- end -}}
 
+            {{- $body := dict -}}
+            {{- if eq $imageRes.MediaType.MainType "image" -}}
+              {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
+              {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" $service -}}
+            {{- else if eq $imageRes.MediaType.MainType "audio" -}}
+              {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
+            {{- else -}}
+              {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
+            {{- end -}}
+
             {
               "id": "{{ printf "%s/%s" $annnotationId (index (split $mediatype "/") 0) }}",
               "type": "Annotation",
               "motivation":"painting",
-              {{- $body := dict -}}
-              {{- if eq $imageRes.MediaType.MainType "image" -}}
-                {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
-                {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" $service -}}
-              {{- else if eq $imageRes.MediaType.MainType "audio" -}}
-                {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
-              {{- else -}}
-                {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
-              {{- end -}}
               "body": {{- $body | jsonify -}},
               "target":"{{ $canvasId }}"
             }]

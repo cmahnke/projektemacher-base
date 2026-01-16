@@ -68,11 +68,6 @@
     {{- $items = $items | append $item -}}
   {{- end -}}
   {{- $collection := dict "@context" "http://iiif.io/api/presentation/3/context.json" "id" (printf "%s%s" site.BaseURL "collection.json") "type" "Collection" -}}
-  {
-    "@context": "http://iiif.io/api/presentation/3/context.json",
-    "id": "{{ site.BaseURL }}collection.json",
-    "type": "Collection",
-
     {{- $label := dict site.Language.Lang (slice site.Title) -}}
     {{- if hugo.IsMultilingual -}}
       {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
@@ -81,7 +76,11 @@
       {{- end -}}
     {{- end -}}
     {{- $collection = $collection | merge (dict "label" $label) -}}
-
+    {{/*
+  {
+    "@context": "http://iiif.io/api/presentation/3/context.json",
+    "id": "{{ site.BaseURL }}collection.json",
+    "type": "Collection",
     "label": {
         "{{ site.Language.Lang }}": [
           "{{ site.Title }}"
@@ -96,30 +95,30 @@
         {{ end }}
       {{- end -}}
     },
-    {{- $items := slice -}}
     "items": [
+    */}}
+      {{- $items := slice -}}
       {{- range $i, $iiifPage := $iiifPages -}}
         {{- with $iiifPage.Params.iiifManifest -}}
           {{- $manifest = path.Base . -}}
         {{- end -}}
+        {{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
+        {{- $label := dict site.Language.Lang (slice $iiifPage.Title) -}}
+        {{- if hugo.IsMultilingual -}}
+          {{- if .IsTranslated -}}
+            {{- range .Translations -}}
+              {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label "thumbnail" $thumnails -}}
+        {{/*
         {
           "id": "{{ printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest }}",
-          "type": "Manifest",
-
-          {{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
+          "type": "Manifest",          
           {{- if gt ($thumnails | len) 0 -}}
             "thumbnail": {{ $thumnails | jsonify }},
           {{- end -}}
-
-          {{- $label := dict site.Language.Lang (slice $iiifPage.Title) -}}
-          {{- if hugo.IsMultilingual -}}
-            {{- if .IsTranslated -}}
-              {{- range .Translations -}}
-                {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
-              {{- end -}}
-            {{- end -}}
-          {{- end -}}
-          {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label -}}
           "label": {
             "{{ site.Language.Lang }}": [
               {{ $iiifPage.Title | jsonify }}
@@ -139,9 +138,13 @@
         {{- if ne $i (sub (len $iiifPages) 1) -}}
          ,
         {{- end -}}
+        */}}
         {{- $items = $items | append $item -}}
       {{- end -}}
+{{/*
     ]
   }
+*/}}
   {{- $collection = $collection | merge (dict "items" $items) -}}
-{{- end -}}
+  {{- $collection | jsonify -}}
+  {{- end -}}
