@@ -201,7 +201,7 @@
             {{- $body := dict -}}
             {{- if eq $imageRes.MediaType.MainType "image" -}}
               {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
-              {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" $service -}}
+              {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" (slice $service) -}}
             {{- else if eq $imageRes.MediaType.MainType "audio" -}}
               {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
             {{- else -}}
