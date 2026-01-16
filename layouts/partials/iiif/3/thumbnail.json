@@ -60,15 +60,6 @@
 {{- if and (ne $previewImg nil) (ne $previewImg "") -}}
   {{- $thumbnailRes := $previewImg.Resize "300x" -}}
   {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
-  {{/*
-  "thumbnail": [{
-    "id": "{{ $thumbnailRes.Permalink }}",
-    "format": "image/jpeg",
-    "type":"Image",
-    "height": {{ $thumbnailRes.Height }},
-    "width": {{ $thumbnailRes.Width }}
-  }
-  */}}
   {{- /* Add IIIF Image Service for preview if not section */ -}}
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}
     {{- with $previewReference.params.iiif -}}
@@ -76,22 +67,8 @@
       {{- $thumbServicePreview := printf "%s%s%s" $urlBase (path.Dir .) $fullResImgSuffix -}}
       {{- $service := slice (dict "id" $imageId "type" "ImageService2" "profile" "level0") -}}
       {{- $thumbnails = $thumbnails | append (dict "id" $thumbServicePreview "format" "image/jpeg" "type" "Image" "height" $previewImg.Height "width" $previewImg.Width "service" $service) -}}
-      {{/*
-      ,{
-        "id": "{{ $thumbServicePreview }}",
-        "format": "image/jpeg",
-        "type":"Image",
-        "height": {{ $previewImg.Height }},
-        "width": {{ $previewImg.Width }},
-        "service": [{
-          "id":"{{ $imageId }}",
-          "type": "ImageService2",
-          "profile":"level0"
-        }]
-      }
-      */}}
     {{- end -}}
   {{- end -}}
-  {{/* ] */}}
 {{- end -}}
+
 {{- return $thumbnails -}}

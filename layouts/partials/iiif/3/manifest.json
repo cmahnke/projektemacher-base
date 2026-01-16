@@ -203,28 +203,6 @@
               {{- else -}}
                 {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
               {{- end -}}
-              {{/*
-              "body":{
-                {{- if hasPrefix $mediatype "image" -}}
-                  {{- $bodyId := printf "%s%s" $imageId $fullResImgSuffix -}}
-                  "id": "{{ $bodyId }}",
-                  "type": "Image",
-                  "format": "image/jpeg",
-                  "height": {{ $imageRes.Height }},
-                  "width": {{ $imageRes.Width }},
-                  
-                  "service": [{
-                    "id":"{{ $imageId }}",
-                    "type": "ImageService2",
-                    "profile":"level0"
-                  }]
-                {{- else if hasPrefix $mediatype "audio" -}}
-                  "id": "{{ $imageId }}",
-                  "type": "Sound",
-                  "format": {{ $mediatype | jsonify }}
-                {{- end -}}
-              },
-              */}}
               "body": {{- $body | jsonify -}},
               "target":"{{ $canvasId }}"
             }]

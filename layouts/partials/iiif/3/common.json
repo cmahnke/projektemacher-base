@@ -1,7 +1,7 @@
 {{- $common := dict "@context" "http://iiif.io/api/presentation/3/context.json" "type" "Manifest" "id" .Permalink "viewingDirection" "left-to-right" -}}
 "@context": "http://iiif.io/api/presentation/3/context.json",
 "type": "Manifest",
-"id": "{{ .Permalink }}",
+"id": "{{ (.OutputFormats.Get "iiif-manifest").Permalink }}",
 "viewingDirection": "left-to-right",
 {{- $defaultBehavior := "paged" -}}
 
@@ -36,20 +36,12 @@
 
 {{- $common = $common | merge (dict "requiredStatement" $requiredStatement) -}}
 
-{{/*
-{{- $thumnail := trim (partial "iiif/3/thumbnail.json" .) "\n\t " -}}
-{{- if ne $thumnail ""}}
-  {{- $thumnail -}},
-{{- end -}}
-*/}}
 {{- $thumbnails := partial "iiif/3/thumbnail.json" . -}}
 {{- if gt ($thumbnails | len) 0 -}}
   "thumbnail": {{ $thumbnails | jsonify }},
   {{- $common = $common | merge (dict "thumbnail" $thumbnails) -}}
 {{- end -}}
-{{/*
-{{- partialCached "iiif/3/provider.json" . -}},
-*/}}
+
 {{- $provider := partialCached "iiif/3/provider.json" . -}}
   "provider": {{ $provider | jsonify }},
 {{- $common = $common | merge (dict "provider" $provider) -}}
