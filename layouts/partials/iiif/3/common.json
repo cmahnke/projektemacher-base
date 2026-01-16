@@ -47,8 +47,12 @@
   "thumbnail": {{ $thumbnails | jsonify }},
   {{- $common = $common | merge (dict "thumbnail" $thumbnails) -}}
 {{- end -}}
-
+{{/*
 {{- partialCached "iiif/3/provider.json" . -}},
+*/}}
+{{- $provider := partialCached "iiif/3/provider.json" . -}}
+  "provider": {{ $provider | jsonify }},
+{{- $common = $common | merge (dict "provider" $provider) -}}
 
 {{- $label := dict $.Site.Language.Lang (slice (printf "%s: %s" .Site.Title .Title)) -}}
 {{- if hugo.IsMultilingual -}}
