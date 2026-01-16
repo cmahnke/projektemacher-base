@@ -10,7 +10,11 @@
 {{- $imageIdSuffix := "" -}}
 {{- $manifest := dict -}}
 {
-  {{- partial "iiif/3/common.json" . -}}
+  {{- $common := partial "iiif/3/common.json" . -}}
+
+  {{- range $key, $value := $common -}}
+    "{{ $key }}": {{ $value | jsonify }},
+  {{- end -}}
 
   {{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
   {{ $defaultContentPage := "" }}
@@ -115,56 +119,58 @@
       {{- end -}}
       {{- $canvasId := printf "%scanvas/%s" $imageUrlBase $canvas -}}
 
+        {{- $pageLabel := "" -}}
+        {{- if .params.label -}}
+          {{- $pageLabel = dict "none" (slice .params.label) -}}
+        {{- else if findRE `page0*(\d+)` $manifestDir -}}
+          {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
+        {{- else if findRE `page-(.+)` $manifestDir -}}
+          {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
+        {{- else if (hasPrefix $manifestDir "cover") -}}
+          {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
+        {{- else if (hasPrefix $manifestDir "front") -}}
+          {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
+        {{- else if (hasPrefix $manifestDir "back") -}}
+          {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
+        {{- else if (hasPrefix $manifestDir "top") -}}
+            {{- $pageLabel = dict "en" (slice "Top") "de" (slice "Oberseite") -}}
+        {{- else if (hasPrefix $manifestDir "title") -}}
+          {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
+        {{- else if (hasPrefix $manifestDir "end") -}}
+          {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
+        {{- else if (hasPrefix $manifestDir "front-recto") -}}
+          {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
+        {{- else if (hasPrefix $manifestDir "front-verso") -}}
+          {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Verso") -}}
+        {{- else if (hasPrefix $manifestDir "end-recto") -}}
+          {{- $pageLabel = dict "en" (slice "Rear endpaper recto") "de" (slice "Hinteres Vorsatzpapier Recto") -}}
+        {{- else if (hasPrefix $manifestDir "end-verso") -}}
+          {{- $pageLabel = dict "en" (slice "Rear endpaper verso") "de" (slice "Hinteres Vorsatzpapier Verso") -}}
+        {{- else if hasPrefix $mediatype "audio" -}}
+          {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
+        {{- else -}}
+          {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
+          {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
+        {{- end -}}
+
+        {{- $item := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
         {
           "id":"{{ $canvasId }}",
-          "type": "Canvas",
-          {{- $pageLabel := "" -}}
-          {{- if .params.label -}}
-            {{- $pageLabel = dict "none" (slice .params.label) -}}
-          {{- else if findRE `page0*(\d+)` $manifestDir -}}
-            {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
-          {{- else if findRE `page-(.+)` $manifestDir -}}
-            {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
-          {{- else if (hasPrefix $manifestDir "cover") -}}
-            {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
-          {{- else if (hasPrefix $manifestDir "front") -}}
-            {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
-          {{- else if (hasPrefix $manifestDir "back") -}}
-            {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
-          {{- else if (hasPrefix $manifestDir "top") -}}
-              {{- $pageLabel = dict "en" (slice "Top") "de" (slice "Oberseite") -}}
-          {{- else if (hasPrefix $manifestDir "title") -}}
-            {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
-          {{- else if (hasPrefix $manifestDir "end") -}}
-            {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
-          {{- else if (hasPrefix $manifestDir "front-recto") -}}
-            {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
-          {{- else if (hasPrefix $manifestDir "front-verso") -}}
-            {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Verso") -}}
-          {{- else if (hasPrefix $manifestDir "end-recto") -}}
-            {{- $pageLabel = dict "en" (slice "Rear endpaper recto") "de" (slice "Hinteres Vorsatzpapier Recto") -}}
-          {{- else if (hasPrefix $manifestDir "end-verso") -}}
-            {{- $pageLabel = dict "en" (slice "Rear endpaper verso") "de" (slice "Hinteres Vorsatzpapier Verso") -}}
-          {{- else if hasPrefix $mediatype "audio" -}}
-            {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
-          {{- else -}}
-            {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
-            {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
-          {{- end -}}
-
+          "type": "Canvas",          
           "label": {{ $pageLabel | jsonify }},
           {{- if .params.hint -}}
+            {{- $item = $item | merge (dict "behavior" (slice .params.hint)) -}}
             "behavior": ["{{ .params.hint }}"],
           {{- end -}}
 
           {{- if eq $imageRes.MediaType.MainType "image" -}}
+            {{- $thumbnail := $imageRes.Resize "300x" -}}
+            {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
+              {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
+            {{- end -}}
             "height": {{ $imageRes.Height }},
             "width": {{ $imageRes.Width }},
             "thumbnail": [
-              {{- $thumbnail := $imageRes.Resize "300x" -}}
-              {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
-                {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
-              {{- end -}}
               {
                 "id": "{{ $thumbnail.Permalink }}",
                 "format": "image/jpeg",
@@ -173,6 +179,8 @@
                 "width": {{ $thumbnail.Width }}
               }
             ],
+            {{- $thumbnail := slice (dict "id" $thumbnail.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnail.Height "width" $thumbnail.Width) -}}
+            {{- $item = $item | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
           {{- end -}}
           {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
 
@@ -208,8 +216,10 @@
               "target":"{{ $canvasId }}"
             }]
             {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
-            
           }]
+          {{/*
+          {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice (dict "id" (printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId)) -}}
+          */}}
        }
        {{- if ne $i (sub (len $iiifResources) 1) -}}
         ,
