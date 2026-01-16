@@ -1,8 +1,8 @@
 {{- $defaultAttribution := dict "de" "Bereitgestellt von Projektemacher" "en" "Provided by Projektemacher" -}}
 {{- if isset .Params "iiifAttribution" -}}
+  {{- errorf "[iiif/3/provider.json] .Params.iiifAttribution isn't supported anymore use .Params.iiif.attribution" -}}
   ,"attribution":"{{ .Params.iiifAttribution }}",
 {{- end -}}
-
 
 {{ $value := dict }}
 {{ $translations := .AllTranslations }}
@@ -22,26 +22,4 @@
 
 {{- $requiredStatement := dict "label" (dict "en" (slice "Attribution") "de" (slice "Namensnennung")) "value" $value -}}
 
-"requiredStatement": {
-  "label": { "en": [ "Attribution" ],
-    "de": [ "Namensnennung" ]
-  },
-  "value": {
-    {{- $translations := .AllTranslations -}}
-    {{- range $i, $translation := $translations -}}
-      "{{ .Lang }}": [
-      {{- if isset .Params "iiifAttribution" -}}
-        {{- errorf "[iiif/3/provider.json] .Params.iiifAttribution isn't supported anymore use .Params.iiif.attribution" -}}
-      {{- end -}}
-      {{- if and (isset .Params "iiif") (isset .Params.iiif "attribution") -}}
-        {{ $translation.Params.iiif.attribution | jsonify }}
-      {{- else -}}
-        {{ index $defaultAttribution $translation.Lang | jsonify }}
-      {{- end -}}
-      ]
-      {{- if ne $i (sub (len $translations) 1) -}}
-       ,
-      {{- end -}}
-    {{- end -}}
-  }
-}
+{{ return $requiredStatement }}

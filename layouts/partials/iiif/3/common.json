@@ -13,29 +13,46 @@
   {{- end -}}
 ,
 
-{{- $behavior := dict -}}
 {{- if and (isset .Params "iiif") (isset .Params.iiif "behavior") -}}
-  {{- $behavior = .Params.iiif.behavior -}}
+  {{- if reflect.IsSlice .Params.iiif.behavior -}}
+    {{- errorf "[iiif/3/common.json] .Params.iiif.behavior is a slice, but it should be a string" -}}
+  {{- end -}}
+  {{- $common = $common | merge (dict "behavior" (slice .Params.iiif.behavior)) -}}
 {{- else -}}
-  {{- $behavior = slice $defaultBehavior -}}
+  {{- $common = $common | merge (dict "behavior" (slice $defaultBehavior)) -}}
 {{- end -}}
 
 {{- if .Description -}}
   {{- $summary := partial "iiif/3/manifest-summary.json" . -}}
   "summary": {{- $summary | jsonify -}},
+  {{- $common = $common | merge (dict "summary" $summary) -}}
 {{- end -}}
 
 {{- if and (isset .Params "iiif") (isset .Params.iiif "rights") -}}
   {"rights", "{{ .Params.iiif.rights }}"},
 {{- end -}}
-{{ partial "iiif/3/required-statement.json" . }},
+{{ $requiredStatement := partial "iiif/3/required-statement.json" . -}}
+"requiredStatement":{{ $requiredStatement | jsonify }},
 
+{{- $common = $common | merge (dict "requiredStatement" $requiredStatement) -}}
+
+{{/*
 {{- $thumnail := trim (partial "iiif/3/thumbnail.json" .) "\n\t " -}}
 {{- if ne $thumnail ""}}
   {{- $thumnail -}},
 {{- end -}}
-
+*/}}
+{{- $thumbnails := partial "iiif/3/thumbnail.json" . -}}
+{{- if gt ($thumbnails | len) 0 -}}
+  "thumbnail": {{ $thumbnails | jsonify }},
+  {{- $common = $common | merge (dict "thumbnail" $thumbnails) -}}
+{{- end -}}
+{{/*
 {{- partialCached "iiif/3/provider.json" . -}},
+*/}}
+{{- $provider := partialCached "iiif/3/provider.json" . -}}
+  "provider": {{ $provider | jsonify }},
+{{- $common = $common | merge (dict "provider" $provider) -}}
 
 {{- $label := dict $.Site.Language.Lang (slice (printf "%s: %s" .Site.Title .Title)) -}}
 {{- if hugo.IsMultilingual -}}
@@ -47,19 +64,23 @@
 {{- $homepage := slice (dict "id" .Permalink "type" "Text" "format" "text/html" "label" $label) -}}
 
 "homepage": {{ $homepage | jsonify }},
+{{- $common = $common | merge (dict "homepage" $homepage) -}}
 
 {{- $label := partial "iiif/3/manifest-label.json" . -}}
 "label": {{ $label | jsonify }},
-{{- if and (isset .Params "iiif") (isset .Params.iiif "metadata") -}}
-  {{- jsonify .Params.iiif.metadata -}}
-{{- end -}}
+{{- $common = $common | merge (dict "label" $label) -}}
+
 {{- if isset .Params "iiifMetadata" -}}
   {{- errorf "[single.iiii-metadata.json] .Params.iiifMetadata isn't supported anymore use .Params.iiif.metadata" -}}
 {{- end -}}
-{{- if and (isset .Params "iiif") (isset .Params.iiif "structure") -}}
-  "structures": {{- jsonify .Params.iiif.structure -}}
-{{- end -}}
-
 {{- if isset .Params "iiifStructure" -}}
   {{- errorf "[single.iiii-metadata.json] .Params.iiifStructure isn't supported anymore use .Params.iiif.structure" -}}
+{{- end -}}
+{{- with .Params.iiif.metadata -}}
+  {{- jsonify . -}}
+  {{- $common = $common | merge (dict "metadata" .) -}}
+{{- end -}}
+{{- with .Params.iiif.structure -}}
+  "structures": {{- jsonify . -}}
+  {{- $common = $common | merge (dict "structures" .) -}}
 {{- end -}}

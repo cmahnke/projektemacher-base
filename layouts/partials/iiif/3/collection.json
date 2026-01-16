@@ -1,6 +1,6 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $manifest := "manifest.json" -}}
-{{- $iiif := slice -}}
+{{- $iiifPages := slice -}}
 {{- range . -}}
   {{- $page := . -}}
   {{- $formats := slice -}}
@@ -12,31 +12,31 @@
   {{/* This is needed to rendering of collections for tag pages */}}
   {{- else if reflect.IsSlice .Params.outputs -}}
     {{- if or (in .Params.outputs "iiif") -}}
-      {{- $iiif = $iiif | append $page -}}
+      {{- $iiifPages = $iiifPages | append $page -}}
       {{- $formats = $formats | append $formats -}}
     {{- else if (in .Params.outputs "iiif-manifest") -}}
-      {{- $iiif = $iiif | append $page -}}
+      {{- $iiifPages = $iiifPages | append $page -}}
       {{- $formats = $formats | append $formats -}}
     {{- end -}}
     {{ range .OutputFormats -}}
       {{- if or (eq .Name "iiif") (eq .Name "iiif-manifest") -}}
         {{- if not (in $formats .Name) -}}
-          {{- $iiif = $iiif | append $page -}}
+          {{- $iiifPages = $iiifPages | append $page -}}
           {{- break -}}
         {{- end -}}
       {{- end -}}
     {{- else -}}
       {{/* TODO: This will never happen since .OutputFormats includes default 'html' and 'rss' */}}
-      {{- warnf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
+      {{- errorf "[home.iiif-collection.json] Outputs for %s is slice: This is usually the case if a output format definition isn't in config.toml" .File.Path -}}
     {{ end -}}
   {{- end -}}
 {{- end -}}
-{{- if or (eq 0 (len $iiif)) (ne "page.Pages" (printf "%T" $iiif)) -}}
+{{- if or (eq 0 (len $iiifPages)) (ne "page.Pages" (printf "%T" $iiifPages)) -}}
   {{- if $debug -}}
     {{- warnf "[iiif/3/collection.json] Skipping generation of IIIF collection since given pages don't contain manifest sources - certainly called via layouts/_default/term.iiif-collection.json" -}}
   {{- end -}}
 {{- else -}}
-  {{- $iiif = ($iiif | uniq).ByDate.Reverse  -}}
+  {{- $iiifPages = ($iiifPages | uniq).ByDate.Reverse  -}}
   {{- $collection := dict "@context" "http://iiif.io/api/presentation/3/context.json" "id" (printf "%s%s" site.BaseURL "collection.json") "type" "Collection" -}}
   {{- $label := dict site.Language.Lang (slice site.Title) -}}
   {{- if hugo.IsMultilingual -}}
@@ -47,15 +47,15 @@
   {{- end -}}
   {{- $collection = merge $collection (dict "label" $label) -}}
   {{- $items := slice -}}
-  {{- range $i, $item := $iiif -}}
+  {{- range $i, $item := $iiifPages -}}
     {{- with $item.Params.iiifManifest -}}
       {{- $manifest = path.Base . -}}
     {{- end -}}
     {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest) "type" "Manifest" -}}
-    {{- $thumbnail := (partial "iiif/3/thumbnail.json" .) -}}
-    {{/* TODO: This won't work until the partial returns a dict
-    {{- $item = $item | merge $thumbnail -}}
-    */}}
+    {{- $thumbnails := partial "iiif/3/thumbnail.json" . -}}
+    {{- if gt ($thumbnails | len) 0 -}}
+      {{- $item = $item | merge (dict "thumbnail" $thumbnails) -}}
+    {{- end -}}
     {{- $label := dict site.Language.Lang (slice .Title) -}}
     {{- if hugo.IsMultilingual -}}
       {{- $translations := where .Translations ".Lang" "!=" site.Language.Lang -}}
@@ -67,10 +67,24 @@
 
     {{- $items = $items | append $item -}}
   {{- end -}}
+  {{- $collection := dict "@context" "http://iiif.io/api/presentation/3/context.json" "id" (printf "%s%s" site.BaseURL "collection.json") "type" "Collection" -}}
   {
     "@context": "http://iiif.io/api/presentation/3/context.json",
     "id": "{{ site.BaseURL }}collection.json",
     "type": "Collection",
+    {{/*
+    {{- partialCached "iiif/3/provider.json" . -}},
+    */}}
+
+    {{- $label := dict site.Language.Lang (slice site.Title) -}}
+    {{- if hugo.IsMultilingual -}}
+      {{- $translations := where site.Home.AllTranslations ".Lang" "!=" site.Language.Lang -}}
+      {{- range $translations -}}
+        {{- $label = $label | merge (dict .Lang (slice .Name)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $collection = $collection | merge (dict "label" $label) -}}
+
     "label": {
         "{{ site.Language.Lang }}": [
           "{{ site.Title }}"
@@ -85,23 +99,39 @@
         {{ end }}
       {{- end -}}
     },
+    {{- $items := slice -}}
     "items": [
-      {{- range $i, $item := $iiif -}}
-        {{- with $item.Params.iiifManifest -}}
+      {{- range $i, $iiifPage := $iiifPages -}}
+        {{- with $iiifPage.Params.iiifManifest -}}
           {{- $manifest = path.Base . -}}
         {{- end -}}
         {
-          "id": "{{ printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest }}",
+          "id": "{{ printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest }}",
           "type": "Manifest",
 
+          {{/*
           {{- $thumbnail := trim (partial "iiif/3/thumbnail.json" .) "\n \t" -}}
           {{- if ne $thumbnail "" -}}
             {{- $thumbnail -}},
           {{- end -}}
+          */}}
+          {{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
+          {{- if gt ($thumnails | len) 0 -}}
+            "thumbnail": {{ $thumnails | jsonify }},
+          {{- end -}}
 
+          {{- $label := dict site.Language.Lang (slice $iiifPage.Title) -}}
+          {{- if hugo.IsMultilingual -}}
+            {{- if .IsTranslated -}}
+              {{- range .Translations -}}
+                {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+          {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label -}}
           "label": {
             "{{ site.Language.Lang }}": [
-              {{ $item.Title | jsonify }}
+              {{ $iiifPage.Title | jsonify }}
             ]
             {{- if hugo.IsMultilingual -}}
               {{- if .IsTranslated -}}
@@ -115,10 +145,12 @@
             {{- end -}}
           }
         }
-        {{- if ne $i (sub (len $iiif) 1) -}}
+        {{- if ne $i (sub (len $iiifPages) 1) -}}
          ,
         {{- end -}}
+        {{- $items = $items | append $item -}}
       {{- end -}}
     ]
+    {{- $collection = $collection | merge (dict "items" $items) -}}
   }
 {{- end -}}

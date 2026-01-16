@@ -1,26 +1,23 @@
 {{- $labels := dict "en" (slice "Projektemacher") "de" (slice "Projektemacher") -}}
+{{/*
 "provider": [
   {
     "id": "https://projektemacher.org/",
     "type": "Agent",
     "label": {{ $labels | jsonify }},
-    {{- $homepage := dict "id" "https://projektemacher.org/" "type" "Text" "label" $labels -}}
     "homepage": [
       {
         "id": "https://projektemacher.org/",
         "type": "Text",
         "label": {{ $labels | jsonify }},
         "format": "text/html"
-    }
-    {{- $provider := dict "provider" (slice (dict "id" "https://projektemacher.org/" "type" "Agent" "label" $labels "homepage" (slice $homepage))) -}}
-  ],
+      }
+    ],
+*/}}
+  {{- $homepage := dict "id" "https://projektemacher.org/" "type" "Text" "label" $labels "format" "text/html" -}}
+  {{- $provider := dict "id" "https://projektemacher.org/" "type" "Agent" "label" $labels "homepage" (slice $homepage) -}}
+{{/*
   "logo": [
-    {{- $logo := slice -}}
-    {{- if isset .Params "iiifLogo" -}}
-      {{- $logo = $logo | append (dict "id" .Params.iiifLogo.img "service" (dict "@context" "http://iiif.io/api/image/2/context.json" "id" .Params.iiifLogo.url "profile" "http://iiif.io/api/image/2/level0.json")) -}}
-    {{- else -}}
-      {{- $logo = $logo | append (dict "id" "https://projektemacher.org/images/logo.png" "type" "Image" "format" "image/png" "height" 1024 "width" 1024) -}}
-    {{- end -}}
     {
       {{- if isset .Params "iiifLogo" -}}
         {{- errorf "[iiif/3/provider.json] .Params.iiifLogo isn't supported anymore use .Params.iiif.logo" -}}
@@ -42,7 +39,17 @@
       {{- end -}}
     }
   ],
-  {{- $seeAlso := dict "seeAlso" (slice (dict "id" "https://projektemacher.org/projektemacher.json" "type" "Dataset" "format" "application/ld+json" "profile" "https://schema.org/")) -}}
+  */}}
+  {{- $logo := slice -}}
+  {{- if and (isset .Params "iiif") (isset .Params.iiif "logo") -}}
+    {{- $logo = $logo | append (dict "id" .Params.iiif.logo.img "service" (dict "@context" "http://iiif.io/api/image/2/context.json" "id" .Params.iiif.logo.url "profile" "http://iiif.io/api/image/2/level0.json")) -}}
+  {{- else -}}
+    {{- $logo = $logo | append (dict "id" "https://projektemacher.org/images/logo.png" "type" "Image" "format" "image/png" "height" 1024 "width" 1024) -}}
+  {{- end -}}
+  {{- $provider = $provider | merge (dict "logo" $logo) -}}
+  {{- $seeAlso := slice (dict "id" "https://projektemacher.org/projektemacher.json" "type" "Dataset" "format" "application/ld+json" "profile" "https://schema.org/") -}}
+  {{- $provider = $provider | merge (dict "seeAlso" $seeAlso) -}}
+  {{/*
   "seeAlso": [
     {
       "id": "https://projektemacher.org/projektemacher.json",
@@ -53,3 +60,5 @@
   ]
   }
 ]
+*/}}
+{{- return slice $provider -}}

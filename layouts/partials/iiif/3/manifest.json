@@ -8,6 +8,7 @@
 {{- end -}}
 
 {{- $imageIdSuffix := "" -}}
+{{- $manifest := dict -}}
 {
   {{- partial "iiif/3/common.json" . -}}
 
@@ -181,16 +182,28 @@
             "items":[
             {{- $imageId := "" -}}
 
-            {{- if hasPrefix $mediatype "image" -}}
+            {{- if eq $imageRes.MediaType.MainType "image" -}}
               {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
-            {{ else if hasPrefix $mediatype "audio" }}
+            {{ else if eq $imageRes.MediaType.MainType "audio" }}
               {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
+            {{- else -}}
+              {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
             {{- end -}}
 
             {
               "id": "{{ printf "%s/%s" $annnotationId (index (split $mediatype "/") 0) }}",
               "type": "Annotation",
               "motivation":"painting",
+              {{- $body := dict -}}
+              {{- if eq $imageRes.MediaType.MainType "image" -}}
+                {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
+                {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" $service -}}
+              {{- else if eq $imageRes.MediaType.MainType "audio" -}}
+                {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
+              {{- else -}}
+                {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
+              {{- end -}}
+              {{/*
               "body":{
                 {{- if hasPrefix $mediatype "image" -}}
                   {{- $bodyId := printf "%s%s" $imageId $fullResImgSuffix -}}
@@ -199,6 +212,7 @@
                   "format": "image/jpeg",
                   "height": {{ $imageRes.Height }},
                   "width": {{ $imageRes.Width }},
+                  
                   "service": [{
                     "id":"{{ $imageId }}",
                     "type": "ImageService2",
@@ -210,8 +224,12 @@
                   "format": {{ $mediatype | jsonify }}
                 {{- end -}}
               },
+              */}}
+              "body": {{- $body | jsonify -}},
               "target":"{{ $canvasId }}"
             }]
+            {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
+            
           }]
        }
        {{- if ne $i (sub (len $iiifResources) 1) -}}
