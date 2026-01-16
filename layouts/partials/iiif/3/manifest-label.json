@@ -5,4 +5,5 @@
     {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
   {{- end -}}
 {{- end -}}
+
 {{ return $label}}
