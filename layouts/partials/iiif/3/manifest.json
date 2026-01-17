@@ -4,249 +4,199 @@
 
 {{- $imageIdSuffix := "" -}}
 {{- $manifest := dict -}}
-{
-  {{- $common := partial "iiif/3/common.json" . -}}
 
-  {{- $seeAlso := dict -}}
-  {{- with .Params.linkedart -}}
-    {{- $seeAlso := dict "seeAlso" (slice (dict "id" $.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata"))) -}}
-  {{- end -}}
-  {{- $common = $common | merge $seeAlso -}}
+{{- $common := partial "iiif/3/common.json" . -}}
 
-  {{- range $key, $value := $common -}}
-    "{{ $key }}": {{ $value | jsonify }},
-  {{- end -}}
+{{- $seeAlso := dict -}}
+{{- with .Params.linkedart -}}
+  {{- $seeAlso := dict "seeAlso" (slice (dict "id" $.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata"))) -}}
+{{- end -}}
+{{- $common = $common | merge $seeAlso -}}
 
-  {{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
-  {{ $defaultContentPage := "" }}
-  {{- if hugo.IsMultilingual -}}
-    {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
-  {{- else -}}
-    {{- $defaultContentPage = . -}}
-  {{ end }}
-  {{- $urlBase := "" -}}
-  {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
-  {{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
-    {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
-  {{- else -}}
-    {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
-  {{- end -}}
 
-  {{- $iiifResources := slice -}}
+{{- $manifest = $manifest | merge $common -}}
 
-  {{- if eq .Kind "page" -}}
-    {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
-  {{- else if eq .Kind "section" -}}
-    {{- if (isset .Params "resources") -}}
-      {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
-        {{- $res := $.Resources.Get .src -}}
-        {{- if eq (string $res.MediaType) "image/jxl" -}}
-          {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
-          {{- $res = $.Resources.Get $previewLoc -}}
-        {{- end -}}
-        {{- $iiifResources = $iiifResources | append (merge . (dict "relpath" "" "res" $res)) -}}
+{{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
+{{ $defaultContentPage := "" }}
+{{- if hugo.IsMultilingual -}}
+  {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
+{{- else -}}
+  {{- $defaultContentPage = . -}}
+{{ end }}
+{{- $urlBase := "" -}}
+{{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
+{{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+  {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
+{{- else -}}
+  {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
+{{- end -}}
+
+{{- $iiifResources := slice -}}
+
+{{- if eq .Kind "page" -}}
+  {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
+{{- else if eq .Kind "section" -}}
+  {{- if (isset .Params "resources") -}}
+    {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
+      {{- $res := $.Resources.Get .src -}}
+      {{- if eq (string $res.MediaType) "image/jxl" -}}
+        {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
+        {{- $res = $.Resources.Get $previewLoc -}}
       {{- end -}}
+      {{- $iiifResources = $iiifResources | append (merge . (dict "relpath" "" "res" $res)) -}}
     {{- end -}}
-    {{- $parentPath := path.Dir .RelPermalink -}}
-    {{- range .CurrentSection.Pages -}}
-      {{- $childPath := path.Dir .RelPermalink -}}
-      {{- $relPath := substr $childPath (add (len $parentPath) 1) -}}
-      {{- $childPage := . -}}
-      {{- range (where .Params.resources "params.iiif" "ne" nil) -}}
-        {{- $childSrc := .src -}}
-        {{- $res := $childPage.Resources.Get .src -}}
-
-        {{/* Check for JXL */}}
-        {{- if eq (string $res.MediaType) "image/jxl" -}}
-          {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
-          {{- $res = $childPage.Resources.Get $previewLoc -}}
-        {{- end -}}
-        {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res "relpath" (printf "%s/" $relPath)) -}}
-
-        {{- $iiifResources = $iiifResources | append $pageResources -}}
-      {{- end -}}
-    {{- end -}}
-  {{- else -}}
-    {{- errorf "[iiif/3/manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
   {{- end -}}
+  {{- $parentPath := path.Dir .RelPermalink -}}
+  {{- range .CurrentSection.Pages -}}
+    {{- $childPath := path.Dir .RelPermalink -}}
+    {{- $relPath := substr $childPath (add (len $parentPath) 1) -}}
+    {{- $childPage := . -}}
+    {{- range (where .Params.resources "params.iiif" "ne" nil) -}}
+      {{- $childSrc := .src -}}
+      {{- $res := $childPage.Resources.Get .src -}}
 
-  "items": [
-    {{- range $i, $res := $iiifResources -}}
-      {{- $imageUrlBase := $urlBase -}}
-      {{- if eq $.Kind "section" -}}
-        {{- $imageUrlBase = printf "%s%s" $urlBase $res.relpath -}}
-      {{- end -}}
-      {{- if not .params.iiif -}}
-        {{- continue -}}
-      {{- end -}}
-      {{- $imageRes := $.Resources.Get $res.src -}}
-      {{- if and (eq $.Kind "section") (isset $res "res") -}}
-        {{- $imageRes = $res.res -}}
-      {{- end -}}
-      {{- if and $debug (eq $imageRes nil) -}}
-        {{- errorf "[iiif/3/manifest.json] Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
-      {{- end -}}
-
-      {{- $mediatype := string $imageRes.MediaType -}}
       {{/* Check for JXL */}}
-      {{- if eq $mediatype "image/jxl" -}}
-        {{- $previewLoc := "" -}}
-        {{- if (ne $.Kind "section") -}}
-          {{- $previewLoc = path.Join (path.Dir $res.params.iiif) $fullResImgSuffix -}}
-        {{- else -}}
-          {{- $previewLoc = path.Join $res.relpath (path.Dir $res.params.iiif) $fullResImgSuffix -}}
-        {{- end -}}
-        {{- if $debug -}}
-          {{ warnf "[iiif/3/manifest.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
-        {{- end -}}
-        {{- $imageRes = $.Resources.Get $previewLoc -}}
+      {{- if eq (string $res.MediaType) "image/jxl" -}}
+        {{- $previewLoc := path.Join (path.Dir .params.iiif) $fullResImgSuffix -}}
+        {{- $res = $childPage.Resources.Get $previewLoc -}}
       {{- end -}}
-      {{- if eq $imageRes nil -}}
-        {{- errorf "[iiif/3/manifest.json] failed to load from %#v" $res -}}
-      {{- end -}}
+      {{- $pageResources := merge . (dict "pagepath" (string $childPage.Path) "res" $res "relpath" (printf "%s/" $relPath)) -}}
 
-      {{- $manifestDir := "" -}}
-      {{- if hasPrefix $mediatype "image" -}}
-        {{- $manifestDir = path.Dir .params.iiif -}}
-      {{ else if hasPrefix $mediatype "audio" }}
-        {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
-      {{- end -}}
+      {{- $iiifResources = $iiifResources | append $pageResources -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- errorf "[iiif/3/manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
+{{- end -}}
 
-      {{- $canvas := "" -}}
-      {{- if .name -}}
-        {{- $canvas = .name -}}
-      {{- else -}}
-        {{- $canvas = $manifestDir -}}
-      {{- end -}}
-      {{- $canvasId := printf "%scanvas/%s" $imageUrlBase $canvas -}}
+{{- $manifestItems := slice -}}
+{{- range $i, $res := $iiifResources -}}
+  {{- $imageUrlBase := $urlBase -}}
+  {{- if eq $.Kind "section" -}}
+    {{- $imageUrlBase = printf "%s%s" $urlBase $res.relpath -}}
+  {{- end -}}
+  {{- if not .params.iiif -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $imageRes := $.Resources.Get $res.src -}}
+  {{- if and (eq $.Kind "section") (isset $res "res") -}}
+    {{- $imageRes = $res.res -}}
+  {{- end -}}
+  {{- if and $debug (eq $imageRes nil) -}}
+    {{- errorf "[iiif/3/manifest.json] Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
+  {{- end -}}
 
-        {{- $pageLabel := "" -}}
-        {{- if .params.label -}}
-          {{- $pageLabel = dict "none" (slice .params.label) -}}
-        {{- else if findRE `page0*(\d+)` $manifestDir -}}
-          {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
-        {{- else if findRE `page-(.+)` $manifestDir -}}
-          {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
-        {{- else if (hasPrefix $manifestDir "cover") -}}
-          {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
-        {{- else if (hasPrefix $manifestDir "front") -}}
-          {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
-        {{- else if (hasPrefix $manifestDir "back") -}}
-          {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
-        {{- else if (hasPrefix $manifestDir "top") -}}
-            {{- $pageLabel = dict "en" (slice "Top") "de" (slice "Oberseite") -}}
-        {{- else if (hasPrefix $manifestDir "title") -}}
-          {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
-        {{- else if (hasPrefix $manifestDir "end") -}}
-          {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
-        {{- else if (hasPrefix $manifestDir "front-recto") -}}
-          {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
-        {{- else if (hasPrefix $manifestDir "front-verso") -}}
-          {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Verso") -}}
-        {{- else if (hasPrefix $manifestDir "end-recto") -}}
-          {{- $pageLabel = dict "en" (slice "Rear endpaper recto") "de" (slice "Hinteres Vorsatzpapier Recto") -}}
-        {{- else if (hasPrefix $manifestDir "end-verso") -}}
-          {{- $pageLabel = dict "en" (slice "Rear endpaper verso") "de" (slice "Hinteres Vorsatzpapier Verso") -}}
-        {{- else if hasPrefix $mediatype "audio" -}}
-          {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
-        {{- else -}}
-          {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
-          {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
-        {{- end -}}
+  {{- $mediatype := string $imageRes.MediaType -}}
+  {{/* Check for JXL */}}
+  {{- if eq $mediatype "image/jxl" -}}
+    {{- $previewLoc := "" -}}
+    {{- if (ne $.Kind "section") -}}
+      {{- $previewLoc = path.Join (path.Dir $res.params.iiif) $fullResImgSuffix -}}
+    {{- else -}}
+      {{- $previewLoc = path.Join $res.relpath (path.Dir $res.params.iiif) $fullResImgSuffix -}}
+    {{- end -}}
+    {{- if $debug -}}
+      {{ warnf "[iiif/3/manifest.json] Using %s as preview, trying to load %s as JPEG substitute for %s" $res.src $previewLoc .File.Path }}
+    {{- end -}}
+    {{- $imageRes = $.Resources.Get $previewLoc -}}
+  {{- end -}}
+  {{- if eq $imageRes nil -}}
+    {{- errorf "[iiif/3/manifest.json] failed to load from %#v" $res -}}
+  {{- end -}}
 
-        {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
-        {{/*
-        {
-          "id":"{{ $canvasId }}",
-          "type": "Canvas",          
-          "label": {{ $pageLabel | jsonify }},
-        */}}
-          {{- if .params.hint -}}
-            {{- $canvas = $canvas | merge (dict "behavior" (slice .params.hint)) -}}
-          {{/*
-            "behavior": ["{{ .params.hint }}"],
-            */}}
-          {{- end -}}
+  {{- $manifestDir := "" -}}
+  {{- if hasPrefix $mediatype "image" -}}
+    {{- $manifestDir = path.Dir .params.iiif -}}
+  {{ else if hasPrefix $mediatype "audio" }}
+    {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
+  {{- end -}}
 
-          {{- if eq $imageRes.MediaType.MainType "image" -}}
-            {{- $thumbnailRes := $imageRes.Resize "300x" -}}
-            {{- if or (not $thumbnailRes.Height) (not $thumbnailRes.Width) -}}
-              {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
-            {{- end -}}
-            {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
-            {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
-            {{/*
-            "height": {{ $imageRes.Height }},
-            "width": {{ $imageRes.Width }},
-            "thumbnail": {{ $thumbnail | jsonify }},
-            */}}
-            {{/*
-            "thumbnail": [
-              {
-                "id": "{{ $thumbnail.Permalink }}",
-                "format": "image/jpeg",
-                "type":"Image",
-                "height": {{ $thumbnail.Height }},
-                "width": {{ $thumbnail.Width }}
-              }
-            ],
-            */}}
+  {{- $canvas := "" -}}
+  {{- if .name -}}
+    {{- $canvas = .name -}}
+  {{- else -}}
+    {{- $canvas = $manifestDir -}}
+  {{- end -}}
+  {{- $canvasId := printf "%scanvas/%s" $imageUrlBase $canvas -}}
 
-          {{- end -}}
-          {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
+  {{- $pageLabel := "" -}}
+  {{- if .params.label -}}
+    {{- $pageLabel = dict "none" (slice .params.label) -}}
+  {{- else if findRE `page0*(\d+)` $manifestDir -}}
+    {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
+  {{- else if findRE `page-(.+)` $manifestDir -}}
+    {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
+  {{- else if (hasPrefix $manifestDir "cover") -}}
+    {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
+  {{- else if (hasPrefix $manifestDir "front") -}}
+    {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
+  {{- else if (hasPrefix $manifestDir "back") -}}
+    {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
+  {{- else if (hasPrefix $manifestDir "top") -}}
+      {{- $pageLabel = dict "en" (slice "Top") "de" (slice "Oberseite") -}}
+  {{- else if (hasPrefix $manifestDir "title") -}}
+    {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
+  {{- else if (hasPrefix $manifestDir "end") -}}
+    {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
+  {{- else if (hasPrefix $manifestDir "front-recto") -}}
+    {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
+  {{- else if (hasPrefix $manifestDir "front-verso") -}}
+    {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Verso") -}}
+  {{- else if (hasPrefix $manifestDir "end-recto") -}}
+    {{- $pageLabel = dict "en" (slice "Rear endpaper recto") "de" (slice "Hinteres Vorsatzpapier Recto") -}}
+  {{- else if (hasPrefix $manifestDir "end-verso") -}}
+    {{- $pageLabel = dict "en" (slice "Rear endpaper verso") "de" (slice "Hinteres Vorsatzpapier Verso") -}}
+  {{- else if hasPrefix $mediatype "audio" -}}
+    {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
+  {{- else -}}
+    {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
+    {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
+  {{- end -}}
 
-          {{/*
-          "items": [{
-            "id": "{{ $annnotationId }}",
-            "type": "AnnotationPage",
-            "items":[
-          */}}
-            {{- $imageId := "" -}}
+  {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
 
-            {{- if eq $imageRes.MediaType.MainType "image" -}}
-              {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
-            {{ else if eq $imageRes.MediaType.MainType "audio" }}
-              {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
-            {{- else -}}
-              {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
-            {{- end -}}
+  {{- if .params.hint -}}
+    {{- $canvas = $canvas | merge (dict "behavior" (slice .params.hint)) -}}
+  {{- end -}}
 
-            {{- $body := dict -}}
-            {{- if eq $imageRes.MediaType.MainType "image" -}}
-              {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
-              {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" (slice $service) -}}
-            {{- else if eq $imageRes.MediaType.MainType "audio" -}}
-              {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
-            {{- else -}}
-              {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
-            {{- end -}}
-            {{/*
-            {
-              "id": "{{ printf "%s/%s" $annnotationId (index (split $mediatype "/") 0) }}",
-              "type": "Annotation",
-              "motivation":"painting",
-              "body": {{- $body | jsonify -}},
-              "target":"{{ $canvasId }}"
-            }
-            */}}
-            {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
-            {{/*
-            ]
-          }]
-            */}}
+  {{- if eq $imageRes.MediaType.MainType "image" -}}
+    {{- $thumbnailRes := $imageRes.Resize "300x" -}}
+    {{- if or (not $thumbnailRes.Height) (not $thumbnailRes.Width) -}}
+      {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
+    {{- end -}}
+    {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
+    {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
+  {{- end -}}
+  {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
 
-          {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice $item) -}}
-          {{/*
-          "items": {{ slice $annotationPage | jsonify }}
-          
-       }
-       {{- if ne $i (sub (len $iiifResources) 1) -}}
-        ,
-       {{- end -}}
-       */}}
-      {{- $canvas = $canvas | merge (dict "items" (slice $annotationPage)) -}}
-      {{- $canvas | jsonify -}}
 
-     {{- end -}}
-  ]
-}
+  {{- $imageId := "" -}}
+
+  {{- if eq $imageRes.MediaType.MainType "image" -}}
+    {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
+  {{ else if eq $imageRes.MediaType.MainType "audio" }}
+    {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
+  {{- else -}}
+    {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
+  {{- end -}}
+
+  {{- $body := dict -}}
+  {{- if eq $imageRes.MediaType.MainType "image" -}}
+    {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
+    {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" (slice $service) -}}
+  {{- else if eq $imageRes.MediaType.MainType "audio" -}}
+    {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
+  {{- else -}}
+    {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
+  {{- end -}}
+
+  {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
+
+  {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice $item) -}}
+
+  {{- $canvas = $canvas | merge (dict "items" (slice $annotationPage)) -}}
+  {{- $manifestItems = $manifestItems | append $canvas -}}
+{{- end -}}
+
+{{- $manifest = $manifest | merge (dict "items" $manifestItems) -}}
+{{- $manifest | jsonify -}}
