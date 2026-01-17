@@ -18,7 +18,7 @@
   {{- $download = . -}}
 {{- end -}}
 
-{{- $pdflink := printf "%s/%s" .Page.Permalink $pdf -}}
+{{- $pdflink := printf "%s%s" .Page.Permalink $pdf -}}
 
 {{- $file := path.Join .Page.Path $pdf -}}
 {{- if not (fileExists $file) -}}
