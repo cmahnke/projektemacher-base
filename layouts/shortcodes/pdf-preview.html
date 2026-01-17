@@ -14,6 +14,9 @@
 {{- end -}}
 
 {{- $download := false -}}
+{{- with .Get "download" -}}
+  {{- $download = . -}}
+{{- end -}}
 
 {{- $pdflink := printf "%s/%s" .Page.Permalink $pdf -}}
 
@@ -38,6 +41,11 @@
     };
     PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
   </script>
+  {{- if $download -}}
+    <a class="pdf-preview-download" href="{{ $pdflink }}" download>
+      {{ i18n "pdfDownload" }}
+    </a>
+  {{- end -}}
 {{- end -}}
 
 {{- define "_partials/shortcodes/pdf-preview-metadata.html" -}}
