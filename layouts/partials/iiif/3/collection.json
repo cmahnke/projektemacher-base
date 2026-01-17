@@ -64,7 +64,6 @@
       {{- end -}}
     {{- end -}}
     {{- $item = $item | merge (dict "label" $label) -}}
-
     {{- $items = $items | append $item -}}
   {{- end -}}
   {{- $collection := dict "@context" "http://iiif.io/api/presentation/3/context.json" "id" (printf "%s%s" site.BaseURL "collection.json") "type" "Collection" -}}

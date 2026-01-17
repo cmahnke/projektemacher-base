@@ -2,15 +2,16 @@
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
-{{- $seeAlso := dict -}}
-{{- with .Params.linkedart -}}
-  {{- $seeAlso := dict "seeAlso" (slice (dict "id" $.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata"))) -}}
-{{- end -}}
-
 {{- $imageIdSuffix := "" -}}
 {{- $manifest := dict -}}
 {
   {{- $common := partial "iiif/3/common.json" . -}}
+
+  {{- $seeAlso := dict -}}
+  {{- with .Params.linkedart -}}
+    {{- $seeAlso := dict "seeAlso" (slice (dict "id" $.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata"))) -}}
+  {{- end -}}
+  {{- $common = $common | merge $seeAlso -}}
 
   {{- range $key, $value := $common -}}
     "{{ $key }}": {{ $value | jsonify }},
@@ -153,23 +154,33 @@
           {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
         {{- end -}}
 
-        {{- $item := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
+        {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
+        {{/*
         {
           "id":"{{ $canvasId }}",
           "type": "Canvas",          
           "label": {{ $pageLabel | jsonify }},
+        */}}
           {{- if .params.hint -}}
-            {{- $item = $item | merge (dict "behavior" (slice .params.hint)) -}}
+            {{- $canvas = $canvas | merge (dict "behavior" (slice .params.hint)) -}}
+          {{/*
             "behavior": ["{{ .params.hint }}"],
+            */}}
           {{- end -}}
 
           {{- if eq $imageRes.MediaType.MainType "image" -}}
-            {{- $thumbnail := $imageRes.Resize "300x" -}}
-            {{- if or (not $thumbnail.Height) (not $thumbnail.Width) -}}
+            {{- $thumbnailRes := $imageRes.Resize "300x" -}}
+            {{- if or (not $thumbnailRes.Height) (not $thumbnailRes.Width) -}}
               {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
             {{- end -}}
+            {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
+            {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
+            {{/*
             "height": {{ $imageRes.Height }},
             "width": {{ $imageRes.Width }},
+            "thumbnail": {{ $thumbnail | jsonify }},
+            */}}
+            {{/*
             "thumbnail": [
               {
                 "id": "{{ $thumbnail.Permalink }}",
@@ -179,15 +190,17 @@
                 "width": {{ $thumbnail.Width }}
               }
             ],
-            {{- $thumbnail := slice (dict "id" $thumbnail.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnail.Height "width" $thumbnail.Width) -}}
-            {{- $item = $item | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
+            */}}
+
           {{- end -}}
           {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
 
+          {{/*
           "items": [{
             "id": "{{ $annnotationId }}",
             "type": "AnnotationPage",
             "items":[
+          */}}
             {{- $imageId := "" -}}
 
             {{- if eq $imageRes.MediaType.MainType "image" -}}
@@ -207,23 +220,33 @@
             {{- else -}}
               {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
             {{- end -}}
-
+            {{/*
             {
               "id": "{{ printf "%s/%s" $annnotationId (index (split $mediatype "/") 0) }}",
               "type": "Annotation",
               "motivation":"painting",
               "body": {{- $body | jsonify -}},
               "target":"{{ $canvasId }}"
-            }]
+            }
+            */}}
             {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
+            {{/*
+            ]
           }]
+            */}}
+
+          {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice $item) -}}
           {{/*
-          {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice (dict "id" (printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId)) -}}
-          */}}
+          "items": {{ slice $annotationPage | jsonify }}
+          
        }
        {{- if ne $i (sub (len $iiifResources) 1) -}}
         ,
        {{- end -}}
+       */}}
+      {{- $canvas = $canvas | merge (dict "items" (slice $annotationPage)) -}}
+      {{- $canvas | jsonify -}}
+
      {{- end -}}
   ]
 }
