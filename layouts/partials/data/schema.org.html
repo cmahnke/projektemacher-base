@@ -1,6 +1,13 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
-{{- if .IsHome -}}
+{{- if .Params.schema -}}
+  {{- $template := printf "schema.org/%s" .Params.schema -}}
+  {{- if templates.Exists (printf "_partials/%s" $template) -}}
+    {{- partial $template . -}}
+  {{- else -}}
+    {{- warnf "[data/schema.org.html] Can't find %s" $template -}}
+  {{- end -}}
+{{- else if .IsHome -}}
   {{- if templates.Exists "_partials/schema.org/home.html" -}}
     {{- partial "schema.org/home.html" . -}}
   {{- else -}}
