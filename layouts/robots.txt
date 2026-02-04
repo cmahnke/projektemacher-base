@@ -12,5 +12,7 @@ Sitemap: {{ "sitemap.xml" | absLangURL }}
 {{- $llmsGoTXT := resources.Get "llms.go.txt" -}}
 {{- if and $llmsGoTXT .Site.Params.robots.llmsTXT -}}
   {{- $llmsTXT := $llmsGoTXT | resources.ExecuteAsTemplate "llms.txt" . -}}
-  llms-txt: {{ $llmsTXT.Permalink }}
+  {{- with $llmsTXT.Permalink -}}
+llms-txt: {{ . }}
+  {{- end -}}
 {{- end -}}
