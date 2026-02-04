@@ -55,7 +55,8 @@
     "@fontsource/roboto": "^5.2.9",
     "@fontsource/space-grotesk": "^5.2.10",
     "@fontsource/space-mono": "^5.2.9",
-    "@fontsource/special-elite": "^5.2.8"
+    "@fontsource/special-elite": "^5.2.8",
+    "@fontsource/comic-relief": "^5.2.2"
   },
   "devDependencies": {
     "@fontsource-utils/scss": "^0.2.2",
