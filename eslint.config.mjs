@@ -29,6 +29,7 @@ export default [{
 
     rules: {
         "no-unused-vars": 1,
+        "no-useless-assignment": 1,
         "toml/padding-line-between-tables": 0,
         "no-prototype-builtins": 0,
     },
