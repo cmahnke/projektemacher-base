@@ -37,6 +37,11 @@ class Config(Site):
         if self.config_file is None:
             raise Exception(f"No config file found in {self.base_dir}")
         self.config = self.load_hugo_config()
+        self.langs = list(self.config.get("languages", {"default": {}}).keys())
+        self.defaultLanguage = self.config.get("defaultContentLanguage", None)
+        if self.defaultLanguage is None:
+            self.defaultLanguage = self.config.get("defaultcontentlanguage", None)
+        
 
     def load_hugo_config(self):
         self.logger.debug(f"Loading Hugo config from {self.base_dir} ({self.config_file})")
@@ -67,11 +72,12 @@ class Post:
     filePattern = r"(_?)index(\.([a-zA-Z-]){2,5})?\.md"
     filePatternMatcher = re.compile(filePattern)
 
-    def __init__(self, path, lang=None):
+    def __init__(self, path, lang=None, config=None):
         self.files = {}
         self.post = {}
         self.section = False
         self.resources = {}
+        self.config = config
         if isinstance(path, dict):
             self._fromDict(path)
         elif isinstance(path, str):
@@ -88,6 +94,9 @@ class Post:
             self.files[None] = self.files[list(self.files.keys())[0]]
         if self.files[None].startswith("_"):
             self.section = True
+        self.outputDir = self._outputDir(lang)
+        if config and config.defaultLanguage:
+            self.post[config.defaultLanguage] = self.post[None]
 
     def _fromDict(self, dict):
         for lang, file in dict.items():
@@ -99,8 +108,10 @@ class Post:
         for file in os.listdir(path):
             fileMatch = Post.filePatternMatcher.match(file)
             if fileMatch:
-                lang = fileMatch.group(2)
+                lang = fileMatch.group(2).lstrip(".")
                 postFiles[lang] = os.path.join(path, file)
+                if lang is None and self.config and self.config.defaultLanguage:
+                    postFiles[self.config.defaultLanguage] = os.path.join(path, file)
         return postFiles
 
     def _findResources(self, lang):
@@ -116,6 +127,76 @@ class Post:
         with open(path) as f:
             self.post[lang] = frontmatter.load(f)
 
+    def _findSection(self, lang):
+        if self.section:
+            return self
+        parent = self.path.parent
+        if parent == self.path:
+            return None
+        try:
+            parentPost = Post(parent, lang, self.config)
+            if parentPost.section:
+                return parentPost
+            else:
+                return parentPost._findSection(lang)
+        except Exception as e:
+            logging.debug(f"No post found in {parent} for lang {lang}: {e}")
+            return None
+
+    def getOutputs(self, lang=None):
+        outputs = []
+        if "outputs" in self.post[lang].metadata:
+            outputs.append(self.post[lang].metadata["outputs"])
+        if self.config and "outputs" in self.config.config:
+            outputs.append(self.config.config["outputs"])
+        if not self.section:
+            section = self._findSection(lang)
+            if section and "outputs" in section.post[lang].metadata:
+                outputs.append(section.post[lang].metadata["outputs"])
+        return list(set(outputs))
+
+    def getOutputDirs(self):
+        outputDirs = []
+        if self.config is not None and "publishDir" in self.config.config and self.config.defaultLanguage:
+            publish_dir = self.config.publishDir()
+            rel_path = Path(os.path.relpath(self.files[None], self.config.content_dir())).parent
+            outputDirs = [os.path.join(publish_dir, rel_path)]
+            for lang in self.config.langs:
+                if lang != self.config.defaultLanguage:
+                  outputDirs.append(os.path.join(publish_dir, lang, rel_path))
+        return outputDirs
+
+    def _outputDir(self, lang):
+        if self.config is None:
+            return None
+        publish_dir = self.config.publishDir()
+        rel_path = Path(os.path.relpath(self.files[lang], self.config.content_dir())).parent
+        outputDirs = {}
+        if lang and self.config and lang is not self.config.defaultLanguage:
+            for l in self.config.langs:
+                if l == lang:
+                    outputDirs[l] = os.path.join(publish_dir, lang, rel_path)
+        else:
+            outputDirs[None] = os.path.join(publish_dir, rel_path)
+        return outputDirs
+
+    def _findOutputs(self, lang):
+        buildins = ["index.html"]
+        outputs = self.getOutputs(lang)
+        outputfiles = []
+        outputs.remove("html")
+        if self.config is not None and "outputFormats" in self.config.config:
+            for output in outputs:
+                if output in self.config.config["outputFormats"]:
+                    outputfiles.append(self.config.config["outputFormats"][output]["baseName"] + "." + output)
+        if self.config is None:
+            return None
+        publish_dir = self.config.publishDir()
+        rel_path = os.path.relpath(self.files[lang], self.config.content_dir()).replace(".md", ".html")
+        if rel_path.endswith("index.html"):
+            rel_path = rel_path[:-10]
+        raise NotImplementedError(f"Output formats {outputs} are not implemented yet! (config: {self.config.config})")
+    
     def getContent(self, lang=None):
         if hasattr(self, "post"):
             return self.post[lang].content
@@ -161,8 +242,13 @@ class Post:
         return f"{self.__class__.__name__}(files='{self.files}')"
 
 class Content:
-    def __init__(self, path="content"):
+    DEFAULT_CONTENT_DIR = "./content/"
+
+    def __init__(self, path=DEFAULT_CONTENT_DIR, sub_path="",config=None, sections=True):
         self.path = path
+        self.sub_path = sub_path
+        self.sections = sections
+        self.config = config
         self.site = Site(Path(self.path).absolute().parent)
         self.posts = []
         self.iterPos = -1
@@ -172,29 +258,42 @@ class Content:
             for lang, file in postsPaths[path]:
                 post_variants[lang] = os.path.join(path, file)
             if post_variants:
-                p = Post(post_variants)
-                self.posts.append(Post(post_variants))
+                #p = Post(post_variants)
+                self.posts.append(Post(post_variants, config=self.config))
         mimetypes.init()
 
     def __iter__(self):
         return self
 
     def __next__(self):
+
         self.iterPos += 1
         if self.iterPos < len(self.posts):
+            if self.posts[self.iterPos].section:
+                self.iterPos += 1
             return self.posts[self.iterPos]
         else:
             raise StopIteration
 
     def _findPosts(self):
         postFiles = {}
-        for subdir, dirs, files in os.walk(self.path):
+        search_path = self.path
+        if self.sub_path is not "" and self.sub_path is not None:
+            search_path = os.path.join(search_path, self.sub_path)
+        for subdir, dirs, files in os.walk(search_path):
             postFiles[subdir] = []
             for file in files:
                 fileMatch = Post.filePatternMatcher.match(file)
                 if fileMatch:
                     lang = fileMatch.group(2)
+                    if lang is not None:
+                        lang = lang.lstrip(".")
+                    else:
+                        if self.config and self.config.defaultLanguage:
+                            postFiles[subdir].append((self.config.defaultLanguage, file))
                     postFiles[subdir].append((lang, file))
+                    #if self.config and self.config.defaultLanguage:
+                    #    postFiles[subdir].append((self.config.defaultLanguage, file))
 
         return postFiles
 
