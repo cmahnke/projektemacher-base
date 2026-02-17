@@ -20,7 +20,7 @@ class ArchiveOrg:
           pass
       return None
     
-    def latest(self, url)
+    def latest(self, url):
         return self.get_snapshot(url, "21001231")
     
     def earliest(self, url):
