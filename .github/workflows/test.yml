@@ -275,6 +275,23 @@ jobs:
 #        run: |
 #          ./scripts/github/pyhugolib.sh
 
+  test_PyHugo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install required dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
+      - name: "Test PyHugolib"
+        run: |
+           python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
+
   test_pnpm:
     runs-on: ubuntu-24.04
     steps:

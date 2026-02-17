@@ -1,4 +1,4 @@
-import os, io, re, glob, pathlib, mimetypes, toml
+import os, io, re, glob, pathlib, mimetypes, toml, logging
 from pathlib import Path
 import frontmatter
 
@@ -31,17 +31,19 @@ class Site:
 
 class Config(Site):
     def __init__(self, base_dir):
-        self.config_file = self.guess_base(base_dir)
-        self.base_dir = base_dir
-        self.config = self.load_hugo_config
+        self.logger = logging.getLogger(__name__)
+        self.base_dir = os.path.abspath(base_dir)
+        self.config_file = self.guess_base(self.base_dir)
+        self.config = self.load_hugo_config()
 
     def load_hugo_config(self):
+        self.logger.debug(f"Loading Hugo config from {self.base_dir} ({self.config_file})")
         config = {}
         config_dir = os.path.join(self.base_dir, "config", "_default")
         
-        with open(self.config_file, "rb") as f:
+        with open(self.config_file, "r") as f:
             config = toml.load(f)
-        if not os.path.exists(config_dir):
+        if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
                 if filename.endswith(".toml"):
                     with open(os.path.join(config_dir, filename), "rb") as f:

@@ -61,6 +61,22 @@ class Posts:
         return post
 
 class Published(Posts):
-    def __init__(self, config, paths):
+    def __init__(self, config, pattern="*.html"):
         self.config = config
         self.publishDir = config.publishDir()
+        self.baseUrl = config.baseURL().rstrip("/")
+        self.pattern = pattern
+    
+    def postList(self, subDir=""):
+        urls = []
+        search_path = self.publishDir / subDir
+        for file_path in search_path.rglob(self.pattern):
+            relative_path = file_path.relative_to(self.publishDir)
+            url_path = relative_path.as_posix()
+
+            if url_path.endswith("index.html"):
+                url_path = url_path[:-10]
+
+            full_url = f"{self.baseUrl}/{url_path}".rstrip("/") + "/"
+            urls.append(full_url)
+        return urls
