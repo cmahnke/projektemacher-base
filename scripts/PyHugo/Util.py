@@ -6,7 +6,7 @@ class ArchiveOrg:
     def __init__(self, base_dir):
         self.base_dir = base_dir
 
-    def get_snapshot(sel, url, timestamp):
+    def get_snapshot(url, timestamp):
       api_url = "http://archive.org/wayback/available"
       params = {"url": url, "timestamp": timestamp}
       try:
@@ -20,8 +20,8 @@ class ArchiveOrg:
           pass
       return None
     
-    def latest(self, url):
-        return self.get_snapshot(url, "21001231")
+    def latest(url):
+        return ArchiveOrg.get_snapshot(url, "21001231")
     
-    def earliest(self, url):
-        return self.get_snapshot(url, "19000101")
+    def earliest(url):
+        return ArchiveOrg.get_snapshot(url, "19000101")
