@@ -29,6 +29,35 @@ class Site:
     def content_dir(self):
         return os.path.join(self.base_dir, self._content_path)
 
+class Config(Site):
+    def __init__(self, base_dir):
+        self.config_file = self.guess_base(base_dir)
+        self.base_dir = base_dir
+        self.config = self.load_hugo_config
+
+    def load_hugo_config(self):
+        config = {}
+        config_dir = os.path.join(self.base_dir, "config", "_default")
+        
+        with open(self.config_file, "rb") as f:
+            config = toml.load(f)
+        if not os.path.exists(config_dir):
+            for filename in os.listdir(config_dir):
+                if filename.endswith(".toml"):
+                    with open(os.path.join(config_dir, filename), "rb") as f:
+                        data = toml.load(f)
+                        key = filename.replace(".toml", "")
+                        if key == "hugo" or key == "config":
+                            config.update(data)
+                        else:
+                            config[key] = data
+        return config
+    
+    def baseURL(self):
+        return self.config.get("baseURL", "http://localhost:1313/")
+    
+    def publishDir(self):
+        return self.config.get("publishDir", "public")
 
 class Post:
     filePattern = r"(_?)index(\.([a-zA-Z-]){2,5})?\.md"

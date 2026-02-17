@@ -19,7 +19,6 @@ class Posts:
         else:
             ""
 
-
     def postList(self):
         posts = []
         files = self.listFiles()
@@ -60,3 +59,8 @@ class Posts:
             cprint("Error in %s".format(file), "red")
 
         return post
+
+class Published(Posts):
+    def __init__(self, config, paths):
+        self.config = config
+        self.publishDir = config.publishDir()
