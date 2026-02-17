@@ -6,3 +6,6 @@ other = "page"
 
 [section]
 other = "section"
+
+[relatedContent]
+other = "Related posts"

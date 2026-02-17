@@ -6,3 +6,6 @@ other = "Seite"
 
 [section]
 other = "Abschnitt"
+
+[relatedContent]
+other = "Verwandte Beiträge"
