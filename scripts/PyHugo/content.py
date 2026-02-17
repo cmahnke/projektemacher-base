@@ -34,6 +34,8 @@ class Config(Site):
         self.logger = logging.getLogger(__name__)
         self.base_dir = os.path.abspath(base_dir)
         self.config_file = self.guess_base(self.base_dir)
+        if self.config_file is None:
+            raise Exception(f"No config file found in {self.base_dir}")
         self.config = self.load_hugo_config()
 
     def load_hugo_config(self):
@@ -46,7 +48,7 @@ class Config(Site):
         if os.path.exists(config_dir):
             for filename in os.listdir(config_dir):
                 if filename.endswith(".toml"):
-                    with open(os.path.join(config_dir, filename), "rb") as f:
+                    with open(os.path.join(config_dir, filename), "r") as f:
                         data = toml.load(f)
                         key = filename.replace(".toml", "")
                         if key == "hugo" or key == "config":

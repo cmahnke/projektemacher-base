@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.2.0
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.2.0
@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
 
       - name: Install Dart SASS
         run: |
@@ -205,7 +205,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.2.0
@@ -231,7 +231,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
@@ -244,7 +244,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
@@ -260,7 +260,7 @@ jobs:
 #    steps:
 #      - uses: actions/checkout@v6
 #        with:
-#          submodules: true  # Fetch Hugo themes (true OR recursive)
+#          submodules: true
 #      - name: Set up Python
 #        uses: actions/setup-python@v6
 #        with:
@@ -280,7 +280,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -297,7 +297,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
+          submodules: true
       - name: Setup Node.js
         uses: actions/setup-node@v6.2.0
         with:
