@@ -83,7 +83,7 @@ class Post:
         elif isinstance(path, str):
             self._load(path, lang)
         elif isinstance(path, pathlib.Path) and lang is None:
-            files = Post._findContentFiles(path)
+            files = self._findContentFiles(path)
             self._fromDict(files)
         else:
             raise NotImplementedError(f"Handling {type(path)} is not implemented!")
@@ -108,12 +108,14 @@ class Post:
             self.files[lang] = file
             self._load(file, lang)
 
-    def _findContentFiles(path: pathlib.Path):
+    def _findContentFiles(self, path: pathlib.Path):
         postFiles = {}
         for file in os.listdir(path):
             fileMatch = Post.filePatternMatcher.match(file)
             if fileMatch:
-                lang = fileMatch.group(2).lstrip(".")
+                lang = fileMatch.group(2)
+                if lang is not None:
+                    lang = lang.lstrip(".")
                 postFiles[lang] = os.path.join(path, file)
                 if lang is None and self.config and self.config.defaultLanguage:
                     postFiles[self.config.defaultLanguage] = os.path.join(path, file)
