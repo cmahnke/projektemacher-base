@@ -304,6 +304,9 @@ other = "Stereoskopie"
 [UnknownArtist]
 other = "Unbekannter Künstler"
 
+[Zenodo]
+other = "Zenodo"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
