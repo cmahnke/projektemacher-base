@@ -92,11 +92,16 @@ class Post:
         if not None in self.post:
             self.post[None] = self.post[list(self.post.keys())[0]]
             self.files[None] = self.files[list(self.files.keys())[0]]
-        if self.files[None].startswith("_"):
+        if self.files[None].startswith("_") or os.path.basename(self.files[None]).startswith("_"):
             self.section = True
         self.outputDir = self._outputDir(lang)
+        self.draft = self.getDraft(lang)
         if config and config.defaultLanguage:
             self.post[config.defaultLanguage] = self.post[None]
+        if config and not self.draft:
+            self.url = self.config.baseURL().rstrip("/") + "/" + os.path.relpath(self.files[None], self.config.content_dir()).replace(".md", ".html").replace("\\", "/")
+        else:
+            self.url = None
 
     def _fromDict(self, dict):
         for lang, file in dict.items():
@@ -156,14 +161,14 @@ class Post:
         return list(set(outputs))
 
     def getOutputDirs(self):
-        outputDirs = []
+        outputDirs = {}
         if self.config is not None and "publishDir" in self.config.config and self.config.defaultLanguage:
             publish_dir = self.config.publishDir()
             rel_path = Path(os.path.relpath(self.files[None], self.config.content_dir())).parent
-            outputDirs = [os.path.join(publish_dir, rel_path)]
+            outputDirs[self.config.defaultLanguage] = os.path.join(publish_dir, rel_path)
             for lang in self.config.langs:
                 if lang != self.config.defaultLanguage:
-                  outputDirs.append(os.path.join(publish_dir, lang, rel_path))
+                  outputDirs[lang] = os.path.join(publish_dir, lang, rel_path)
         return outputDirs
 
     def _outputDir(self, lang):
@@ -197,6 +202,9 @@ class Post:
             rel_path = rel_path[:-10]
         raise NotImplementedError(f"Output formats {outputs} are not implemented yet! (config: {self.config.config})")
     
+    def getURL(self):
+        return self.url
+
     def getContent(self, lang=None):
         if hasattr(self, "post"):
             return self.post[lang].content
@@ -224,6 +232,11 @@ class Post:
         if len(retRes) == 0:
             return None
         return retRes
+
+    def getDraft(self, lang=None):
+        if "draft" in self.post[lang].metadata:
+            return self.post[lang].metadata["draft"]
+        return False
 
     def getTags(self, lang=None):
         tags = {}
