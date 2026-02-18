@@ -8,6 +8,10 @@ publishDir = "docs"
 canonifyurls = true
 disablePathToLower = true
 
+[params.author]
+  email = 'mail@christianmahnke.de'
+  name = 'Christian Mahnke'
+  uri = 'http://www.wikidata.org/entity/Q137668638'
 
 [markup.goldmark.renderer]
   unsafe = true
