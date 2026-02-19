@@ -52,20 +52,39 @@ def check_availability(url):
     return False
 
 
-async def archive(urls, client):
+async def archive_api(url, access_key, secret_key, client):
+    api_url = "https://web.archive.org/save/"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"LOW {access_key}:{secret_key}"
+    }
+    data = {
+        "url": url,
+        "capture_outlinks": "1",
+        "skip_first_archive": "1"
+    }
+
+    response = await client.post(api_url, headers=headers, data=data)
+    response.raise_for_status()
+    return response.json()
+
+async def archive(urls, client, access_key=None, secret_key=None):
     async_reqs = []
     for url in urls:
         archive_url = f"{archive_prefix}{url}"
         try:
             if not check_availability(url):
 
-                async def req(url):
+                async def req(url, original_url):
                     try:
                         retries = 3
                         for i in range(retries):
                             try:
-                                resp = await client.get(url)
-                                resp.raise_for_status()
+                                if access_key and secret_key:
+                                    await archive_api(original_url, access_key, secret_key, client)
+                                else:
+                                    resp = await client.get(url)
+                                    resp.raise_for_status()
                                 return  # Success
                             except httpx.HTTPStatusError as e:
                                 if e.response.status_code == 429 and i < retries - 1:
@@ -83,7 +102,7 @@ async def archive(urls, client):
                     ) as error:
                         cprint(f"HTTP Error {error.__class__.__name__}: {str(error)}", "red")
 
-                async_reqs.append(req(archive_url))
+                async_reqs.append(req(archive_url, url))
                 print(f"Saving {archive_url}")
         except:
             cprint(f"Failed to check availability of {url}", "red")
@@ -138,6 +157,8 @@ async def main() -> int:
     parser.add_argument("--exclude", "-e", nargs="+", help="Host names to exclude")
     parser.add_argument("--age", "-a", type=int, default=max_age, help=f"Maximum age (default {max_age})")
     parser.add_argument("--output", "-o", type=str, help=f"Output URL list file name")
+    parser.add_argument("--access-key", help="Internet Archive Access Key")
+    parser.add_argument("--secret-key", help="Internet Archive Secret Key")
 
     args = parser.parse_args()
 
@@ -158,7 +179,7 @@ async def main() -> int:
     # Try to avoid "Too many requests" see https://www.python-httpx.org/advanced/resource-limits/
     limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     client = httpx.AsyncClient(timeout=120, limits=limits)
-    async_reqs = await archive(urls, client)
+    async_reqs = await archive(urls, client, access_key=args.access_key, secret_key=args.secret_key)
     await asyncio.gather(*async_reqs)
     await client.aclose()
     if args.output is not None:
