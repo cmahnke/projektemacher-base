@@ -27,3 +27,12 @@ class PyHugo:
         self.logger.setLevel("DEBUG")
         self.logger.info("Set Log level to debug")
         self.debug = debug
+
+    def getSite(self):
+        return self.site
+
+    def getConfig(self):
+        return self.config
+
+    def getContent(self, sub_path=""):
+        return Content(self.site.content_dir(), sub_path=sub_path, config=self.config)

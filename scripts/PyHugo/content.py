@@ -100,6 +100,15 @@ class Config(Site):
     def publishDir(self):
         return self.config.get("publishDir", "public")
 
+    def getAuthors(self):
+        params = self.config.get("params", {})
+        authors_data = params.get("authors", params.get("author"))
+        if not authors_data:
+            return []
+        if isinstance(authors_data, list):
+            return authors_data
+        return [authors_data]
+
 class Post:
     filePattern = r"(_?)index(\.([a-zA-Z-]){2,5})?\.md"
     filePatternMatcher = re.compile(filePattern)
@@ -249,6 +258,14 @@ class Post:
             return self.post[lang].metadata
         return None
 
+    def addMetadata(self, key, value, lang=None):
+        if self.config and lang == self.config.defaultLanguage:
+            lang = None
+        if hasattr(self, "post") and lang in self.post:
+            self.post[lang].metadata[key] = value
+            with open(self.files[lang], "wb") as f:
+                frontmatter.dump(self.post[lang], f)
+
     def getResources(self, lang=None):
         if len(self.resources[lang]) == 0:
             return None
@@ -284,12 +301,6 @@ class Post:
                     path = Path(path)
                 tags[tag] = Tag(tag, lang, path)
         return tags
-
-    def addMetadata(self, key, value, lang=None):
-        if lang in self.post:
-            self.post[lang].metadata[key] = value
-            with open(self.files[lang], "w") as f:
-                frontmatter.dump(self.post[lang], f)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(files='{self.files}')"

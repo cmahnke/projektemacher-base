@@ -1,4 +1,5 @@
 import os, io, re, yaml, glob
+import sys
 from termcolor import cprint
 
 
@@ -8,6 +9,7 @@ class Posts:
 
     def __init__(self, paths):
         cprint(f"Post is deprecated. Please use PyHugo instead.", "red")
+        sys.exit(1)
         for path in paths:
             if "*" in path:
                 self.paths.extend(glob.glob(path))
