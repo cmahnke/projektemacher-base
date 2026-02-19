@@ -29,6 +29,38 @@ class Site:
     def content_dir(self):
         return os.path.join(self.base_dir, self._content_path)
 
+    def load_i18n(self):
+        translations = {}
+
+        def _load_dir(path):
+            if not os.path.exists(path) or not os.path.isdir(path):
+                return
+            for file in os.listdir(path):
+                if file.endswith(".toml"):
+                    lang = file[:-5]
+                    if lang not in translations:
+                        translations[lang] = {}
+                    with open(os.path.join(path, file), "r") as f:
+                        try:
+                            data = toml.load(f)
+                            translations[lang].update(data)
+                        except Exception as e:
+                            logging.warning(f"Error loading i18n file {file}: {e}")
+
+        themes = self.config.get("theme", [])
+        if isinstance(themes, str):
+            themes = [themes]
+        themes_dir = self.config.get("themesDir", "themes")
+
+        for theme in themes:
+            theme_i18n = os.path.join(self.base_dir, themes_dir, theme, "i18n")
+            _load_dir(theme_i18n)
+
+        site_i18n = os.path.join(self.base_dir, "i18n")
+        _load_dir(site_i18n)
+
+        return translations
+
 class Config(Site):
     def __init__(self, base_dir):
         self.logger = logging.getLogger(__name__)
@@ -253,6 +285,12 @@ class Post:
                 tags[tag] = Tag(tag, lang, path)
         return tags
 
+    def addMetadata(self, key, value, lang=None):
+        if lang in self.post:
+            self.post[lang].metadata[key] = value
+            with open(self.files[lang], "w") as f:
+                frontmatter.dump(self.post[lang], f)
+
     def __repr__(self):
         return f"{self.__class__.__name__}(files='{self.files}')"
 
@@ -293,7 +331,7 @@ class Content:
     def _findPosts(self):
         postFiles = {}
         search_path = self.path
-        if self.sub_path is not "" and self.sub_path is not None:
+        if self.sub_path != "" and self.sub_path is not None:
             search_path = os.path.join(search_path, self.sub_path)
         for subdir, dirs, files in os.walk(search_path):
             postFiles[subdir] = []
@@ -328,6 +366,17 @@ class Tag (Post):
             self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag.replace(" ", "-"))
             if os.path.exists(self.tag_dir):
                 super().__init__(self.tag_dir, self.lang)
+
+    def getWikidata(self, lang=None):
+        metadata = self.getMetadata(lang)
+        if metadata is None:
+            return []
+        wikidata = metadata.get("wikidata")
+        if wikidata:
+            if isinstance(wikidata, list):
+                return wikidata
+            return [wikidata]
+        return []
 
 class Published:
     def __init__(self, config, pattern="*.html"):

@@ -1,7 +1,7 @@
 import logging
 import os
-from .content import Site, Post, Content, Config
-from .Posts import Posts, Published
+from .content import Site, Post, Content, Config, Published
+from .Util import ArchiveOrg
 
 class PyHugo:
     def __init__(self, base_dir, debug=False):
