@@ -1,3 +1,0 @@
-setuptools-golang>=2.7.0
-termcolor
-toml

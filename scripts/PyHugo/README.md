@@ -1,14 +1,16 @@
-PyHugolib
+PyHugo
 ---------
+
+**This is outdated and applies only to the deleted Go based prototype**
 
 # Features
 
 ## Usage
 
-Import PyHugolib
+Import PyHugo
 
 ```
-from PyHugolib import *
+from PyHugo import *
 ```
 
 
@@ -17,7 +19,7 @@ from PyHugolib import *
 The `Config` class can be used to load a Hugo configuration
 
 ```
-PyHugolib().setDebug(True)
+PyHugo().setDebug(True)
 cfg = Config().load("../../../../config.toml")
 print(cfg["baseURL"])
 ```
@@ -27,7 +29,7 @@ print(cfg["baseURL"])
 The `Site` class can be used to load a Hugo site structure
 
 ```
-PyHugolib().setDebug(True)
+PyHugo().setDebug(True)
 structure = Site().structure("../../../../config.toml")
 print(structure)
 ```

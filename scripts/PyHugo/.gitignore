@@ -1,8 +1,4 @@
-PyHugolib/build/hugolib.h
-PyHugolib/build/hugolib.so
-**/hugolib.*.h
-**/hugolib.*.so
 .eggs
 build
 dist
-PyHugolib.egg-info
+__pycache__
