@@ -46,3 +46,6 @@ academic
 # Indexer
 pagefind[bin]
 beautifulsoup4
+#git+https://github.com/IIIF/presentation-validator
+# Archive
+#wayback-machine-archiver
