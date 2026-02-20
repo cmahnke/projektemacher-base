@@ -368,7 +368,7 @@ class Post:
                 keywords.add(label.strip())
 
         meta = self.getMetadata(lang)
-        if meta and "keywords" in meta:
+        if meta and "keywords" in meta and meta["keywords"] is not None:
             for k in meta["keywords"].split(","):
                 keywords.add(k.strip())
 
