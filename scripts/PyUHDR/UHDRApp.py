@@ -31,6 +31,9 @@ class UHDRApp:
             self.ultrahdr_app_path = shutil.which(default_ultrahdr_app_bin)
         else:
             self.ultrahdr_app_path = default_ultrahdr_app_path
+        if self.ultrahdr_app_path is None:
+            logging.error(f"UltraHDR app binary '{default_ultrahdr_app_bin}' not found in PATH or at {default_ultrahdr_app_path}")
+            raise FileNotFoundError(f"UltraHDR app binary '{default_ultrahdr_app_bin}' not found in PATH or at {default_ultrahdr_app_path}")
         logging.warning(f"UltraHDR app initialized, binary is at {self.ultrahdr_app_path}")
 
     def uhdr_process(self, image, gainmap_file, out_file="out.jpeg"):
