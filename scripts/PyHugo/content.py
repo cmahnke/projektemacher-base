@@ -11,6 +11,7 @@ class Site:
         config_file = self.guess_base(base_dir)
         self.base_dir = os.path.dirname(config_file)
         self.config = toml.load(config_file)
+        self.translations = self.load_i18n()
 
     def guess_base(self, start_dir, configs = config_files):
         current_dir = os.path.abspath(start_dir)
@@ -38,15 +39,15 @@ class Site:
                 return
             for file in os.listdir(path):
                 if file.endswith(".toml"):
-                    lang = file[:-5]
+                    lang = file[:-5][-2:]
                     if lang not in translations:
                         translations[lang] = {}
                     with open(os.path.join(path, file), "r") as f:
-                        try:
-                            data = toml.load(f)
-                            translations[lang].update(data)
-                        except Exception as e:
-                            logging.warning(f"Error loading i18n file {file}: {e}")
+                        data = toml.load(f)
+                        for key, value in data.items():
+                            if key not in translations:
+                                translations[key] = {}
+                            translations[key][lang] = value
 
         themes = self.config.get("theme", [])
         if isinstance(themes, str):
@@ -64,6 +65,9 @@ class Site:
 
 class Config(Site):
     def __init__(self, base_dir):
+        if isinstance(base_dir, Site):
+            base_dir = base_dir.base_dir
+        super().__init__(base_dir)
         self.logger = logging.getLogger(__name__)
         self.base_dir = os.path.abspath(base_dir)
         self.config_file = self.guess_base(self.base_dir)
@@ -109,6 +113,24 @@ class Config(Site):
         if isinstance(authors_data, list):
             return authors_data
         return [authors_data]
+
+    def translate(self, key, lang=None):
+        if not self.translations:
+            self.logger.warning("No translations loaded, cannot translate key.")
+            return None
+        if lang is None:
+            lang = self.defaultLanguage
+            self.logger.warning(f"No language specified for translation key '{key}', using default language '{lang}'")
+        if lang and lang in self.translations and key in self.translations and lang in self.translations[key]:
+            translation = self.translations[key][lang]
+            if "other" in translation:
+                return translation["other"]
+            if "many" in translation:
+                return translation["many"]
+            if "one" in translation:
+                return translation["one"]
+            return None
+        return None
 
 class Post:
     filePattern = r"(_?)index(\.([a-zA-Z-]){2,5})?\.md"
@@ -319,11 +341,12 @@ class Post:
         
         if self.config:
           tags = self.getTags(lang)
-          i18n = self.config.load_i18n()
           for tag_name, tag_obj in tags.items():
-              keywords.add(tag_name)
-              if lang and lang in i18n and tag_name in i18n[lang]:
-                  keywords.add(i18n[lang][tag_name])
+              translated_tag = self.config.translate(tag_name, lang)
+              if translated_tag is not None:
+                  keywords.add(translated_tag)
+              else:
+                keywords.add(tag_name)
               
               wd_items = tag_obj.getWikidata(lang)
               for wd in wd_items:
