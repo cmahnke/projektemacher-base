@@ -4,7 +4,7 @@ import frontmatter
 from .Util import Wikidata
 
 class Site:
-    _content_path = "./content/"
+    CONTENT_PATH = "./content/"
     config_files = ["config.toml", "hugo.toml"]
 
     def __init__(self, base_dir):
@@ -28,8 +28,8 @@ class Site:
             current_dir = parent_dir
         return None
 
-    def content_dir(self):
-        return os.path.join(self.base_dir, self._content_path)
+    def contentDir(self):
+        return os.path.join(self.base_dir, self.CONTENT_PATH)
 
     def load_i18n(self):
         translations = {}
@@ -170,7 +170,7 @@ class Post:
         if config and config.defaultLanguage:
             self.post[config.defaultLanguage] = self.post[None]
         if config and not self.draft:
-            self.url = self.config.baseURL().rstrip("/") + "/" + os.path.relpath(self.files[None], self.config.content_dir()).replace(".md", ".html").replace("\\", "/")
+            self.url = self.config.baseURL().rstrip("/") + "/" + os.path.relpath(self.files[None], self.config.contentDir()).replace(".md", ".html").replace("\\", "/")
         else:
             self.url = None
 
@@ -237,7 +237,7 @@ class Post:
         outputDirs = {}
         if self.config is not None and "publishDir" in self.config.config and self.config.defaultLanguage:
             publish_dir = self.config.publishDir()
-            rel_path = Path(os.path.relpath(self.files[None], self.config.content_dir())).parent
+            rel_path = Path(os.path.relpath(self.files[None], self.config.contentDir())).parent
             outputDirs[self.config.defaultLanguage] = os.path.join(publish_dir, rel_path)
             for lang in self.config.langs:
                 if lang != self.config.defaultLanguage:
@@ -248,7 +248,7 @@ class Post:
         if self.config is None:
             return None
         publish_dir = self.config.publishDir()
-        rel_path = Path(os.path.relpath(self.files[lang], self.config.content_dir())).parent
+        rel_path = Path(os.path.relpath(self.files[lang], self.config.contentDir())).parent
         outputDirs = {}
         if lang and self.config and lang is not self.config.defaultLanguage:
             for l in self.config.langs:
@@ -275,6 +275,9 @@ class Post:
             rel_path = rel_path[:-10]
         raise NotImplementedError(f"Output formats {outputs} are not implemented yet! (config: {self.config.config})")
     
+    def getFile(self, lang=None):
+        return self.files[lang]
+
     def getURL(self):
         return self.url
 
@@ -378,7 +381,7 @@ class Post:
         return f"{self.__class__.__name__}(files='{self.files}')"
 
 class Content:
-    DEFAULT_CONTENT_DIR = "./content/"
+    DEFAULT_CONTENT_DIR = Site.CONTENT_PATH
 
     def __init__(self, path=DEFAULT_CONTENT_DIR, sub_path="",config=None, sections=True):
         self.path = path
@@ -446,7 +449,7 @@ class Tag (Post):
         self.files = {}
         if ctx is not None:
             self.site = Site(ctx)
-            self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag.replace(" ", "-"))
+            self.tag_dir = Path(self.site.contentDir()).joinpath(self._tag_path, tag.replace(" ", "-"))
             if os.path.exists(self.tag_dir):
                 super().__init__(self.tag_dir, self.lang)
 
