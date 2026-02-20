@@ -25,3 +25,30 @@ class ArchiveOrg:
     
     def earliest(url):
         return ArchiveOrg.get_snapshot(url, "19000101")
+
+class Wikidata:
+    def getLabel(id_or_url, lang="en"):
+        if not id_or_url:
+            return None
+        qid = id_or_url
+        if "http" in qid:
+            qid = qid.rstrip("/").split("/")[-1]
+
+        api_url = "https://www.wikidata.org/w/api.php"
+        params = {
+            "action": "wbgetentities",
+            "ids": qid,
+            "props": "labels",
+            "languages": lang,
+            "format": "json"
+        }
+        try:
+            response = requests.get(api_url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            entity = data.get("entities", {}).get(qid, {})
+            if "labels" in entity and lang in entity["labels"]:
+                return entity["labels"][lang]["value"].strip()
+        except requests.exceptions.RequestException:
+            pass
+        return None

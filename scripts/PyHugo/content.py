@@ -1,6 +1,7 @@
 import os, io, re, glob, pathlib, mimetypes, toml, logging
 from pathlib import Path
 import frontmatter
+from .Util import Wikidata
 
 class Site:
     _content_path = "./content/"
@@ -258,6 +259,17 @@ class Post:
             return self.post[lang].metadata
         return None
 
+    def getWikidata(self, lang=None):
+        metadata = self.getMetadata(lang)
+        if metadata is None:
+            return []
+        wikidata = metadata.get("wikidata")
+        if wikidata:
+            if isinstance(wikidata, list):
+                return wikidata
+            return [wikidata]
+        return []
+
     def addMetadata(self, key, value, lang=None):
         if self.config and lang == self.config.defaultLanguage:
             lang = None
@@ -301,6 +313,36 @@ class Post:
                     path = Path(path)
                 tags[tag] = Tag(tag, lang, path)
         return tags
+
+    def getKeywords(self, lang=None):
+        keywords = set()
+        
+        if self.config:
+          tags = self.getTags(lang)
+          i18n = self.config.load_i18n()
+          for tag_name, tag_obj in tags.items():
+              keywords.add(tag_name)
+              if lang and lang in i18n and tag_name in i18n[lang]:
+                  keywords.add(i18n[lang][tag_name])
+              
+              wd_items = tag_obj.getWikidata(lang)
+              for wd in wd_items:
+                  label = Wikidata.getLabel(wd, lang)
+                  if label:
+                      keywords.add(label)
+
+        wd_items = self.getWikidata(lang)
+        for wd in wd_items:
+            label = Wikidata.getLabel(wd, lang)
+            if label:
+                keywords.add(label.strip())
+
+        meta = self.getMetadata(lang)
+        if meta and "keywords" in meta:
+            for k in meta["keywords"].split(","):
+                keywords.add(k.strip())
+
+        return list(keywords)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(files='{self.files}')"
@@ -377,17 +419,6 @@ class Tag (Post):
             self.tag_dir = Path(self.site.content_dir()).joinpath(self._tag_path, tag.replace(" ", "-"))
             if os.path.exists(self.tag_dir):
                 super().__init__(self.tag_dir, self.lang)
-
-    def getWikidata(self, lang=None):
-        metadata = self.getMetadata(lang)
-        if metadata is None:
-            return []
-        wikidata = metadata.get("wikidata")
-        if wikidata:
-            if isinstance(wikidata, list):
-                return wikidata
-            return [wikidata]
-        return []
 
 class Published:
     def __init__(self, config, pattern="*.html"):
