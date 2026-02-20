@@ -1,7 +1,9 @@
 import sys, os, argparse, logging
+from pathlib import Path
 
-sys.path.append(os.path.join(os.path.dirname(__file__)))
-from content import Post, Content, Config, Site, Published
+sys.path.append(f"{Path(__file__).parent.parent}/")
+print(f"loading from {sys.path[-1]}")
+from PyHugo import Post, Content, Config, Site, Published
 
 hugo_dir = "../../../../"
 hugo_config = os.path.abspath(os.path.join(os.path.dirname(__file__), hugo_dir))

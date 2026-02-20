@@ -149,6 +149,13 @@ class Post:
         elif isinstance(path, pathlib.Path) and lang is None:
             files = self._findContentFiles(path)
             self._fromDict(files)
+        elif isinstance(path, pathlib.Path) and lang is not None:
+            files = self._findContentFiles(path)
+            if config and config.defaultLanguage and lang == config.defaultLanguage:
+                lang = None
+                self._fromDict(files[lang])
+            else:
+                raise NotImplementedError(f"Handling pathlib.Path with lang is not implemented yet! (path: {path}, lang: {lang}, config: {config}), files found: {files}")
         else:
             raise NotImplementedError(f"Handling {type(path)} is not implemented!")
         self._findResources(lang)
