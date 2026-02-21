@@ -162,6 +162,14 @@ async def main() -> int:
 
     args = parser.parse_args()
 
+    if args.access_key is None and "INTERNET_ARCHIVE_ACCESS_KEY" in os.environ:
+        args.access_key = os.environ["INTERNET_ARCHIVE_ACCESS_KEY"]
+        cprint("Using INTERNET_ARCHIVE_ACCESS_KEY from environment", "yellow")
+
+    if args.secret_key is None and "INTERNET_ARCHIVE_SECRET_KEY" in os.environ:
+        args.secret_key = os.environ["INTERNET_ARCHIVE_SECRET_KEY"]
+        cprint("Using INTERNET_ARCHIVE_SECRET_KEY from environment", "yellow")
+
     max_age = args.age
 
     if args.dir is not None:
