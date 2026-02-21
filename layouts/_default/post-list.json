@@ -1,0 +1,61 @@
+{{- $pages := where .Site.AllPages "Params.displayinlist" "!=" false -}}
+{{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
+
+{{- $pages = where $pages "Params.metaPage" "!=" true -}}
+{{- $pages = where $pages "Params.displayinlist" "!=" false -}}
+
+{{ $taxonomy := "tags" }}
+
+{{- $pageList := slice -}}
+{{- range $page := $pages.ByDate -}}
+  {{- $pageUrl := .Permalink -}}
+  {{- with .OutputFormats.Get "html" -}}
+    {{- $pageUrl = .Permalink -}}
+  {{- end -}}
+
+  {{- $outputs := slice -}}
+  {{- range .OutputFormats -}}
+    {{- $output := dict "name" .Name "url" .Permalink -}}
+    {{- $outputs = $outputs | append $output -}}
+  {{- end -}}
+
+  {{- $sections := slice -}}
+  {{- $skip := false -}}
+  {{ range .Ancestors.Reverse }}
+    {{- if ne .Path "/" -}}
+      {{/*
+      {{- with .Params.metapage -}}
+        {{- if eq . true -}}
+          {{- $skip = true -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with .Params.displayinlist -}}
+        {{- if eq . false -}}
+          {{- $skip = true -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+      */}}
+      {{- $sections = $sections | append .Path -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $skip -}}
+    {{- continue -}}
+  {{- end -}}
+
+  {{- $post := dict "url" $pageUrl "title" .Title  "section" $sections "path" .Path "lang" .Lang "summary" .Summary -}}
+  {{- with .Params.tags -}}
+    {{- $post = $post | merge (dict "tags" .) -}}
+  {{- end -}}
+  {{- with .Date -}}
+    {{- $post = $post | merge (dict "date" .) -}}
+  {{- end -}}
+  {{- with $outputs -}}
+    {{- $post = $post | merge (dict "outputs" .) -}}
+  {{- end -}}
+  {{- $pageList = $pageList | append $post -}}
+
+{{- end -}}
+{{- $pageList | jsonify -}}
