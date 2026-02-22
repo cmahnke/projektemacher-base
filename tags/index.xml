@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/tags/</link>
+    <description>Recent content in Tags on Projektemacher Base</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>mail@christianmahnke.de (Christian Mahnke)</managingEditor>
+    <webMaster>mail@christianmahnke.de (Christian Mahnke)</webMaster>
+    <atom:link href="https://theme.projektemacher.org/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Another Tag</title>
+      <link>https://theme.projektemacher.org/tags/Another-tag/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Another-tag/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Some Tag</title>
+      <link>https://theme.projektemacher.org/tags/Some-Tag/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Some-Tag/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag 1</title>
+      <link>https://theme.projektemacher.org/tags/Tag-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Tag-1/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag 2</title>
+      <link>https://theme.projektemacher.org/tags/Tag-2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Tag-2/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag 3</title>
+      <link>https://theme.projektemacher.org/tags/Tag-3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Tag-3/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag 4</title>
+      <link>https://theme.projektemacher.org/tags/Tag-4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Tag-4/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag-With-Hyphen</title>
+      <link>https://theme.projektemacher.org/tags/Tag-with-hyphen/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Tag-with-hyphen/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Yet Another Tag</title>
+      <link>https://theme.projektemacher.org/tags/Yet-another-Tag/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/tags/Yet-another-Tag/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

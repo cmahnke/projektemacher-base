@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projektemacher Base template on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/</link>
+    <description>Recent content in Projektemacher Base template on Projektemacher Base</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>mail@christianmahnke.de (Christian Mahnke)</managingEditor>
+    <webMaster>mail@christianmahnke.de (Christian Mahnke)</webMaster><atom:link href="https://theme.projektemacher.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/git/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/git/</guid>
+      <description>&lt;h1 id=&#34;git-related-notes&#34;&gt;Git related notes&lt;/h1&gt;
+&lt;h1 id=&#34;fixing-wrong-github-user&#34;&gt;Fixing wrong GitHub user&lt;/h1&gt;
+&lt;p&gt;Make sure the remote is configured with the right user name:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git remote set-url origin https://cmahnke@github.com/cmahnke/hugo-13878.git
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;setting-the-mail-address-for-a-push&#34;&gt;Setting the mail address for a push&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git config user.email 194820+cmahnke@users.noreply.github.com
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;populating-a-git-repository-for-github-error-reports&#34;&gt;Populating a Git Repository for GitHub error reports&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git remote add hugo-github-issue-13878 https://github.com/jmooring/hugo-testing
+git fetch hugo-github-issue-13878 hugo-github-issue-13878
+git checkout -B main
+git merge hugo-github-issue-13878/hugo-github-issue-13878
+git push --set-upstream origin main
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/post-specific-assets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/post-specific-assets/</guid>
+      <description>&lt;p&gt;Make sure the &lt;code&gt;assets&lt;/code&gt; directory is mounted (in &lt;code&gt;hugo.toml&lt;/code&gt; or &lt;code&gt;config.toml&lt;/code&gt;)&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[module]
+  [[module.mounts]]
+      source = &amp;#34;assets/scss&amp;#34;
+      target = &amp;#34;assets/scss&amp;#34;
+
+  [[module.mounts]]
+      source = &amp;#34;assets/js&amp;#34;
+      target = &amp;#34;assets/js&amp;#34;
+
+  [[module.mounts]]
+      source = &amp;#34;assets/ts&amp;#34;
+      target = &amp;#34;assets/ts&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a reference to the front matter&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scss: scss/tag-ring/tag-ring.scss
+js:
+  - ts/tag-ring/tag-ring.ts
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/site-params/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/site-params/</guid>
+      <description>&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[params.iiif]
+  presentationViewer = &amp;#34;js/iiif/tify.js&amp;#34;
+
+[params.css]
+  includeDirs = [&amp;#34;node_modules/tify/dist/&amp;#34;]
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>Code</title>
+      <link>https://theme.projektemacher.org/shortcodes/code/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/code/</guid>
+      <description>&lt;h1 id=&#34;example&#34;&gt;Example&lt;/h1&gt;
+&lt;div class=&#34;highlight-container&#34; id=&#34;container_6f0ae930b345ca85cbcede1a109f81cd&#34;&gt;
+  &lt;div class=&#34;highlight-head&#34;&gt;
+    &lt;span class=&#34;highlight-title&#34;&gt;Example with title&lt;/span&gt;
+    &lt;i class=&#34;copy&#34; id=&#34;button_6f0ae930b345ca85cbcede1a109f81cd&#34;&gt;&lt;/i&gt;
+    &lt;label class=&#34;collapse&#34; for=&#34;collapse_6f0ae930b345ca85cbcede1a109f81cd&#34;&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;input type=&#34;checkbox&#34; style=&#34;display: none;&#34; name=&#34;collapse_6f0ae930b345ca85cbcede1a109f81cd&#34; id=&#34;collapse_6f0ae930b345ca85cbcede1a109f81cd&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34; id=&#34;1&#34;&gt;&lt;a style=&#34;outline:none;text-decoration:none;color:inherit&#34; href=&#34;#1&#34;&gt;1&lt;/a&gt;&lt;/span&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;navigator&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clipboard&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;writeText&lt;/span&gt;(...)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;textarea id=&#34;content_6f0ae930b345ca85cbcede1a109f81cd&#34; style=&#34;display:none;&#34;&gt;navigator.clipboard.writeText(...)
+&lt;/textarea&gt;
+  &lt;script type=&#34;text/javascript&#34;&gt;
+      var button = document.getElementById(&#39;button_6f0ae930b345ca85cbcede1a109f81cd&#39;);
+      var content = document.getElementById(&#39;content_6f0ae930b345ca85cbcede1a109f81cd&#39;);
+      addCopyToClipboard(button, content);
+  &lt;/script&gt;
+&lt;/div&gt;
+&lt;div class=&#34;highlight-container&#34; id=&#34;container_bf89bbcd464663893f18c48e89499014&#34;&gt;
+  &lt;div class=&#34;highlight-head&#34;&gt;
+    &lt;span class=&#34;highlight-title&#34;&gt;Example without line numbers&lt;/span&gt;
+    &lt;i class=&#34;copy&#34; id=&#34;button_bf89bbcd464663893f18c48e89499014&#34;&gt;&lt;/i&gt;
+    &lt;label class=&#34;collapse&#34; for=&#34;collapse_bf89bbcd464663893f18c48e89499014&#34;&gt;&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;input type=&#34;checkbox&#34; style=&#34;display: none;&#34; name=&#34;collapse_bf89bbcd464663893f18c48e89499014&#34; id=&#34;collapse_bf89bbcd464663893f18c48e89499014&#34;&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-js&#34; data-lang=&#34;js&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;navigator&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;clipboard&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;writeText&lt;/span&gt;(...)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;textarea id=&#34;content_bf89bbcd464663893f18c48e89499014&#34; style=&#34;display:none;&#34;&gt;navigator.clipboard.writeText(...)
+&lt;/textarea&gt;
+  &lt;script type=&#34;text/javascript&#34;&gt;
+      var button = document.getElementById(&#39;button_bf89bbcd464663893f18c48e89499014&#39;);
+      var content = document.getElementById(&#39;content_bf89bbcd464663893f18c48e89499014&#39;);
+      addCopyToClipboard(button, content);
+  &lt;/script&gt;
+&lt;/div&gt;
+&lt;h1 id=&#34;options&#34;&gt;Options&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;lang&lt;/code&gt; - string: One of those &lt;a href=&#34;https://gohugo.io/content-management/syntax-highlighting/#languages&#34; target=&#34;_blank&#34;&gt;supported languages&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class&lt;/code&gt; - string: Custom class name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title&lt;/code&gt; - string: Custom title&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lineNumbers&lt;/code&gt; - boolean: If line numbers should be shown, default: &lt;code&gt;true&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lineNumbersIDPrefix&lt;/code&gt; - string: Refix for the lin number id&amp;rsquo;s&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;references&#34;&gt;References&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/functions/transform/highlight/&#34; target=&#34;_blank&#34;&gt;transform.Highlight&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/render-hooks/code-blocks/&#34; target=&#34;_blank&#34;&gt;Code block render hooks&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+      </item>
+    
+    <item>
+      <title>Developing shortcodes</title>
+      <link>https://theme.projektemacher.org/posts/development/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/development/</guid>
+      <description>&lt;h1 id=&#34;seting-up&#34;&gt;Seting up&lt;/h1&gt;
+&lt;p&gt;To use the example site locally you need to set up the language files:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;./scripts/setup.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;running-the-example-site&#34;&gt;Running the example site&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Afterwards the example site can be generated or &lt;code&gt;serve&lt;/code&gt;&amp;rsquo;d.&lt;/p&gt;
+&lt;h1 id=&#34;cleaning-up&#34;&gt;Cleaning up&lt;/h1&gt;
+&lt;p&gt;Before commiting changes one can clean up the language files:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;./scripts/cleanup.sh
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>Menu</title>
+      <link>https://theme.projektemacher.org/config/menu/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/config/menu/</guid>
+      <description>&lt;h1 id=&#34;adding-html-or-draft-menu-entries&#34;&gt;Adding HTML or draft menu entries&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[[languages.en.menu.main]]
+    name = &amp;#39;&amp;lt;input type=&amp;#34;text&amp;#34; placeholder=&amp;#34;Search&amp;#34; class=&amp;#34;search-input&amp;#34;&amp;gt;&amp;lt;button type=&amp;#34;submit&amp;#34; class=&amp;#34;search-button&amp;#34;&amp;gt;Search&amp;lt;/button&amp;gt;&amp;#39;
+    weight = 7
+    url = &amp;#34;search&amp;#34;
+
+    [[languages.en.menu.main.params]]
+        html = true
+        draft = true
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>Mirador</title>
+      <link>https://theme.projektemacher.org/posts/mirador/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/mirador/</guid>
+      <description>&lt;h1 id=&#34;requirements&#34;&gt;Requirements&lt;/h1&gt;
+&lt;h2 id=&#34;packagejson&#34;&gt;&lt;code&gt;package.json&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Make sure to check out a dev version that can be used with the patch for page gaps.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{
+  &amp;#34;dependencies&amp;#34;: {
+    &amp;#34;mirador&amp;#34;: &amp;#34;ProjectMirador/mirador#5cb692ed31480c1e130f4a8715726688cb35796d&amp;#34;
+  },
+  &amp;#34;devDependencies&amp;#34;: {
+      &amp;#34;patch-package&amp;#34;: &amp;#34;^8.0.0&amp;#34;
+  },
+  &amp;#34;scripts&amp;#34;: {
+    &amp;#34;prepatch&amp;#34;: &amp;#34;cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD&amp;#34;,
+    &amp;#34;patch&amp;#34;: &amp;#34;yarn run patch-package&amp;#34;,
+    &amp;#34;postinstall&amp;#34;: &amp;#34;yarn run prepatch &amp;amp;&amp;amp; yarn run patch &amp;amp;&amp;amp; yarn run postinstall-mirador &amp;amp;&amp;amp; ls -al node_modules/mirador/dist&amp;#34;,
+    &amp;#34;postinstall-mirador&amp;#34;: &amp;#34;cd node_modules/mirador &amp;amp;&amp;amp; yarn add -D @babel/plugin-proposal-private-property-in-object &amp;amp;&amp;amp; yarn install &amp;amp;&amp;amp; yarn run build&amp;#34;
+
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+    <item>
+      <title>November 1961</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>October 1972</title>
+      <link>https://theme.projektemacher.org/shortcodes/timeline/date2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/timeline/date2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Posts</title>
+      <link>https://theme.projektemacher.org/meta/posts/index.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/meta/posts/index.json</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Privacy policy</title>
+      <link>https://theme.projektemacher.org/privacy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/privacy/</guid>
+      <description>&lt;h2 id=&#34;hosting&#34;&gt;Hosting&lt;/h2&gt;
+&lt;p&gt;The hoster collects the following data transmitted by your browser in log files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IP address&lt;/li&gt;
+&lt;li&gt;The address of the previously visited website (Referer [sic!] request header)&lt;/li&gt;
+&lt;li&gt;Date and time of the enquiry&lt;/li&gt;
+&lt;li&gt;Time zone difference to Greenwich Mean Time&lt;/li&gt;
+&lt;li&gt;Content of the request&lt;/li&gt;
+&lt;li&gt;HTTP status code&lt;/li&gt;
+&lt;li&gt;Amount of data transferred&lt;/li&gt;
+&lt;li&gt;Website from which the request originates&lt;/li&gt;
+&lt;li&gt;Information about the browser and operating system&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is necessary to display the website and to ensure stability and security. This corresponds to a legitimate interest within the meaning of &lt;a href=&#34;https://gdpr-info.eu/art-6-gdpr/&#34; target=&#34;_blank&#34;&gt;Art. 6 para. 1 sentence 1 lit. f GDPR&lt;/a&gt;.&lt;/p&gt;</description>
+      </item>
+    
+    <item>
+      <title>Tags</title>
+      <link>https://theme.projektemacher.org/meta/tags/index.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/meta/tags/index.json</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 1</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags1/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 2</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags2/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 3</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags3/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Tags 4</title>
+      <link>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/shortcodes/tagcloud/tags4/</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>ToDo</title>
+      <link>https://theme.projektemacher.org/todo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/todo/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;There are several sources for issues:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;a href=&#34;&#34;&gt;GitHub Issues&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The annotations / tags in various files&lt;/li&gt;
+&lt;li&gt;This file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;general-goals&#34;&gt;General goals&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Finish this site as documentation&lt;/li&gt;
+&lt;li&gt;Deprecate Hugo versions before 0.123&lt;/li&gt;
+&lt;li&gt;Remove duplicate functionality&lt;/li&gt;
+&lt;li&gt;Use shortcode metadata for every shortcode&lt;/li&gt;
+&lt;/ul&gt;</description>
+      </item>
+    
+    <item>
+      <title>Wikidata</title>
+      <link>https://theme.projektemacher.org/meta/wikidata/index.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/meta/wikidata/index.json</guid>
+      <description></description>
+      </item>
+    
+    <item>
+      <title>Wikidata</title>
+      <link>https://theme.projektemacher.org/wikidata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/wikidata/</guid>
+      <description>&lt;h1 id=&#34;templates&#34;&gt;Templates&lt;/h1&gt;
+&lt;p&gt;The most important part of the Wikidata integration is the enhanced link handling in &lt;code&gt;layouts/_default/_markup/render-link.html&lt;/code&gt;&lt;/p&gt;
+&lt;h1 id=&#34;security&#34;&gt;Security&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[security]
+  [security.http]
+    mediaTypes = [&amp;#39;^application/json$&amp;#39;, &amp;#39;^application/json;\s?charset=[uU][tT][fF]-8$&amp;#39;, &amp;#39;^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$&amp;#39;]
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;example-query&#34;&gt;Example query&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -X GET -H &amp;#34;Accept: application/sparql-results+json&amp;#34; &amp;#34;https://query.wikidata.org/sparql?query=SELECT+%3Fitem+%3FitemLabel+%3FofficialWebsite+%3FofficialBlog+%3FonlineDatabaseURL+WHERE+%7B%0A++++++%3Fitem+wdt%3AP856+%3Chttps%3A%2F%2Fdsgvo-gesetz.de%2Fart-6-dsgvo%2F%3E+.+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22%5BAUTO_LANGUAGE%5D%2Cen%22+.+%7D%0A++++++OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3FofficialWebsite+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1581+%3FofficialBlog+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1316+%3FonlineDatabaseURL+.+%7D%0A++++%7D&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;</description>
+      </item>
+    
+  </channel>
+</rss>

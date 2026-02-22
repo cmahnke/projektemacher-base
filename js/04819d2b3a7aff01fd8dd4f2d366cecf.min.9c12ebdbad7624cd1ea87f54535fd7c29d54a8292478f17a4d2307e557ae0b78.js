@@ -1,0 +1,1 @@
+(()=>{function e(e,t){e.addEventListener("click",e=>{const n=t.value;navigator.clipboard.writeText(n).then(()=>{},()=>{console.warn("Failed to write to clipboard!")})})}window.addCopyToClipboard=e})()

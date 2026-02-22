@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Wikidata </title><meta name="description" content="" />
+
+<meta name="generator" content="Hugo 0.156.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<script src="https://theme.projektemacher.org/js/main.min.f8952214762921b4f64b73e2957b35e4d15f86bd8df6dba030b5f9d531681c67.js" integrity="sha256-&#43;JUiFHYpIbT2S3PilXs15NFfhr2N9tugMLX51TFoHGc="></script>
+
+<link href="https://theme.projektemacher.org/css/concated.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" rel="stylesheet" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU=">
+
+
+<link rel="icon" type="image/png" href="https://theme.projektemacher.org/images/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://theme.projektemacher.org/images/favicon-16.png" sizes="16x16">
+
+
+
+
+
+
+<link href="https://theme.projektemacher.org/css/3dcde2e700baa65d3814003bfc8fa7f9.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" rel="stylesheet" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU=">
+<script src="https://theme.projektemacher.org/js/5d85c20c8f862f9ecfa0aee0edbc8fe4.min.f8952214762921b4f64b73e2957b35e4d15f86bd8df6dba030b5f9d531681c67.js" integrity="sha256-+JUiFHYpIbT2S3PilXs15NFfhr2N9tugMLX51TFoHGc="></script>
+</head>
+
+    <body class="home blog  meta">
+
+
+    <header id="site-header" class="site-header" role="banner">
+      <div class='top-navigation'>
+        <div class='container'>
+</div>
+
+      </div>
+
+      <div class="container">
+        <header class="header header-main" id="head">
+  <div class="menu">
+    
+  </div><a href="https://theme.projektemacher.org/"><img class="header-logo" alt="Projektemacher Base" src=""></a><h1 class="header-title">Wikidata</h1></header>
+
+      </div>
+    </header>
+
+    <main id="main" class="main" role="main">
+
+      
+      
+      
+  <div class="post ">
+    <div class="content">
+      <h1 class="post-title">Wikidata</h1>
+      <div class="post-body">
+          <h1 id="templates">Templates</h1>
+<p>The most important part of the Wikidata integration is the enhanced link handling in <code>layouts/_default/_markup/render-link.html</code></p>
+<h1 id="security">Security</h1>
+<pre tabindex="0"><code>[security]
+  [security.http]
+    mediaTypes = [&#39;^application/json$&#39;, &#39;^application/json;\s?charset=[uU][tT][fF]-8$&#39;, &#39;^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$&#39;]
+</code></pre><h1 id="example-query">Example query</h1>
+<pre tabindex="0"><code>curl -X GET -H &#34;Accept: application/sparql-results+json&#34; &#34;https://query.wikidata.org/sparql?query=SELECT+%3Fitem+%3FitemLabel+%3FofficialWebsite+%3FofficialBlog+%3FonlineDatabaseURL+WHERE+%7B%0A++++++%3Fitem+wdt%3AP856+%3Chttps%3A%2F%2Fdsgvo-gesetz.de%2Fart-6-dsgvo%2F%3E+.+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22%5BAUTO_LANGUAGE%5D%2Cen%22+.+%7D%0A++++++OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3FofficialWebsite+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1581+%3FofficialBlog+.+%7D+OPTIONAL+%7B+%3Fitem+wdt%3AP1316+%3FonlineDatabaseURL+.+%7D%0A++++%7D&#34;
+</code></pre>
+      </div>
+     </div></div>
+
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+	<div class="menu-container menu-footer" role="navigation">
+		<div class="menu">
+          <ul id="menu-footer-items" class="menu-footer-items"></ul>
+        </div>
+    </div><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Base is a <a href="https://projektemacher.org/en/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://theme.projektemacher.org/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 1 Projektemacher Base</p></div>
+</footer>
+
+
+</body>
+</html>

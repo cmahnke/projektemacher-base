@@ -1,0 +1,51 @@
+<div class="tab-content">
+    <div id="horizontal" class="tab-pane fade show active" role="tabpanel" aria-labelledby="horizontal-tab"><div id="timeline" class="timeline timeline-horizontal">
+</div>
+<script type="text/javascript">
+    var triggerTabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl);
+    });
+
+    var issues = [{"content": "\u003ca href=\u0022\/shortcodes\/timeline\/date1\/\u0022\u003eNovember 1961\u003c\/a\u003e", "start": new Date( 1961 , 11 , 1), "url": "\"/shortcodes/timeline/date1/\""},{"content": "\u003ca href=\u0022\/shortcodes\/timeline\/date2\/\u0022\u003eOctober 1972\u003c\/a\u003e", "start": new Date( 1972 , 10 , 1), "url": "\"/shortcodes/timeline/date2/\""},];
+    var options = {};
+    var timeline = addTimeline('timeline', issues, options);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if ($(window).width() < 1024) {
+            bootstrap.Tab.getInstance(document.getElementById('vertical-tab')).show()
+            
+        }
+    });
+</script>
+</div>
+
+    <div id="vertical" class="tab-pane fade" role="tabpanel" aria-labelledby="vertical-tab"><div class="timeline timeline-vertical"><div class="timeline-item even">
+            <div class="preview-img-container">
+                <a href="https://theme.projektemacher.org/shortcodes/timeline/date1/">
+                    <img class="list preview-img" src="" alt="Cover">
+                    <div class="year">1961</div>
+                </a>
+            </div>
+            <div class="preview-text-container">
+                <a href="https://theme.projektemacher.org/shortcodes/timeline/date1/"><div class="preview-title">November 1961</div>
+                    <p></p>
+                </a>
+
+            </div>
+        </div><div class="timeline-item odd">
+            <div class="preview-img-container">
+                <a href="https://theme.projektemacher.org/shortcodes/timeline/date2/">
+                    <img class="list preview-img" src="" alt="Cover">
+                    <div class="year">1972</div>
+                </a>
+            </div>
+            <div class="preview-text-container">
+                <a href="https://theme.projektemacher.org/shortcodes/timeline/date2/"><div class="preview-title">October 1972</div>
+                    <p></p>
+                </a>
+
+            </div>
+        </div></div>
+</div>
+</div>
