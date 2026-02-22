@@ -81,11 +81,12 @@ async def archive(urls, client, access_key=None, secret_key=None):
                         for i in range(retries):
                             try:
                                 if access_key and secret_key:
-                                    await archive_api(original_url, access_key, secret_key, client)
+                                    cprint(f"Saving {url} using API with access key...", "green")
+                                    resp = await archive_api(original_url, access_key, secret_key, client)
                                 else:
                                     resp = await client.get(url)
                                     resp.raise_for_status()
-                                return  # Success
+                                return 
                             except httpx.HTTPStatusError as e:
                                 if e.response.status_code == 429 and i < retries - 1:
                                     retry_after = int(e.response.headers.get("Retry-After", "5"))
@@ -185,7 +186,10 @@ async def main() -> int:
     urls = build_url_list(dir)
 
     # Try to avoid "Too many requests" see https://www.python-httpx.org/advanced/resource-limits/
-    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    if args.access_key and args.secret_key:
+        limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
+    else:
+      limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     client = httpx.AsyncClient(timeout=120, limits=limits)
     async_reqs = await archive(urls, client, access_key=args.access_key, secret_key=args.secret_key)
     await asyncio.gather(*async_reqs)
