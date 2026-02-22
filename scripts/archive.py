@@ -189,7 +189,7 @@ async def main() -> int:
     if args.access_key and args.secret_key:
         limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
     else:
-      limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+        limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     client = httpx.AsyncClient(timeout=120, limits=limits)
     async_reqs = await archive(urls, client, access_key=args.access_key, secret_key=args.secret_key)
     await asyncio.gather(*async_reqs)
