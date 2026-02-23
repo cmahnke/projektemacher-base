@@ -307,6 +307,9 @@ other = "Unknown artist"
 [Zenodo]
 other = "Zenodo"
 
+[WebArchiving]
+other = "Web archiving"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
