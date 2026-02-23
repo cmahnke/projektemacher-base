@@ -72,7 +72,7 @@
   "stylelint-prettier": "^5.0.3",
   "stylelint-scss": "^7.0.0",
   "svgo": "^3.3.2",
-  "three": "^0.183.0",
+  "three": "^0.183.1",
   "toml": "^3.0.0",
   "xslt3": "^2.7.0"
  },
