@@ -1,7 +1,8 @@
-import os, io, re, glob, pathlib, mimetypes, toml, logging
+import os, io, re, glob, pathlib, mimetypes, toml, logging, sys
 from pathlib import Path
 import frontmatter
-from .Util import Wikidata
+#sys.path.append(str(Path(__file__).parent))
+from PyHugo.Util import Wikidata
 
 class Site:
     CONTENT_PATH = "./content/"
@@ -9,6 +10,8 @@ class Site:
 
     def __init__(self, base_dir):
         config_file = self.guess_base(base_dir)
+        if config_file is None:
+            raise ValueError(f"Could't find config file in {base_dir}")
         self.base_dir = os.path.dirname(config_file)
         self.config = toml.load(config_file)
         self.translations = self.load_i18n()
@@ -78,13 +81,13 @@ class Config(Site):
         self.defaultLanguage = self.config.get("defaultContentLanguage", None)
         if self.defaultLanguage is None:
             self.defaultLanguage = self.config.get("defaultcontentlanguage", None)
-        
+
 
     def load_hugo_config(self):
         self.logger.debug(f"Loading Hugo config from {self.base_dir} ({self.config_file})")
         config = {}
         config_dir = os.path.join(self.base_dir, "config", "_default")
-        
+
         with open(self.config_file, "r") as f:
             config = toml.load(f)
         if os.path.exists(config_dir):
@@ -98,10 +101,10 @@ class Config(Site):
                         else:
                             config[key] = data
         return config
-    
+
     def baseURL(self):
         return self.config.get("baseURL", "http://localhost:1313/")
-    
+
     def publishDir(self):
         return self.config.get("publishDir", "public")
 
@@ -274,7 +277,7 @@ class Post:
         if rel_path.endswith("index.html"):
             rel_path = rel_path[:-10]
         raise NotImplementedError(f"Output formats {outputs} are not implemented yet! (config: {self.config.config})")
-    
+
     def getFile(self, lang=None):
         return self.files[lang]
 
@@ -348,7 +351,7 @@ class Post:
 
     def getKeywords(self, lang=None):
         keywords = set()
-        
+
         if self.config:
           tags = self.getTags(lang)
           for tag_name, tag_obj in tags.items():
@@ -357,7 +360,7 @@ class Post:
                   keywords.add(translated_tag)
               else:
                 keywords.add(tag_name)
-              
+
               wd_items = tag_obj.getWikidata(lang)
               for wd in wd_items:
                   label = Wikidata.getLabel(wd, lang)
@@ -459,7 +462,7 @@ class Published:
         self.publishDir = config.publishDir()
         self.baseUrl = config.baseURL().rstrip("/")
         self.pattern = pattern
-    
+
     def postList(self, subDir=""):
         urls = []
         search_path = self.publishDir / subDir
