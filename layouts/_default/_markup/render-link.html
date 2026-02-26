@@ -25,6 +25,7 @@
     {{- $queryOpts := dict
       "method" "get"
       "headers" (dict "Accept" "application/sparql-results+json")
+      "timeout" "120s"
     -}}
     {{- $query := printf `SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
         ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
