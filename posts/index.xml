@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Projektemacher Base</title>
+    <link>https://theme.projektemacher.org/posts/</link>
+    <description>Recent content in Posts on Projektemacher Base</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>mail@christianmahnke.de (Christian Mahnke)</managingEditor>
+    <webMaster>mail@christianmahnke.de (Christian Mahnke)</webMaster>
+    <atom:link href="https://theme.projektemacher.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/post-specific-assets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/post-specific-assets/</guid>
+      <description>&lt;p&gt;Make sure the &lt;code&gt;assets&lt;/code&gt; directory is mounted (in &lt;code&gt;hugo.toml&lt;/code&gt; or &lt;code&gt;config.toml&lt;/code&gt;)&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[module]&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/scss&amp;#34;&#xA;      target = &amp;#34;assets/scss&amp;#34;&#xA;&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/js&amp;#34;&#xA;      target = &amp;#34;assets/js&amp;#34;&#xA;&#xA;  [[module.mounts]]&#xA;      source = &amp;#34;assets/ts&amp;#34;&#xA;      target = &amp;#34;assets/ts&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a reference to the front matter&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scss: scss/tag-ring/tag-ring.scss&#xA;js:&#xA;  - ts/tag-ring/tag-ring.ts&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://theme.projektemacher.org/posts/site-params/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/site-params/</guid>
+      <description>&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[params.iiif]&#xA;  presentationViewer = &amp;#34;js/iiif/tify.js&amp;#34;&#xA;&#xA;[params.css]&#xA;  includeDirs = [&amp;#34;node_modules/tify/dist/&amp;#34;]&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title>Developing shortcodes</title>
+      <link>https://theme.projektemacher.org/posts/development/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/development/</guid>
+      <description>&lt;h1 id=&#34;seting-up&#34;&gt;Seting up&lt;/h1&gt;&#xA;&lt;p&gt;To use the example site locally you need to set up the language files:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;./scripts/setup.sh&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;running-the-example-site&#34;&gt;Running the example site&lt;/h1&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Afterwards the example site can be generated or &lt;code&gt;serve&lt;/code&gt;&amp;rsquo;d.&lt;/p&gt;&#xA;&lt;h1 id=&#34;cleaning-up&#34;&gt;Cleaning up&lt;/h1&gt;&#xA;&lt;p&gt;Before commiting changes one can clean up the language files:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;./scripts/cleanup.sh&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title>Mirador</title>
+      <link>https://theme.projektemacher.org/posts/mirador/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>mail@christianmahnke.de (Christian Mahnke)</author>
+      <guid>https://theme.projektemacher.org/posts/mirador/</guid>
+      <description>&lt;h1 id=&#34;requirements&#34;&gt;Requirements&lt;/h1&gt;&#xA;&lt;h2 id=&#34;packagejson&#34;&gt;&lt;code&gt;package.json&lt;/code&gt;&lt;/h2&gt;&#xA;&lt;p&gt;Make sure to check out a dev version that can be used with the patch for page gaps.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{&#xA;  &amp;#34;dependencies&amp;#34;: {&#xA;    &amp;#34;mirador&amp;#34;: &amp;#34;ProjectMirador/mirador#5cb692ed31480c1e130f4a8715726688cb35796d&amp;#34;&#xA;  },&#xA;  &amp;#34;devDependencies&amp;#34;: {&#xA;      &amp;#34;patch-package&amp;#34;: &amp;#34;^8.0.0&amp;#34;&#xA;  },&#xA;  &amp;#34;scripts&amp;#34;: {&#xA;    &amp;#34;prepatch&amp;#34;: &amp;#34;cp -rf $INIT_CWD/themes/projektemacher-base/patches $INIT_CWD&amp;#34;,&#xA;    &amp;#34;patch&amp;#34;: &amp;#34;yarn run patch-package&amp;#34;,&#xA;    &amp;#34;postinstall&amp;#34;: &amp;#34;yarn run prepatch &amp;amp;&amp;amp; yarn run patch &amp;amp;&amp;amp; yarn run postinstall-mirador &amp;amp;&amp;amp; ls -al node_modules/mirador/dist&amp;#34;,&#xA;    &amp;#34;postinstall-mirador&amp;#34;: &amp;#34;cd node_modules/mirador &amp;amp;&amp;amp; yarn add -D @babel/plugin-proposal-private-property-in-object &amp;amp;&amp;amp; yarn install &amp;amp;&amp;amp; yarn run build&amp;#34;&#xA;&#xA;  }&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>
