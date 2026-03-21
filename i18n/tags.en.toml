@@ -310,6 +310,9 @@ other = "Zenodo"
 [WebArchiving]
 other = "Web archiving"
 
+[OrganisationalPsychology]
+other = "Organisational psychology"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
