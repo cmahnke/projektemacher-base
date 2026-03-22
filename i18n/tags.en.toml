@@ -313,6 +313,12 @@ other = "Web archiving"
 [OrganisationalPsychology]
 other = "Organisational psychology"
 
+[Lottie]
+other = "Lottie"
+
+[Movie]
+other = "Movie"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

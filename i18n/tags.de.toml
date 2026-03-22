@@ -313,6 +313,12 @@ other = "Webarchivierung"
 [OrganisationalPsychology]
 other = "Organisationspsychologie"
 
+[Lottie]
+other = "Lottie"
+
+[Movie]
+other = "Film"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
