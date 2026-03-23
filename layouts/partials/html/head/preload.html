@@ -1,0 +1,18 @@
+{{- $defaultType := "image" -}}
+
+{{- with .Params.preload -}}
+  {{- $files := dict -}}
+  {{- if reflect.IsSlice . -}}
+    {{- range . -}}
+      {{- $files = merge $files (dict $defaultType .) -}}
+    {{- end -}}
+  {{- else if reflect.IsMap . -}}
+    {{- $files = . -}}
+  {{- else if ne . "" -}}
+    {{- $files = dict $defaultType . -}}
+  {{- end -}}
+
+  {{- range $type, $source := $files -}}
+    <link rel="preload" href="{{ $source }}" as="{{ $type }}">
+  {{- end -}}
+{{- end -}}
