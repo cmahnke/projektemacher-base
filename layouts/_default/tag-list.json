@@ -55,7 +55,7 @@
             {{- $i18nTag = i18n $tag  -}}
           {{- end -}}
           {{/* See https://github.com/gohugoio/hugo/issues/7844#issuecomment-1843854396
-            {{ $i18nTag := index $.Site.Data .Lang $tag }}
+            {{ $i18nTag := index hugo.Data .Lang $tag }}
           */}}
           {{- if or (eq $i18nTag "") (eq $i18nTag nil) -}}
             {{- $i18nTag = $tag -}}
