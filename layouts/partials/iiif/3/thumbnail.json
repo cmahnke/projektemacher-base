@@ -11,7 +11,7 @@
 {{- $urlBase := "" -}}
 {{- $localPath := printf "%s/" (substr (path.Dir .RelPermalink) 1) -}}
 {{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
-  {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
+  {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
 {{- else -}}
   {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
 {{- end -}}
