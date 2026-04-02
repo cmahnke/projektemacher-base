@@ -1,24 +1,24 @@
 <div class="footer-container">
     <p class="projektemacher">
-        {{ $.Sites.Default.Title }} {{ i18n "projektemacher" | safeHTML }}
+        {{ hugo.Sites.Default.Title }} {{ i18n "projektemacher" | safeHTML }}
     </p>
 
-    {{- if and $.Sites.Default.Copyright (eq $.Sites.Default.Copyright "false") -}}
+    {{- if and hugo.Sites.Default.Copyright (eq hugo.Sites.Default.Copyright "false") -}}
         <p class="copyright"></p>
-    {{- else if $.Sites.Default.Params.copyrightYears -}}
-	      <p class="copyright">&copy; {{ $.Sites.Default.Params.copyrightYears }} {{ .Sites.Default.Copyright | safeHTML }}</p>
-	  {{- else if $.Sites.Default.Params.copyright -}}
+    {{- else if hugo.Sites.Default.Params.copyrightYears -}}
+	      <p class="copyright">&copy; {{ hugo.Sites.Default.Params.copyrightYears }} {{ .Sites.Default.Copyright | safeHTML }}</p>
+	  {{- else if hugo.Sites.Default.Params.copyright -}}
 	      <p class="copyright">{{- .Sites.Default.Params.copyright | safeHTML -}}</p>
     {{- else -}}
-        <p class="copyright">&copy; {{ $.Sites.Default.Lastmod.Year }} {{ $.Sites.Default.Title }}</p>
+        <p class="copyright">&copy; {{ hugo.Sites.Default.Lastmod.Year }} {{ hugo.Sites.Default.Title }}</p>
     {{- end -}}
-    {{- if and $.Sites.Default.Params.cc (eq $.Sites.Default.Params.cc true) -}}
+    {{- if and hugo.Sites.Default.Params.cc (eq hugo.Sites.Default.Params.cc true) -}}
         <p class="cc">{{ i18n "cc" | safeHTML }}</p>
 	  {{- end -}}
-    {{- if and $.Sites.Default.Params.footer.privacy (eq $.Sites.Default.Params.footer.privacy true) -}}
+    {{- if and hugo.Sites.Default.Params.footer.privacy (eq hugo.Sites.Default.Params.footer.privacy true) -}}
       {{ $privacyUrl := "/privacy" }}
-      {{- if and $.Sites.Default.Params.footer.privacyUrl -}}
-        {{ $privacyUrl := $.Sites.Default.Params.footer.privacyUrl }}
+      {{- if and hugo.Sites.Default.Params.footer.privacyUrl -}}
+        {{ $privacyUrl := hugo.Sites.Default.Params.footer.privacyUrl }}
       {{- end -}}
       <p class="privacy"><a href="{{ $privacyUrl | safeHTML }}" title="{{ i18n "privacyPolicy" | safeHTML }}">{{ i18n "privacyPolicy" | safeHTML }}</a></p>
 	  {{- end -}}

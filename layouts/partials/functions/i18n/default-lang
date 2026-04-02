@@ -1,1 +1,1 @@
-{{- return (index $.Sites.Default.Languages 0).Lang -}}
+{{- return (index hugo.Sites.Default.Languages 0).Lang -}}
