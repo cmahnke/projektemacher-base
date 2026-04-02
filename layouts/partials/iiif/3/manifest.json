@@ -16,7 +16,7 @@
 
 {{- $manifest = $manifest | merge $common -}}
 
-{{- $defaultContentLanguage := site.Sites.Default.Language.Lang -}}
+{{- $defaultContentLanguage := hugo.Sites.Default.Language.Lang -}}
 {{ $defaultContentPage := "" }}
 {{- if hugo.IsMultilingual -}}
   {{- $defaultContentPage = index (where .AllTranslations ".Lang" "eq" $defaultContentLanguage) 0 -}}
@@ -26,7 +26,7 @@
 {{- $urlBase := "" -}}
 {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
 {{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
-  {{- $urlBase = printf "%s%s" site.Sites.Default.BaseURL $localPath -}}
+  {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
 {{- else -}}
   {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
 {{- end -}}

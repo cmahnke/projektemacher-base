@@ -39,7 +39,7 @@
         {{- end -}}
       {{- else -}}
         {{- $definitionMissing = true -}}
-        {{- if eq $.Lang $.Sites.Default.Language.Lang -}}
+        {{- if eq $.Lang hugo.Sites.Default.Language.Lang -}}
           {{- if eq $debug true -}}
             {{- warnf "[tag-list.json] Can't load file %s" $tagPath -}}
           {{- end -}}
@@ -51,7 +51,7 @@
         {{- range $.Site.Languages -}}
           {{- $i18nTag := $tag -}}
 
-          {{- if eq .Lang $.Sites.Default.Language.Lang -}}
+          {{- if eq .Lang hugo.Sites.Default.Language.Lang -}}
             {{- $i18nTag = i18n $tag  -}}
           {{- end -}}
           {{/* See https://github.com/gohugoio/hugo/issues/7844#issuecomment-1843854396
