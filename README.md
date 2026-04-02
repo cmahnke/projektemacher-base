@@ -68,6 +68,21 @@ The [example site](https://cmahnke.github.io/projektemacher-base/) is currently 
 * Include nomalize.js by default
 * Finish shortcode metadata
 
+## Version upgrades
+
+### TODO (0.153.0 - 0.156.0)
+
+Notes:
+
+* https://discourse.gohugo.io/t/56732
+* https://gohugo.io/methods/site/language/#lang
+
+Method:
+* .Site.AllPages
+* .Site.Languages
+* Site.BuildDrafts (?)
+* .Language.Lang
+
 # Tools
 
 * [IIIF validator](https://presentation-validator.iiif.io/)

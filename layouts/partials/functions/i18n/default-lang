@@ -1,1 +1,5 @@
-{{- return (index $.Sites.Default.Languages 0).Lang -}}
+{{- if ge hugo.Version "0.156.0" -}}
+  {{- return hugo.Sites.Default.Language.Name -}}
+{{- else -}}
+  {{- return (index $.Sites.Default.Languages 0).Lang -}}
+{{- end -}}
