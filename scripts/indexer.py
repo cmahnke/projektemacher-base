@@ -8,6 +8,7 @@ import re
 import argparse
 import pathlib
 import requests
+from requests_ratelimiter import LimiterSession
 from pagefind.index import PagefindIndex, IndexConfig
 from bs4.element import Tag
 from bs4 import BeautifulSoup
@@ -76,6 +77,7 @@ def get_labels (qid, lang):
     """
 
     try:
+        log.debug(f"Querying Wikidata for labels of {qid} in language '{lang}'")
         response = requests.get(WIKIDATA_ENDPOINT, params={"query": query}, headers=WIKIDATA_HEADERS)
         response.raise_for_status()
 
@@ -162,7 +164,7 @@ def get_base_type(qid, lang = 'en', default_label = None):
     """
 
     try:
-        response = requests.get(WIKIDATA_ENDPOINT, headers=WIKIDATA_HEADERS, params={'query': sparql_query})
+        response = session.get(WIKIDATA_ENDPOINT, headers=WIKIDATA_HEADERS, params={'query': sparql_query})
         response.raise_for_status()
         data = response.json()
 
@@ -549,16 +551,26 @@ async def index(contents, output_dir):
         await index.write_files(output_path=output_dir)
         log.info("Pagefind indexing complete!")
 
-async def main():
+def main():
     if sys.version_info[0] < 3 or sys.version_info[1] < 13:
         raise Exception("Must be using Python 3.13")
 
-    parser = argparse.ArgumentParser(description='Index page')
+    parser = argparse.ArgumentParser(description='Index page', add_help=False, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-s', '--source', type=pathlib.Path, help='The source directory containing HTML files to be indexed',)
     parser.add_argument('-c', '--config', type=pathlib.Path, help='File containing configuration (JSON or YAML)', required=True)
     parser.add_argument("-o", "--output", type=pathlib.Path, help="The directory where Pagefind will write its index files. Defaults to a 'pagefind' subdirectory within the source directory.")
-
+    parser.add_argument("-l", "--limit", type=int, help="The maximum number of requests per second", default=1)
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("-h", "--help", action="store_true", help="Show help")
     args = parser.parse_args()
+
+    if args.help:
+        parser.print_help()
+        sys.exit(0)
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+
     config = load_config(args.config)
 
     if config is None:
@@ -591,6 +603,9 @@ async def main():
     if ("ignore" in config["content"]):
         ignore = config["content"]["ignore"]
 
+    global session
+    session = LimiterSession(per_second=args.limit)
+
     log.info(f"Starting Pagefind indexing for '{source_dir}'...")
     log.info(f"Output directory: '{output_dir}'")
     log.info(f"Using configuration from: '{args.config}'")
@@ -600,8 +615,11 @@ async def main():
     pages = []
     for relative_path, filepath in file_list.items():
         pages.append(Page(relative_path, filepath, preprocess_html_file(filepath, index_config)))
-    await index(pages, output_dir)
+    asyncio.run(index(pages, output_dir))
 
 if __name__ == "__main__":
-    print("Starting indexer")
-    asyncio.run(main())
+    try:
+        print("Starting indexer")
+        main()
+    except KeyboardInterrupt:
+        log.info("Indexer stopped by user (Ctrl+C).")

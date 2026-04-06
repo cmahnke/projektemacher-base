@@ -34,6 +34,7 @@ fpdf2
 beautifulsoup4
 httpx
 requests
+requests-ratelimiter
 # HDR related
 ffmpeg-python
 opencv-python
