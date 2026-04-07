@@ -1,0 +1,26 @@
+name: Hugo setup
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HUGO_VERSION: 0.160.0
+
+jobs:
+  hugo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Install Hugo
+        run: |
+          ./scripts/github/setup-hugo.sh ${{ env.HUGO_VERSION }}
