@@ -26,12 +26,15 @@ if [ -z "$ARCH" ] ; then
   ARCH=$DEFAULT_ARCH
 fi
 
-curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
+ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
+URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
+
+curl -sLJO "${URL}"
 mkdir -p "${HOME}/.local/hugo" "${HOME}/.local/bin"
 #echo "PATH is '$PATH'"
-tar -C "${HOME}/.local/hugo" -xf "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
+tar -C "${HOME}/.local/hugo" -xf "${ARCHIVE}"
 mv "${HOME}/.local/hugo/hugo" "${HOME}/.local/bin/"
-rm -r "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz" "${HOME}/.local/hugo"
+rm -r "${ARCHIVE}" "${HOME}/.local/hugo"
 echo "${HOME}/.local/bin/hugo" >> "${GITHUB_PATH}"
 
 
