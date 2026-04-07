@@ -27,7 +27,18 @@ if [ -z "$ARCH" ] ; then
 fi
 
 ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
-URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
+
+case "$1" in
+  http*)
+    URL="$1"
+    ;;
+  *)
+    URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
+    ARCHIVE="$(filename "$URL")"
+    ;;
+esac
+
+echo "Using '$URL' to get '$ARCHIVE'"
 
 curl -sLJO "${URL}"
 mkdir -p "${HOME}/.local/hugo" "${HOME}/.local/bin"
