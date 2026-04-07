@@ -27,17 +27,23 @@ if [ -z "$ARCH" ] ; then
 fi
 
 curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
-mkdir -p "${HOME}/.local/hugo"
+mkdir -p "${HOME}/.local/hugo" "${HOME}/.local/bin"
+echo "PATH is '$PATH'"
 tar -C "${HOME}/.local/hugo" -xf "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
 mv "${HOME}/.local/hugo/hugo" "${HOME}/.local/bin/"
 rm "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
 echo "${HOME}/.local/bin/hugo" >> "${GITHUB_PATH}"
 
 
-echo "Hugo: $(hugo version)"
+if ! [ -x "$(command -v hugo)" ]; then
+  echo "'sass' not installed"
+  exit 2
+else
+  echo "Hugo: $(hugo version)"
+fi
 
 if ! [ -x "$(command -v sass)" ]; then
-    echo "'sass' not installed"
+  echo "'sass' not installed"
 else
   echo "Dart Sass: $(sass --version)"
 fi
