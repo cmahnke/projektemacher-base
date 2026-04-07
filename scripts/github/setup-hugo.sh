@@ -31,10 +31,10 @@ ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
 case "$1" in
   http*)
     URL="$1"
+    ARCHIVE="$(basename "$URL")"
     ;;
   *)
     URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
-    ARCHIVE="$(filename "$URL")"
     ;;
 esac
 
