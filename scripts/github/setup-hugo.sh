@@ -27,7 +27,7 @@ if [ -z "$ARCH" ] ; then
 fi
 
 curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
-mkdir "${HOME}/.local/hugo"
+mkdir -p "${HOME}/.local/hugo"
 tar -C "${HOME}/.local/hugo" -xf "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
 rm "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
 echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
