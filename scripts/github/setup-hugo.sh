@@ -28,10 +28,10 @@ fi
 
 curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
 mkdir -p "${HOME}/.local/hugo" "${HOME}/.local/bin"
-echo "PATH is '$PATH'"
+#echo "PATH is '$PATH'"
 tar -C "${HOME}/.local/hugo" -xf "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
 mv "${HOME}/.local/hugo/hugo" "${HOME}/.local/bin/"
-rm "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
+rm -r "hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz" "${HOME}/.local/hugo"
 echo "${HOME}/.local/bin/hugo" >> "${GITHUB_PATH}"
 
 
