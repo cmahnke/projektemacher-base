@@ -8,7 +8,7 @@ sectionContent: false
 sitemap:
   disable: true
 cascade:
-  - target:
+  - _target:
       kind: '{page,section}'
       lang: en
       path: '**'
