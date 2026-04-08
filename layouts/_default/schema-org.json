@@ -1,0 +1,22 @@
+{{- $pages := where .Site.RegularPages "Params.displayinlist" "!=" false -}}
+
+{{- if isset "section" .Params -}}
+  {{- $pages = where .Site.RegularPages "Section" .Params.section -}}
+{{- end -}}
+
+{{- $pageList := slice -}}
+{{- range $page := $pages -}}
+  {{- $schemaOrg := transform.Unmarshal (partial "metadata/schema.org/util/post.html" .) -}}
+  {{- $schemaOrg = $schemaOrg | merge (dict "@type" "BlogPosting") -}}
+  {{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+
+  {{- $about := partial "metadata/schema.org/util/about.html" $page | transform.Unmarshal (dict "format" "json") -}}
+  {{- with $about -}}
+    {{- $schemaOrg = $schemaOrg | merge (dict "about" .) -}}
+  {{- end -}}
+
+  {{- with $schemaOrg  -}}
+    {{- $pageList = $pageList | append $schemaOrg -}}
+  {{- end -}}
+{{- end -}}
+{{- $pageList  | jsonify -}}

@@ -1,0 +1,19 @@
+{{- if or (isset .Params "author") (isset .Params "authors") -}}
+  {{- errorf "[metadata/schema.org/util/author.html] Post params 'author' or 'authors' not supported by JSON-LD / Schema.org seialisation" -}}
+{{- end -}}
+{{- $author := dict "@type" "Person" -}}
+{{- $authorName := "" -}}
+{{- with site.Params.author -}}
+  {{- if reflect.IsMap . -}}
+    {{- with .name -}}
+      {{- $author = $author | merge (dict "name" .) -}}
+    {{- end -}}
+    {{- with .uri -}}
+      {{- $author = $author | merge (dict "@id" .) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $author =  $author | merge (dict "name" .) -}}
+    {{- $author = $author | merge (dict "@id" (printf "%s#person" site.BaseURL )) -}}
+  {{- end }}
+{{- end }}
+{{- $author | jsonify -}}

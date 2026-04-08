@@ -1,0 +1,77 @@
+{{- $defaultRelation := "related" -}}
+{{- $entityBase := "http://www.wikidata.org/entity/" -}}
+
+{{- $entries := dict -}}
+{{- $contents := slice $ -}}
+{{- range $tag := .Params.tags -}}
+  {{- if hasPrefix . "hidden_" -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- if ne $tag "" -}}
+    {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
+    {{- with site.GetPage $tagUrl -}}
+      {{- with .Params.wikidata -}}
+        {{- if not (reflect.IsMap .) -}}
+          {{- $list := slice -}}
+          {{- if not (reflect.IsSlice .) -}}
+            {{- $list = slice . -}}
+          {{- else  -}}
+            {{- $list = . -}}
+          {{- end -}}
+          {{- range $list -}}
+            {{- $entries = $entries | merge (dict . $defaultRelation) -}}
+          {{- end -}}
+        {{- else -}}
+          {{- $entries = . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with .Content -}}
+        {{ $contents = $contents | append $ }}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $contents -}}
+  {{- with .Content -}}
+    {{- $regex := `data-wikidata-entity="(.*?)"` -}}
+    {{- $matches := findRESubmatch $regex . -}}
+    {{- range $match := $matches -}}
+      {{- $entity := (index $match 1) -}}
+      {{- if eq $entity "" -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- if not (hasPrefix $entity "http") -}}
+        {{- $entity = printf "https://www.wikidata.org/wiki/%s" $entity -}}
+      {{- end -}}
+      {{- $entries = $entries | merge (dict $entity $defaultRelation) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with .Params.wikidata -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- $list := slice -}}
+    {{- if not (reflect.IsSlice .) -}}
+      {{- $list = slice . -}}
+    {{- else  -}}
+      {{- $list = . -}}
+    {{- end -}}
+    {{- range $list -}}
+      {{- $entries = $entries | merge (dict . $defaultRelation) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $entries = $entries | merge . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $about := slice -}}
+{{- range $url, $relation := $entries -}}
+  {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
+  {{- $uri := printf "%s%s" $entityBase $id -}}
+  {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id) -}}
+  {{- $thing := dict "@type" "Thing" "@id" $uri "name" $name -}}
+  {{- $about = $about | append $thing -}}
+{{- end -}}
+
+{{- $about | jsonify -}}

@@ -1,0 +1,11 @@
+{{- $datePublished := .Date.Format "2006-01-02" -}}
+{{- $dateModified := .Lastmod.Format "2006-01-02" -}}
+{{- $post := dict "@id" (.OutputFormats.Get "html").Permalink "url" (.OutputFormats.Get "html").Permalink "datePublished" $datePublished "dateModified" $dateModified -}}
+{{- with .Description -}}
+  {{- $post = $post | merge (dict "description" .) -}}
+{{- end -}}
+{{- with .Title -}}
+  {{- $post = $post | merge (dict "name" .) -}}
+  {{- $post = $post | merge (dict "headline" .) -}}
+{{- end -}}
+{{- $post | jsonify -}}
