@@ -6,14 +6,6 @@ DEFAULT_VARIANT="extended_"
 DEFAULT_OS="linux"
 DEFAULT_ARCH="amd64"
 
-if [ -n "$1" ] ; then
-  HUGO_VERSION="$1"
-fi
-
-if [ -z "$HUGO_VERSION" ] ; then
-  echo "HUGO_VERSION not set, exiting"
-fi
-
 if [ -z "$VARIANT" ] ; then
   VARIANT=$DEFAULT_VARIANT
 fi
@@ -26,14 +18,28 @@ if [ -z "$ARCH" ] ; then
   ARCH=$DEFAULT_ARCH
 fi
 
-ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
-
 case "$1" in
   http*)
     URL="$1"
     ARCHIVE="$(basename "$URL")"
+    if [ -n "$HUGO_VERSION" ] ; then
+      if [ "$(expr "$URL" : ".*$HUGO_VERSION")" -eq 0 ]; then
+        echo "Version missmatch between '$HUGO_VERSION' and '$URL'"
+        exit 1
+      fi
+    fi
     ;;
   *)
+    if [ -n "$1" ] ; then
+      HUGO_VERSION="$1"
+    fi
+
+    if [ -z "$HUGO_VERSION" ] ; then
+      echo "HUGO_VERSION not set, exiting"
+      exit 2
+    fi
+
+    ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
     URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
     ;;
 esac
@@ -50,8 +56,8 @@ echo "${HOME}/.local/bin/hugo" >> "${GITHUB_PATH}"
 
 
 if ! [ -x "$(command -v hugo)" ]; then
-  echo "'sass' not installed"
-  exit 2
+  echo "'hugo' not installed"
+  exit 3
 else
   echo "Hugo: $(hugo version)"
 fi
