@@ -1,8 +1,15 @@
 {{- $pages := where .Site.RegularPages "Params.displayinlist" "!=" false -}}
 
+{{- $section := "post" -}}
+{{- $type := "Blog" -}}
 {{- if isset "section" .Params -}}
-  {{- $pages = where .Site.RegularPages "Section" .Params.section -}}
+  {{- $section = .Params.section -}}
 {{- end -}}
+{{- if isset "type" .Params -}}
+  {{- $type = .Params.type -}}
+{{- end -}}
+
+{{- $pages = where $pages "Section" $section -}}
 
 {{- $pageList := slice -}}
 {{- range $page := $pages -}}
@@ -14,9 +21,26 @@
   {{- with $about -}}
     {{- $schemaOrg = $schemaOrg | merge (dict "about" .) -}}
   {{- end -}}
-
+  {{- with $author -}}
+    {{- $schemaOrg = $schemaOrg | merge (dict "author" .) -}}
+  {{- end -}}
   {{- with $schemaOrg  -}}
     {{- $pageList = $pageList | append $schemaOrg -}}
   {{- end -}}
 {{- end -}}
-{{- $pageList  | jsonify -}}
+
+{{- $name := site.Title -}}
+{{- $siteURL := site.BaseURL -}}
+
+{{- if ne $section "" -}}
+  {{- with site.GetPage $section -}}
+    {{- $siteURL = (.OutputFormats.Get "html").Permalink -}}
+    {{- $name = printf "%s - %s" $name .Title -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $blog := dict "@context" "https://schema.org/" "@type" $type
+  "author" (transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .))
+  "blogPost" $pageList "@id" $siteURL "mainEntityOfPage" $siteURL "name" $name -}}
+
+{{- $blog | jsonify -}}
