@@ -25,12 +25,12 @@ exclude = [
 ]
 # Maximal age in days
 max_age = 60
-
+check_timeout = 1
 
 def check_availability(url):
     available_url = f"{available_prefix}{url}"
     try:
-        req = httpx.get(available_url)
+        req = httpx.get(available_url, timeout=check_timeout)
         req.raise_for_status()
         json = req.json()
         if "archived_snapshots" in json and json["archived_snapshots"]:
@@ -42,6 +42,9 @@ def check_availability(url):
                 return False
             cprint(f"URL {url} has been archived within the last {max_age} days!", "green")
             return True
+    except httpx.TimeoutException as te:
+        cprint(f"HTTP Timeout for {url}: {te}", "red")
+
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 429:
             cprint(f"Rate limited checking availability for {url}. Assuming not archived.", "yellow")
@@ -86,7 +89,7 @@ async def archive(urls, client, access_key=None, secret_key=None):
                                 else:
                                     resp = await client.get(url)
                                     resp.raise_for_status()
-                                return 
+                                return
                             except httpx.HTTPStatusError as e:
                                 if e.response.status_code == 429 and i < retries - 1:
                                     retry_after = int(e.response.headers.get("Retry-After", "5"))
