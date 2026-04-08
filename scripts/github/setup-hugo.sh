@@ -24,7 +24,7 @@ case "$1" in
     ARCHIVE="$(basename "$URL")"
     if [ -n "$HUGO_VERSION" ] ; then
       if [ "$(expr "$URL" : ".*$HUGO_VERSION")" -eq 0 ]; then
-        echo "Version missmatch between '$HUGO_VERSION' and '$URL'"
+        echo "Version mismatch between '$HUGO_VERSION' and '$URL'"
         exit 1
       fi
     fi
