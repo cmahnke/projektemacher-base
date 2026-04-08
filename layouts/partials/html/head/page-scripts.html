@@ -11,7 +11,6 @@
 
 {{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 
-{{- $isServer := hugo.IsServer -}}
 {{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
 
 {{- if and $debug (len $includes) -}}
@@ -39,7 +38,7 @@
 
 {{- if $scripts -}}
   {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
-  {{- if $isServer -}}
+  {{- if hugo.IsServer -}}
       {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
   {{- end -}}
   {{- $fileName := "" -}}
@@ -50,7 +49,8 @@
     {{- if $debug -}}
       {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
-    {{- $mainOpts := dict "targetPath" $script "defines" $defines -}}
+    {{- $mainOpts := dict "targetPath" $script "defines" $defines "minify" (cond hugo.IsDevelopment false true) "sourceMap" (cond hugo.IsDevelopment "linked" "none") -}}
+
     {{- $mainOpts = merge $mainOpts $additionalOpts -}}
     {{- $main := "" -}}
     {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
@@ -66,10 +66,7 @@
     {{- $fileName = printf "%s%s" $fileName $script -}}
   {{- end -}}
 
-  {{- if not $isServer -}}
-      {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | minify | fingerprint -}}
-  {{- else -}}
-      {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
-  {{- end -}}
+
+  {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
   <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
 {{- end -}}
