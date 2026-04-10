@@ -3,6 +3,8 @@
 
 {{- $entries := dict -}}
 {{- $contents := slice $ -}}
+{{- $about := slice -}}
+
 {{- range $tag := .Params.tags -}}
   {{- if hasPrefix . "hidden_" -}}
     {{- continue -}}
@@ -32,6 +34,16 @@
   {{- end -}}
 {{- end -}}
 
+{{- range $url, $relation := $entries -}}
+  {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
+  {{- $uri := printf "%s%s" $entityBase $id -}}
+  {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id "langs" (slice $.Language.Name "en")) -}}
+  {{- $marker := dict "@type" "PropertyValue" "propertyID" "projektemacher" "value" "tag" -}}
+  {{- $thing := dict "@type" "Thing" "@id" $uri "name" $name "identifier" $marker -}}
+  {{- $about = $about | append $thing -}}
+{{- end -}}
+
+{{- $entries := dict -}}
 {{- range $contents -}}
   {{- with .Content -}}
     {{- $regex := `data-wikidata-entity="(.*?)"` -}}
@@ -65,7 +77,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- $about := slice -}}
+
 {{- range $url, $relation := $entries -}}
   {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
   {{- $uri := printf "%s%s" $entityBase $id -}}
