@@ -8,4 +8,21 @@
   {{- $post = $post | merge (dict "name" .) -}}
   {{- $post = $post | merge (dict "headline" .) -}}
 {{- end -}}
+{{- $post = $post | merge (dict "inLanguage" .Lang) -}}
+{{- $translations := slice -}}
+{{- range .Translations -}}
+  {{- $translation := dict
+    "@type" "CreativeWork"
+    "@id" (.OutputFormats.Get "html").Permalink
+    "url" (.OutputFormats.Get "html").Permalink
+    "inLanguage" .Lang
+  -}}
+  {{- with .Title -}}
+    {{- $translation = $translation | merge (dict "name" .) -}}
+  {{- end -}}
+  {{- $translations = $translations | append $translation -}}
+{{- end -}}
+{{- with $translations -}}
+  {{- $post = $post | merge (dict "workTranslation" .) -}}
+{{- end -}}
 {{- $post | jsonify -}}
