@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 77.0.3", "toml", "frontmatter", "termcolor"]
+requires = ["setuptools >= 82.0.1", "toml", "frontmatter", "termcolor"]
 build-backend = "setuptools.build_meta"
 
 [project]
