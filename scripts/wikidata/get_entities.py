@@ -72,52 +72,38 @@ NAMESPACE_PREFIXES = {
 
 # ── Kuratierte Property-Whitelist für Default-Modus ──
 DEFAULT_PROPERTIES = {
-    # Klassifikation & Typ
     'P31', 'P279', 'P361', 'P527', 'P1552', 'P910', 'P1269',
-    # Namen, Titel & Bezeichnungen
     'P1448', 'P1449', 'P1559', 'P1705', 'P742', 'P735', 'P734',
     'P1477', 'P2561', 'P1476', 'P1680', 'P528', 'P1813', 'P2562',
     'P138', 'P97',
-    # Beschreibung & Zusammenfassung
     'P1343', 'P973', 'P935', 'P373',
-    # Bild & Medien
     'P18', 'P154', 'P242', 'P41', 'P94', 'P10', 'P51',
     'P158', 'P948', 'P6802', 'P4291', 'P3451', 'P8517',
     'P1442', 'P109',
-    # Geografie
     'P625', 'P17', 'P131', 'P36', 'P150', 'P30', 'P206',
     'P421', 'P47', 'P706', 'P1376', 'P276', 'P291', 'P840',
     'P937', 'P551',
-    # Zeit & Geschichte
     'P571', 'P576', 'P580', 'P582', 'P585', 'P569', 'P570',
     'P577', 'P1319', 'P1326',
-    # Personen
     'P21', 'P27', 'P19', 'P20', 'P106', 'P39', 'P69', 'P108',
     'P22', 'P25', 'P26', 'P40', 'P3373', 'P184', 'P1066', 'P737',
     'P1412', 'P103', 'P140', 'P172', 'P119', 'P463', 'P241',
     'P410', 'P166', 'P1411', 'P511', 'P1035', 'P1971',
-    # Organisationen
     'P112', 'P159', 'P169', 'P488', 'P127', 'P355', 'P749',
     'P452', 'P1128', 'P1454', 'P740',
-    # Werke & Kreation
     'P50', 'P57', 'P86', 'P170', 'P175', 'P136', 'P364', 'P495',
     'P123', 'P407', 'P921', 'P144', 'P747', 'P1433', 'P655',
     'P58', 'P162', 'P161', 'P725', 'P676', 'P264', 'P449',
     'P750', 'P272', 'P179', 'P155', 'P156', 'P629', 'P953',
     'P212', 'P957', 'P236', 'P356',
-    # Externe Links & wichtige IDs
     'P856', 'P1566', 'P213', 'P214', 'P227', 'P244', 'P268',
     'P269', 'P496', 'P349', 'P1315',
-    # Social Media & Web
     'P2013', 'P2003', 'P2002', 'P4033', 'P2397', 'P4264',
     'P8687', 'P1651',
-    # Beziehungen
     'P460', 'P1889', 'P2860', 'P3342',
-    # Mengen & Statistik
     'P1082', 'P2046', 'P2044', 'P2048', 'P2049', 'P2067',
 }
 
-# Non-wdt Prädikate die im Default-Modus immer behalten werden
 DEFAULT_KEEP_PREDICATES = {
     str(RDF.type),
     str(RDFS.label),
@@ -190,9 +176,18 @@ SPARQL_HEADERS = {
 }
 MAX_RETRIES = 5
 RETRY_BASE_WAIT = 2
-REQUEST_TIMEOUT = 30
+REQUEST_TIMEOUT = 60
 INTER_QUERY_DELAY = 0.5
 INCOMING_LIMIT = 1000
+
+# ── Indirect link discovery settings ──
+INDIRECT_MAX_HOPS = 2
+INDIRECT_RESULTS_LIMIT = 5000
+INDIRECT_BATCH_SIZE = 50  # Entities per VALUES batch
+
+# ── Type hierarchy settings ──
+HIERARCHY_MAX_DEPTH = 10
+HIERARCHY_BATCH_SIZE = 50
 
 DEFAULT_LANGUAGES = ['en', 'de']
 ALWAYS_INCLUDE_LANG = 'mul'
@@ -262,7 +257,6 @@ STATEMENT_NODE_RE = re.compile(
 PROP_STATEMENT_LINK_RE = re.compile(
     r'^http://www\.wikidata\.org/prop/P\d+$'
 )
-# Pattern für Wikidata Q-Item Entity URIs
 WD_ENTITY_RE = re.compile(
     r'^http://www\.wikidata\.org/entity/Q\d+$'
 )
@@ -270,23 +264,129 @@ WD_ENTITY_RE = re.compile(
 FETCHED_MARKER = ENRICHMENT['fetchedFrom']
 FETCHED_VALUE = Literal("wikidata")
 
+INDIRECT_MARKER = ENRICHMENT['indirectLink']
+HIERARCHY_MARKER = ENRICHMENT['hierarchyNode']
+
 RDFLIB_TERM_LOGGER = logging.getLogger('rdflib.term')
 PROPERTY_ID_RE = re.compile(r'(P\d+)$')
 LABEL_BATCH_SIZE = 50
+WIKIPEDIA_SITELINK_BATCH_SIZE = 50
 
+WDT_P31 = URIRef("http://www.wikidata.org/prop/direct/P31")
+WDT_P279 = URIRef("http://www.wikidata.org/prop/direct/P279")
+
+
+def build_wikipedia_sitelinks_query(
+    entity_uris: list[str], languages: list[str]
+) -> str:
+    """
+    SPARQL query to fetch Wikipedia article URLs for entities
+    in the given languages via schema:about on the article pages.
+    """
+    values_entities = " ".join(f"<{u}>" for u in entity_uris)
+    # Wikipedia site URIs: https://en.wikipedia.org/ etc.
+    site_filters = " || ".join(
+        f'?site = <https://{lang}.wikipedia.org/>' for lang in languages
+        if lang != 'mul'  # 'mul' has no Wikipedia
+    )
+    if not site_filters:
+        return ""
+
+    return f"""
+    PREFIX schema: <http://schema.org/>
+    SELECT ?entity ?article ?siteLang WHERE {{
+        VALUES ?entity {{ {values_entities} }}
+        ?article schema:about ?entity ;
+                 schema:isPartOf ?site ;
+                 schema:inLanguage ?siteLang .
+        FILTER({site_filters})
+    }}
+    """
+
+
+def fetch_wikipedia_sitelinks(
+    entity_uris: list[str],
+    target_graph: Graph,
+    languages: list[str]
+) -> int:
+    """
+    Fetch Wikipedia article URLs for all given entity URIs and add
+    them as schema:sameAs triples to the graph.
+    Skips entities that already have Wikipedia sitelinks in the graph.
+    """
+    if not entity_uris:
+        return 0
+
+    # Filter languages: remove 'mul' (no Wikipedia for that)
+    wiki_languages = [l for l in languages if l != 'mul']
+    if not wiki_languages:
+        return 0
+
+    # Check which entities already have Wikipedia links
+    needed = []
+    for uri_str in entity_uris:
+        uri_ref = URIRef(uri_str)
+        has_wiki = False
+        for obj in target_graph.objects(uri_ref, SCHEMA_HTTP['sameAs']):
+            if 'wikipedia.org' in str(obj):
+                has_wiki = True
+                break
+        if not has_wiki:
+            for obj in target_graph.objects(uri_ref, SCHEMA_HTTPS['sameAs']):
+                if 'wikipedia.org' in str(obj):
+                    has_wiki = True
+                    break
+        if not has_wiki:
+            needed.append(uri_str)
+
+    if not needed:
+        return 0
+
+    logger.info(
+        f"  Rufe Wikipedia-Sitelinks für {len(needed)} Entities ab "
+        f"(Sprachen: {', '.join(wiki_languages)})..."
+    )
+
+    total_added = 0
+
+    for batch_start in range(0, len(needed), WIKIPEDIA_SITELINK_BATCH_SIZE):
+        batch = needed[batch_start:batch_start + WIKIPEDIA_SITELINK_BATCH_SIZE]
+        query = build_wikipedia_sitelinks_query(batch, languages)
+        if not query:
+            continue
+
+        data = sparql_query_with_retry(query)
+        if data is None:
+            logger.error("  Wikipedia-Sitelink-Batch fehlgeschlagen")
+            continue
+
+        added = 0
+        for r in data.get('results', {}).get('bindings', []):
+            entity_ref = URIRef(r['entity']['value'])
+            article_url = URIRef(r['article']['value'])
+
+            # Add as schema:sameAs
+            t = (entity_ref, SCHEMA_HTTP['sameAs'], article_url)
+            if t not in target_graph:
+                target_graph.add(t)
+                added += 1
+
+        total_added += added
+        time.sleep(INTER_QUERY_DELAY)
+
+    if total_added > 0:
+        logger.info(f"  → {total_added} Wikipedia-Sitelink-Triples hinzugefügt")
+    return total_added
 
 def bind_standard_prefixes(graph: Graph) -> None:
-    """Bindet alle bekannten Namespace-Prefixe an den Graph."""
     for prefix, namespace in NAMESPACE_PREFIXES.items():
         graph.bind(prefix, namespace, override=True)
 
 
 def build_whitelist_sparql(uri: str, languages: list[str]) -> str:
-    """Baut SPARQL-Abfrage für Whitelist-Properties (Default-Modus)."""
     lang_filter = build_language_filter(languages)
     wdt_values = " ".join(f"wdt:{pid}" for pid in sorted(DEFAULT_PROPERTIES))
     other_preds = " ".join(f"<{p}>" for p in sorted(DEFAULT_KEEP_PREDICATES))
-
     return f"""
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
     SELECT ?p ?o WHERE {{
@@ -303,25 +403,14 @@ def build_whitelist_sparql(uri: str, languages: list[str]) -> str:
 
 
 def build_incoming_sparql(
-    uri: str,
-    fetch_all: bool,
-    include_statements: bool
+    uri: str, fetch_all: bool, include_statements: bool
 ) -> str:
-    """
-    Baut SPARQL-Abfrage für eingehende Triples.
-
-    Default-Modus: Nur Q-Entities als Subject, nur wdt: Prädikate
-    -a Modus: Alle Subjects, filtert Statement-Nodes (ohne -s)
-    -s Modus: Alles
-    """
     if include_statements:
-        # Alles
         return (
             f"SELECT ?s ?p WHERE {{ ?s ?p <{uri}> }} "
             f"LIMIT {INCOMING_LIMIT}"
         )
     elif fetch_all:
-        # Alle außer Statement-Nodes als Subject
         return f"""
         SELECT ?s ?p WHERE {{
             ?s ?p <{uri}> .
@@ -332,7 +421,6 @@ def build_incoming_sparql(
         }} LIMIT {INCOMING_LIMIT}
         """
     else:
-        # Default: nur Q-Entities als Subject, nur wdt: Prädikate
         return f"""
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
         SELECT ?s ?p WHERE {{
@@ -450,7 +538,6 @@ def fetch_property_labels(
         lang_filter = " || ".join(
             f'LANG(?label) = "{l}"' for l in languages
         )
-
         query = f"""
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -460,7 +547,6 @@ def fetch_property_labels(
             FILTER({lang_filter})
         }}
         """
-
         data = sparql_query_with_retry(query)
         if data is None:
             logger.error("  Property-Label-Batch fehlgeschlagen")
@@ -604,7 +690,6 @@ def should_include_outgoing_triple(
     object_str: str | None,
     include_statements: bool
 ) -> bool:
-    """Filtert ausgehende Triples: Statement-Links ohne -s."""
     if include_statements:
         return True
     if is_statement_link_predicate(predicate_str):
@@ -626,9 +711,14 @@ def detect_rdf_format(filepath: str) -> str:
 def sparql_query_with_retry(query: str) -> dict | None:
     for attempt in range(MAX_RETRIES):
         try:
-            resp = requests.get(
-                SPARQL_URL, params={'query': query},
-                headers=SPARQL_HEADERS, timeout=REQUEST_TIMEOUT
+            resp = requests.post(
+                SPARQL_URL,
+                data={'query': query},
+                headers={
+                    **SPARQL_HEADERS,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                timeout=REQUEST_TIMEOUT
             )
             if resp.status_code == 429:
                 ra = resp.headers.get("Retry-After")
@@ -660,6 +750,161 @@ def sparql_query_with_retry(query: str) -> dict | None:
     logger.error(f"SPARQL nach {MAX_RETRIES} Versuchen fehlgeschlagen.")
     return None
 
+# ─────────────────────────────────────────────────────────────────────
+# Type hierarchy resolution (P31 → P279 chain)
+# ─────────────────────────────────────────────────────────────────────
+
+def collect_instance_of_types(graph: Graph, entity_uris: list[URIRef]) -> set[str]:
+    type_uris = set()
+    for entity_uri in entity_uris:
+        for obj in graph.objects(entity_uri, WDT_P31):
+            obj_str = str(obj)
+            if WD_ENTITY_RE.match(obj_str):
+                type_uris.add(obj_str)
+    return type_uris
+
+
+def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
+    if not class_uris:
+        return {}
+
+    all_uris = sorted(class_uris)
+    result: dict[str, list[str]] = {}
+
+    for batch_start in range(0, len(all_uris), HIERARCHY_BATCH_SIZE):
+        batch = all_uris[batch_start:batch_start + HIERARCHY_BATCH_SIZE]
+        values_clause = " ".join(f"<{u}>" for u in batch)
+
+        query = f"""
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        SELECT ?child ?parent WHERE {{
+            VALUES ?child {{ {values_clause} }}
+            ?child wdt:P279 ?parent .
+            FILTER(STRSTARTS(STR(?parent), "http://www.wikidata.org/entity/Q"))
+        }}
+        """
+        data = sparql_query_with_retry(query)
+        if data is None:
+            continue
+
+        for r in data.get('results', {}).get('bindings', []):
+            child = r['child']['value']
+            parent = r['parent']['value']
+            result.setdefault(child, []).append(parent)
+
+        time.sleep(INTER_QUERY_DELAY)
+
+    return result
+
+
+def resolve_type_hierarchies(
+    target_graph: Graph,
+    entity_uris: list[URIRef],
+    languages: list[str],
+    label_cache: set[str],
+    max_depth: int = HIERARCHY_MAX_DEPTH
+) -> bool:
+    type_uris = collect_instance_of_types(target_graph, entity_uris)
+    if not type_uris:
+        logger.info("Typ-Hierarchie: Keine wdt:P31-Typen gefunden – überspringe.")
+        return False
+
+    logger.info(
+        f"\n{'='*60}\n"
+        f"Typ-Hierarchie: Löse {len(type_uris)} instance-of Typen auf "
+        f"(max {max_depth} Ebenen)\n"
+        f"{'='*60}"
+    )
+
+    total_triples_added = 0
+    all_hierarchy_entities: set[str] = set()
+    collected_pids: set[str] = {'P279'}
+
+    current_level = type_uris.copy()
+    visited: set[str] = set()
+    depth = 0
+
+    while current_level and depth < max_depth:
+        depth += 1
+        to_query = current_level - visited
+        if not to_query:
+            break
+
+        logger.info(
+            f"  Ebene {depth}: Prüfe {len(to_query)} Klassen "
+            f"auf Oberklassen (P279)..."
+        )
+
+        parent_map = fetch_superclasses_batch(to_query)
+        visited.update(to_query)
+
+        next_level: set[str] = set()
+        added_this_level = 0
+
+        for child_uri, parent_uris in parent_map.items():
+            child_ref = URIRef(child_uri)
+            all_hierarchy_entities.add(child_uri)
+
+            for parent_uri in parent_uris:
+                parent_ref = URIRef(parent_uri)
+                all_hierarchy_entities.add(parent_uri)
+
+                t = (child_ref, WDT_P279, parent_ref)
+                if t not in target_graph:
+                    target_graph.add(t)
+                    added_this_level += 1
+
+                marker = (parent_ref, HIERARCHY_MARKER, Literal(True))
+                if marker not in target_graph:
+                    target_graph.add(marker)
+
+                if parent_uri not in visited:
+                    next_level.add(parent_uri)
+
+        for uri_str in to_query:
+            if uri_str not in parent_map:
+                root_ref = URIRef(uri_str)
+                all_hierarchy_entities.add(uri_str)
+                marker = (root_ref, HIERARCHY_MARKER, Literal(True))
+                if marker not in target_graph:
+                    target_graph.add(marker)
+
+        total_triples_added += added_this_level
+        if added_this_level > 0:
+            logger.info(
+                f"    → {added_this_level} P279-Triples, "
+                f"{len(next_level)} neue Oberklassen"
+            )
+        else:
+            logger.info(f"    → Keine neuen P279-Triples")
+
+        current_level = next_level
+
+    if depth >= max_depth and current_level:
+        logger.warning(
+            f"  Tiefe {max_depth} erreicht, "
+            f"{len(current_level)} nicht weiter aufgelöst"
+        )
+
+    if all_hierarchy_entities:
+        label_count = fetch_entity_labels(
+            all_hierarchy_entities, target_graph, languages
+        )
+        total_triples_added += label_count
+
+    if collected_pids:
+        plabel_count = fetch_property_labels(
+            collected_pids, target_graph, languages, label_cache
+        )
+        total_triples_added += plabel_count
+
+    logger.info(
+        f"\nTyp-Hierarchie: {len(all_hierarchy_entities)} Klassen, "
+        f"{total_triples_added} Triples, {depth} Ebenen"
+    )
+
+    return total_triples_added > 0
+
 
 def fetch_wikidata_statements(
     uri: str, target_graph: Graph,
@@ -679,14 +924,12 @@ def fetch_wikidata_statements(
 
     logger.info(f"[{current}/{total}] Hole Wikidata-Statements für: {uri}")
 
-    # ── Ausgehende Query ──
     if fetch_all:
         lf = build_language_filter(languages)
         out_query = f"SELECT ?p ?o WHERE {{ <{uri}> ?p ?o . {lf} }}"
     else:
         out_query = build_whitelist_sparql(uri, languages)
 
-    # ── Eingehende Query (mit Filter je nach Modus) ──
     in_query = build_incoming_sparql(uri, fetch_all, include_statements)
 
     wikidata_graph = Graph()
@@ -694,7 +937,6 @@ def fetch_wikidata_statements(
     collected_stmts = set()
     skipped = 0
 
-    # Ausgehend
     data = sparql_query_with_retry(out_query)
     if data is None:
         logger.error(f"Ausgehende Abfrage fehlgeschlagen für {uri}")
@@ -712,7 +954,6 @@ def fetch_wikidata_statements(
 
             o_str = str(o) if isinstance(o, URIRef) else None
 
-            # Im -a Modus: Statement-Links filtern
             if fetch_all and not should_include_outgoing_triple(
                 p_str, o_str, include_statements
             ):
@@ -727,7 +968,6 @@ def fetch_wikidata_statements(
 
     time.sleep(INTER_QUERY_DELAY)
 
-    # Eingehend (bereits serverseitig gefiltert)
     data = sparql_query_with_retry(in_query)
     if data is None:
         logger.error(f"Eingehende Abfrage fehlgeschlagen für {uri}")
@@ -743,7 +983,6 @@ def fetch_wikidata_statements(
 
     time.sleep(INTER_QUERY_DELAY)
 
-    # Override
     wd_preds = set(wikidata_graph.predicates(subject=uri_ref))
     override_preds = wd_preds & WIKIDATA_OVERRIDES_PROPERTIES
     removed = 0
@@ -754,41 +993,43 @@ def fetch_wikidata_statements(
     if removed:
         logger.info(f"  → {removed} Override-Triples entfernt")
 
-    # Einfügen
     added = 0
     for t in wikidata_graph:
         if t not in target_graph:
             target_graph.add(t)
             added += 1
 
-    # Statements
     stmt_count = 0
     if include_statements and collected_stmts:
         stmt_count = fetch_statement_details(
             collected_stmts, target_graph, languages, label_cache
         )
 
-    # Labels
     label_count = 0
     if collected_pids:
         label_count = fetch_property_labels(
             collected_pids, target_graph, languages, label_cache
         )
 
+    wiki_count = fetch_wikipedia_sitelinks(
+        [str(uri)], target_graph, languages
+    )
+
     mark_as_fetched(uri_ref, target_graph)
 
-    changed = (removed + added + label_count + stmt_count) > 0
+    changed = (removed + added + label_count + stmt_count + wiki_count) > 0
     parts = [f"{added} hinzugefügt", f"{removed} ersetzt"]
     if label_count:
         parts.append(f"{label_count} Property-Labels")
     if stmt_count:
         parts.append(f"{stmt_count} Statement-Details")
+    if wiki_count:
+        parts.append(f"{wiki_count} Wikipedia-Links")
     if skipped:
         parts.append(f"{skipped} gefiltert")
     logger.info(f"  → {', '.join(parts)} für {uri}")
 
     return changed
-
 
 def load_schema_graph(input_source: str) -> Graph:
     g = Graph()
@@ -876,6 +1117,375 @@ def save_graph(graph: Graph, path: str, fmt: str) -> bool:
         return False
 
 
+# ─────────────────────────────────────────────────────────────────────
+# Indirect link discovery – batched approach
+# ─────────────────────────────────────────────────────────────────────
+
+def collect_wikidata_entity_uris(about_uris: list[URIRef]) -> list[str]:
+    return sorted(set(
+        str(u) for u in about_uris
+        if WD_ENTITY_RE.match(str(u))
+    ))
+
+
+def fetch_entity_labels(
+    entity_uris: set[str],
+    target_graph: Graph,
+    languages: list[str]
+) -> int:
+    if not entity_uris:
+        return 0
+
+    needed = set()
+    for uri_str in entity_uris:
+        uri_ref = URIRef(uri_str)
+        if not any(target_graph.objects(uri_ref, RDFS.label)):
+            needed.add(uri_str)
+    if not needed:
+        return 0
+
+    logger.info(f"  Rufe Labels für {len(needed)} Entities ab...")
+    all_needed = sorted(needed)
+    total_added = 0
+    lang_filter_parts = " || ".join(f'LANG(?label) = "{l}"' for l in languages)
+
+    for batch_start in range(0, len(all_needed), LABEL_BATCH_SIZE):
+        batch = all_needed[batch_start:batch_start + LABEL_BATCH_SIZE]
+        values_clause = " ".join(f"<{u}>" for u in batch)
+
+        query = f"""
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT ?entity ?label WHERE {{
+            VALUES ?entity {{ {values_clause} }}
+            ?entity rdfs:label ?label .
+            FILTER({lang_filter_parts})
+        }}
+        """
+        data = sparql_query_with_retry(query)
+        if data is None:
+            continue
+
+        added = 0
+        for r in data.get('results', {}).get('bindings', []):
+            e_uri = URIRef(r['entity']['value'])
+            lv = r['label']['value']
+            ll = r['label'].get('xml:lang')
+            label = Literal(lv, lang=ll) if ll else Literal(lv)
+            t = (e_uri, RDFS.label, label)
+            if t not in target_graph:
+                target_graph.add(t)
+                added += 1
+        total_added += added
+        time.sleep(INTER_QUERY_DELAY)
+
+    if total_added > 0:
+        logger.info(f"  → {total_added} Entity-Label-Triples hinzugefügt")
+    return total_added
+
+
+def build_batch_indirect_1hop_query(
+    uri_batch: list[str], all_uri_set: set[str]
+) -> str:
+    """
+    Single SPARQL query: for all entities in uri_batch, find 1-hop
+    intermediaries ?mid connecting to ANY other entity in all_uri_set.
+
+    A ?p1 ?mid . ?mid ?p2 B   where A ∈ batch, B ∈ all, A≠B, mid∉all
+    Also reversed directions.
+    """
+    values_a = " ".join(f"<{u}>" for u in uri_batch)
+    values_all = " ".join(f"<{u}>" for u in sorted(all_uri_set))
+
+    return f"""
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    SELECT DISTINCT ?a ?b ?mid ?p1 ?p2 ?dir1 ?dir2 WHERE {{
+      VALUES ?a {{ {values_a} }}
+      VALUES ?b {{ {values_all} }}
+      FILTER(?a != ?b)
+      FILTER(STR(?a) < STR(?b))
+      {{
+        ?a ?p1 ?mid .
+        ?mid ?p2 ?b .
+        BIND("fwd" AS ?dir1) BIND("fwd" AS ?dir2)
+      }} UNION {{
+        ?mid ?p1 ?a .
+        ?mid ?p2 ?b .
+        BIND("rev" AS ?dir1) BIND("fwd" AS ?dir2)
+      }} UNION {{
+        ?a ?p1 ?mid .
+        ?b ?p2 ?mid .
+        BIND("fwd" AS ?dir1) BIND("rev" AS ?dir2)
+      }} UNION {{
+        ?mid ?p1 ?a .
+        ?b ?p2 ?mid .
+        BIND("rev" AS ?dir1) BIND("rev" AS ?dir2)
+      }}
+      FILTER(STRSTARTS(STR(?mid), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(STR(?p1), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(STR(?p2), "http://www.wikidata.org/prop/direct/"))
+      FILTER(?mid != ?a && ?mid != ?b)
+    }} LIMIT {INDIRECT_RESULTS_LIMIT}
+    """
+
+
+def build_batch_indirect_2hop_query(
+    uri_batch: list[str], all_uri_set: set[str]
+) -> str:
+    """
+    Single SPARQL query: for entities in batch, find 2-hop paths
+    A → mid1 → mid2 → B where B ∈ all_uri_set.
+    """
+    values_a = " ".join(f"<{u}>" for u in uri_batch)
+    values_all = " ".join(f"<{u}>" for u in sorted(all_uri_set))
+
+    return f"""
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    SELECT DISTINCT ?a ?b ?mid1 ?mid2 ?p1 ?p2 ?p3 WHERE {{
+      VALUES ?a {{ {values_a} }}
+      VALUES ?b {{ {values_all} }}
+      FILTER(?a != ?b)
+      FILTER(STR(?a) < STR(?b))
+      ?a ?p1 ?mid1 .
+      ?mid1 ?p2 ?mid2 .
+      ?mid2 ?p3 ?b .
+      FILTER(STRSTARTS(STR(?mid1), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(STR(?mid2), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(STR(?p1), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(STR(?p2), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(STR(?p3), "http://www.wikidata.org/prop/direct/"))
+      FILTER(?mid1 != ?a && ?mid1 != ?b)
+      FILTER(?mid2 != ?a && ?mid2 != ?b)
+      FILTER(?mid1 != ?mid2)
+    }} LIMIT {INDIRECT_RESULTS_LIMIT}
+    """
+
+
+def discover_indirect_links(
+    about_uris: list[URIRef],
+    target_graph: Graph,
+    languages: list[str],
+    label_cache: set[str],
+    max_hops: int = INDIRECT_MAX_HOPS
+) -> bool:
+    """
+    Batched indirect link discovery.  Instead of querying pair-by-pair,
+    entities are split into batches and each batch query finds ALL
+    1-hop (and optionally 2-hop) intermediaries between any two
+    entities from the full set simultaneously.
+    """
+    wd_uris = collect_wikidata_entity_uris(about_uris)
+    if len(wd_uris) < 2:
+        logger.info("Indirekte Links: weniger als 2 Wikidata-Entities – überspringe.")
+        return False
+
+    all_uri_set = set(wd_uris)
+    n_entities = len(wd_uris)
+    n_possible_pairs = n_entities * (n_entities - 1) // 2
+    n_batches_1hop = (n_entities + INDIRECT_BATCH_SIZE - 1) // INDIRECT_BATCH_SIZE
+
+    logger.info(
+        f"\n{'='*60}\n"
+        f"Indirekte Links: {n_entities} Entities, "
+        f"{n_possible_pairs} mögliche Paare\n"
+        f"  Batch-Strategie: {n_batches_1hop} Batch-Queries "
+        f"(je ≤{INDIRECT_BATCH_SIZE} Entities × alle {n_entities})\n"
+        f"  Max Hops: {max_hops}\n"
+        f"{'='*60}"
+    )
+
+    total_triples_added = 0
+    total_paths_found = 0
+    intermediate_entities: set[str] = set()
+    collected_pids: set[str] = set()
+    seen_pairs: set[tuple[str, str]] = set()
+
+    # ── 1-hop batched queries ──
+    for batch_idx in range(0, n_entities, INDIRECT_BATCH_SIZE):
+        batch = wd_uris[batch_idx:batch_idx + INDIRECT_BATCH_SIZE]
+        batch_num = batch_idx // INDIRECT_BATCH_SIZE + 1
+
+        logger.info(
+            f"  1-Hop Batch {batch_num}/{n_batches_1hop}: "
+            f"{len(batch)} Entities als Startpunkte..."
+        )
+
+        query = build_batch_indirect_1hop_query(batch, all_uri_set)
+        data = sparql_query_with_retry(query)
+
+        if data is None:
+            logger.error(f"  1-Hop Batch {batch_num} fehlgeschlagen")
+            time.sleep(INTER_QUERY_DELAY)
+            continue
+
+        batch_paths = 0
+        batch_triples = 0
+
+        for r in data.get('results', {}).get('bindings', []):
+            a_uri = r['a']['value']
+            b_uri = r['b']['value']
+            mid_uri = r['mid']['value']
+            p1_uri = r['p1']['value']
+            p2_uri = r['p2']['value']
+            dir1 = r['dir1']['value']
+            dir2 = r['dir2']['value']
+
+            # Canonical pair order (already ensured by STR(?a)<STR(?b))
+            pair_key = (a_uri, b_uri) if a_uri < b_uri else (b_uri, a_uri)
+
+            mid_ref = URIRef(mid_uri)
+            a_ref = URIRef(a_uri)
+            b_ref = URIRef(b_uri)
+            p1_ref = URIRef(p1_uri)
+            p2_ref = URIRef(p2_uri)
+
+            if dir1 == "fwd":
+                t1 = (a_ref, p1_ref, mid_ref)
+            else:
+                t1 = (mid_ref, p1_ref, a_ref)
+
+            if dir2 == "fwd":
+                t2 = (mid_ref, p2_ref, b_ref)
+            else:
+                t2 = (b_ref, p2_ref, mid_ref)
+
+            added_here = 0
+            for triple in [t1, t2]:
+                if triple not in target_graph:
+                    target_graph.add(triple)
+                    added_here += 1
+
+            marker = (mid_ref, INDIRECT_MARKER, Literal(True))
+            if marker not in target_graph:
+                target_graph.add(marker)
+
+            if added_here > 0:
+                batch_triples += added_here
+                batch_paths += 1
+
+            intermediate_entities.add(mid_uri)
+            seen_pairs.add(pair_key)
+            for p_str in (p1_uri, p2_uri):
+                pid = extract_property_id(p_str)
+                if pid:
+                    collected_pids.add(pid)
+
+        total_triples_added += batch_triples
+        total_paths_found += batch_paths
+
+        if batch_paths > 0:
+            logger.info(
+                f"    → {batch_paths} Pfade, {batch_triples} Triples"
+            )
+
+        time.sleep(INTER_QUERY_DELAY)
+
+    # ── 2-hop batched queries ──
+    if max_hops >= 2:
+        n_batches_2hop = (n_entities + INDIRECT_BATCH_SIZE - 1) // INDIRECT_BATCH_SIZE
+        logger.info(
+            f"\n  2-Hop Durchlauf: {n_batches_2hop} Batch-Queries..."
+        )
+
+        for batch_idx in range(0, n_entities, INDIRECT_BATCH_SIZE):
+            batch = wd_uris[batch_idx:batch_idx + INDIRECT_BATCH_SIZE]
+            batch_num = batch_idx // INDIRECT_BATCH_SIZE + 1
+
+            logger.info(
+                f"  2-Hop Batch {batch_num}/{n_batches_2hop}: "
+                f"{len(batch)} Entities..."
+            )
+
+            query = build_batch_indirect_2hop_query(batch, all_uri_set)
+            data = sparql_query_with_retry(query)
+
+            if data is None:
+                logger.error(f"  2-Hop Batch {batch_num} fehlgeschlagen")
+                time.sleep(INTER_QUERY_DELAY)
+                continue
+
+            batch_paths = 0
+            batch_triples = 0
+
+            for r in data.get('results', {}).get('bindings', []):
+                a_uri = r['a']['value']
+                b_uri = r['b']['value']
+                mid1_uri = r['mid1']['value']
+                mid2_uri = r['mid2']['value']
+                p1_uri = r['p1']['value']
+                p2_uri = r['p2']['value']
+                p3_uri = r['p3']['value']
+
+                a_ref = URIRef(a_uri)
+                b_ref = URIRef(b_uri)
+                mid1_ref = URIRef(mid1_uri)
+                mid2_ref = URIRef(mid2_uri)
+
+                triples = [
+                    (a_ref, URIRef(p1_uri), mid1_ref),
+                    (mid1_ref, URIRef(p2_uri), mid2_ref),
+                    (mid2_ref, URIRef(p3_uri), b_ref),
+                ]
+
+                added_here = 0
+                for triple in triples:
+                    if triple not in target_graph:
+                        target_graph.add(triple)
+                        added_here += 1
+
+                for mid_ref in (mid1_ref, mid2_ref):
+                    marker = (mid_ref, INDIRECT_MARKER, Literal(True))
+                    if marker not in target_graph:
+                        target_graph.add(marker)
+
+                if added_here > 0:
+                    batch_triples += added_here
+                    batch_paths += 1
+
+                intermediate_entities.add(mid1_uri)
+                intermediate_entities.add(mid2_uri)
+                for p_str in (p1_uri, p2_uri, p3_uri):
+                    pid = extract_property_id(p_str)
+                    if pid:
+                        collected_pids.add(pid)
+
+            total_triples_added += batch_triples
+            total_paths_found += batch_paths
+
+            if batch_paths > 0:
+                logger.info(
+                    f"    → {batch_paths} Pfade, {batch_triples} Triples"
+                )
+
+            time.sleep(INTER_QUERY_DELAY)
+
+    # ── Fetch labels for intermediate entities ──
+    # Remove entities that are already in our fetched set
+    new_intermediates = intermediate_entities - all_uri_set
+    if new_intermediates:
+        label_count = fetch_entity_labels(
+            new_intermediates, target_graph, languages
+        )
+        total_triples_added += label_count
+
+    # ── Property labels ──
+    if collected_pids:
+        plabels = fetch_property_labels(
+            collected_pids, target_graph, languages, label_cache
+        )
+        total_triples_added += plabels
+
+    logger.info(
+        f"\nIndirekte Links Zusammenfassung:\n"
+        f"  {total_paths_found} Pfade gefunden\n"
+        f"  {len(intermediate_entities)} Zwischen-Entities "
+        f"({len(new_intermediates)} neu)\n"
+        f"  {len(seen_pairs)} verbundene Paare\n"
+        f"  {total_triples_added} Triples hinzugefügt"
+    )
+
+    return total_triples_added > 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Schema.org JSON-LD → Wikidata-Anreicherung"
@@ -898,6 +1508,35 @@ def main():
         help="Statement-Details (Qualifiers etc.). Impliziert -a."
     )
     parser.add_argument(
+        "-i", "--indirect", action="store_true",
+        help=(
+            "Suche nach indirekten Verbindungen zwischen Entities "
+            "über Zwischen-Knoten (batched SPARQL)."
+        )
+    )
+    parser.add_argument(
+        "--indirect-hops", type=int, default=INDIRECT_MAX_HOPS,
+        metavar="N",
+        help=(
+            f"Max Hop-Anzahl für indirekte Pfade "
+            f"(1 oder 2, Standard: {INDIRECT_MAX_HOPS}). Nur mit -i."
+        )
+    )
+    parser.add_argument(
+        "-t", "--type-hierarchy", action="store_true",
+        help=(
+            "Löst P31→P279 Typ-Hierarchie auf bis zur Wurzelklasse."
+        )
+    )
+    parser.add_argument(
+        "--hierarchy-depth", type=int, default=HIERARCHY_MAX_DEPTH,
+        metavar="N",
+        help=(
+            f"Max Tiefe Typ-Hierarchie "
+            f"(Standard: {HIERARCHY_MAX_DEPTH}). Nur mit -t."
+        )
+    )
+    parser.add_argument(
         "--force", action="store_true",
         help="Erzwingt Neu-Laden."
     )
@@ -905,6 +1544,17 @@ def main():
 
     if args.statements:
         args.fetch_all = True
+
+    if args.indirect_hops < 1:
+        args.indirect_hops = 1
+    elif args.indirect_hops > 2:
+        logger.warning(
+            f"--indirect-hops={args.indirect_hops} auf 2 begrenzt"
+        )
+        args.indirect_hops = 2
+
+    if args.hierarchy_depth < 1:
+        args.hierarchy_depth = 1
 
     languages = parse_languages(args.languages)
     logger.info(f"Sprachen: {', '.join(languages)}")
@@ -916,6 +1566,10 @@ def main():
             f"Kuratiert ({len(DEFAULT_PROPERTIES)} wdt: + "
             f"{len(DEFAULT_KEEP_PREDICATES)} allgemeine)"
         )
+    if args.type_hierarchy:
+        mode += f" + Typ-Hierarchie (max {args.hierarchy_depth} Ebenen)"
+    if args.indirect:
+        mode += f" + Indirekte Links (max {args.indirect_hops} Hops, batched)"
     logger.info(f"Modus: {mode}")
 
     output_format = detect_rdf_format(args.output)
@@ -958,6 +1612,23 @@ def main():
                 force_update=args.force
             ):
                 modified = True
+
+        # ── Type hierarchy ──
+        if args.type_hierarchy:
+            if resolve_type_hierarchies(
+                result_graph, about_uris, languages,
+                label_cache, max_depth=args.hierarchy_depth
+            ):
+                modified = True
+
+        # ── Indirect links (batched) ──
+        if args.indirect:
+            if discover_indirect_links(
+                about_uris, result_graph, languages,
+                label_cache, max_hops=args.indirect_hops
+            ):
+                modified = True
+
     except KeyboardInterrupt:
         logger.warning("Unterbrochen. Speichere...")
     finally:
