@@ -26,6 +26,8 @@
         {{- else -}}
           {{- $entries = . -}}
         {{- end -}}
+      {{- else -}}
+        {{- $entries = $entries | merge (dict .Permalink $defaultRelation) -}}
       {{- end -}}
       {{- with .Content -}}
         {{ $contents = $contents | append $ }}
@@ -35,9 +37,17 @@
 {{- end -}}
 
 {{- range $url, $relation := $entries -}}
-  {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
-  {{- $uri := printf "%s%s" $entityBase $id -}}
-  {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id "langs" (slice $.Language.Name "en")) -}}
+  {{- $uri := "" -}}
+  {{- $name := "" -}}
+  {{- if not (hasPrefix $url site.BaseURL) -}}
+    {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
+    {{- $uri = printf "%s%s" $entityBase $id -}}
+    {{- $name = partial "data/functions/wikidata-label.html" (dict "url" $id "langs" (slice $.Language.Name "en")) -}}
+  {{- else -}}
+    {{- $uri = printf "%s#" $url -}}
+    {{- $page := index (where site.Pages "Permalink" "==" $url) 0 -}}
+    {{- $name = $page.Title -}}
+  {{- end -}}
   {{- $marker := dict "@type" "PropertyValue" "propertyID" "projektemacher" "value" "tag" -}}
   {{- $thing := dict "@type" "Thing" "@id" $uri "name" $name "identifier" $marker -}}
   {{- $about = $about | append $thing -}}
@@ -77,13 +87,19 @@
   {{- end -}}
 {{- end -}}
 
-
 {{- range $url, $relation := $entries -}}
   {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
   {{- $uri := printf "%s%s" $entityBase $id -}}
   {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id "langs" (slice $.Language.Name "en")) -}}
   {{- $thing := dict "@type" "Thing" "@id" $uri "name" $name -}}
   {{- $about = $about | append $thing -}}
+{{- end -}}
+
+{{- with .OutputFormats.Get "codemeta" -}}
+  {{- $about = $about | append (dict "@id" .Permalink) -}}
+{{- end -}}
+{{- with .OutputFormats.Get "linkedart" -}}
+  {{- $about = $about | append (dict "@id" .Permalink) -}}
 {{- end -}}
 
 {{- $about | jsonify -}}

@@ -32,7 +32,7 @@
       {{- $entity := index .entities $wikidataID -}}
       {{/* P1014 : Getty AAT-ID Property */}}
       {{- $aatClaims := index $entity.claims "P1014" -}}
-      {{- $label := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
+      {{- $label := partial "metadata/linked-art/wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
       {{- if $aatClaims -}}
         {{- $aatID := (index $aatClaims 0).mainsnak.datavalue.value -}}
         {{- $aatURL := printf "https://vocab.getty.edu/aat/%s.json" $aatID -}}
@@ -63,7 +63,7 @@
       {{- $actor = $actor | merge (dict "_label" .name) -}}
     {{- else -}}
       {{- with .wikidata -}}
-        {{- $a := partial "metadata/linked-art-actor.json" . }} -}}
+        {{- $a := partial "metadata/linked-art/actor.json" . }} -}}
         {{- if gt (len $a) 0 -}}
           {{- $actor = $actor | merge ($a) -}}
         {{- end -}}
@@ -71,7 +71,7 @@
       {{- $producedBy = $producedBy | merge (dict "carried_out_by" (slice $actor)) -}}
     {{- end -}}
   {{- else -}}
-    {{- $actor = $actor | merge ( partial "metadata/linked-art-actor.json" $anonymousWikidata) -}}
+    {{- $actor = $actor | merge ( partial "metadata/linked-art/actor.json" $anonymousWikidata) -}}
     {{/*
     {{- $actor = $actor | merge (dict "_label" $anonymousLabel "id" $anonymousWikidata "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300404670" "type" "Type" "_label" $anonymousLabel))) -}}
     */}}
@@ -188,7 +188,7 @@
       {{- errorf "[metadata/linked-art.json] No owner found for %s" $.Permalink -}}
     {{- end -}}
     {{- $owner := dict "id" $currentOwner -}}
-    {{- $a := partial "metadata/linked-art-actor.json" $currentOwner }} -}}
+    {{- $a := partial "metadata/linked-art/actor.json" $currentOwner }} -}}
     {{- if gt (len $a) 0 -}}
       {{- $owner = $owner | merge ($a) -}}
     {{- end -}}
@@ -199,7 +199,7 @@
       {{- range $i, $prevOwner := $owners -}}
         {{- $acquisition := dict "type" "Acquisition" -}}
         {{- if eq $i 0 -}}
-          {{- $to := partial "metadata/linked-art-actor.json" .wikidata -}}
+          {{- $to := partial "metadata/linked-art/actor.json" .wikidata -}}
           {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "transferred_title_to" (slice $to)) -}}
         {{- else -}}
           {{- $prevOwner := (index $owners (sub $i 1)) -}}
@@ -208,11 +208,11 @@
             {{- continue -}}
           {{- end -}}
           {{- $until := time.AsTime $prevOwner.until -}}
-          {{- $from := partial "metadata/linked-art-actor.json" $prevOwner.wikidata -}}
+          {{- $from := partial "metadata/linked-art/actor.json" $prevOwner.wikidata -}}
           {{- if and (reflect.IsMap .) (isset . "wikidata") -}}
             {{- $currentOwner = .wikidata -}}
           {{- end -}}
-          {{- $to := partial "metadata/linked-art-actor.json" $currentOwner -}}
+          {{- $to := partial "metadata/linked-art/actor.json" $currentOwner -}}
           {{- $timespan := dict "type" "TimeSpan" "begin_of_the_begin" ($until.Format "2006-01-02T15:04:05Z") "end_of_the_end" ($until.Format "2006-01-02T15:04:05Z") "_label" (time.Format ":date_long" $until) -}}
           {{- $acquisition = $acquisition | merge (dict "type" "Acquisition" "timespan" $timespan "transferred_title_from" (slice $from) "transferred_title_to" (slice $to)) -}}
         {{- end -}}
