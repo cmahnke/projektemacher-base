@@ -18,7 +18,7 @@
     {{- end -}} 
     {{- $datePublished := (index $cff "date-released") | default "" -}}
     {{- $codemeta = dict
-      "@context" "https://doi.org/10.5063/schema/codemeta-3.0"
+      "@context" "https://w3id.org/codemeta/3.1"
       "@type" "SoftwareSourceCode"
       "name" $cff.title
       "softwareVersion" $cff.version
