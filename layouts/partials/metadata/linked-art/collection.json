@@ -1,3 +1,5 @@
+{{/* Validation: https://linked.art/software/validator/ */}}
+
 {{- $pages := where site.RegularPages "Params.displayinlist" "!=" false -}}
 
 {{- $section := "post" -}}
@@ -23,13 +25,7 @@
         {{- $linkedArtClean = merge $linkedArtClean (dict $key $value) -}}
       {{- end -}}
     {{- end -}}
-    
-    
-        {{- $entries = $entries | append $linkedArtClean -}} 
-    
-  {{/*
-    {{- $entries = $entries | append $linkedArt -}} 
-    */}}
+    {{- $entries = $entries | append $linkedArtClean -}} 
   {{- end -}}
 {{- end -}}
 

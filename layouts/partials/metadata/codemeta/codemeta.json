@@ -1,0 +1,46 @@
+{{- $cffFile := "CITATION.cff" -}}
+{{- with .Resources.Get $cffFile -}}
+  {{- $cff := . | transform.Unmarshal (dict "format" "yaml") -}}
+  {{- $codemeta := dict -}}
+  {{- if $cff -}}
+    {{- $authors := slice -}} 
+    {{- range $cff.authors -}} 
+      {{- $givenName := index . "given-names" -}}
+      {{- $familyName := index . "family-names" -}}
+      {{- $a := dict "@type" "Person" "givenName" $givenName "familyName" $familyName -}} 
+      {{- with index . "orcid" -}}
+        {{- $a = merge $a (dict "@id" .) -}}
+      {{- end -}} 
+      {{- with index . "affiliation" -}}
+        {{- $a = merge $a (dict "affiliation" (dict "@type" "Organization" "name" .)) -}}
+      {{- end -}} 
+      {{- $authors = $authors | append $a -}} 
+    {{- end -}} 
+    {{- $datePublished := (index $cff "date-released") | default "" -}}
+    {{- $codemeta = dict
+      "@context" "https://doi.org/10.5063/schema/codemeta-3.0"
+      "@type" "SoftwareSourceCode"
+      "name" $cff.title
+      "softwareVersion" $cff.version
+      "description" ($cff.abstract | default "")
+      "author" $authors
+      "datePublished" $datePublished
+      "license" (printf "https://spdx.org/licenses/%s" $cff.license)
+      "codeRepository" (index $cff "repository-code" | default "")
+      "runtimePlatform" (index $cff "repository" | default "")
+    -}} 
+    {{- with $cff.keywords -}}
+      {{- $codemeta = $codemeta | merge $codemeta (dict "keywords" .) -}}
+    {{- end -}} 
+    {{- if index $cff "identifiers" -}} 
+      {{- $ids := slice -}} 
+      {{- range $cff.identifiers -}} 
+        {{- $ids = $ids | append (dict "@type" "PropertyValue" "propertyID" .type "value" .value) -}} 
+      {{- end -}} 
+      {{- $codemeta = merge $codemeta (dict "identifier" $ids) -}} 
+    {{- end -}} 
+  {{- end -}}
+  {{- $codemeta | jsonify -}}
+{{- else -}}
+  {{- errorf "[metadata/codemeta.json] %s not found at %s" $cffFile .RelPermalink -}}
+{{- end -}}

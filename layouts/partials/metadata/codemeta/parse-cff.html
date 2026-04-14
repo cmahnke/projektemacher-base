@@ -1,0 +1,9 @@
+{{- $cffFile := "CITATION.cff" -}}
+{{- $cffDict := dict -}}
+
+{{- with .Resources.Get $cffFile -}}
+  {{- $cffDict = . | transform.Unmarshal -}}
+{{- else -}}
+  {{- errorf "CITATION.cff not found at %s" $cffFile -}}
+{{- end -}}
+{{- return $cffDict -}}

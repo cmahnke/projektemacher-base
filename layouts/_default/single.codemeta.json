@@ -1,0 +1,1 @@
+{{- (partial "metadata/codemeta/codemeta.json" .) | jsonify -}}
