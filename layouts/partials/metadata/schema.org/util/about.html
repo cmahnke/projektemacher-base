@@ -87,13 +87,19 @@
   {{- end -}}
 {{- end -}}
 
-
 {{- range $url, $relation := $entries -}}
   {{- $id := replaceRE `https://www.wikidata.org/wiki/` "" $url -}}
   {{- $uri := printf "%s%s" $entityBase $id -}}
   {{- $name := partial "data/functions/wikidata-label.html" (dict "url" $id "langs" (slice $.Language.Name "en")) -}}
   {{- $thing := dict "@type" "Thing" "@id" $uri "name" $name -}}
   {{- $about = $about | append $thing -}}
+{{- end -}}
+
+{{- with .OutputFormats.Get "codemeta" -}}
+  {{- $about = $about | append (dict "@id" .Permalink) -}}
+{{- end -}}
+{{- with .OutputFormats.Get "linkedart" -}}
+  {{- $about = $about | append (dict "@id" .Permalink) -}}
 {{- end -}}
 
 {{- $about | jsonify -}}
