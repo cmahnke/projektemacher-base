@@ -275,19 +275,21 @@ WIKIPEDIA_SITELINK_BATCH_SIZE = 50
 WDT_P31 = URIRef("http://www.wikidata.org/prop/direct/P31")
 WDT_P279 = URIRef("http://www.wikidata.org/prop/direct/P279")
 
+# ── JSON-LD about-Referenz-Auflösung: Einstellungen ──
+ABOUT_FETCH_TIMEOUT = 30
+ABOUT_FETCH_HEADERS = {
+    'User-Agent': 'BlogEntityExtractor/1.0 (https://github.com/cmahnke)',
+    'Accept': 'application/ld+json, application/json;q=0.9, */*;q=0.1'
+}
+
 
 def build_wikipedia_sitelinks_query(
     entity_uris: list[str], languages: list[str]
 ) -> str:
-    """
-    SPARQL query to fetch Wikipedia article URLs for entities
-    in the given languages via schema:about on the article pages.
-    """
     values_entities = " ".join(f"<{u}>" for u in entity_uris)
-    # Wikipedia site URIs: https://en.wikipedia.org/ etc.
     site_filters = " || ".join(
         f'?site = <https://{lang}.wikipedia.org/>' for lang in languages
-        if lang != 'mul'  # 'mul' has no Wikipedia
+        if lang != 'mul'
     )
     if not site_filters:
         return ""
@@ -309,20 +311,13 @@ def fetch_wikipedia_sitelinks(
     target_graph: Graph,
     languages: list[str]
 ) -> int:
-    """
-    Fetch Wikipedia article URLs for all given entity URIs and add
-    them as schema:sameAs triples to the graph.
-    Skips entities that already have Wikipedia sitelinks in the graph.
-    """
     if not entity_uris:
         return 0
 
-    # Filter languages: remove 'mul' (no Wikipedia for that)
     wiki_languages = [l for l in languages if l != 'mul']
     if not wiki_languages:
         return 0
 
-    # Check which entities already have Wikipedia links
     needed = []
     for uri_str in entity_uris:
         uri_ref = URIRef(uri_str)
@@ -365,7 +360,6 @@ def fetch_wikipedia_sitelinks(
             entity_ref = URIRef(r['entity']['value'])
             article_url = URIRef(r['article']['value'])
 
-            # Add as schema:sameAs
             t = (entity_ref, SCHEMA_HTTP['sameAs'], article_url)
             if t not in target_graph:
                 target_graph.add(t)
@@ -377,6 +371,7 @@ def fetch_wikipedia_sitelinks(
     if total_added > 0:
         logger.info(f"  → {total_added} Wikipedia-Sitelink-Triples hinzugefügt")
     return total_added
+
 
 def bind_standard_prefixes(graph: Graph) -> None:
     for prefix, namespace in NAMESPACE_PREFIXES.items():
@@ -415,8 +410,10 @@ def build_incoming_sparql(
         SELECT ?s ?p WHERE {{
             ?s ?p <{uri}> .
             FILTER(
-                !STRSTARTS(STR(?s), "http://www.wikidata.org/entity/statement/")
-                && !REGEX(STR(?p), "^http://www.wikidata.org/prop/P[0-9]+$")
+                !STRSTARTS(STR(?s),
+                    "http://www.wikidata.org/entity/statement/")
+                && !REGEX(STR(?p),
+                    "^http://www.wikidata.org/prop/P[0-9]+$")
             )
         }} LIMIT {INCOMING_LIMIT}
         """
@@ -427,7 +424,8 @@ def build_incoming_sparql(
             ?s ?p <{uri}> .
             FILTER(
                 STRSTARTS(STR(?s), "http://www.wikidata.org/entity/Q")
-                && STRSTARTS(STR(?p), "http://www.wikidata.org/prop/direct/")
+                && STRSTARTS(STR(?p),
+                    "http://www.wikidata.org/prop/direct/")
             )
         }} LIMIT {INCOMING_LIMIT}
         """
@@ -567,13 +565,21 @@ def fetch_property_labels(
             eu = URIRef(f"http://www.wikidata.org/entity/{pid}")
             for tu in [
                 URIRef(f"http://www.wikidata.org/prop/direct/{pid}"),
-                URIRef(f"http://www.wikidata.org/prop/direct-normalized/{pid}"),
+                URIRef(
+                    f"http://www.wikidata.org/prop/direct-normalized/{pid}"
+                ),
                 URIRef(f"http://www.wikidata.org/prop/statement/{pid}"),
-                URIRef(f"http://www.wikidata.org/prop/statement/value/{pid}"),
+                URIRef(
+                    f"http://www.wikidata.org/prop/statement/value/{pid}"
+                ),
                 URIRef(f"http://www.wikidata.org/prop/qualifier/{pid}"),
-                URIRef(f"http://www.wikidata.org/prop/qualifier/value/{pid}"),
+                URIRef(
+                    f"http://www.wikidata.org/prop/qualifier/value/{pid}"
+                ),
                 URIRef(f"http://www.wikidata.org/prop/reference/{pid}"),
-                URIRef(f"http://www.wikidata.org/prop/reference/value/{pid}"),
+                URIRef(
+                    f"http://www.wikidata.org/prop/reference/value/{pid}"
+                ),
                 URIRef(f"http://www.wikidata.org/prop/{pid}"),
                 URIRef(f"http://www.wikidata.org/prop/novalue/{pid}"),
             ]:
@@ -589,7 +595,9 @@ def fetch_property_labels(
             time.sleep(INTER_QUERY_DELAY)
 
     if total_added > 0:
-        logger.info(f"  → {total_added} Property-Label-Triples hinzugefügt")
+        logger.info(
+            f"  → {total_added} Property-Label-Triples hinzugefügt"
+        )
     return total_added
 
 
@@ -648,7 +656,9 @@ def fetch_statement_details(
         )
 
     if total_added > 0:
-        logger.info(f"  → {total_added} Statement-Detail-Triples hinzugefügt")
+        logger.info(
+            f"  → {total_added} Statement-Detail-Triples hinzugefügt"
+        )
     return total_added
 
 
@@ -666,7 +676,9 @@ def build_language_filter(languages: list[str]) -> str:
 
 
 def parse_languages(lang_string: str) -> list[str]:
-    languages = [l.strip().lower() for l in lang_string.split(',') if l.strip()]
+    languages = [
+        l.strip().lower() for l in lang_string.split(',') if l.strip()
+    ]
     if not languages:
         languages = DEFAULT_LANGUAGES.copy()
     if ALWAYS_INCLUDE_LANG not in languages:
@@ -703,7 +715,9 @@ def detect_rdf_format(filepath: str) -> str:
     ext = os.path.splitext(filepath)[1].lower()
     fmt = FORMAT_MAP.get(ext)
     if fmt is None:
-        logger.warning(f"Unbekannte Endung '{ext}'. Fallback: turtle.")
+        logger.warning(
+            f"Unbekannte Endung '{ext}'. Fallback: turtle."
+        )
         return 'turtle'
     return fmt
 
@@ -727,7 +741,9 @@ def sparql_query_with_retry(query: str) -> dict | None:
                 except (ValueError, TypeError):
                     w = None
                 w = w or (RETRY_BASE_WAIT ** attempt) + 5
-                logger.warning(f"Rate limit. Warte {w}s ({attempt+1}/{MAX_RETRIES})")
+                logger.warning(
+                    f"Rate limit. Warte {w}s ({attempt+1}/{MAX_RETRIES})"
+                )
                 time.sleep(w)
                 continue
             if resp.status_code >= 500:
@@ -747,14 +763,19 @@ def sparql_query_with_retry(query: str) -> dict | None:
             if attempt >= MAX_RETRIES - 1:
                 return None
             time.sleep(1)
-    logger.error(f"SPARQL nach {MAX_RETRIES} Versuchen fehlgeschlagen.")
+    logger.error(
+        f"SPARQL nach {MAX_RETRIES} Versuchen fehlgeschlagen."
+    )
     return None
+
 
 # ─────────────────────────────────────────────────────────────────────
 # Type hierarchy resolution (P31 → P279 chain)
 # ─────────────────────────────────────────────────────────────────────
 
-def collect_instance_of_types(graph: Graph, entity_uris: list[URIRef]) -> set[str]:
+def collect_instance_of_types(
+    graph: Graph, entity_uris: list[URIRef]
+) -> set[str]:
     type_uris = set()
     for entity_uri in entity_uris:
         for obj in graph.objects(entity_uri, WDT_P31):
@@ -764,7 +785,9 @@ def collect_instance_of_types(graph: Graph, entity_uris: list[URIRef]) -> set[st
     return type_uris
 
 
-def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
+def fetch_superclasses_batch(
+    class_uris: set[str]
+) -> dict[str, list[str]]:
     if not class_uris:
         return {}
 
@@ -772,7 +795,9 @@ def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
 
     for batch_start in range(0, len(all_uris), HIERARCHY_BATCH_SIZE):
-        batch = all_uris[batch_start:batch_start + HIERARCHY_BATCH_SIZE]
+        batch = all_uris[
+            batch_start:batch_start + HIERARCHY_BATCH_SIZE
+        ]
         values_clause = " ".join(f"<{u}>" for u in batch)
 
         query = f"""
@@ -780,7 +805,10 @@ def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
         SELECT ?child ?parent WHERE {{
             VALUES ?child {{ {values_clause} }}
             ?child wdt:P279 ?parent .
-            FILTER(STRSTARTS(STR(?parent), "http://www.wikidata.org/entity/Q"))
+            FILTER(STRSTARTS(
+                STR(?parent),
+                "http://www.wikidata.org/entity/Q"
+            ))
         }}
         """
         data = sparql_query_with_retry(query)
@@ -806,7 +834,9 @@ def resolve_type_hierarchies(
 ) -> bool:
     type_uris = collect_instance_of_types(target_graph, entity_uris)
     if not type_uris:
-        logger.info("Typ-Hierarchie: Keine wdt:P31-Typen gefunden – überspringe.")
+        logger.info(
+            "Typ-Hierarchie: Keine wdt:P31-Typen gefunden – überspringe."
+        )
         return False
 
     logger.info(
@@ -854,7 +884,9 @@ def resolve_type_hierarchies(
                     target_graph.add(t)
                     added_this_level += 1
 
-                marker = (parent_ref, HIERARCHY_MARKER, Literal(True))
+                marker = (
+                    parent_ref, HIERARCHY_MARKER, Literal(True)
+                )
                 if marker not in target_graph:
                     target_graph.add(marker)
 
@@ -865,7 +897,9 @@ def resolve_type_hierarchies(
             if uri_str not in parent_map:
                 root_ref = URIRef(uri_str)
                 all_hierarchy_entities.add(uri_str)
-                marker = (root_ref, HIERARCHY_MARKER, Literal(True))
+                marker = (
+                    root_ref, HIERARCHY_MARKER, Literal(True)
+                )
                 if marker not in target_graph:
                     target_graph.add(marker)
 
@@ -919,18 +953,26 @@ def fetch_wikidata_statements(
     uri_ref = URIRef(uri)
 
     if not force_update and is_already_fetched(uri_ref, target_graph):
-        logger.info(f"[{current}/{total}] Überspringe {uri}: bereits abgerufen.")
+        logger.info(
+            f"[{current}/{total}] Überspringe {uri}: bereits abgerufen."
+        )
         return False
 
-    logger.info(f"[{current}/{total}] Hole Wikidata-Statements für: {uri}")
+    logger.info(
+        f"[{current}/{total}] Hole Wikidata-Statements für: {uri}"
+    )
 
     if fetch_all:
         lf = build_language_filter(languages)
-        out_query = f"SELECT ?p ?o WHERE {{ <{uri}> ?p ?o . {lf} }}"
+        out_query = (
+            f"SELECT ?p ?o WHERE {{ <{uri}> ?p ?o . {lf} }}"
+        )
     else:
         out_query = build_whitelist_sparql(uri, languages)
 
-    in_query = build_incoming_sparql(uri, fetch_all, include_statements)
+    in_query = build_incoming_sparql(
+        uri, fetch_all, include_statements
+    )
 
     wikidata_graph = Graph()
     collected_pids = set()
@@ -939,7 +981,9 @@ def fetch_wikidata_statements(
 
     data = sparql_query_with_retry(out_query)
     if data is None:
-        logger.error(f"Ausgehende Abfrage fehlgeschlagen für {uri}")
+        logger.error(
+            f"Ausgehende Abfrage fehlgeschlagen für {uri}"
+        )
     else:
         for r in data.get('results', {}).get('bindings', []):
             p_str = r['p']['value']
@@ -948,7 +992,9 @@ def fetch_wikidata_statements(
             if pid:
                 collected_pids.add(pid)
 
-            o = parse_sparql_binding_to_rdf(r['o'], languages, p_str)
+            o = parse_sparql_binding_to_rdf(
+                r['o'], languages, p_str
+            )
             if o is None:
                 continue
 
@@ -970,7 +1016,9 @@ def fetch_wikidata_statements(
 
     data = sparql_query_with_retry(in_query)
     if data is None:
-        logger.error(f"Eingehende Abfrage fehlgeschlagen für {uri}")
+        logger.error(
+            f"Eingehende Abfrage fehlgeschlagen für {uri}"
+        )
     else:
         for r in data.get('results', {}).get('bindings', []):
             s = URIRef(r['s']['value'])
@@ -987,7 +1035,9 @@ def fetch_wikidata_statements(
     override_preds = wd_preds & WIKIDATA_OVERRIDES_PROPERTIES
     removed = 0
     for pred in override_preds:
-        for t in list(target_graph.triples((uri_ref, pred, None))):
+        for t in list(
+            target_graph.triples((uri_ref, pred, None))
+        ):
             target_graph.remove(t)
             removed += 1
     if removed:
@@ -1017,7 +1067,9 @@ def fetch_wikidata_statements(
 
     mark_as_fetched(uri_ref, target_graph)
 
-    changed = (removed + added + label_count + stmt_count + wiki_count) > 0
+    changed = (
+        removed + added + label_count + stmt_count + wiki_count
+    ) > 0
     parts = [f"{added} hinzugefügt", f"{removed} ersetzt"]
     if label_count:
         parts.append(f"{label_count} Property-Labels")
@@ -1031,12 +1083,317 @@ def fetch_wikidata_statements(
 
     return changed
 
+
+# ─────────────────────────────────────────────────────────────────────
+# JSON-LD about-Referenz-Auflösung: @id-only about-Objekte abrufen
+# ─────────────────────────────────────────────────────────────────────
+
+def _is_id_only_about(about_obj: dict | str) -> str | None:
+    """
+    Prüft ob ein about-Objekt nur eine @id enthält (kein 'name' o.ä.).
+    Gibt die @id-URL zurück falls ja, sonst None.
+
+    Erkennt folgende Muster:
+      - {"@id": "https://example.org/thing"}                → id-only
+      - {"@id": "https://...", "@type": "Thing"}            → id-only
+      - {"@id": "https://...", "name": "Foo"}               → NICHT id-only
+      - "https://example.org/thing"                         → id-only (string)
+    """
+    if isinstance(about_obj, str):
+        # Einfache String-Referenz = nur eine ID
+        if about_obj.startswith(('http://', 'https://')):
+            return about_obj
+        return None
+
+    if not isinstance(about_obj, dict):
+        return None
+
+    id_value = about_obj.get('@id')
+    if not id_value:
+        return None
+
+    # Prüfe ob außer @id und @type noch andere Schlüssel vorhanden sind
+    meaningful_keys = {
+        k for k in about_obj.keys()
+        if k not in ('@id', '@type')
+    }
+
+    if meaningful_keys:
+        # Hat zusätzliche Daten wie 'name', 'description' etc.
+        return None
+
+    # Nur @id (und optional @type) vorhanden
+    if id_value.startswith(('http://', 'https://')):
+        return id_value
+
+    return None
+
+
+def _extract_jsonld_from_response(
+    response_text: str, url: str
+) -> list[dict]:
+    """
+    Versucht JSON-LD aus einer HTTP-Antwort zu extrahieren.
+    Unterstützt:
+      - Direkte JSON-LD Antwort (Objekt oder Array)
+      - HTML mit eingebettetem <script type="application/ld+json">
+    Gibt eine Liste von JSON-LD-Objekten zurück.
+    """
+    results = []
+
+    # Versuch 1: Direktes JSON parsen
+    try:
+        data = json.loads(response_text)
+        if isinstance(data, dict):
+            results.append(data)
+            return results
+        elif isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict):
+                    results.append(item)
+            if results:
+                return results
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Versuch 2: JSON-LD aus HTML-Script-Tags extrahieren
+    script_pattern = re.compile(
+        r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>'
+        r'(.*?)</script>',
+        re.DOTALL | re.IGNORECASE
+    )
+    matches = script_pattern.findall(response_text)
+
+    for match in matches:
+        try:
+            data = json.loads(match.strip())
+            if isinstance(data, dict):
+                results.append(data)
+            elif isinstance(data, list):
+                for item in data:
+                    if isinstance(item, dict):
+                        results.append(item)
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.debug(
+                f"  JSON-LD Script-Block konnte nicht geparst werden "
+                f"von {url}: {e}"
+            )
+
+    return results
+
+
+def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
+    """
+    Ruft eine URL ab und versucht JSON-LD daraus zu parsen.
+    Gibt einen RDF-Graph zurück oder None bei Fehler.
+    """
+    logger.debug(f"  Versuche JSON-LD abzurufen von: {url}")
+
+    try:
+        resp = requests.get(
+            url,
+            headers=ABOUT_FETCH_HEADERS,
+            timeout=ABOUT_FETCH_TIMEOUT,
+            allow_redirects=True
+        )
+        resp.raise_for_status()
+    except requests.exceptions.Timeout:
+        logger.debug(f"  Timeout beim Abrufen von {url}")
+        return None
+    except requests.exceptions.ConnectionError as e:
+        logger.debug(f"  Verbindungsfehler für {url}: {e}")
+        return None
+    except requests.exceptions.HTTPError as e:
+        logger.debug(f"  HTTP-Fehler für {url}: {e}")
+        return None
+    except Exception as e:
+        logger.debug(f"  Fehler beim Abrufen von {url}: {e}")
+        return None
+
+    content_type = resp.headers.get('Content-Type', '').lower()
+    response_text = resp.text
+
+    # JSON-LD Objekte aus Antwort extrahieren
+    jsonld_objects = _extract_jsonld_from_response(
+        response_text, url
+    )
+
+    if not jsonld_objects:
+        logger.debug(
+            f"  Kein JSON-LD in Antwort von {url} gefunden "
+            f"(Content-Type: {content_type})"
+        )
+        return None
+
+    # Alle gefundenen JSON-LD Objekte in einen Graph parsen
+    combined_graph = Graph()
+
+    for jsonld_obj in jsonld_objects:
+        try:
+            jsonld_str = json.dumps(jsonld_obj)
+            temp_graph = Graph()
+            temp_graph.parse(data=jsonld_str, format='json-ld')
+            for triple in temp_graph:
+                combined_graph.add(triple)
+        except Exception as e:
+            logger.debug(
+                f"  JSON-LD Objekt von {url} konnte nicht als RDF "
+                f"geparst werden: {e}"
+            )
+
+    if len(combined_graph) == 0:
+        logger.debug(
+            f"  JSON-LD von {url} ergab keine RDF-Triples"
+        )
+        return None
+
+    return combined_graph
+
+
+def resolve_id_only_abouts(
+    raw_json: dict | list, target_graph: Graph
+) -> int:
+    """
+    Durchsucht die rohe JSON-LD Struktur nach about-Objekten die nur
+    eine @id enthalten (kein 'name' etc.), ruft deren URL ab, parst
+    das Ergebnis als JSON-LD und fügt die Triples dem Graph hinzu.
+
+    Gibt die Anzahl der hinzugefügten Triples zurück.
+
+    Unterstützt sowohl einzelne JSON-LD Objekte als auch @graph-Arrays
+    und verschachtelte Strukturen.
+    """
+    # Sammle alle about-Referenzen die nur @id haben
+    id_only_urls: set[str] = set()
+    _collect_id_only_abouts(raw_json, id_only_urls)
+
+    if not id_only_urls:
+        return 0
+
+    logger.info(
+        f"Gefunden: {len(id_only_urls)} about-Referenzen mit nur @id "
+        f"(ohne name) – versuche aufzulösen..."
+    )
+
+    total_added = 0
+    resolved = 0
+    failed = 0
+
+    for url in sorted(id_only_urls):
+        logger.info(f"  Löse auf: {url}")
+
+        fetched_graph = _fetch_and_parse_jsonld_url(url)
+
+        if fetched_graph is None:
+            logger.warning(f"  ✗ Konnte kein JSON-LD laden von: {url}")
+            failed += 1
+            continue
+
+        # Triples zum Zielgraph hinzufügen
+        added = 0
+        for triple in fetched_graph:
+            if triple not in target_graph:
+                target_graph.add(triple)
+                added += 1
+
+        if added > 0:
+            logger.info(
+                f"  ✓ {added} Triples hinzugefügt von: {url} "
+                f"({len(fetched_graph)} gesamt in Quelle)"
+            )
+            total_added += added
+            resolved += 1
+        else:
+            logger.info(
+                f"  ○ Alle {len(fetched_graph)} Triples bereits "
+                f"vorhanden von: {url}"
+            )
+            resolved += 1
+
+        # Kurze Pause zwischen Anfragen
+        time.sleep(INTER_QUERY_DELAY)
+
+    logger.info(
+        f"About-Auflösung: {resolved} aufgelöst, {failed} fehlgeschlagen, "
+        f"{total_added} Triples hinzugefügt"
+    )
+
+    return total_added
+
+
+def _collect_id_only_abouts(
+    obj: dict | list | str, collected: set[str]
+) -> None:
+    """
+    Rekursiv JSON-LD Struktur durchsuchen und @id-only about-Objekte
+    sammeln.
+    """
+    if isinstance(obj, list):
+        for item in obj:
+            _collect_id_only_abouts(item, collected)
+        return
+
+    if isinstance(obj, str):
+        return
+
+    if not isinstance(obj, dict):
+        return
+
+    # @graph Container durchsuchen
+    if '@graph' in obj:
+        _collect_id_only_abouts(obj['@graph'], collected)
+
+    # Prüfe 'about'-Felder (verschiedene Schreibweisen)
+    for about_key in ('about', 'schema:about',
+                      'http://schema.org/about',
+                      'https://schema.org/about'):
+        if about_key in obj:
+            about_val = obj[about_key]
+            if isinstance(about_val, list):
+                for item in about_val:
+                    url = _is_id_only_about(item)
+                    if url:
+                        collected.add(url)
+                    # Rekursiv in verschachtelte about-Objekte
+                    if isinstance(item, dict):
+                        _collect_id_only_abouts(item, collected)
+            else:
+                url = _is_id_only_about(about_val)
+                if url:
+                    collected.add(url)
+                if isinstance(about_val, dict):
+                    _collect_id_only_abouts(about_val, collected)
+
+    # Rekursiv alle Werte durchsuchen (für verschachtelte Objekte
+    # wie blogPost → about)
+    for key, value in obj.items():
+        if key.startswith('@'):
+            # @context, @id, @type etc. überspringen
+            continue
+        if key in ('about', 'schema:about',
+                   'http://schema.org/about',
+                   'https://schema.org/about'):
+            # Schon oben behandelt
+            continue
+        if isinstance(value, (dict, list)):
+            _collect_id_only_abouts(value, collected)
+
+
 def load_schema_graph(input_source: str) -> Graph:
+    """
+    Lädt JSON-LD von URL oder Datei.
+    Prüft about-Objekte die nur @id haben und versucht deren URL
+    abzurufen und als JSON-LD dem Graph hinzuzufügen.
+    """
     g = Graph()
+    raw_json = None
+
     try:
         if input_source.startswith(('http://', 'https://')):
             logger.info(f"Lade JSON-LD von URL: {input_source}")
-            resp = requests.get(input_source, timeout=REQUEST_TIMEOUT)
+            resp = requests.get(
+                input_source, timeout=REQUEST_TIMEOUT
+            )
             resp.raise_for_status()
             content = resp.text
         else:
@@ -1046,14 +1403,35 @@ def load_schema_graph(input_source: str) -> Graph:
                 sys.exit(1)
             with open(input_source, 'r', encoding='utf-8') as f:
                 content = f.read()
+
+        # Rohes JSON parsen für about-Analyse
+        try:
+            raw_json = json.loads(content)
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning(
+                f"JSON-Voranalyse fehlgeschlagen (about-Auflösung "
+                f"wird übersprungen): {e}"
+            )
+
+        # Normales RDF-Parsing
         g.parse(data=content, format="json-ld")
         logger.info(f"{len(g)} Triples aus Eingabe geparst.")
+
     except requests.exceptions.RequestException as e:
         logger.error(f"URL-Fehler: {e}")
         sys.exit(1)
     except Exception as e:
         logger.error(f"Parse-Fehler: {e}")
         sys.exit(1)
+
+    # ── @id-only about-Objekte auflösen ──
+    if raw_json is not None:
+        added = resolve_id_only_abouts(raw_json, g)
+        if added > 0:
+            logger.info(
+                f"Nach about-Auflösung: {len(g)} Triples gesamt"
+            )
+
     return g
 
 
@@ -1110,7 +1488,9 @@ def save_graph(graph: Graph, path: str, fmt: str) -> bool:
     try:
         bind_standard_prefixes(graph)
         graph.serialize(destination=path, format=fmt)
-        logger.info(f"Gespeichert: {path} ({len(graph)} Triples, {fmt})")
+        logger.info(
+            f"Gespeichert: {path} ({len(graph)} Triples, {fmt})"
+        )
         return True
     except Exception as e:
         logger.error(f"Speicherfehler: {e}")
@@ -1121,7 +1501,9 @@ def save_graph(graph: Graph, path: str, fmt: str) -> bool:
 # Indirect link discovery – batched approach
 # ─────────────────────────────────────────────────────────────────────
 
-def collect_wikidata_entity_uris(about_uris: list[URIRef]) -> list[str]:
+def collect_wikidata_entity_uris(
+    about_uris: list[URIRef]
+) -> list[str]:
     return sorted(set(
         str(u) for u in about_uris
         if WD_ENTITY_RE.match(str(u))
@@ -1147,10 +1529,14 @@ def fetch_entity_labels(
     logger.info(f"  Rufe Labels für {len(needed)} Entities ab...")
     all_needed = sorted(needed)
     total_added = 0
-    lang_filter_parts = " || ".join(f'LANG(?label) = "{l}"' for l in languages)
+    lang_filter_parts = " || ".join(
+        f'LANG(?label) = "{l}"' for l in languages
+    )
 
     for batch_start in range(0, len(all_needed), LABEL_BATCH_SIZE):
-        batch = all_needed[batch_start:batch_start + LABEL_BATCH_SIZE]
+        batch = all_needed[
+            batch_start:batch_start + LABEL_BATCH_SIZE
+        ]
         values_clause = " ".join(f"<{u}>" for u in batch)
 
         query = f"""
@@ -1179,22 +1565,19 @@ def fetch_entity_labels(
         time.sleep(INTER_QUERY_DELAY)
 
     if total_added > 0:
-        logger.info(f"  → {total_added} Entity-Label-Triples hinzugefügt")
+        logger.info(
+            f"  → {total_added} Entity-Label-Triples hinzugefügt"
+        )
     return total_added
 
 
 def build_batch_indirect_1hop_query(
     uri_batch: list[str], all_uri_set: set[str]
 ) -> str:
-    """
-    Single SPARQL query: for all entities in uri_batch, find 1-hop
-    intermediaries ?mid connecting to ANY other entity in all_uri_set.
-
-    A ?p1 ?mid . ?mid ?p2 B   where A ∈ batch, B ∈ all, A≠B, mid∉all
-    Also reversed directions.
-    """
     values_a = " ".join(f"<{u}>" for u in uri_batch)
-    values_all = " ".join(f"<{u}>" for u in sorted(all_uri_set))
+    values_all = " ".join(
+        f"<{u}>" for u in sorted(all_uri_set)
+    )
 
     return f"""
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -1220,9 +1603,12 @@ def build_batch_indirect_1hop_query(
         ?b ?p2 ?mid .
         BIND("rev" AS ?dir1) BIND("rev" AS ?dir2)
       }}
-      FILTER(STRSTARTS(STR(?mid), "http://www.wikidata.org/entity/Q"))
-      FILTER(STRSTARTS(STR(?p1), "http://www.wikidata.org/prop/direct/"))
-      FILTER(STRSTARTS(STR(?p2), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(
+          STR(?mid), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(
+          STR(?p1), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(
+          STR(?p2), "http://www.wikidata.org/prop/direct/"))
       FILTER(?mid != ?a && ?mid != ?b)
     }} LIMIT {INDIRECT_RESULTS_LIMIT}
     """
@@ -1231,12 +1617,10 @@ def build_batch_indirect_1hop_query(
 def build_batch_indirect_2hop_query(
     uri_batch: list[str], all_uri_set: set[str]
 ) -> str:
-    """
-    Single SPARQL query: for entities in batch, find 2-hop paths
-    A → mid1 → mid2 → B where B ∈ all_uri_set.
-    """
     values_a = " ".join(f"<{u}>" for u in uri_batch)
-    values_all = " ".join(f"<{u}>" for u in sorted(all_uri_set))
+    values_all = " ".join(
+        f"<{u}>" for u in sorted(all_uri_set)
+    )
 
     return f"""
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -1248,11 +1632,16 @@ def build_batch_indirect_2hop_query(
       ?a ?p1 ?mid1 .
       ?mid1 ?p2 ?mid2 .
       ?mid2 ?p3 ?b .
-      FILTER(STRSTARTS(STR(?mid1), "http://www.wikidata.org/entity/Q"))
-      FILTER(STRSTARTS(STR(?mid2), "http://www.wikidata.org/entity/Q"))
-      FILTER(STRSTARTS(STR(?p1), "http://www.wikidata.org/prop/direct/"))
-      FILTER(STRSTARTS(STR(?p2), "http://www.wikidata.org/prop/direct/"))
-      FILTER(STRSTARTS(STR(?p3), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(
+          STR(?mid1), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(
+          STR(?mid2), "http://www.wikidata.org/entity/Q"))
+      FILTER(STRSTARTS(
+          STR(?p1), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(
+          STR(?p2), "http://www.wikidata.org/prop/direct/"))
+      FILTER(STRSTARTS(
+          STR(?p3), "http://www.wikidata.org/prop/direct/"))
       FILTER(?mid1 != ?a && ?mid1 != ?b)
       FILTER(?mid2 != ?a && ?mid2 != ?b)
       FILTER(?mid1 != ?mid2)
@@ -1267,21 +1656,20 @@ def discover_indirect_links(
     label_cache: set[str],
     max_hops: int = INDIRECT_MAX_HOPS
 ) -> bool:
-    """
-    Batched indirect link discovery.  Instead of querying pair-by-pair,
-    entities are split into batches and each batch query finds ALL
-    1-hop (and optionally 2-hop) intermediaries between any two
-    entities from the full set simultaneously.
-    """
     wd_uris = collect_wikidata_entity_uris(about_uris)
     if len(wd_uris) < 2:
-        logger.info("Indirekte Links: weniger als 2 Wikidata-Entities – überspringe.")
+        logger.info(
+            "Indirekte Links: weniger als 2 Wikidata-Entities "
+            "– überspringe."
+        )
         return False
 
     all_uri_set = set(wd_uris)
     n_entities = len(wd_uris)
     n_possible_pairs = n_entities * (n_entities - 1) // 2
-    n_batches_1hop = (n_entities + INDIRECT_BATCH_SIZE - 1) // INDIRECT_BATCH_SIZE
+    n_batches_1hop = (
+        (n_entities + INDIRECT_BATCH_SIZE - 1) // INDIRECT_BATCH_SIZE
+    )
 
     logger.info(
         f"\n{'='*60}\n"
@@ -1301,7 +1689,9 @@ def discover_indirect_links(
 
     # ── 1-hop batched queries ──
     for batch_idx in range(0, n_entities, INDIRECT_BATCH_SIZE):
-        batch = wd_uris[batch_idx:batch_idx + INDIRECT_BATCH_SIZE]
+        batch = wd_uris[
+            batch_idx:batch_idx + INDIRECT_BATCH_SIZE
+        ]
         batch_num = batch_idx // INDIRECT_BATCH_SIZE + 1
 
         logger.info(
@@ -1309,11 +1699,15 @@ def discover_indirect_links(
             f"{len(batch)} Entities als Startpunkte..."
         )
 
-        query = build_batch_indirect_1hop_query(batch, all_uri_set)
+        query = build_batch_indirect_1hop_query(
+            batch, all_uri_set
+        )
         data = sparql_query_with_retry(query)
 
         if data is None:
-            logger.error(f"  1-Hop Batch {batch_num} fehlgeschlagen")
+            logger.error(
+                f"  1-Hop Batch {batch_num} fehlgeschlagen"
+            )
             time.sleep(INTER_QUERY_DELAY)
             continue
 
@@ -1329,8 +1723,10 @@ def discover_indirect_links(
             dir1 = r['dir1']['value']
             dir2 = r['dir2']['value']
 
-            # Canonical pair order (already ensured by STR(?a)<STR(?b))
-            pair_key = (a_uri, b_uri) if a_uri < b_uri else (b_uri, a_uri)
+            pair_key = (
+                (a_uri, b_uri) if a_uri < b_uri
+                else (b_uri, a_uri)
+            )
 
             mid_ref = URIRef(mid_uri)
             a_ref = URIRef(a_uri)
@@ -1354,7 +1750,9 @@ def discover_indirect_links(
                     target_graph.add(triple)
                     added_here += 1
 
-            marker = (mid_ref, INDIRECT_MARKER, Literal(True))
+            marker = (
+                mid_ref, INDIRECT_MARKER, Literal(True)
+            )
             if marker not in target_graph:
                 target_graph.add(marker)
 
@@ -1374,20 +1772,29 @@ def discover_indirect_links(
 
         if batch_paths > 0:
             logger.info(
-                f"    → {batch_paths} Pfade, {batch_triples} Triples"
+                f"    → {batch_paths} Pfade, "
+                f"{batch_triples} Triples"
             )
 
         time.sleep(INTER_QUERY_DELAY)
 
     # ── 2-hop batched queries ──
     if max_hops >= 2:
-        n_batches_2hop = (n_entities + INDIRECT_BATCH_SIZE - 1) // INDIRECT_BATCH_SIZE
+        n_batches_2hop = (
+            (n_entities + INDIRECT_BATCH_SIZE - 1)
+            // INDIRECT_BATCH_SIZE
+        )
         logger.info(
-            f"\n  2-Hop Durchlauf: {n_batches_2hop} Batch-Queries..."
+            f"\n  2-Hop Durchlauf: "
+            f"{n_batches_2hop} Batch-Queries..."
         )
 
-        for batch_idx in range(0, n_entities, INDIRECT_BATCH_SIZE):
-            batch = wd_uris[batch_idx:batch_idx + INDIRECT_BATCH_SIZE]
+        for batch_idx in range(
+            0, n_entities, INDIRECT_BATCH_SIZE
+        ):
+            batch = wd_uris[
+                batch_idx:batch_idx + INDIRECT_BATCH_SIZE
+            ]
             batch_num = batch_idx // INDIRECT_BATCH_SIZE + 1
 
             logger.info(
@@ -1395,11 +1802,15 @@ def discover_indirect_links(
                 f"{len(batch)} Entities..."
             )
 
-            query = build_batch_indirect_2hop_query(batch, all_uri_set)
+            query = build_batch_indirect_2hop_query(
+                batch, all_uri_set
+            )
             data = sparql_query_with_retry(query)
 
             if data is None:
-                logger.error(f"  2-Hop Batch {batch_num} fehlgeschlagen")
+                logger.error(
+                    f"  2-Hop Batch {batch_num} fehlgeschlagen"
+                )
                 time.sleep(INTER_QUERY_DELAY)
                 continue
 
@@ -1433,7 +1844,9 @@ def discover_indirect_links(
                         added_here += 1
 
                 for mid_ref in (mid1_ref, mid2_ref):
-                    marker = (mid_ref, INDIRECT_MARKER, Literal(True))
+                    marker = (
+                        mid_ref, INDIRECT_MARKER, Literal(True)
+                    )
                     if marker not in target_graph:
                         target_graph.add(marker)
 
@@ -1453,13 +1866,13 @@ def discover_indirect_links(
 
             if batch_paths > 0:
                 logger.info(
-                    f"    → {batch_paths} Pfade, {batch_triples} Triples"
+                    f"    → {batch_paths} Pfade, "
+                    f"{batch_triples} Triples"
                 )
 
             time.sleep(INTER_QUERY_DELAY)
 
     # ── Fetch labels for intermediate entities ──
-    # Remove entities that are already in our fetched set
     new_intermediates = intermediate_entities - all_uri_set
     if new_intermediates:
         label_count = fetch_entity_labels(
@@ -1490,22 +1903,34 @@ def main():
     parser = argparse.ArgumentParser(
         description="Schema.org JSON-LD → Wikidata-Anreicherung"
     )
-    parser.add_argument("input", help="URL oder Pfad zur JSON-LD Datei")
+    parser.add_argument(
+        "input", help="URL oder Pfad zur JSON-LD Datei"
+    )
     parser.add_argument(
         "-o", "--output", default="enriched_entities.ttl",
         help="Ausgabe-RDF-Datei (Standard: enriched_entities.ttl)"
     )
     parser.add_argument(
-        "-l", "--languages", default=",".join(DEFAULT_LANGUAGES),
-        help=f"Sprachen (Standard: {','.join(DEFAULT_LANGUAGES)})"
+        "-l", "--languages",
+        default=",".join(DEFAULT_LANGUAGES),
+        help=(
+            f"Sprachen "
+            f"(Standard: {','.join(DEFAULT_LANGUAGES)})"
+        )
     )
     parser.add_argument(
         "-a", "--all", action="store_true", dest="fetch_all",
-        help=f"Alle Properties statt Auswahl ({len(DEFAULT_PROPERTIES)} wdt:)"
+        help=(
+            f"Alle Properties statt Auswahl "
+            f"({len(DEFAULT_PROPERTIES)} wdt:)"
+        )
     )
     parser.add_argument(
         "-s", "--statements", action="store_true",
-        help="Statement-Details (Qualifiers etc.). Impliziert -a."
+        help=(
+            "Statement-Details (Qualifiers etc.). "
+            "Impliziert -a."
+        )
     )
     parser.add_argument(
         "-i", "--indirect", action="store_true",
@@ -1519,17 +1944,20 @@ def main():
         metavar="N",
         help=(
             f"Max Hop-Anzahl für indirekte Pfade "
-            f"(1 oder 2, Standard: {INDIRECT_MAX_HOPS}). Nur mit -i."
+            f"(1 oder 2, Standard: {INDIRECT_MAX_HOPS}). "
+            f"Nur mit -i."
         )
     )
     parser.add_argument(
         "-t", "--type-hierarchy", action="store_true",
         help=(
-            "Löst P31→P279 Typ-Hierarchie auf bis zur Wurzelklasse."
+            "Löst P31→P279 Typ-Hierarchie auf "
+            "bis zur Wurzelklasse."
         )
     )
     parser.add_argument(
-        "--hierarchy-depth", type=int, default=HIERARCHY_MAX_DEPTH,
+        "--hierarchy-depth", type=int,
+        default=HIERARCHY_MAX_DEPTH,
         metavar="N",
         help=(
             f"Max Tiefe Typ-Hierarchie "
@@ -1560,16 +1988,25 @@ def main():
     logger.info(f"Sprachen: {', '.join(languages)}")
 
     if args.fetch_all:
-        mode = "ALLE + Statements" if args.statements else "ALLE Properties"
+        mode = (
+            "ALLE + Statements" if args.statements
+            else "ALLE Properties"
+        )
     else:
         mode = (
             f"Kuratiert ({len(DEFAULT_PROPERTIES)} wdt: + "
             f"{len(DEFAULT_KEEP_PREDICATES)} allgemeine)"
         )
     if args.type_hierarchy:
-        mode += f" + Typ-Hierarchie (max {args.hierarchy_depth} Ebenen)"
+        mode += (
+            f" + Typ-Hierarchie "
+            f"(max {args.hierarchy_depth} Ebenen)"
+        )
     if args.indirect:
-        mode += f" + Indirekte Links (max {args.indirect_hops} Hops, batched)"
+        mode += (
+            f" + Indirekte Links "
+            f"(max {args.indirect_hops} Hops, batched)"
+        )
     logger.info(f"Modus: {mode}")
 
     output_format = detect_rdf_format(args.output)
@@ -1583,9 +2020,13 @@ def main():
 
     if os.path.exists(args.output):
         try:
-            result_graph.parse(source=args.output, format=output_format)
+            result_graph.parse(
+                source=args.output, format=output_format
+            )
             initial = len(result_graph)
-            logger.info(f"{initial} bestehende Triples geladen.")
+            logger.info(
+                f"{initial} bestehende Triples geladen."
+            )
             bind_standard_prefixes(result_graph)
         except Exception as e:
             logger.warning(f"Laden fehlgeschlagen: {e}")
@@ -1593,7 +2034,10 @@ def main():
     label_cache = extract_cached_property_ids(result_graph)
 
     schema_added = merge_graphs(result_graph, schema_graph)
-    logger.info(f"{schema_added} Schema.org-Triples (Gesamt: {len(result_graph)})")
+    logger.info(
+        f"{schema_added} Schema.org-Triples "
+        f"(Gesamt: {len(result_graph)})"
+    )
     modified = schema_added > 0
 
     if not about_uris:
@@ -1633,7 +2077,9 @@ def main():
         logger.warning("Unterbrochen. Speichere...")
     finally:
         if modified or (initial == 0 and len(result_graph) > 0):
-            save_graph(result_graph, args.output, output_format)
+            save_graph(
+                result_graph, args.output, output_format
+            )
         else:
             logger.info("Keine Änderungen.")
 
