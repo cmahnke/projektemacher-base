@@ -33,7 +33,6 @@
 {{- $siteURL := site.BaseURL -}}
 
 {{- $classified := slice (dict "id" "http://vocab.getty.edu/aat/300025976" "type" "Type" "_label" "Collection") -}}
-
 {{- $collection := dict "@context" "https://linked.art/ns/v1/linked-art.jsonld" "type" "Set"
   "id" (printf "%s#collection" $siteURL) "_label" $name "members" $entries "classified_as" $classified -}}
 
