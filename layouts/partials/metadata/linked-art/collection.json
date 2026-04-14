@@ -1,0 +1,49 @@
+{{- $pages := where site.RegularPages "Params.displayinlist" "!=" false -}}
+
+{{- $section := "post" -}}
+{{- $type := "Blog" -}}
+{{- if isset "section" .Params -}}
+  {{- $section = .Params.section -}}
+{{- end -}}
+{{- if isset "type" .Params -}}
+  {{- $type = .Params.type -}}
+{{- end -}}
+
+{{- $pages = where $pages "Section" $section -}}
+
+{{- $entries := slice -}}
+
+{{- range $page := $pages -}}
+  {{- $linkedArt :=  partial "metadata/linked-art/linked-art.json" . -}}
+  {{ if gt (len $linkedArt) 0 -}}
+    {{- $exclude := slice "@context" -}}
+    {{- $linkedArtClean := dict -}}
+    {{- range $key, $value := $linkedArt -}}
+      {{- if not (in $exclude $key) -}}
+        {{- $linkedArtClean = merge $linkedArtClean (dict $key $value) -}}
+      {{- end -}}
+    {{- end -}}
+    
+    
+        {{- $entries = $entries | append $linkedArtClean -}} 
+    
+  {{/*
+    {{- $entries = $entries | append $linkedArt -}} 
+    */}}
+  {{- end -}}
+{{- end -}}
+
+{{- $name := printf "Collection of %s" site.Title -}}
+{{- $siteURL := site.BaseURL -}}
+
+{{- $classified := slice (dict "id" "http://vocab.getty.edu/aat/300025976" "type" "Type" "_label" "Collection") -}}
+
+{{- $collection := dict "@context" "https://linked.art/ns/v1/linked-art.jsonld" "type" "Set"
+  "id" (printf "%s#collection" $siteURL) "_label" $name "members" $entries "classified_as" $classified -}}
+
+{{- $collection | jsonify -}}
+
+
+
+
+

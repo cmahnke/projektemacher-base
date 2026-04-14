@@ -9,7 +9,7 @@
 {{- with resources.GetRemote $url -}}
   {{- with .Content | transform.Unmarshal -}}
     {{- $entity := index .entities $id -}}
-    {{- $name := partial "metadata/linked-art-wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
+    {{- $name := partial "metadata/linked-art/wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}
     {{- $claims := $entity.claims -}}
     {{- if isset $claims "P31" -}}
       {{- range (index $claims "P31") }}
