@@ -1006,7 +1006,8 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
             g.parse(data=resp.text, format='json-ld')
             if len(g) > 0:
                 return g
-        except Exception:
+        except Exception as e:
+            logger.debug(f"  Fehler beim parsen von {url}: {e}")
             pass
 
     jsonld_objects = _extract_jsonld_from_response(resp.text, url)
