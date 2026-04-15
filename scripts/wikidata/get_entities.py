@@ -51,6 +51,7 @@ NAMESPACE_PREFIXES = {
     'xsd': XSD_NS, 'enrichment': ENRICHMENT,
 }
 
+# ── Kuratierte Property-Whitelist (ohne externe Identifier – die werden dynamisch geladen) ──
 DEFAULT_PROPERTIES = {
     'P31', 'P279', 'P361', 'P527', 'P1552', 'P910', 'P1269',
     'P1448', 'P1449', 'P1559', 'P1705', 'P742', 'P735', 'P734',
@@ -76,13 +77,18 @@ DEFAULT_PROPERTIES = {
     'P58', 'P162', 'P161', 'P725', 'P676', 'P264', 'P449',
     'P750', 'P272', 'P179', 'P155', 'P156', 'P629', 'P953',
     'P212', 'P957', 'P236', 'P356',
-    'P856', 'P1566', 'P213', 'P214', 'P227', 'P244', 'P268',
-    'P269', 'P496', 'P349', 'P1315',
-    'P2013', 'P2003', 'P2002', 'P4033', 'P2397', 'P4264',
-    'P8687', 'P1651',
     'P460', 'P1889', 'P2860', 'P3342',
     'P1082', 'P2046', 'P2044', 'P2048', 'P2049', 'P2067',
 }
+
+# Wikidata-Klassen für externe Identifier-Properties
+# Q19847637 = "Wikidata property for an identifier"
+# Q18614948 = "Wikidata property to identify things"
+# Q44847669 = "Wikidata property for authority control"
+IDENTIFIER_PROPERTY_CLASSES = {'Q19847637', 'Q18614948', 'Q44847669'}
+
+# Cache für dynamisch geladene Identifier-Properties
+_identifier_properties_cache: set[str] | None = None
 
 DEFAULT_KEEP_PREDICATES = {
     str(RDF.type), str(RDFS.label), str(RDFS.comment),
@@ -213,10 +219,93 @@ GETTY_AAT_URL_RE = re.compile(r'^https?://vocab\.getty\.edu/aat/(\d+)/?$')
 GETTY_AAT_PAGE_RE = re.compile(r'^https?://vocab\.getty\.edu/page/aat/(\d+)/?$')
 
 
+# ── Dynamisches Laden der Identifier-Properties ──
+
+def fetch_identifier_properties() -> set[str]:
+    """
+    Lädt alle Wikidata-Properties die Instanzen der Identifier-Basisklassen sind.
+    Ergebnis wird gecacht.
+
+    Abgefragte Klassen:
+      Q19847637 = "Wikidata property for an identifier"
+      Q18614948 = "Wikidata property to identify things"
+      Q44847669 = "Wikidata property for authority control"
+
+    Nutzt P31 (instance of) UND P279* (subclass of) transitiv,
+    damit auch Unterklassen wie "Wikidata property for authority control
+    for people" etc. erfasst werden.
+    """
+    global _identifier_properties_cache
+    if _identifier_properties_cache is not None:
+        return _identifier_properties_cache
+
+    class_values = " ".join(f"wd:{qid}" for qid in sorted(IDENTIFIER_PROPERTY_CLASSES))
+
+    logger.info(
+        f"Lade externe Identifier-Properties von Wikidata "
+        f"(Basisklassen: {', '.join(sorted(IDENTIFIER_PROPERTY_CLASSES))})..."
+    )
+
+    # Transitiv: P31/P279* um auch Unterklassen zu erfassen
+    query = f"""
+    PREFIX wd: <http://www.wikidata.org/entity/>
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    PREFIX wikibase: <http://wikiba.se/ontology#>
+    SELECT DISTINCT ?prop WHERE {{
+        VALUES ?idClass {{ {class_values} }}
+        ?prop wdt:P31/wdt:P279* ?idClass .
+        ?prop a wikibase:Property .
+    }}
+    """
+
+    data = sparql_query_with_retry(query)
+    if data is None:
+        logger.warning(
+            "Konnte Identifier-Properties nicht laden. "
+            "Verwende leere Menge (keine externen IDs)."
+        )
+        _identifier_properties_cache = set()
+        return _identifier_properties_cache
+
+    props = set()
+    for r in data.get('results', {}).get('bindings', []):
+        prop_uri = r['prop']['value']
+        pid = extract_property_id(prop_uri)
+        if pid:
+            props.add(pid)
+
+    _identifier_properties_cache = props
+    logger.info(f"  → {len(props)} externe Identifier-Properties geladen")
+
+    if props and logger.isEnabledFor(logging.DEBUG):
+        logger.debug(f"  Identifier-PIDs (Auszug): {sorted(props)[:20]}...")
+
+    return _identifier_properties_cache
+
+
+def get_effective_properties(include_identifiers: bool = True) -> set[str]:
+    """
+    Gibt die effektive Property-Whitelist zurück:
+    DEFAULT_PROPERTIES + optional dynamisch geladene Identifier-Properties.
+    """
+    effective = DEFAULT_PROPERTIES.copy()
+    if include_identifiers:
+        id_props = fetch_identifier_properties()
+        if id_props:
+            before = len(effective)
+            effective.update(id_props)
+            added = len(effective) - before
+            if added > 0:
+                logger.info(
+                    f"  Property-Whitelist: {before} kuratierte + {len(id_props)} Identifier "
+                    f"= {len(effective)} Properties ({added} neu)"
+                )
+    return effective
+
+
 # ── URI-Erkennung ──
 
 def _normalize_wikidata_uri(url: str) -> str | None:
-    """Normalisiert Wikidata-URLs zur kanonischen Form oder gibt None zurück."""
     m = WD_ENTITY_BROAD_RE.match(url)
     if m:
         return f"http://www.wikidata.org/entity/{m.group(1)}"
@@ -224,7 +313,6 @@ def _normalize_wikidata_uri(url: str) -> str | None:
 
 
 def _resolve_getty_aat_url(url: str) -> str | None:
-    """Gibt die JSON-LD URL für eine Getty AAT URI zurück oder None."""
     m = GETTY_AAT_URL_RE.match(url)
     if m:
         return f"http://vocab.getty.edu/aat/{m.group(1)}.jsonld"
@@ -424,9 +512,13 @@ def sparql_query_with_retry(query: str) -> dict | None:
     return None
 
 
-def build_whitelist_sparql(uri: str, languages: list[str]) -> str:
+def build_whitelist_sparql(uri: str, languages: list[str], properties: set[str]) -> str:
+    """
+    Baut die SPARQL-Query für den Whitelist-Modus.
+    Nutzt die übergebene Property-Menge (inkl. dynamischer Identifier).
+    """
     lang_filter = build_language_filter(languages)
-    wdt_values = " ".join(f"wdt:{pid}" for pid in sorted(DEFAULT_PROPERTIES))
+    wdt_values = " ".join(f"wdt:{pid}" for pid in sorted(properties))
     other_preds = " ".join(f"<{p}>" for p in sorted(DEFAULT_KEEP_PREDICATES))
     return f"""
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -779,11 +871,12 @@ def resolve_type_hierarchies(
 def fetch_wikidata_statements(
     uri: str, target_graph: Graph, current: int, total: int,
     languages: list[str], label_cache: set[str],
+    effective_properties: set[str],
     fetch_all: bool = False, include_statements: bool = False, force_update: bool = False
 ) -> bool:
     """
     Holt Wikidata-Statements für eine Entity-URI über SPARQL.
-    Normalisiert die URI und wendet alle globalen Einstellungen an.
+    Nutzt die übergebene effective_properties für den Whitelist-Modus.
     """
     canonical = _normalize_wikidata_uri(str(uri))
     if canonical:
@@ -799,7 +892,7 @@ def fetch_wikidata_statements(
         lf = build_language_filter(languages)
         out_query = f"SELECT ?p ?o WHERE {{ <{uri}> ?p ?o . {lf} }}"
     else:
-        out_query = build_whitelist_sparql(uri, languages)
+        out_query = build_whitelist_sparql(uri, languages, effective_properties)
     in_query = build_incoming_sparql(uri, fetch_all, include_statements)
     wikidata_graph = Graph()
     collected_pids = set()
@@ -877,17 +970,9 @@ def fetch_wikidata_statements(
 
 # ─────────────────────────────────────────────────────────────────────
 # JSON-LD about-Referenz-Auflösung
-#
-# Ablauf:
-# 1. Initiale Schema.org JSON-LD → komplett in den Graph
-# 2. @id-only about-Einträge → URL abrufen → JSON-LD komplett in Graph
-# 3. Aus dem gesamten Graph (inkl. Schritt 2) alle URIs sammeln:
-#    - Wikidata → zur about_uris Liste (→ fetch_wikidata_statements)
-#    - Getty AAT → JSON-LD Endpunkt abrufen → komplett in Graph
 # ─────────────────────────────────────────────────────────────────────
 
 def _is_id_only_about(about_obj: dict | str) -> str | None:
-    """Prüft ob ein about-Objekt nur @id enthält (kein 'name' etc.)."""
     if isinstance(about_obj, str):
         if about_obj.startswith(('http://', 'https://')):
             return about_obj
@@ -906,7 +991,6 @@ def _is_id_only_about(about_obj: dict | str) -> str | None:
 
 
 def _collect_id_only_abouts(obj: dict | list | str, collected: set[str]) -> None:
-    """Rekursiv JSON-LD Struktur nach @id-only about-Objekten durchsuchen."""
     if isinstance(obj, list):
         for item in obj:
             _collect_id_only_abouts(item, collected)
@@ -940,7 +1024,6 @@ def _collect_id_only_abouts(obj: dict | list | str, collected: set[str]) -> None
 
 
 def _extract_jsonld_from_response(response_text: str, url: str) -> list[dict]:
-    """JSON-LD aus HTTP-Antwort extrahieren (direkt oder aus HTML)."""
     try:
         data = json.loads(response_text)
         if isinstance(data, dict):
@@ -967,12 +1050,6 @@ def _extract_jsonld_from_response(response_text: str, url: str) -> list[dict]:
 
 
 def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
-    """
-    Ruft eine URL ab und versucht JSON-LD komplett zu parsen.
-    Für bekannte LD-Quellen (Getty AAT) wird der spezifische Endpunkt genutzt.
-    Wikidata-URIs werden hier NICHT behandelt (laufen über SPARQL).
-    """
-    # Getty AAT spezifischer Endpunkt
     getty_url = _resolve_getty_aat_url(url)
     if getty_url:
         logger.info(f"    Erkannt als getty-aat: {url}")
@@ -990,7 +1067,6 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
         except Exception as e:
             logger.debug(f"    Getty-AAT-Abruf fehlgeschlagen: {e}")
 
-    # Generischer Abruf
     try:
         resp = requests.get(url, headers=ABOUT_FETCH_HEADERS,
                             timeout=ABOUT_FETCH_TIMEOUT, allow_redirects=True)
@@ -1006,8 +1082,7 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
             g.parse(data=resp.text, format='json-ld')
             if len(g) > 0:
                 return g
-        except Exception as e:
-            logger.debug(f"  Fehler beim parsen von {url}: {e}")
+        except Exception:
             pass
 
     jsonld_objects = _extract_jsonld_from_response(resp.text, url)
@@ -1026,23 +1101,14 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
 
 
 def _collect_linked_data_uris_from_graph(graph: Graph) -> tuple[set[str], set[str]]:
-    """
-    Durchsucht den gesamten Graph nach URIs die zu bekannten
-    Linked-Data Quellen gehören (als Subjekt oder Objekt).
-
-    Returns:
-        (wikidata_uris, getty_aat_uris)
-    """
     wikidata_uris: set[str] = set()
     getty_aat_uris: set[str] = set()
-
     all_uris: set[str] = set()
     for s, p, o in graph:
         if isinstance(s, URIRef):
             all_uris.add(str(s))
         if isinstance(o, URIRef):
             all_uris.add(str(o))
-
     for uri_str in all_uris:
         canonical_wd = _normalize_wikidata_uri(uri_str)
         if canonical_wd:
@@ -1050,32 +1116,60 @@ def _collect_linked_data_uris_from_graph(graph: Graph) -> tuple[set[str], set[st
             continue
         if _resolve_getty_aat_url(uri_str):
             getty_aat_uris.add(uri_str)
-
     return (wikidata_uris, getty_aat_uris)
+
+
+def _fetch_getty_uris_into_graph(getty_uris: set[str], target_graph: Graph) -> int:
+    if not getty_uris:
+        return 0
+    needed = set()
+    for uri_str in getty_uris:
+        uri_ref = URIRef(uri_str)
+        if not any(target_graph.objects(uri_ref, RDFS.label)):
+            needed.add(uri_str)
+    if not needed:
+        return 0
+    logger.info(f"  Rufe {len(needed)} Getty AAT Einträge ab...")
+    total_added = 0
+    for url in sorted(needed):
+        getty_jsonld_url = _resolve_getty_aat_url(url)
+        if not getty_jsonld_url:
+            continue
+        logger.info(f"    Getty AAT: {url}")
+        headers = dict(ABOUT_FETCH_HEADERS)
+        headers['Accept'] = 'application/ld+json, application/json;q=0.9'
+        try:
+            resp = requests.get(getty_jsonld_url, headers=headers,
+                                timeout=ABOUT_FETCH_TIMEOUT, allow_redirects=True)
+            resp.raise_for_status()
+            g = Graph()
+            g.parse(data=resp.text, format='json-ld')
+            added = merge_graphs(target_graph, g)
+            if added > 0:
+                logger.info(f"    ✓ {added} Triples hinzugefügt ({len(g)} gesamt)")
+                total_added += added
+            else:
+                logger.info(f"    ○ Bereits vorhanden")
+        except Exception as e:
+            logger.warning(f"    ✗ Fehler: {e}")
+        time.sleep(INTER_QUERY_DELAY)
+    if total_added > 0:
+        logger.info(f"  → {total_added} Getty-AAT-Triples hinzugefügt")
+    return total_added
 
 
 def resolve_about_references(
     raw_json: dict | list, schema_graph: Graph
 ) -> tuple[Graph, set[str]]:
-    """
-    Schritt 2 der Auflösung: @id-only about-Einträge abrufen und
-    komplett in den Graph einfügen.
-
-    Returns:
-        (erweiterter_graph, zusätzliche_wikidata_uris)
-    """
-    # 2a: @id-only URLs aus dem rohen JSON sammeln
     id_only_urls: set[str] = set()
     _collect_id_only_abouts(raw_json, id_only_urls)
 
     if not id_only_urls:
         logger.info("About-Auflösung: Keine @id-only about-Referenzen gefunden.")
-        # Trotzdem nach bekannten URIs im bestehenden Graph suchen
         wd_uris, getty_uris = _collect_linked_data_uris_from_graph(schema_graph)
         _fetch_getty_uris_into_graph(getty_uris, schema_graph)
         return (schema_graph, wd_uris)
 
-    # 2b: Wikidata-URIs von Nicht-Wikidata trennen
     wikidata_from_ids: set[str] = set()
     non_wikidata_urls: set[str] = set()
 
@@ -1088,12 +1182,11 @@ def resolve_about_references(
 
     parts = []
     if wikidata_from_ids:
-        parts.append(f"{len(wikidata_from_ids)} Wikidata (→ SPARQL später)")
+        parts.append(f"{len(wikidata_from_ids)} Wikidata (→ SPARQL)")
     if non_wikidata_urls:
-        parts.append(f"{len(non_wikidata_urls)} andere (→ JSON-LD jetzt)")
+        parts.append(f"{len(non_wikidata_urls)} andere (→ JSON-LD)")
     logger.info(f"About-Auflösung: {len(id_only_urls)} @id-only URLs ({', '.join(parts)})")
 
-    # 2c: Nicht-Wikidata URLs abrufen und KOMPLETT in Graph einfügen
     total_added = 0
     resolved = 0
     failed = 0
@@ -1124,14 +1217,8 @@ def resolve_about_references(
             f"{failed} fehlgeschlagen, {total_added} Triples"
         )
 
-    # 2d: Jetzt den erweiterten Graph nach allen bekannten URIs durchsuchen
-    # (inkl. URIs die aus den gerade abgerufenen JSON-LD Dateien stammen)
     wd_uris_from_graph, getty_uris_from_graph = _collect_linked_data_uris_from_graph(schema_graph)
-
-    # Alle Wikidata-URIs zusammenführen
     all_wikidata_uris = wikidata_from_ids | wd_uris_from_graph
-
-    # Getty-URIs die noch nicht im Graph aufgelöst wurden abrufen
     _fetch_getty_uris_into_graph(getty_uris_from_graph, schema_graph)
 
     if all_wikidata_uris:
@@ -1143,63 +1230,9 @@ def resolve_about_references(
     return (schema_graph, all_wikidata_uris)
 
 
-def _fetch_getty_uris_into_graph(getty_uris: set[str], target_graph: Graph) -> int:
-    """
-    Ruft Getty AAT URIs als JSON-LD ab und fügt sie komplett in den Graph ein.
-    Überspringt URIs die bereits als Subjekt mit rdfs:label im Graph sind.
-    """
-    if not getty_uris:
-        return 0
-
-    # Nur URIs die noch nicht aufgelöst wurden
-    needed = set()
-    for uri_str in getty_uris:
-        uri_ref = URIRef(uri_str)
-        if not any(target_graph.objects(uri_ref, RDFS.label)):
-            needed.add(uri_str)
-
-    if not needed:
-        return 0
-
-    logger.info(f"  Rufe {len(needed)} Getty AAT Einträge ab...")
-    total_added = 0
-
-    for url in sorted(needed):
-        getty_jsonld_url = _resolve_getty_aat_url(url)
-        if not getty_jsonld_url:
-            continue
-
-        logger.info(f"    Getty AAT: {url}")
-        headers = dict(ABOUT_FETCH_HEADERS)
-        headers['Accept'] = 'application/ld+json, application/json;q=0.9'
-        try:
-            resp = requests.get(getty_jsonld_url, headers=headers,
-                                timeout=ABOUT_FETCH_TIMEOUT, allow_redirects=True)
-            resp.raise_for_status()
-            g = Graph()
-            g.parse(data=resp.text, format='json-ld')
-            added = merge_graphs(target_graph, g)
-            if added > 0:
-                logger.info(f"    ✓ {added} Triples hinzugefügt ({len(g)} gesamt)")
-                total_added += added
-            else:
-                logger.info(f"    ○ Bereits vorhanden")
-        except Exception as e:
-            logger.warning(f"    ✗ Fehler: {e}")
-        time.sleep(INTER_QUERY_DELAY)
-
-    if total_added > 0:
-        logger.info(f"  → {total_added} Getty-AAT-Triples hinzugefügt")
-    return total_added
-
-
 # ── Graph Loading ──
 
 def load_schema_graph(input_source: str) -> tuple[Graph, dict | list | None]:
-    """
-    Lädt JSON-LD von URL oder Datei KOMPLETT in einen Graph.
-    Gibt (graph, raw_json) zurück.
-    """
     g = Graph()
     raw_json = None
     try:
@@ -1278,13 +1311,15 @@ def main():
     parser.add_argument("-l", "--languages", default=",".join(DEFAULT_LANGUAGES),
                         help=f"Sprachen (Standard: {','.join(DEFAULT_LANGUAGES)})")
     parser.add_argument("-a", "--all", action="store_true", dest="fetch_all",
-                        help=f"Alle Properties statt Auswahl ({len(DEFAULT_PROPERTIES)} wdt:)")
+                        help=f"Alle Properties statt Auswahl ({len(DEFAULT_PROPERTIES)} kuratierte)")
     parser.add_argument("-s", "--statements", action="store_true",
                         help="Statement-Details (Qualifiers etc.). Impliziert -a.")
     parser.add_argument("-t", "--type-hierarchy", action="store_true",
                         help="Löst P31→P279 Typ-Hierarchie auf bis zur Wurzelklasse.")
     parser.add_argument("--hierarchy-depth", type=int, default=HIERARCHY_MAX_DEPTH, metavar="N",
                         help=f"Max Tiefe Typ-Hierarchie (Standard: {HIERARCHY_MAX_DEPTH}). Nur mit -t.")
+    parser.add_argument("--no-identifiers", action="store_true",
+                        help="Keine externen Identifier-Properties dynamisch laden.")
     parser.add_argument("--force", action="store_true", help="Erzwingt Neu-Laden.")
     args = parser.parse_args()
 
@@ -1296,10 +1331,20 @@ def main():
     languages = parse_languages(args.languages)
     logger.info(f"Sprachen: {', '.join(languages)}")
 
+    # ── Effektive Property-Liste bestimmen ──
+    include_identifiers = not args.no_identifiers and not args.fetch_all
     if args.fetch_all:
+        effective_properties = DEFAULT_PROPERTIES  # wird im -a Modus nicht genutzt
         mode = "ALLE + Statements" if args.statements else "ALLE Properties"
     else:
-        mode = f"Kuratiert ({len(DEFAULT_PROPERTIES)} wdt: + {len(DEFAULT_KEEP_PREDICATES)} allgemeine)"
+        effective_properties = get_effective_properties(include_identifiers=include_identifiers)
+        id_count = len(effective_properties) - len(DEFAULT_PROPERTIES)
+        mode = (
+            f"Kuratiert ({len(DEFAULT_PROPERTIES)} wdt: + "
+            f"{id_count} Identifier + "
+            f"{len(DEFAULT_KEEP_PREDICATES)} allgemeine)"
+        )
+
     if args.type_hierarchy:
         mode += f" + Typ-Hierarchie (max {args.hierarchy_depth} Ebenen)"
     logger.info(f"Modus: {mode}")
@@ -1309,19 +1354,17 @@ def main():
     # ── Schritt 1: Schema-Graph komplett laden ──
     schema_graph, raw_json = load_schema_graph(args.input)
 
-    # ── Schritt 2: @id-only abouts auflösen, JSON-LD komplett einfügen ──
-    # Danach den erweiterten Graph nach Wikidata/Getty URIs durchsuchen
+    # ── Schritt 2: @id-only abouts auflösen ──
     extra_wikidata_uris: set[str] = set()
     if raw_json is not None:
         schema_graph, extra_wikidata_uris = resolve_about_references(raw_json, schema_graph)
         if extra_wikidata_uris:
             logger.info(f"Nach about-Auflösung: {len(schema_graph)} Triples im Schema-Graph")
 
-    # ── Schritt 3: about-URIs aus Schema extrahieren ──
+    # ── Schritt 3: about-URIs extrahieren ──
     about_uris = extract_about_uris(schema_graph)
     logger.info(f"{len(about_uris)} 'about'-URIs aus Schema extrahiert.")
 
-    # Wikidata-URIs aus Schritt 2 zur Liste hinzufügen
     existing_uri_strs = {str(u) for u in about_uris}
     added_wd_count = 0
     for wd_uri in sorted(extra_wikidata_uris):
@@ -1360,18 +1403,18 @@ def main():
         return
 
     try:
-        # ── Schritt 4: Wikidata-Statements für ALLE about-URIs ──
-        # Alle globalen Einstellungen (Sprachen, Whitelist, Force) gelten
+        # ── Schritt 4: Wikidata-Statements ──
         for i, uri in enumerate(about_uris, 1):
             if fetch_wikidata_statements(
                 uri, result_graph, i, len(about_uris),
                 languages=languages, label_cache=label_cache,
+                effective_properties=effective_properties,
                 fetch_all=args.fetch_all, include_statements=args.statements,
                 force_update=args.force
             ):
                 modified = True
 
-        # ── Schritt 5: Optional Typ-Hierarchie ──
+        # ── Schritt 5: Typ-Hierarchie ──
         if args.type_hierarchy:
             if resolve_type_hierarchies(
                 result_graph, about_uris, languages,
