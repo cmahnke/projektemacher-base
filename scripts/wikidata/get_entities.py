@@ -51,7 +51,6 @@ NAMESPACE_PREFIXES = {
     'xsd': XSD_NS, 'enrichment': ENRICHMENT,
 }
 
-# ── Kuratierte Property-Whitelist (ohne externe Identifier – die werden dynamisch geladen) ──
 DEFAULT_PROPERTIES = {
     'P31', 'P279', 'P361', 'P527', 'P1552', 'P910', 'P1269',
     'P1448', 'P1449', 'P1559', 'P1705', 'P742', 'P735', 'P734',
@@ -81,14 +80,22 @@ DEFAULT_PROPERTIES = {
     'P1082', 'P2046', 'P2044', 'P2048', 'P2049', 'P2067',
 }
 
-# Wikidata-Klassen für externe Identifier-Properties
-# Q19847637 = "Wikidata property for an identifier"
-# Q18614948 = "Wikidata property to identify things"
-# Q44847669 = "Wikidata property for authority control"
 IDENTIFIER_PROPERTY_CLASSES = {'Q19847637', 'Q18614948', 'Q44847669'}
-
-# Cache für dynamisch geladene Identifier-Properties
 _identifier_properties_cache: set[str] | None = None
+
+# ── Entity-Klassifizierung: Wikidata-Basisklassen ──
+# Wenn eine Entity (über P31/P279*) von einer dieser Klassen erbt,
+# wird ein zusätzliches wdt:P31-Triple mit der Basisklasse hinzugefügt.
+ENTITY_BASE_CLASSES = {
+    'Q5',         # human
+    'Q17334923',  # location
+    'Q43229',     # organization
+    'Q1656682',   # event
+    'Q386724',    # work
+    'Q15642541',  # human-geographic territorial entity
+    'Q16334295',  # group of humans
+}
+CLASSIFY_BATCH_SIZE = 50
 
 DEFAULT_KEEP_PREDICATES = {
     str(RDF.type), str(RDFS.label), str(RDFS.comment),
@@ -222,32 +229,12 @@ GETTY_AAT_PAGE_RE = re.compile(r'^https?://vocab\.getty\.edu/page/aat/(\d+)/?$')
 # ── Dynamisches Laden der Identifier-Properties ──
 
 def fetch_identifier_properties() -> set[str]:
-    """
-    Lädt alle Wikidata-Properties die Instanzen der Identifier-Basisklassen sind.
-    Ergebnis wird gecacht.
-
-    Abgefragte Klassen:
-      Q19847637 = "Wikidata property for an identifier"
-      Q18614948 = "Wikidata property to identify things"
-      Q44847669 = "Wikidata property for authority control"
-
-    Nutzt P31 (instance of) UND P279* (subclass of) transitiv,
-    damit auch Unterklassen wie "Wikidata property for authority control
-    for people" etc. erfasst werden.
-    """
     global _identifier_properties_cache
     if _identifier_properties_cache is not None:
         return _identifier_properties_cache
-
     class_values = " ".join(f"wd:{qid}" for qid in sorted(IDENTIFIER_PROPERTY_CLASSES))
-
-    logger.info(
-        f"Lade externe Identifier-Properties von Wikidata "
-        f"(Basisklassen: {', '.join(sorted(IDENTIFIER_PROPERTY_CLASSES))})..."
-    )
-
-    # Transitiv: P31/P279* um auch Unterklassen zu erfassen
-    query = f"""
+    logger.info(f"Lade externe Identifier-Properties von Wikidata...")
+    data = sparql_query_with_retry(f"""
     PREFIX wd: <http://www.wikidata.org/entity/>
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
     PREFIX wikibase: <http://wikiba.se/ontology#>
@@ -256,38 +243,22 @@ def fetch_identifier_properties() -> set[str]:
         ?prop wdt:P31/wdt:P279* ?idClass .
         ?prop a wikibase:Property .
     }}
-    """
-
-    data = sparql_query_with_retry(query)
+    """)
     if data is None:
-        logger.warning(
-            "Konnte Identifier-Properties nicht laden. "
-            "Verwende leere Menge (keine externen IDs)."
-        )
+        logger.warning("Konnte Identifier-Properties nicht laden.")
         _identifier_properties_cache = set()
         return _identifier_properties_cache
-
     props = set()
     for r in data.get('results', {}).get('bindings', []):
-        prop_uri = r['prop']['value']
-        pid = extract_property_id(prop_uri)
+        pid = extract_property_id(r['prop']['value'])
         if pid:
             props.add(pid)
-
     _identifier_properties_cache = props
     logger.info(f"  → {len(props)} externe Identifier-Properties geladen")
-
-    if props and logger.isEnabledFor(logging.DEBUG):
-        logger.debug(f"  Identifier-PIDs (Auszug): {sorted(props)[:20]}...")
-
     return _identifier_properties_cache
 
 
 def get_effective_properties(include_identifiers: bool = True) -> set[str]:
-    """
-    Gibt die effektive Property-Whitelist zurück:
-    DEFAULT_PROPERTIES + optional dynamisch geladene Identifier-Properties.
-    """
     effective = DEFAULT_PROPERTIES.copy()
     if include_identifiers:
         id_props = fetch_identifier_properties()
@@ -298,7 +269,7 @@ def get_effective_properties(include_identifiers: bool = True) -> set[str]:
             if added > 0:
                 logger.info(
                     f"  Property-Whitelist: {before} kuratierte + {len(id_props)} Identifier "
-                    f"= {len(effective)} Properties ({added} neu)"
+                    f"= {len(effective)} ({added} neu)"
                 )
     return effective
 
@@ -328,11 +299,9 @@ def bind_standard_prefixes(graph: Graph) -> None:
     for prefix, namespace in NAMESPACE_PREFIXES.items():
         graph.bind(prefix, namespace, override=True)
 
-
 def build_language_filter(languages: list[str]) -> str:
     lc = " || ".join(f'LANG(?o) = "{l}"' for l in languages)
     return f'FILTER(!isLiteral(?o) || LANG(?o) = "" || {lc})'
-
 
 def parse_languages(lang_string: str) -> list[str]:
     languages = [l.strip().lower() for l in lang_string.split(',') if l.strip()]
@@ -341,7 +310,6 @@ def parse_languages(lang_string: str) -> list[str]:
     if ALWAYS_INCLUDE_LANG not in languages:
         languages.append(ALWAYS_INCLUDE_LANG)
     return languages
-
 
 def is_literal_in_allowed_languages(
     value: str, lang: str | None, datatype: str | None, predicate: str, allowed: list[str]
@@ -352,7 +320,6 @@ def is_literal_in_allowed_languages(
         return lang in allowed
     return True
 
-
 def should_include_outgoing_triple(predicate_str: str, object_str: str | None, include_statements: bool) -> bool:
     if include_statements:
         return True
@@ -362,7 +329,6 @@ def should_include_outgoing_triple(predicate_str: str, object_str: str | None, i
         return False
     return True
 
-
 def detect_rdf_format(filepath: str) -> str:
     ext = os.path.splitext(filepath)[1].lower()
     fmt = FORMAT_MAP.get(ext)
@@ -370,7 +336,6 @@ def detect_rdf_format(filepath: str) -> str:
         logger.warning(f"Unbekannte Endung '{ext}'. Fallback: turtle.")
         return 'turtle'
     return fmt
-
 
 def is_valid_python_date(lexical_value: str, datatype: str) -> bool:
     if datatype not in DATE_DATATYPES:
@@ -383,7 +348,6 @@ def is_valid_python_date(lexical_value: str, datatype: str) -> bool:
     except ValueError:
         return True
     return DATETIME_YEAR_MIN <= year <= DATETIME_YEAR_MAX
-
 
 def safe_literal(value: str, datatype: str | None = None, lang: str | None = None) -> Literal:
     if datatype and not is_valid_python_date(value, datatype):
@@ -403,19 +367,15 @@ def safe_literal(value: str, datatype: str | None = None, lang: str | None = Non
     else:
         return Literal(value)
 
-
 def extract_property_id(uri_str: str) -> str | None:
     match = PROPERTY_ID_RE.search(uri_str)
     return match.group(1) if match else None
 
-
 def is_statement_node(uri_str: str) -> bool:
     return bool(STATEMENT_NODE_RE.match(uri_str))
 
-
 def is_statement_link_predicate(predicate_str: str) -> bool:
     return bool(PROP_STATEMENT_LINK_RE.match(predicate_str))
-
 
 def extract_cached_property_ids(graph: Graph) -> set[str]:
     cached = set()
@@ -426,7 +386,6 @@ def extract_cached_property_ids(graph: Graph) -> set[str]:
     if cached:
         logger.info(f"Label-Cache: {len(cached)} Property-Labels aus Graph geladen")
     return cached
-
 
 def parse_sparql_binding_to_rdf(
     binding: dict, languages: list[str] | None = None, predicate_str: str | None = None
@@ -443,14 +402,11 @@ def parse_sparql_binding_to_rdf(
         return safe_literal(value=o_value, datatype=o_datatype, lang=o_lang)
     return None
 
-
 def is_already_fetched(uri_ref: URIRef, graph: Graph) -> bool:
     return (uri_ref, FETCHED_MARKER, FETCHED_VALUE) in graph
 
-
 def mark_as_fetched(uri_ref: URIRef, graph: Graph) -> None:
     graph.add((uri_ref, FETCHED_MARKER, FETCHED_VALUE))
-
 
 def merge_graphs(target: Graph, source: Graph) -> int:
     before = len(target)
@@ -458,7 +414,6 @@ def merge_graphs(target: Graph, source: Graph) -> int:
         if t not in target:
             target.add(t)
     return len(target) - before
-
 
 def save_graph(graph: Graph, path: str, fmt: str) -> bool:
     try:
@@ -511,12 +466,7 @@ def sparql_query_with_retry(query: str) -> dict | None:
     logger.error(f"SPARQL nach {MAX_RETRIES} Versuchen fehlgeschlagen.")
     return None
 
-
 def build_whitelist_sparql(uri: str, languages: list[str], properties: set[str]) -> str:
-    """
-    Baut die SPARQL-Query für den Whitelist-Modus.
-    Nutzt die übergebene Property-Menge (inkl. dynamischer Identifier).
-    """
     lang_filter = build_language_filter(languages)
     wdt_values = " ".join(f"wdt:{pid}" for pid in sorted(properties))
     other_preds = " ".join(f"<{p}>" for p in sorted(DEFAULT_KEEP_PREDICATES))
@@ -529,7 +479,6 @@ def build_whitelist_sparql(uri: str, languages: list[str], properties: set[str])
         {lang_filter}
     }}
     """
-
 
 def build_incoming_sparql(uri: str, fetch_all: bool, include_statements: bool) -> str:
     if include_statements:
@@ -570,7 +519,6 @@ def build_wikipedia_sitelinks_query(entity_uris: list[str], languages: list[str]
         FILTER({site_filters})
     }}
     """
-
 
 def fetch_wikipedia_sitelinks(entity_uris: list[str], target_graph: Graph, languages: list[str]) -> int:
     if not entity_uris:
@@ -677,7 +625,6 @@ def fetch_property_labels(
         logger.info(f"  → {total_added} Property-Label-Triples hinzugefügt")
     return total_added
 
-
 def fetch_entity_labels(entity_uris: set[str], target_graph: Graph, languages: list[str]) -> int:
     if not entity_uris:
         return 0
@@ -775,7 +722,6 @@ def collect_instance_of_types(graph: Graph, entity_uris: list[URIRef]) -> set[st
                 type_uris.add(obj_str)
     return type_uris
 
-
 def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
     if not class_uris:
         return {}
@@ -799,7 +745,6 @@ def fetch_superclasses_batch(class_uris: set[str]) -> dict[str, list[str]]:
         time.sleep(INTER_QUERY_DELAY)
     return result
 
-
 def resolve_type_hierarchies(
     target_graph: Graph, entity_uris: list[URIRef],
     languages: list[str], label_cache: set[str],
@@ -810,8 +755,7 @@ def resolve_type_hierarchies(
         logger.info("Typ-Hierarchie: Keine wdt:P31-Typen gefunden – überspringe.")
         return False
     logger.info(
-        f"\n{'='*60}\nTyp-Hierarchie: Löse {len(type_uris)} instance-of Typen auf "
-        f"(max {max_depth} Ebenen)\n{'='*60}"
+        f"\n{'='*60}\nTyp-Hierarchie: {len(type_uris)} Typen (max {max_depth} Ebenen)\n{'='*60}"
     )
     total_triples_added = 0
     all_hierarchy_entities: set[str] = set()
@@ -824,7 +768,7 @@ def resolve_type_hierarchies(
         to_query = current_level - visited
         if not to_query:
             break
-        logger.info(f"  Ebene {depth}: Prüfe {len(to_query)} Klassen auf Oberklassen (P279)...")
+        logger.info(f"  Ebene {depth}: {len(to_query)} Klassen...")
         parent_map = fetch_superclasses_batch(to_query)
         visited.update(to_query)
         next_level: set[str] = set()
@@ -851,19 +795,162 @@ def resolve_type_hierarchies(
                 if marker not in target_graph:
                     target_graph.add(marker)
         total_triples_added += added_this_level
-        logger.info(f"    → {added_this_level} P279-Triples, {len(next_level)} neue Oberklassen")
+        logger.info(f"    → {added_this_level} P279-Triples, {len(next_level)} neue")
         current_level = next_level
     if depth >= max_depth and current_level:
-        logger.warning(f"  Tiefe {max_depth} erreicht, {len(current_level)} nicht weiter aufgelöst")
+        logger.warning(f"  Tiefe {max_depth} erreicht, {len(current_level)} offen")
     if all_hierarchy_entities:
         total_triples_added += fetch_entity_labels(all_hierarchy_entities, target_graph, languages)
     if collected_pids:
         total_triples_added += fetch_property_labels(collected_pids, target_graph, languages, label_cache)
-    logger.info(
-        f"\nTyp-Hierarchie: {len(all_hierarchy_entities)} Klassen, "
-        f"{total_triples_added} Triples, {depth} Ebenen"
-    )
+    logger.info(f"\nTyp-Hierarchie: {len(all_hierarchy_entities)} Klassen, {total_triples_added} Triples, {depth} Ebenen")
     return total_triples_added > 0
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Entity-Klassifizierung: Basisklassen als zusätzliche wdt:P31 Triples
+#
+# Prüft für jede Wikidata-Entity ob sie (über P31 → P279*) von einer
+# der Basisklassen erbt. Falls ja, wird ein zusätzliches
+#   <entity> wdt:P31 <basisklasse>
+# Triple hinzugefügt. Der ursprüngliche spezifische P31-Typ bleibt.
+#
+# Beispiel: wd:Q937 hat P31=Q5 (human) → direkt, kein Zusatz nötig.
+#           wd:Q42 hat P31=Q36180 (writer), writer→P279*→Q5 (human)
+#           → zusätzlich: wd:Q42 wdt:P31 wd:Q5
+# ─────────────────────────────────────────────────────────────────────
+
+def classify_entities(
+    about_uris: list[URIRef],
+    target_graph: Graph,
+    languages: list[str]
+) -> bool:
+    """
+    Für jede Wikidata-Entity prüfen ob ihre P31-Typen transitiv
+    (über P279*) von einer der ENTITY_BASE_CLASSES erben.
+    Falls ja, wird die Basisklasse als zusätzliches wdt:P31 Triple
+    hinzugefügt.
+    """
+    wd_uris = [str(u) for u in about_uris if WD_ENTITY_RE.match(str(u))]
+    if not wd_uris:
+        return False
+
+    # Bereits klassifizierte Entities haben schon direkte P31-Triples
+    # zu den Basisklassen – nur prüfen wenn nicht vorhanden
+    base_class_refs = {
+        URIRef(f"http://www.wikidata.org/entity/{qid}")
+        for qid in ENTITY_BASE_CLASSES
+    }
+
+    needed = []
+    for uri_str in wd_uris:
+        uri_ref = URIRef(uri_str)
+        existing_p31 = set(target_graph.objects(uri_ref, WDT_P31))
+        # Wenn noch keine Basisklasse direkt als P31 vorhanden
+        if not existing_p31 & base_class_refs:
+            needed.append(uri_str)
+
+    if not needed:
+        logger.info("Entity-Klassifizierung: Alle Entities haben bereits Basisklassen-P31.")
+        return False
+
+    base_class_values = " ".join(
+        f"wd:{qid}" for qid in sorted(ENTITY_BASE_CLASSES)
+    )
+
+    logger.info(
+        f"\n{'='*60}\n"
+        f"Entity-Klassifizierung: {len(needed)} Entities prüfen\n"
+        f"Basisklassen: {', '.join(sorted(ENTITY_BASE_CLASSES))}\n"
+        f"{'='*60}"
+    )
+
+    total_added = 0
+    classified_count = 0
+    base_class_labels_needed: set[str] = set()
+
+    for bs in range(0, len(needed), CLASSIFY_BATCH_SIZE):
+        batch = needed[bs:bs + CLASSIFY_BATCH_SIZE]
+        batch_num = bs // CLASSIFY_BATCH_SIZE + 1
+        total_batches = (len(needed) + CLASSIFY_BATCH_SIZE - 1) // CLASSIFY_BATCH_SIZE
+
+        logger.info(f"  Batch {batch_num}/{total_batches}: {len(batch)} Entities...")
+
+        values_entities = " ".join(f"<{u}>" for u in batch)
+
+        # Für jede Entity: welche Basisklassen werden transitiv erreicht?
+        query = f"""
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        SELECT ?entity ?baseClass WHERE {{
+            VALUES ?entity {{ {values_entities} }}
+            VALUES ?baseClass {{ {base_class_values} }}
+            ?entity wdt:P31/wdt:P279* ?baseClass .
+        }}
+        """
+
+        data = sparql_query_with_retry(query)
+        if data is None:
+            logger.error(f"  Klassifizierungs-Batch {batch_num} fehlgeschlagen")
+            time.sleep(INTER_QUERY_DELAY)
+            continue
+
+        # Sammle: entity → {basisklasse, ...}
+        entity_bases: dict[str, set[str]] = {}
+        for r in data.get('results', {}).get('bindings', []):
+            entity_uri = r['entity']['value']
+            base_uri = r['baseClass']['value']
+            entity_bases.setdefault(entity_uri, set()).add(base_uri)
+
+        added = 0
+        for entity_uri, base_uris in entity_bases.items():
+            entity_ref = URIRef(entity_uri)
+            entity_classified = False
+
+            for base_uri in base_uris:
+                base_ref = URIRef(base_uri)
+                t = (entity_ref, WDT_P31, base_ref)
+                if t not in target_graph:
+                    target_graph.add(t)
+                    added += 1
+                    entity_classified = True
+                    base_class_labels_needed.add(base_uri)
+
+            if entity_classified:
+                classified_count += 1
+
+        total_added += added
+        time.sleep(INTER_QUERY_DELAY)
+
+    # Labels für die Basisklassen holen
+    if base_class_labels_needed:
+        total_added += fetch_entity_labels(
+            base_class_labels_needed, target_graph, languages
+        )
+
+    # Statistik
+    category_counts: dict[str, int] = {}
+    for qid in ENTITY_BASE_CLASSES:
+        base_ref = URIRef(f"http://www.wikidata.org/entity/{qid}")
+        count = 0
+        for uri_str in wd_uris:
+            if (URIRef(uri_str), WDT_P31, base_ref) in target_graph:
+                count += 1
+        if count > 0:
+            # Label holen für schöne Ausgabe
+            labels = list(target_graph.objects(base_ref, RDFS.label))
+            label_str = str(labels[0]) if labels else qid
+            category_counts[label_str] = count
+
+    stats = ", ".join(f"{k}: {v}" for k, v in sorted(category_counts.items()))
+
+    logger.info(
+        f"\nEntity-Klassifizierung: {classified_count} neu klassifiziert, "
+        f"{total_added} Triples\n"
+        f"  Verteilung: {stats if stats else 'keine'}"
+    )
+
+    return total_added > 0
 
 
 # ── Wikidata Statement Fetching ──
@@ -874,10 +961,6 @@ def fetch_wikidata_statements(
     effective_properties: set[str],
     fetch_all: bool = False, include_statements: bool = False, force_update: bool = False
 ) -> bool:
-    """
-    Holt Wikidata-Statements für eine Entity-URI über SPARQL.
-    Nutzt die übergebene effective_properties für den Whitelist-Modus.
-    """
     canonical = _normalize_wikidata_uri(str(uri))
     if canonical:
         uri = canonical
@@ -968,9 +1051,7 @@ def fetch_wikidata_statements(
     return changed
 
 
-# ─────────────────────────────────────────────────────────────────────
-# JSON-LD about-Referenz-Auflösung
-# ─────────────────────────────────────────────────────────────────────
+# ── JSON-LD about-Referenz-Auflösung ──
 
 def _is_id_only_about(about_obj: dict | str) -> str | None:
     if isinstance(about_obj, str):
@@ -988,7 +1069,6 @@ def _is_id_only_about(about_obj: dict | str) -> str | None:
     if id_value.startswith(('http://', 'https://')):
         return id_value
     return None
-
 
 def _collect_id_only_abouts(obj: dict | list | str, collected: set[str]) -> None:
     if isinstance(obj, list):
@@ -1022,7 +1102,6 @@ def _collect_id_only_abouts(obj: dict | list | str, collected: set[str]) -> None
         if isinstance(value, (dict, list)):
             _collect_id_only_abouts(value, collected)
 
-
 def _extract_jsonld_from_response(response_text: str, url: str) -> list[dict]:
     try:
         data = json.loads(response_text)
@@ -1048,12 +1127,10 @@ def _extract_jsonld_from_response(response_text: str, url: str) -> list[dict]:
             pass
     return results
 
-
 def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
     getty_url = _resolve_getty_aat_url(url)
     if getty_url:
         logger.info(f"    Erkannt als getty-aat: {url}")
-        logger.info(f"    → JSON-LD Endpunkt: {getty_url}")
         headers = dict(ABOUT_FETCH_HEADERS)
         headers['Accept'] = 'application/ld+json, application/json;q=0.9'
         try:
@@ -1066,7 +1143,6 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
                 return g
         except Exception as e:
             logger.debug(f"    Getty-AAT-Abruf fehlgeschlagen: {e}")
-
     try:
         resp = requests.get(url, headers=ABOUT_FETCH_HEADERS,
                             timeout=ABOUT_FETCH_TIMEOUT, allow_redirects=True)
@@ -1074,7 +1150,6 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
     except requests.exceptions.RequestException as e:
         logger.debug(f"  Fehler beim Abrufen von {url}: {e}")
         return None
-
     content_type = resp.headers.get('Content-Type', '').lower()
     if any(ct in content_type for ct in ('json', 'ld+json')):
         try:
@@ -1084,7 +1159,6 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
                 return g
         except Exception:
             pass
-
     jsonld_objects = _extract_jsonld_from_response(resp.text, url)
     if not jsonld_objects:
         return None
@@ -1098,7 +1172,6 @@ def _fetch_and_parse_jsonld_url(url: str) -> Graph | None:
         except Exception:
             pass
     return combined_graph if len(combined_graph) > 0 else None
-
 
 def _collect_linked_data_uris_from_graph(graph: Graph) -> tuple[set[str], set[str]]:
     wikidata_uris: set[str] = set()
@@ -1118,14 +1191,12 @@ def _collect_linked_data_uris_from_graph(graph: Graph) -> tuple[set[str], set[st
             getty_aat_uris.add(uri_str)
     return (wikidata_uris, getty_aat_uris)
 
-
 def _fetch_getty_uris_into_graph(getty_uris: set[str], target_graph: Graph) -> int:
     if not getty_uris:
         return 0
     needed = set()
     for uri_str in getty_uris:
-        uri_ref = URIRef(uri_str)
-        if not any(target_graph.objects(uri_ref, RDFS.label)):
+        if not any(target_graph.objects(URIRef(uri_str), RDFS.label)):
             needed.add(uri_str)
     if not needed:
         return 0
@@ -1146,10 +1217,8 @@ def _fetch_getty_uris_into_graph(getty_uris: set[str], target_graph: Graph) -> i
             g.parse(data=resp.text, format='json-ld')
             added = merge_graphs(target_graph, g)
             if added > 0:
-                logger.info(f"    ✓ {added} Triples hinzugefügt ({len(g)} gesamt)")
+                logger.info(f"    ✓ {added} Triples ({len(g)} gesamt)")
                 total_added += added
-            else:
-                logger.info(f"    ○ Bereits vorhanden")
         except Exception as e:
             logger.warning(f"    ✗ Fehler: {e}")
         time.sleep(INTER_QUERY_DELAY)
@@ -1157,76 +1226,57 @@ def _fetch_getty_uris_into_graph(getty_uris: set[str], target_graph: Graph) -> i
         logger.info(f"  → {total_added} Getty-AAT-Triples hinzugefügt")
     return total_added
 
-
 def resolve_about_references(
     raw_json: dict | list, schema_graph: Graph
 ) -> tuple[Graph, set[str]]:
     id_only_urls: set[str] = set()
     _collect_id_only_abouts(raw_json, id_only_urls)
-
     if not id_only_urls:
         logger.info("About-Auflösung: Keine @id-only about-Referenzen gefunden.")
         wd_uris, getty_uris = _collect_linked_data_uris_from_graph(schema_graph)
         _fetch_getty_uris_into_graph(getty_uris, schema_graph)
         return (schema_graph, wd_uris)
-
     wikidata_from_ids: set[str] = set()
     non_wikidata_urls: set[str] = set()
-
     for url in id_only_urls:
         canonical = _normalize_wikidata_uri(url)
         if canonical:
             wikidata_from_ids.add(canonical)
         else:
             non_wikidata_urls.add(url)
-
     parts = []
     if wikidata_from_ids:
         parts.append(f"{len(wikidata_from_ids)} Wikidata (→ SPARQL)")
     if non_wikidata_urls:
         parts.append(f"{len(non_wikidata_urls)} andere (→ JSON-LD)")
     logger.info(f"About-Auflösung: {len(id_only_urls)} @id-only URLs ({', '.join(parts)})")
-
     total_added = 0
     resolved = 0
     failed = 0
-
     for url in sorted(non_wikidata_urls):
         getty_url = _resolve_getty_aat_url(url)
         source_label = 'getty-aat' if getty_url else 'generisch'
         logger.info(f"  Löse auf [{source_label}]: {url}")
-
         fetched_graph = _fetch_and_parse_jsonld_url(url)
         if fetched_graph is None:
             logger.warning(f"  ✗ Konnte kein JSON-LD laden von: {url}")
             failed += 1
             continue
-
         added = merge_graphs(schema_graph, fetched_graph)
         if added > 0:
-            logger.info(f"  ✓ {added} Triples hinzugefügt von: {url} ({len(fetched_graph)} gesamt)")
+            logger.info(f"  ✓ {added} Triples von: {url} ({len(fetched_graph)} gesamt)")
             total_added += added
         else:
-            logger.info(f"  ○ Alle {len(fetched_graph)} Triples bereits vorhanden von: {url}")
+            logger.info(f"  ○ Bereits vorhanden von: {url}")
         resolved += 1
         time.sleep(INTER_QUERY_DELAY)
-
     if non_wikidata_urls:
-        logger.info(
-            f"About-Auflösung (Schritt 2): {resolved} aufgelöst, "
-            f"{failed} fehlgeschlagen, {total_added} Triples"
-        )
-
+        logger.info(f"About-Auflösung: {resolved} aufgelöst, {failed} fehlgeschlagen, {total_added} Triples")
     wd_uris_from_graph, getty_uris_from_graph = _collect_linked_data_uris_from_graph(schema_graph)
     all_wikidata_uris = wikidata_from_ids | wd_uris_from_graph
     _fetch_getty_uris_into_graph(getty_uris_from_graph, schema_graph)
-
     if all_wikidata_uris:
-        logger.info(
-            f"About-Auflösung: {len(all_wikidata_uris)} Wikidata-URIs gesamt "
-            f"(→ werden über SPARQL verarbeitet)"
-        )
-
+        logger.info(f"About-Auflösung: {len(all_wikidata_uris)} Wikidata-URIs (→ SPARQL)")
     return (schema_graph, all_wikidata_uris)
 
 
@@ -1261,7 +1311,6 @@ def load_schema_graph(input_source: str) -> tuple[Graph, dict | list | None]:
         logger.error(f"Parse-Fehler: {e}")
         sys.exit(1)
     return (g, raw_json)
-
 
 def extract_about_uris(schema_graph: Graph) -> list[URIRef]:
     blogs = (
@@ -1315,11 +1364,13 @@ def main():
     parser.add_argument("-s", "--statements", action="store_true",
                         help="Statement-Details (Qualifiers etc.). Impliziert -a.")
     parser.add_argument("-t", "--type-hierarchy", action="store_true",
-                        help="Löst P31→P279 Typ-Hierarchie auf bis zur Wurzelklasse.")
+                        help="Löst P31→P279 Typ-Hierarchie auf.")
     parser.add_argument("--hierarchy-depth", type=int, default=HIERARCHY_MAX_DEPTH, metavar="N",
-                        help=f"Max Tiefe Typ-Hierarchie (Standard: {HIERARCHY_MAX_DEPTH}). Nur mit -t.")
+                        help=f"Max Tiefe (Standard: {HIERARCHY_MAX_DEPTH}). Nur mit -t.")
     parser.add_argument("--no-identifiers", action="store_true",
                         help="Keine externen Identifier-Properties dynamisch laden.")
+    parser.add_argument("--no-classify", action="store_true",
+                        help="Keine Basisklassen-Klassifizierung (Person/Ort/...).")
     parser.add_argument("--force", action="store_true", help="Erzwingt Neu-Laden.")
     args = parser.parse_args()
 
@@ -1331,39 +1382,30 @@ def main():
     languages = parse_languages(args.languages)
     logger.info(f"Sprachen: {', '.join(languages)}")
 
-    # ── Effektive Property-Liste bestimmen ──
     include_identifiers = not args.no_identifiers and not args.fetch_all
     if args.fetch_all:
-        effective_properties = DEFAULT_PROPERTIES  # wird im -a Modus nicht genutzt
+        effective_properties = DEFAULT_PROPERTIES
         mode = "ALLE + Statements" if args.statements else "ALLE Properties"
     else:
         effective_properties = get_effective_properties(include_identifiers=include_identifiers)
         id_count = len(effective_properties) - len(DEFAULT_PROPERTIES)
-        mode = (
-            f"Kuratiert ({len(DEFAULT_PROPERTIES)} wdt: + "
-            f"{id_count} Identifier + "
-            f"{len(DEFAULT_KEEP_PREDICATES)} allgemeine)"
-        )
+        mode = f"Kuratiert ({len(DEFAULT_PROPERTIES)} + {id_count} Identifier + {len(DEFAULT_KEEP_PREDICATES)} allg.)"
 
     if args.type_hierarchy:
-        mode += f" + Typ-Hierarchie (max {args.hierarchy_depth} Ebenen)"
+        mode += f" + Typ-Hierarchie (max {args.hierarchy_depth})"
+    if not args.no_classify:
+        mode += " + Basisklassen"
     logger.info(f"Modus: {mode}")
 
     output_format = detect_rdf_format(args.output)
-
-    # ── Schritt 1: Schema-Graph komplett laden ──
     schema_graph, raw_json = load_schema_graph(args.input)
 
-    # ── Schritt 2: @id-only abouts auflösen ──
     extra_wikidata_uris: set[str] = set()
     if raw_json is not None:
         schema_graph, extra_wikidata_uris = resolve_about_references(raw_json, schema_graph)
-        if extra_wikidata_uris:
-            logger.info(f"Nach about-Auflösung: {len(schema_graph)} Triples im Schema-Graph")
 
-    # ── Schritt 3: about-URIs extrahieren ──
     about_uris = extract_about_uris(schema_graph)
-    logger.info(f"{len(about_uris)} 'about'-URIs aus Schema extrahiert.")
+    logger.info(f"{len(about_uris)} 'about'-URIs extrahiert.")
 
     existing_uri_strs = {str(u) for u in about_uris}
     added_wd_count = 0
@@ -1373,12 +1415,8 @@ def main():
             existing_uri_strs.add(wd_uri)
             added_wd_count += 1
     if added_wd_count > 0:
-        logger.info(
-            f"{added_wd_count} zusätzliche Wikidata-URIs aus about-Auflösung "
-            f"(Gesamt: {len(about_uris)} about-URIs)"
-        )
+        logger.info(f"{added_wd_count} zusätzliche Wikidata-URIs (Gesamt: {len(about_uris)})")
 
-    # ── Ergebnis-Graph vorbereiten ──
     result_graph = Graph()
     bind_standard_prefixes(result_graph)
     initial = 0
@@ -1403,7 +1441,6 @@ def main():
         return
 
     try:
-        # ── Schritt 4: Wikidata-Statements ──
         for i, uri in enumerate(about_uris, 1):
             if fetch_wikidata_statements(
                 uri, result_graph, i, len(about_uris),
@@ -1414,7 +1451,11 @@ def main():
             ):
                 modified = True
 
-        # ── Schritt 5: Typ-Hierarchie ──
+        # Basisklassen-Klassifizierung (nach Statements, damit P31-Daten da sind)
+        if not args.no_classify:
+            if classify_entities(about_uris, result_graph, languages):
+                modified = True
+
         if args.type_hierarchy:
             if resolve_type_hierarchies(
                 result_graph, about_uris, languages,
