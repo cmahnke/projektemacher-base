@@ -1,0 +1,17 @@
+{{- $labelLangs := slice "de" "en" -}}
+{{- $styleURIs := . -}}
+{{- if not (reflect.IsSlice $styleURIs) -}}
+  {{- errorf "[metadata/linked-art/style.json] label needs to be slice of style URIs" $styleURIs -}}
+{{- end -}}
+{{- $style := slice (dict "id" "http://vocab.getty.edu/aat/30001564" "type" "Type" "_label" "Style") -}}
+
+{{- $styles := slice -}}
+{{- range $uri := $styleURIs -}}
+  {{- range $labelLangs -}}
+    {{- $language := dict "_label" . "id" (printf "http://vocab.getty.edu/language/%s" .) "type" "Language" -}}
+    {{- $label := partial "metadata/linked-art/getty-label.html" (dict "uri" $uri "lang" .) -}}
+    {{- $styles = $styles | append (dict "type" "Type" "classified_as" $style "_label" $label "language" (slice $language)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $styles -}}

@@ -1,0 +1,80 @@
+{{- $uri := .uri -}}
+{{- $lang := .lang | default "de" -}}
+{{- $langURI := printf "http://vocab.getty.edu/language/%s" $lang -}}
+{{- $fallbackLangURI := "http://vocab.getty.edu/language/en" -}}
+{{- $label := "" -}}
+{{- $fallbackLabel := "" -}}
+{{- $descriptorURI := "http://vocab.getty.edu/term/type/Descriptor" -}}
+{{- $langURIprefix := "http://vocab.getty.edu/language/" -}}
+
+{{ $opts := dict
+  "headers" (dict "Accept" "*/*")
+}}
+
+{{- $jsonURL := printf "%s.jsonld" $uri -}}
+
+{{- with try (resources.GetRemote $jsonURL $opts) -}}
+  {{- with .Err -}}
+    {{- errorf "[metadata/linked-art/getty-label.json] Can't get Getty item %s: %s" $jsonURL .Err -}}
+  {{ else with .Value }}
+    {{- $data := . | transform.Unmarshal (dict "format" "json") -}}
+    {{- range $data.identified_by -}}
+      {{- if eq .type "Name" -}}
+
+        {{- $thisLangURI := "" -}}
+        {{- with .language -}}
+          {{- range . -}}
+            {{- $thisLangURI = .id -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $isDescriptor := false -}}
+        {{- with .classified_as -}}
+          {{- range . -}}
+            {{- if eq .id $descriptorURI -}}
+              {{- $isDescriptor = true -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- if eq $thisLangURI $langURI -}}
+          {{- if $isDescriptor -}}
+            {{- $label = .content -}}
+          {{- else if not $label -}}
+            {{- $label = .content -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- if eq $thisLangURI $fallbackLangURI -}}
+          {{- if $isDescriptor -}}
+            {{- $fallbackLabel = .content -}}
+          {{- else if not $fallbackLabel -}}
+            {{- $fallbackLabel = .content -}}
+          {{- end -}}
+        {{- end -}}
+
+      {{- end -}}
+    {{- end -}}
+
+    {{- if not $label -}}
+      {{- if $fallbackLabel -}}
+        {{- $label = $fallbackLabel -}}
+      {{- else -}}
+        {{- with $data._label -}}
+          {{- $label = . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $label -}}
+  {{- . -}}
+{{- else -}}
+  {{- with $fallbackLabel -}}
+    {{- . -}}
+  {{- else -}}
+    {{- warnf "Kein Label gefunden für: %s" $uri -}}
+    {{- $uri -}}
+  {{- end -}}
+{{- end -}}

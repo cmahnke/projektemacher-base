@@ -67,6 +67,18 @@
     {{- $producedBy = $producedBy | merge (dict "timespan" $timespan) -}}
   {{- end -}}
 
+  {{- with .description -}}
+    {{- $descriptions := dict -}}
+    {{- range $page.AllTranslations -}}
+      {{- $translatedPage := . -}}
+      {{- with .Params.linkedart.description -}}
+        {{- $descriptions = $descriptions | merge (dict $translatedPage.Language.Name . ) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $desc := partial "metadata/linked-art/description.json" $descriptions }} -}}
+    {{- $linkedArt = $linkedArt | merge (dict "referred_to_by" $desc) -}}
+  {{- end -}}
+
   {{- $actor := dict "type" "Person" -}}
   {{- $wikidataID := "" -}}
   {{- with .artist -}}
@@ -97,8 +109,15 @@
   {{- end -}}
   {{- $linkedArt = $linkedArt | merge (dict "produced_by" $producedBy) -}}
 
-  {{- if gt ($classification | len) 0 -}}
-    {{- $linkedArt = $linkedArt | merge (dict "classified_as" $classification) -}}
+  {{- $topLevelClassifications := $classification -}}
+
+  {{- with .style -}}
+    {{- $styles := partial "metadata/linked-art/style.json" . }} -}}
+    {{- $topLevelClassifications = $topLevelClassifications | append $styles -}}
+  {{- end -}}
+
+  {{- if gt ($topLevelClassifications | len) 0 -}}
+    {{- $linkedArt = $linkedArt | merge (dict "classified_as" $topLevelClassifications) -}}
   {{- end -}}
 
   {{- $representations := slice -}}

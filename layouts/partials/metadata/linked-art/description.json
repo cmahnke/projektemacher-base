@@ -1,0 +1,17 @@
+{{- $labelLangs := slice "de" "en" -}}
+{{- $labels := . -}}
+{{- if or (not (reflect.IsMap $labels)) (lt (len $labels) 1) -}}
+  {{- errorf "[metadata/linked-art/description.json] label needs to be map of language and text" $labels -}}
+{{- end -}}
+{{- $briefText := slice (dict "id" "http://vocab.getty.edu/aat/300418049" "type" "Type" "_label" "Brief Text") -}}
+{{- $description := slice (dict "id" "http://vocab.getty.edu/aat/300435416" "type" "Type" "_label" "Description" "classified_as" $briefText) -}}
+
+{{- $descriptions := slice -}}
+{{- range $lang, $label := $labels -}}
+  {{- $language := dict "_label" $lang "id" (printf "http://vocab.getty.edu/language/%s" $lang) "type" "Language" -}}
+  {{- $descriptions = $descriptions | append (dict "type" "LinguisticObject" "classified_as" $description "content" $label "language" (slice $language)) -}}
+{{- end -}}
+{{/*
+{{ errorf "==> %d %s %s" (len $labels) ($labels | jsonify) ($description | jsonify) }}
+*/}}
+{{- return $descriptions -}}
