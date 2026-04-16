@@ -52,6 +52,21 @@
   {{- end -}}
 
   {{- $producedBy := dict "type" "Production" -}}
+  {{- $date := dict -}}
+  {{- with .date -}}
+    {{- $year := int . -}}
+    {{/* This is needed to check if the string is valid */}}
+    {{- $beginStr := printf "%04d-01-01T00:00:00Z" $year -}}
+    {{- $endStr := printf "%04d-12-31T23:59:59Z" $year -}}
+    {{- $beginDate := time $beginStr -}}
+    {{- $endDate := time $endStr -}}
+    {{- $timespan := dict "type" "TimeSpan" "_label" .
+        "begin_of_the_begin" ($beginDate.Format "2006-01-02T15:04:05Z")
+        "end_of_the_end" ($endDate.Format "2006-01-02T15:04:05Z")
+    -}}
+    {{- $producedBy = $producedBy | merge (dict "timespan" $timespan) -}}
+  {{- end -}}
+
   {{- $actor := dict "type" "Person" -}}
   {{- $wikidataID := "" -}}
   {{- with .artist -}}
