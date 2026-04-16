@@ -3,7 +3,7 @@
 {{- $labelLangs := slice "de" "en" -}}
 {{- $anonymousWikidata := "http://www.wikidata.org/entity/Q4233718" -}}
 {{- $anonymousLabel := "anonymous" -}}
-{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" "Visualisation" -}}
+{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" "Visualisation" "ArtBrut" -}}
 {{- $tagsWikidata := slice -}}
 {{- range $tag := $.Params.tags -}}
   {{- if and (ne $tag "") (not (in $ignoreTags $tag)) -}}
