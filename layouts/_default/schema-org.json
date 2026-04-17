@@ -1,12 +1,13 @@
 {{- $pages := where .Site.RegularPages "Params.displayinlist" "!=" false -}}
 
 {{- $section := "post" -}}
-{{- $type := "Blog" -}}
+{{- $blogType := "Blog" -}}
+{{- $topType := "WebSite" -}}
 {{- if isset "section" .Params -}}
   {{- $section = .Params.section -}}
 {{- end -}}
 {{- if isset "type" .Params -}}
-  {{- $type = .Params.type -}}
+  {{- $blogType = .Params.type -}}
 {{- end -}}
 
 {{- $pages = where $pages "Section" $section -}}
@@ -39,8 +40,15 @@
   {{- end -}}
 {{- end -}}
 
-{{- $blog := dict "@context" "https://schema.org/" "@type" $type
-  "author" (transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .))
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- $blog := dict "@context" "https://schema.org/" "@type" $blogType
+  "author" $author
   "blogPost" $pageList "@id" $siteURL "mainEntityOfPage" $siteURL "name" $name -}}
 
-{{- $blog | jsonify -}}
+{{- $hasPart := slice $blog -}}
+
+
+
+{{- $website := dict "@context" "https://schema.org/" "@type" $topType "hasPart" $hasPart "author" $author "name" site.Title "url" site.BaseURL -}}
+
+{{- $website | jsonify -}}
