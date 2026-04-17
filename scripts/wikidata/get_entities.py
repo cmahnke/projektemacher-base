@@ -65,164 +65,164 @@ NAMESPACE_PREFIXES = {
 }
 
 DEFAULT_PROPERTIES = {
-// --- Klassifikation & Struktur ---
-'P31',   // ist ein(e) – Instanz von (z.B. "ist ein Mensch")
-'P279',  // Unterklasse von
-'P361',  // Teil von
-'P527',  // besteht aus / hat Teil
-'P1552', // hat Merkmal
-'P910',  // Hauptkategorie (Wikipedia-Kategorie des Artikels)
-'P1269', // Aspekt von
+# --- Klassifikation & Struktur ---
+'P31',   # ist ein(e) – Instanz von (z.B. "ist ein Mensch")
+'P279',  # Unterklasse von
+'P361',  # Teil von
+'P527',  # besteht aus / hat Teil
+'P1552', # hat Merkmal
+'P910',  # Hauptkategorie (Wikipedia-Kategorie des Artikels)
+'P1269', # Aspekt von
 
-// --- Namen & Bezeichnungen ---
-'P1448', // offizieller Name
-'P1449', // Spitzname
-'P1559', // Name in Landessprache
-'P1705', // Eigenbezeichnung (autonym)
-'P742',  // Pseudonym
-'P735',  // Vorname
-'P734',  // Nachname
-'P1477', // Geburtsname
-'P2561', // Name
-'P1476', // Titel (eines Werks)
-'P1680', // Untertitel
-'P528',  // Katalognummer
-'P1813', // Kurzname / Abkürzung
-'P2562', // Verheiratungsname
+# --- Namen & Bezeichnungen ---
+'P1448', # offizieller Name
+'P1449', # Spitzname
+'P1559', # Name in Landessprache
+'P1705', # Eigenbezeichnung (autonym)
+'P742',  # Pseudonym
+'P735',  # Vorname
+'P734',  # Nachname
+'P1477', # Geburtsname
+'P2561', # Name
+'P1476', # Titel (eines Werks)
+'P1680', # Untertitel
+'P528',  # Katalognummer
+'P1813', # Kurzname / Abkürzung
+'P2562', # Verheiratungsname
 
-// --- Quellen & Nachweise ---
-'P1343', // beschrieben in
-'P973',  // beschrieben unter URL
-'P935',  // Commons-Galerie
-'P373',  // Commons-Kategorie
+# --- Quellen & Nachweise ---
+'P1343', # beschrieben in
+'P973',  # beschrieben unter URL
+'P935',  # Commons-Galerie
+'P373',  # Commons-Kategorie
 
-// --- Geografie & Lage ---
-'P625',  // geografische Koordinaten
-'P17',   // Staat / Land
-'P131',  // liegt in (Verwaltungseinheit)
-'P36',   // Hauptstadt
-'P150',  // enthält Verwaltungseinheit
-'P30',   // Kontinent
-'P206',  // liegt am Gewässer
-'P421',  // Zeitzone
-'P47',   // grenzt an
-'P706',  // liegt auf geologischem Objekt
-'P1376', // Hauptstadt von
-'P276',  // Standort / Aufbewahrungsort
-'P291',  // Erscheinungsort
-'P840',  // Handlungsort (Fiktion)
-'P937',  // Wirkungsort
-'P551',  // Wohnort
+# --- Geografie & Lage ---
+'P625',  # geografische Koordinaten
+'P17',   # Staat / Land
+'P131',  # liegt in (Verwaltungseinheit)
+'P36',   # Hauptstadt
+'P150',  # enthält Verwaltungseinheit
+'P30',   # Kontinent
+'P206',  # liegt am Gewässer
+'P421',  # Zeitzone
+'P47',   # grenzt an
+'P706',  # liegt auf geologischem Objekt
+'P1376', # Hauptstadt von
+'P276',  # Standort / Aufbewahrungsort
+'P291',  # Erscheinungsort
+'P840',  # Handlungsort (Fiktion)
+'P937',  # Wirkungsort
+'P551',  # Wohnort
 
-// --- Datum & Zeit ---
-'P571',  // Gründungsdatum / Entstehungsdatum
-'P576',  // Auflösungsdatum
-'P580',  // Beginn (allgemein)
-'P582',  // Ende (allgemein)
-'P585',  // Zeitpunkt (Einzelereignis)
-'P569',  // Geburtsdatum
-'P570',  // Sterbedatum
-'P577',  // Veröffentlichungsdatum
-'P1319', // frühestes Datum
-'P1326', // spätestes Datum
+# --- Datum & Zeit ---
+'P571',  # Gründungsdatum / Entstehungsdatum
+'P576',  # Auflösungsdatum
+'P580',  # Beginn (allgemein)
+'P582',  # Ende (allgemein)
+'P585',  # Zeitpunkt (Einzelereignis)
+'P569',  # Geburtsdatum
+'P570',  # Sterbedatum
+'P577',  # Veröffentlichungsdatum
+'P1319', # frühestes Datum
+'P1326', # spätestes Datum
 
-// --- Person: Biografie ---
-'P21',   // Geschlecht
-'P27',   // Staatsangehörigkeit
-'P19',   // Geburtsort
-'P20',   // Sterbeort
-'P106',  // Beruf / Tätigkeit
-'P39',   // Amt / Funktion
-'P69',   // Bildungseinrichtung (besucht)
-'P108',  // Arbeitgeber
-'P22',   // Vater
-'P25',   // Mutter
-'P26',   // Ehepartner
-'P40',   // Kind
-'P3373', // Geschwister
-'P184',  // Doktorvater
-'P1066', // Lehrer / akademischer Betreuer
-'P737',  // beeinflusst von
-'P1412', // verwendete Sprachen
-'P103',  // Muttersprache
-'P140',  // Religion / Weltanschauung
-'P172',  // ethnische Zugehörigkeit
-'P119',  // Begräbnisstätte
-'P463',  // Mitglied von (Organisation)
-'P241',  // Militäreinheit / Truppenteil
+# --- Person: Biografie ---
+'P21',   # Geschlecht
+'P27',   # Staatsangehörigkeit
+'P19',   # Geburtsort
+'P20',   # Sterbeort
+'P106',  # Beruf / Tätigkeit
+'P39',   # Amt / Funktion
+'P69',   # Bildungseinrichtung (besucht)
+'P108',  # Arbeitgeber
+'P22',   # Vater
+'P25',   # Mutter
+'P26',   # Ehepartner
+'P40',   # Kind
+'P3373', # Geschwister
+'P184',  # Doktorvater
+'P1066', # Lehrer / akademischer Betreuer
+'P737',  # beeinflusst von
+'P1412', # verwendete Sprachen
+'P103',  # Muttersprache
+'P140',  # Religion / Weltanschauung
+'P172',  # ethnische Zugehörigkeit
+'P119',  # Begräbnisstätte
+'P463',  # Mitglied von (Organisation)
+'P241',  # Militäreinheit / Truppenteil
 
-// --- Person: Auszeichnungen ---
-'P166',  // Auszeichnung / Preis
-'P1411', // nominiert für
-'P511',  // Ausgezeichnet mit (Ehrung)
-'P1035', // Ehrung
-'P1971', // Anzahl der Kinder
+# --- Person: Auszeichnungen ---
+'P166',  # Auszeichnung / Preis
+'P1411', # nominiert für
+'P511',  # Ausgezeichnet mit (Ehrung)
+'P1035', # Ehrung
+'P1971', # Anzahl der Kinder
 
-// --- Organisation ---
-'P112',  // Gründer
-'P159',  // Hauptsitz
-'P169',  // Vorstandsvorsitzender / CEO
-'P488',  // Vorsitzender
-'P127',  // Eigentümer
-'P355',  // Tochtergesellschaft
-'P749',  // Mutterorganisation
-'P452',  // Branche / Industriezweig
-'P1128', // Anzahl der Mitarbeiter
-'P1454', // Rechtsform
-'P740',  // Gründungsort
+# --- Organisation ---
+'P112',  # Gründer
+'P159',  # Hauptsitz
+'P169',  # Vorstandsvorsitzender / CEO
+'P488',  # Vorsitzender
+'P127',  # Eigentümer
+'P355',  # Tochtergesellschaft
+'P749',  # Mutterorganisation
+'P452',  # Branche / Industriezweig
+'P1128', # Anzahl der Mitarbeiter
+'P1454', # Rechtsform
+'P740',  # Gründungsort
 
-// --- Werk: Autorschaft & Produktion ---
-'P50',   // Autor / Verfasser
-'P57',   // Regisseur
-'P86',   // Komponist
-'P170',  // Schöpfer / Urheber
-'P175',  // ausführender Künstler / Interpret
-'P136',  // Genre
-'P364',  // Originalsprache
-'P495',  // Ursprungsland
-'P123',  // Verleger / Verlag
-'P407',  // Sprache des Werks
-'P921',  // Hauptthema
-'P144',  // basiert auf
-'P747',  // hat Edition / Ausgabe
-'P1433', // veröffentlicht in (Zeitschrift/Sammelband)
-'P655',  // Übersetzer
+# --- Werk: Autorschaft & Produktion ---
+'P50',   # Autor / Verfasser
+'P57',   # Regisseur
+'P86',   # Komponist
+'P170',  # Schöpfer / Urheber
+'P175',  # ausführender Künstler / Interpret
+'P136',  # Genre
+'P364',  # Originalsprache
+'P495',  # Ursprungsland
+'P123',  # Verleger / Verlag
+'P407',  # Sprache des Werks
+'P921',  # Hauptthema
+'P144',  # basiert auf
+'P747',  # hat Edition / Ausgabe
+'P1433', # veröffentlicht in (Zeitschrift/Sammelband)
+'P655',  # Übersetzer
 
-// --- Werk: Beteiligte ---
-'P58',   // Drehbuchautor
-'P162',  // Produzent
-'P161',  // Darsteller / Besetzung
-'P725',  // Sprecher (Stimme)
-'P676',  // Librettist
-'P264',  // Plattenfirma / Musiklabel
-'P449',  // Erstausstrahlung (Sender)
-'P750',  // vertrieben von
-'P272',  // Produktionsfirma
-'P179',  // Teil der Reihe / Serie
-'P155',  // folgt auf (Vorgänger)
-'P156',  // gefolgt von (Nachfolger)
-'P629',  // Ausgabe / Fassung von
-'P953',  // Volltext-URL
+# --- Werk: Beteiligte ---
+'P58',   # Drehbuchautor
+'P162',  # Produzent
+'P161',  # Darsteller / Besetzung
+'P725',  # Sprecher (Stimme)
+'P676',  # Librettist
+'P264',  # Plattenfirma / Musiklabel
+'P449',  # Erstausstrahlung (Sender)
+'P750',  # vertrieben von
+'P272',  # Produktionsfirma
+'P179',  # Teil der Reihe / Serie
+'P155',  # folgt auf (Vorgänger)
+'P156',  # gefolgt von (Nachfolger)
+'P629',  # Ausgabe / Fassung von
+'P953',  # Volltext-URL
 
-// --- Identifikatoren (Publikation) ---
-'P212',  // ISBN-13
-'P957',  // ISBN-10
-'P236',  // ISSN
-'P356',  // DOI
+# --- Identifikatoren (Publikation) ---
+'P212',  # ISBN-13
+'P957',  # ISBN-10
+'P236',  # ISSN
+'P356',  # DOI
 
-// --- Relationen zwischen Artikeln ---
-'P460',  // gleichbedeutend mit / Synonym
-'P1889', // unterschieden von (Disambiguierung)
-'P2860', // zitiert (wissenschaftliche Arbeit)
-'P3342', // bedeutende Person (in Zusammenhang mit)
+# --- Relationen zwischen Artikeln ---
+'P460',  # gleichbedeutend mit / Synonym
+'P1889', # unterschieden von (Disambiguierung)
+'P2860', # zitiert (wissenschaftliche Arbeit)
+'P3342', # bedeutende Person (in Zusammenhang mit)
 
-// --- Maße & Statistiken ---
-'P1082', // Einwohnerzahl
-'P2046', // Fläche
-'P2044', // Höhe über Meeresspiegel
-'P2048', // Höhe (Objekt)
-'P2049', // Breite (Objekt)
-'P2067', // Masse / Gewicht
+# --- Maße & Statistiken ---
+'P1082', # Einwohnerzahl
+'P2046', # Fläche
+'P2044', # Höhe über Meeresspiegel
+'P2048', # Höhe (Objekt)
+'P2049', # Breite (Objekt)
+'P2067', # Masse / Gewicht
 }
 
 _identifier_properties_cache: set[str] | None = None
