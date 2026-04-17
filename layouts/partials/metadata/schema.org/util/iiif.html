@@ -1,0 +1,20 @@
+{{- $viewerURLPrefix := "https://tify.rocks/?manifest=" -}}
+
+{{- $url := (.OutputFormats.Get "iiif-manifest").Permalink -}}
+
+{{- $iiif := dict
+  "@type" "VisualArtwork"
+  "associatedMedia" (dict "@type" "ImageObject" "name" "IIIF Manifest" "contentUrl" $url "encodingFormat" "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"")
+  "potentialAction" (dict "@type" "ViewAction" "name" "Im Viewer öffnen" "target" (printf "%s%s" $viewerURLPrefix $url))
+-}}
+
+{{/*
+{{- with .Title -}}
+  {{- $iiif = $iiif | merge (dict "name" .) -}}
+{{- end -}}
+{{- with .Description -}}
+  {{- $iiif = $iiif | merge (dict "description" .) -}}
+{{- end -}}
+*/}}
+
+{{- $iiif | jsonify -}}

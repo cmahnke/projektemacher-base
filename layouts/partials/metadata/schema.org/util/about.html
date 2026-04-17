@@ -1,6 +1,7 @@
 {{- $defaultRelation := "related" -}}
 {{- $entityBase := "http://www.wikidata.org/entity/" -}}
 
+{{- $page := . -}}
 {{- $entries := dict -}}
 {{- $contents := slice $ -}}
 {{- $about := slice -}}
@@ -100,6 +101,10 @@
 {{- end -}}
 {{- with .OutputFormats.Get "linkedart" -}}
   {{- $about = $about | append (dict "@id" .Permalink) -}}
+{{- end -}}
+
+{{- with .OutputFormats.Get "iiif-manifest" -}}
+  {{- $about = $about | append (partial "metadata/schema.org/util/iiif.html" $page | transform.Unmarshal (dict "format" "json")) -}}
 {{- end -}}
 
 {{- $about | jsonify -}}

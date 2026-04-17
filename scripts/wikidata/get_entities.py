@@ -36,6 +36,15 @@ WIKIBASE = Namespace("http://wikiba.se/ontology#")
 WDQS = Namespace("http://wikiba.se/queryService#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 WDNO = Namespace("http://www.wikidata.org/prop/novalue/")
+CRM = Namespace("http://www.cidoc-crm.org/cidoc-crm/")
+IIIF_PREZI = Namespace("http://iiif.io/api/presentation/3#")
+IIIF_IMAGE = Namespace("http://iiif.io/api/image/3#")
+EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
+OA = Namespace("http://www.w3.org/ns/oa#")
+DC = Namespace("http://purl.org/dc/elements/1.1/")
+DCTERMS = Namespace("http://purl.org/dc/terms/")
+DCTYPES = Namespace("http://purl.org/dc/dcmitype/")
+
 ENRICHMENT = Namespace("urn:enrichment:")
 
 NAMESPACE_PREFIXES = {
@@ -47,6 +56,10 @@ NAMESPACE_PREFIXES = {
     'wdref': WDREF, 'wdv': WDVALUE,
     'wikibase': WIKIBASE, 'wdqs': WDQS,
     'prov': PROV, 'wdno': WDNO,
+    'crm': CRM, 'iiif-prezi': IIIF_PREZI,
+    'iiif-image': IIIF_IMAGE, 'exif': EXIF,
+    'oa': OA, 'dc': DC, 'dcterms': DCTERMS,
+    'dcTypes': DCTYPES,
     'skos': SKOS, 'owl': OWL, 'rdfs': RDFS, 'rdf': RDF,
     'xsd': XSD_NS, 'enrichment': ENRICHMENT,
 }
