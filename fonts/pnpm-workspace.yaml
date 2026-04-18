@@ -1,2 +1,4 @@
 blockExoticSubdeps: false
 ignoreScripts: false
+packages:
+  - .
