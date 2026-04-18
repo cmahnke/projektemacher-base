@@ -1,4 +1,1 @@
-blockExoticSubdeps: false
-ignoreScripts: false
-packages:
-  - .
+../pnpm-workspace.yaml
