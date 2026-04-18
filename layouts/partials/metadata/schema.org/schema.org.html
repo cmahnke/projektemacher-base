@@ -18,6 +18,6 @@
   {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
     {{- partial $schemaTemplate . -}}
   {{- else if $debug -}}
-    {{- warnf "[data/schema.org.html] Can't find %s" $schemaTemplate -}}
+    {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $schemaTemplate -}}
   {{- end -}}
 {{- end -}}

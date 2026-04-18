@@ -3,7 +3,7 @@
 {{- $labelLangs := slice "de" "en" -}}
 {{- $anonymousWikidata := "http://www.wikidata.org/entity/Q4233718" -}}
 {{- $anonymousLabel := "anonymous" -}}
-{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" "Visualisation" -}}
+{{- $ignoreTags := slice  "Art" "Christmas" "ClimateChange" "Visualisation" "ArtBrut" -}}
 {{- $tagsWikidata := slice -}}
 {{- range $tag := $.Params.tags -}}
   {{- if and (ne $tag "") (not (in $ignoreTags $tag)) -}}
@@ -52,6 +52,33 @@
   {{- end -}}
 
   {{- $producedBy := dict "type" "Production" -}}
+  {{- $date := dict -}}
+  {{- with .date -}}
+    {{- $year := int . -}}
+    {{/* This is needed to check if the string is valid */}}
+    {{- $beginStr := printf "%04d-01-01T00:00:00Z" $year -}}
+    {{- $endStr := printf "%04d-12-31T23:59:59Z" $year -}}
+    {{- $beginDate := time $beginStr -}}
+    {{- $endDate := time $endStr -}}
+    {{- $timespan := dict "type" "TimeSpan" "_label" .
+        "begin_of_the_begin" ($beginDate.Format "2006-01-02T15:04:05Z")
+        "end_of_the_end" ($endDate.Format "2006-01-02T15:04:05Z")
+    -}}
+    {{- $producedBy = $producedBy | merge (dict "timespan" $timespan) -}}
+  {{- end -}}
+
+  {{- with .description -}}
+    {{- $descriptions := dict -}}
+    {{- range $page.AllTranslations -}}
+      {{- $translatedPage := . -}}
+      {{- with .Params.linkedart.description -}}
+        {{- $descriptions = $descriptions | merge (dict $translatedPage.Language.Name . ) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $desc := partial "metadata/linked-art/description.json" $descriptions }} -}}
+    {{- $linkedArt = $linkedArt | merge (dict "referred_to_by" $desc) -}}
+  {{- end -}}
+
   {{- $actor := dict "type" "Person" -}}
   {{- $wikidataID := "" -}}
   {{- with .artist -}}
@@ -82,8 +109,15 @@
   {{- end -}}
   {{- $linkedArt = $linkedArt | merge (dict "produced_by" $producedBy) -}}
 
-  {{- if gt ($classification | len) 0 -}}
-    {{- $linkedArt = $linkedArt | merge (dict "classified_as" $classification) -}}
+  {{- $topLevelClassifications := $classification -}}
+
+  {{- with .style -}}
+    {{- $styles := partial "metadata/linked-art/style.json" . }} -}}
+    {{- $topLevelClassifications = $topLevelClassifications | append $styles -}}
+  {{- end -}}
+
+  {{- if gt ($topLevelClassifications | len) 0 -}}
+    {{- $linkedArt = $linkedArt | merge (dict "classified_as" $topLevelClassifications) -}}
   {{- end -}}
 
   {{- $representations := slice -}}

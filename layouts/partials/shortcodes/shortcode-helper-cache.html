@@ -90,6 +90,19 @@
 
 {{- if $debug -}}
   {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Returning shortcode metadata cache %#v" $includes -}}
+  {{- range $shorcode, $include := $includes -}}
+    {{range $type := slice "js" "scss" "css" -}}
+      {{- if (isset $include $type) -}}
+        {{- range (index $include $type) -}}
+          {{- if hasPrefix . "http" -}}
+            {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Shortcode %s requires external %s file %s" $shorcode $type . -}}
+          {{- else if not (fileExists (printf "assets/%s" .)) -}}
+            {{- errorf "[partials/shortcodes/shortcode-helper-cache.html] Shortcode %s requires missing file %s" $shorcode . -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{/* Return a JSON containing all shortcodes and their required includes */}}
 {{- $includes | jsonify }}

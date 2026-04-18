@@ -36,6 +36,15 @@ WIKIBASE = Namespace("http://wikiba.se/ontology#")
 WDQS = Namespace("http://wikiba.se/queryService#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 WDNO = Namespace("http://www.wikidata.org/prop/novalue/")
+CRM = Namespace("http://www.cidoc-crm.org/cidoc-crm/")
+IIIF_PREZI = Namespace("http://iiif.io/api/presentation/3#")
+IIIF_IMAGE = Namespace("http://iiif.io/api/image/3#")
+EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
+OA = Namespace("http://www.w3.org/ns/oa#")
+DC = Namespace("http://purl.org/dc/elements/1.1/")
+DCTERMS = Namespace("http://purl.org/dc/terms/")
+DCTYPES = Namespace("http://purl.org/dc/dcmitype/")
+
 ENRICHMENT = Namespace("urn:enrichment:")
 
 NAMESPACE_PREFIXES = {
@@ -47,37 +56,173 @@ NAMESPACE_PREFIXES = {
     'wdref': WDREF, 'wdv': WDVALUE,
     'wikibase': WIKIBASE, 'wdqs': WDQS,
     'prov': PROV, 'wdno': WDNO,
+    'crm': CRM, 'iiif-prezi': IIIF_PREZI,
+    'iiif-image': IIIF_IMAGE, 'exif': EXIF,
+    'oa': OA, 'dc': DC, 'dcterms': DCTERMS,
+    'dcTypes': DCTYPES,
     'skos': SKOS, 'owl': OWL, 'rdfs': RDFS, 'rdf': RDF,
     'xsd': XSD_NS, 'enrichment': ENRICHMENT,
 }
 
 DEFAULT_PROPERTIES = {
-    'P31', 'P279', 'P361', 'P527', 'P1552', 'P910', 'P1269',
-    'P1448', 'P1449', 'P1559', 'P1705', 'P742', 'P735', 'P734',
-    'P1477', 'P2561', 'P1476', 'P1680', 'P528', 'P1813', 'P2562',
-    'P138', 'P97',
-    'P1343', 'P973', 'P935', 'P373',
-    'P18', 'P154', 'P242', 'P41', 'P94', 'P10', 'P51',
-    'P158', 'P948', 'P6802', 'P4291', 'P3451', 'P8517',
-    'P1442', 'P109',
-    'P625', 'P17', 'P131', 'P36', 'P150', 'P30', 'P206',
-    'P421', 'P47', 'P706', 'P1376', 'P276', 'P291', 'P840',
-    'P937', 'P551',
-    'P571', 'P576', 'P580', 'P582', 'P585', 'P569', 'P570',
-    'P577', 'P1319', 'P1326',
-    'P21', 'P27', 'P19', 'P20', 'P106', 'P39', 'P69', 'P108',
-    'P22', 'P25', 'P26', 'P40', 'P3373', 'P184', 'P1066', 'P737',
-    'P1412', 'P103', 'P140', 'P172', 'P119', 'P463', 'P241',
-    'P410', 'P166', 'P1411', 'P511', 'P1035', 'P1971',
-    'P112', 'P159', 'P169', 'P488', 'P127', 'P355', 'P749',
-    'P452', 'P1128', 'P1454', 'P740',
-    'P50', 'P57', 'P86', 'P170', 'P175', 'P136', 'P364', 'P495',
-    'P123', 'P407', 'P921', 'P144', 'P747', 'P1433', 'P655',
-    'P58', 'P162', 'P161', 'P725', 'P676', 'P264', 'P449',
-    'P750', 'P272', 'P179', 'P155', 'P156', 'P629', 'P953',
-    'P212', 'P957', 'P236', 'P356',
-    'P460', 'P1889', 'P2860', 'P3342',
-    'P1082', 'P2046', 'P2044', 'P2048', 'P2049', 'P2067',
+# --- Klassifikation & Struktur ---
+'P31',   # ist ein(e) – Instanz von (z.B. "ist ein Mensch")
+'P279',  # Unterklasse von
+'P361',  # Teil von
+'P527',  # besteht aus / hat Teil
+'P1552', # hat Merkmal
+'P910',  # Hauptkategorie (Wikipedia-Kategorie des Artikels)
+'P1269', # Aspekt von
+
+# --- Namen & Bezeichnungen ---
+'P1448', # offizieller Name
+'P1449', # Spitzname
+'P1559', # Name in Landessprache
+'P1705', # Eigenbezeichnung (autonym)
+'P742',  # Pseudonym
+'P735',  # Vorname
+'P734',  # Nachname
+'P1477', # Geburtsname
+'P2561', # Name
+'P1476', # Titel (eines Werks)
+'P1680', # Untertitel
+'P528',  # Katalognummer
+'P1813', # Kurzname / Abkürzung
+'P2562', # Verheiratungsname
+
+# --- Quellen & Nachweise ---
+'P1343', # beschrieben in
+'P973',  # beschrieben unter URL
+'P935',  # Commons-Galerie
+'P373',  # Commons-Kategorie
+
+# --- Geografie & Lage ---
+'P625',  # geografische Koordinaten
+'P17',   # Staat / Land
+'P131',  # liegt in (Verwaltungseinheit)
+'P36',   # Hauptstadt
+'P150',  # enthält Verwaltungseinheit
+'P30',   # Kontinent
+'P206',  # liegt am Gewässer
+'P421',  # Zeitzone
+'P47',   # grenzt an
+'P706',  # liegt auf geologischem Objekt
+'P1376', # Hauptstadt von
+'P276',  # Standort / Aufbewahrungsort
+'P291',  # Erscheinungsort
+'P840',  # Handlungsort (Fiktion)
+'P937',  # Wirkungsort
+'P551',  # Wohnort
+
+# --- Datum & Zeit ---
+'P571',  # Gründungsdatum / Entstehungsdatum
+'P576',  # Auflösungsdatum
+'P580',  # Beginn (allgemein)
+'P582',  # Ende (allgemein)
+'P585',  # Zeitpunkt (Einzelereignis)
+'P569',  # Geburtsdatum
+'P570',  # Sterbedatum
+'P577',  # Veröffentlichungsdatum
+'P1319', # frühestes Datum
+'P1326', # spätestes Datum
+
+# --- Person: Biografie ---
+'P21',   # Geschlecht
+'P27',   # Staatsangehörigkeit
+'P19',   # Geburtsort
+'P20',   # Sterbeort
+'P106',  # Beruf / Tätigkeit
+'P39',   # Amt / Funktion
+'P69',   # Bildungseinrichtung (besucht)
+'P108',  # Arbeitgeber
+'P22',   # Vater
+'P25',   # Mutter
+'P26',   # Ehepartner
+'P40',   # Kind
+'P3373', # Geschwister
+'P184',  # Doktorvater
+'P1066', # Lehrer / akademischer Betreuer
+'P737',  # beeinflusst von
+'P1412', # verwendete Sprachen
+'P103',  # Muttersprache
+'P140',  # Religion / Weltanschauung
+'P172',  # ethnische Zugehörigkeit
+'P119',  # Begräbnisstätte
+'P463',  # Mitglied von (Organisation)
+'P241',  # Militäreinheit / Truppenteil
+
+# --- Person: Auszeichnungen ---
+'P166',  # Auszeichnung / Preis
+'P1411', # nominiert für
+'P511',  # Ausgezeichnet mit (Ehrung)
+'P1035', # Ehrung
+'P1971', # Anzahl der Kinder
+
+# --- Organisation ---
+'P112',  # Gründer
+'P159',  # Hauptsitz
+'P169',  # Vorstandsvorsitzender / CEO
+'P488',  # Vorsitzender
+'P127',  # Eigentümer
+'P355',  # Tochtergesellschaft
+'P749',  # Mutterorganisation
+'P452',  # Branche / Industriezweig
+'P1128', # Anzahl der Mitarbeiter
+'P1454', # Rechtsform
+'P740',  # Gründungsort
+
+# --- Werk: Autorschaft & Produktion ---
+'P50',   # Autor / Verfasser
+'P57',   # Regisseur
+'P86',   # Komponist
+'P170',  # Schöpfer / Urheber
+'P175',  # ausführender Künstler / Interpret
+'P136',  # Genre
+'P364',  # Originalsprache
+'P495',  # Ursprungsland
+'P123',  # Verleger / Verlag
+'P407',  # Sprache des Werks
+'P921',  # Hauptthema
+'P144',  # basiert auf
+'P747',  # hat Edition / Ausgabe
+'P1433', # veröffentlicht in (Zeitschrift/Sammelband)
+'P655',  # Übersetzer
+
+# --- Werk: Beteiligte ---
+'P58',   # Drehbuchautor
+'P162',  # Produzent
+'P161',  # Darsteller / Besetzung
+'P725',  # Sprecher (Stimme)
+'P676',  # Librettist
+'P264',  # Plattenfirma / Musiklabel
+'P449',  # Erstausstrahlung (Sender)
+'P750',  # vertrieben von
+'P272',  # Produktionsfirma
+'P179',  # Teil der Reihe / Serie
+'P155',  # folgt auf (Vorgänger)
+'P156',  # gefolgt von (Nachfolger)
+'P629',  # Ausgabe / Fassung von
+'P953',  # Volltext-URL
+
+# --- Identifikatoren (Publikation) ---
+'P212',  # ISBN-13
+'P957',  # ISBN-10
+'P236',  # ISSN
+'P356',  # DOI
+
+# --- Relationen zwischen Artikeln ---
+'P460',  # gleichbedeutend mit / Synonym
+'P1889', # unterschieden von (Disambiguierung)
+'P2860', # zitiert (wissenschaftliche Arbeit)
+'P3342', # bedeutende Person (in Zusammenhang mit)
+
+# --- Maße & Statistiken ---
+'P1082', # Einwohnerzahl
+'P2046', # Fläche
+'P2044', # Höhe über Meeresspiegel
+'P2048', # Höhe (Objekt)
+'P2049', # Breite (Objekt)
+'P2067', # Masse / Gewicht
 }
 
 _identifier_properties_cache: set[str] | None = None
