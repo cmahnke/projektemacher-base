@@ -40,10 +40,12 @@
     "@fontsource/berkshire-swash": "^5.2.8",
     "@fontsource/bodoni-moda": "^5.2.7",
     "@fontsource/caprasimo": "^5.2.7",
+    "@fontsource/comic-relief": "^5.2.2",
     "@fontsource/cormorant": "^5.2.8",
     "@fontsource/cormorant-garamond": "^5.2.11",
     "@fontsource/courier-prime": "^5.2.8",
     "@fontsource/dejavu-mono": "5.2.5",
+    "@fontsource/geist-mono": "^5.2.7",
     "@fontsource/gfs-didot": "^5.2.8",
     "@fontsource/iceberg": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
@@ -56,8 +58,7 @@
     "@fontsource/roboto": "^5.2.10",
     "@fontsource/space-grotesk": "^5.2.10",
     "@fontsource/space-mono": "^5.2.9",
-    "@fontsource/special-elite": "^5.2.8",
-    "@fontsource/comic-relief": "^5.2.2"
+    "@fontsource/special-elite": "^5.2.8"
   },
   "devDependencies": {
     "@fontsource-utils/scss": "^0.2.2",
