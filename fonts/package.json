@@ -45,7 +45,7 @@
     "@fontsource/cormorant-garamond": "^5.2.11",
     "@fontsource/courier-prime": "^5.2.8",
     "@fontsource/dejavu-mono": "5.2.5",
-    "@fontsource/geist-mono": "^5.2.7",
+    "@fontsource-variable/geist-mono": "^5.2.7",
     "@fontsource/gfs-didot": "^5.2.8",
     "@fontsource/iceberg": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
