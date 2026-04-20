@@ -1,3 +1,5 @@
+{{- $linkedArtURISuffix := "#linkedart" -}}
+
 {{- $httpOptions := dict "headers" (dict "Accept" "application/ld+json") -}}
 {{- $iiifFullResolution := "/full/full/0/default.jpg" -}}
 {{- $labelLangs := slice "de" "en" -}}

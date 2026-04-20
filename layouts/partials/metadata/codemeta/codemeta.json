@@ -1,3 +1,5 @@
+{{- $codemetaURISuffix := "#codemeta" -}}
+
 {{- $cffFile := "CITATION.cff" -}}
 {{- with .Resources.Get $cffFile -}}
   {{- $cff := . | transform.Unmarshal (dict "format" "yaml") -}}
