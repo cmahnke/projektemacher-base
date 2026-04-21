@@ -11,6 +11,9 @@ from datetime import datetime
 from rdflib import Graph, URIRef, Namespace, Literal, XSD
 from rdflib.namespace import RDF, RDFS, OWL, SKOS, XSD as XSD_NS
 
+# TODO:
+# * check 'facet of' for broader instanceof resolution 
+
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -223,6 +226,9 @@ DEFAULT_PROPERTIES = {
 'P2048', # Höhe (Objekt)
 'P2049', # Breite (Objekt)
 'P2067', # Masse / Gewicht
+
+# --- Sonstiges ---
+'P2572', # Tag / Schlagwort
 }
 
 _identifier_properties_cache: set[str] | None = None
@@ -235,6 +241,8 @@ ENTITY_BASE_CLASSES = {
     'Q386724',    # work
     'Q15642541',  # human-geographic territorial entity
     'Q16334295',  # group of humans
+    'Q838948',   # form of art
+    'Q7397',      # software
 }
 CLASSIFY_BATCH_SIZE = 50
 
