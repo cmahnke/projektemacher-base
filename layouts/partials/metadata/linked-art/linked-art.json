@@ -85,6 +85,9 @@
   {{- $wikidataID := "" -}}
   {{- with .artist -}}
     {{- with .wikidata -}}
+      {{- if reflect.IsSlice . -}}
+        {{- errorf "[metadata/linked-art/linked-art.json] Invalid slice for author, use string: %#v" . -}}
+      {{- end -}}
       {{- $wikidataID = replaceRE `^.*/([^/]+)$` "$1" . -}}
       {{- $actor = $actor | merge (dict "id" (printf "http://www.wikidata.org/entity/%s" $wikidataID)) -}}
     {{- end -}}
