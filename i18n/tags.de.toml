@@ -322,6 +322,9 @@ other = "Film"
 [DigitalSovereignty]
 other = "Digital Sovereignty"
 
+[CyberSecurity]
+other = "IT-Sicherheit"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
