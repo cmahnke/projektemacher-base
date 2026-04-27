@@ -19,8 +19,15 @@
 {{- $includesSCSS := index $includes "scss" -}}
 
 {{- if and (len $includesCSS) (len $includesSCSS) $debug -}}
-    {{- warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink -}}
+  {{- warnf "[partials/html/head/style.html] '%s' includes SCSS and CSS!" $context.RelPermalink -}}
 {{- end -}}
+
+{{/*
+{{- if or (len $includesCSS) (len $includesSCSS) $debug -}}
+  {{- $stylesheets := delimit ($includesCSS | append $includesSCSS) ", " -}}
+  {{- warnf "[partials/html/head/style.html] '%s' includes SCSS or CSS! (%s)" $context.RelPermalink $stylesheets -}}
+{{- end -}}
+*/}}
 
 {{- $css := slice -}}
 {{- if isset . "css" -}}
