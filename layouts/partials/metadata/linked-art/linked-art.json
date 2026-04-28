@@ -214,6 +214,11 @@
     {{- $linkedArt = $linkedArt | merge (dict "subject_of" (slice $subjectOf)) -}}
   {{- end -}}
 
+  {{- with .references -}}
+    {{- $references := partial "metadata/linked-art/referenced_by.json" $page -}}
+    {{- $linkedArt = $linkedArt | merge (dict "referenced_by" $references) -}}
+  {{- end -}}
+
   {{- with .owner -}}
     {{- $owners := . -}}
     {{- if not (reflect.IsSlice .) -}}

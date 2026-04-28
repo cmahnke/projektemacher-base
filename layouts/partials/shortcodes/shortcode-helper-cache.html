@@ -96,7 +96,7 @@
         {{- range (index $include $type) -}}
           {{- if hasPrefix . "http" -}}
             {{- warnf "[partials/shortcodes/shortcode-helper-cache.html] Shortcode %s requires external %s file %s" $shorcode $type . -}}
-          {{- else if not (fileExists (printf "assets/%s" .)) -}}
+          {{- else if and (hugo.IsServer) (not (fileExists (printf "assets/%s" .))) -}}
             {{- errorf "[partials/shortcodes/shortcode-helper-cache.html] Shortcode %s requires missing file %s" $shorcode . -}}
           {{- end -}}
         {{- end -}}

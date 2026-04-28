@@ -1,0 +1,20 @@
+{{- $context := . -}}
+{{- $referencedBy := slice -}}
+{{- with .Params.linkedart.references -}}
+  {{- $references := . -}}
+  {{- if not (reflect.IsSlice $references) -}}
+    {{- errorf "[metadata/linked-art/referenced_by.json] References needs to be slice of dicts" $references -}}
+  {{- end -}}
+  {{- $classifiedAs := slice (dict "id" "http://vocab.getty.edu/aat/300435419" "type" "Type" "_label" "Bibliography") -}}
+  {{- $uriCounter := 1 -}}
+
+  {{- range $reference := $references -}}
+    {{- $uriSuffix := printf "#bibliography-%d" $uriCounter -}}
+    {{- $uri := printf "%s%s" ($context.OutputFormats.Get "html").Permalink $uriSuffix -}}
+    {{- $label := .label -}}
+    {{- $content := .content -}}
+    {{- $referencedBy = $referencedBy | append (dict "id" $uri "type" "LinguisticObject" "_label" $label "classified_as" $classifiedAs "content" $content "format" "text/plain") -}}
+    {{- $uriCounter = add $uriCounter 1 -}}
+  {{- end -}}
+{{- end -}}
+{{- return $referencedBy -}}

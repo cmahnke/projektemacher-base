@@ -6,6 +6,7 @@
     {{- $context = .context -}}
     {{- if (isset . "opts") -}}
       {{- $additionalOpts = .opts -}}
+      {{ warnf "[partials/html/head/page-script.html] Using additional JS Opts: %#v" $additionalOpts -}}
     {{- end -}}
 {{- end -}}
 
@@ -68,5 +69,11 @@
 
 
   {{- $mainJs = $mainJs | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
-  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+
+  {{- if and (isset . "opts") (isset .opts "format") (eq .opts.format "esm") -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
+  {{- else -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+  {{- end -}}
+
 {{- end -}}
