@@ -1,3 +1,4 @@
+{{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $target := .Destination -}}
 {{- if not site.Params.wikidata -}}
   <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
@@ -12,7 +13,9 @@
     {{- with site.Params.useragent -}}
       {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
     {{- end -}}
-
+    {{- if $debug -}}
+      {{- warnf "[_default/_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
+    {{- end -}}
     {{- with try (resources.GetRemote $queryURL $queryOpts) -}}
       {{- with .Err -}}
         {{- errorf "[_markup/render-link.html] Unable to get remote resource %s: %s" $queryURL . -}}
@@ -38,7 +41,7 @@
     {{- with site.Params.useragent -}}
       {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
     {{- end -}}
-    {{- $query := printf `SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
+    {{- $query := printf `PREFIX wikibase: <http://wikiba.se/ontology#> </http:>PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX bd: <http://www.bigdata.com/rdf#> SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
         ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
         OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
       }` $target -}}
