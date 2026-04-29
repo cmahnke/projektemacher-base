@@ -1,4 +1,8 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
+{{- $wikidataSPARQLEndpoint := "https://query.wikidata.org/sparql" -}}
+{{- with site.Params.wikidatasparqlendpoint -}}
+  {{- $wikidataSPARQLEndpoint = . -}}
+{{- end -}}
 {{- $target := .Destination -}}
 {{- if not site.Params.wikidata -}}
   <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>
@@ -32,7 +36,7 @@
       {{- end -}}
     {{- end -}}
   {{- else if hasPrefix $target "http" -}}
-    {{- $queryURL := "https://query.wikidata.org/sparql" -}}
+    {{- $queryURL := $wikidataSPARQLEndpoint -}}
     {{- $queryOpts := dict
       "method" "get"
       "headers" (dict "Accept" "application/sparql-results+json")
