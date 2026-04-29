@@ -1,4 +1,4 @@
-{{- $debug := partialCached "functions/debug/enabled.html" . -}}
+{{- $debug := partialCached "functions/debug/enabled.html" .Page -}}
 {{- $wikidataSPARQLEndpoint := "https://query.wikidata.org/sparql" -}}
 {{- with site.Params.wikidatasparqlendpoint -}}
   {{- $wikidataSPARQLEndpoint = . -}}
@@ -40,7 +40,6 @@
     {{- $queryOpts := dict
       "method" "get"
       "headers" (dict "Accept" "application/sparql-results+json")
-      "timeout" "120s"
     -}}
     {{- with site.Params.useragent -}}
       {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
