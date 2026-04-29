@@ -27,6 +27,9 @@
       "headers" (dict "Accept" "application/sparql-results+json")
       "timeout" "120s"
     -}}
+    {{- with site.Params.useragent -}}
+      {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
+    {{- end -}}
     {{- $query := printf `SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
         ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
         OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
