@@ -76,7 +76,7 @@
   {{- with $fallbackLabel -}}
     {{- . -}}
   {{- else -}}
-    {{- warnf "Kein Label gefunden für: %s" $uri -}}
+    {{- warnf "[metadata/linked-art/getty-label.json] No Label found for: %s (%s)" $uri $downloadURI -}}
     {{- $uri -}}
   {{- end -}}
 {{- end -}}
