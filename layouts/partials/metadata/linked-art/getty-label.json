@@ -1,4 +1,5 @@
 {{- $uri := .uri -}}
+{{- $gettyVocabServer := "http://data.getty.edu/vocab/" -}}
 {{- $lang := .lang | default "de" -}}
 {{- $langURI := printf "http://vocab.getty.edu/language/%s" $lang -}}
 {{- $fallbackLangURI := "http://vocab.getty.edu/language/en" -}}
@@ -10,8 +11,9 @@
 {{ $opts := dict
   "headers" (dict "Accept" "*/*")
 }}
+{{- $downloadURI := replace $uri "http://vocab.getty.edu/aat/" $gettyVocabServer -}}
 
-{{- $jsonURL := printf "%s.jsonld" $uri -}}
+{{- $jsonURL := printf "%s.jsonld" $downloadURI -}}
 
 {{- with try (resources.GetRemote $jsonURL $opts) -}}
   {{- with .Err -}}
