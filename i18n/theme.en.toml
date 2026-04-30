@@ -101,3 +101,7 @@ other = "Privacy policy"
 
 [relatedPosts]
 other = "Related posts"
+
+# Dates
+[updatedOn]
+other = "Updated on"
