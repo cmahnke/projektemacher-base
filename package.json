@@ -55,7 +55,7 @@
   "node-addon-api": "^8.7.0",
   "node-gyp": "^12.3.0",
   "obj2gltf": "^3.2.0",
-  "postcss": "^8.5.12",
+  "postcss": "^8.5.13",
   "postcss-cli": "^11.0.1",
   "postcss-discard-duplicates": "^7.0.3",
   "postcss-import": "^16.1.1",
