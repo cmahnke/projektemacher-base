@@ -112,11 +112,11 @@ if (argv.experimental) {
   additionalBrowserArgs = ['--enable-experimental-web-platform-features'];
 }
 if (!argv.gpu) {
-  console.log("Disabling 3D APIs");
-  additionalBrowserArgs = [...additionalBrowserArgs, '--disable-gpu']; //--disable-3d-apis
+  console.log("Disabling Hardware 3D APIs (Software-Rendering)");
+  additionalBrowserArgs = [...additionalBrowserArgs, '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--disable-gpu']; //--disable-3d-apis
 } else {
   console.log("Enable unsafe shader");
-  additionalBrowserArgs = [...additionalBrowserArgs, '--enable-unsafe-swiftshader', '--enable-unsafe-webgpu'];
+  additionalBrowserArgs = [...additionalBrowserArgs, '', '--enable-unsafe-swiftshader', '--enable-unsafe-webgpu'];
 }
 
 const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
