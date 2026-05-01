@@ -50,7 +50,10 @@
     {{- if $debug -}}
       {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
-    {{- $mainOpts := dict "targetPath" $script "defines" $defines "minify" (cond hugo.IsDevelopment false true) "sourceMap" (cond hugo.IsDevelopment "linked" "none") -}}
+    {{- $mainOpts := dict "targetPath" $script 
+                          "defines" $defines 
+                          "minify" (cond hugo.IsDevelopment false true) 
+                          "sourceMap" (cond hugo.IsDevelopment "linked" "none") -}}
 
     {{- $mainOpts = merge $mainOpts $additionalOpts -}}
     {{- $main := "" -}}
