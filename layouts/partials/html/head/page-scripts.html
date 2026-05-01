@@ -1,4 +1,5 @@
 {{/* TODO: Merge this into script.html */}}
+{{- errorf "[html/head/page-scripts.html] html/head/page-scripts.html is depcreated, use html/head/script.html instead" -}}
 
 {{- $context := . -}}
 {{- $additionalOpts := dict -}}
@@ -50,7 +51,10 @@
     {{- if $debug -}}
       {{- warnf "[partials/html/head/page-scripts.html] Processing JS script %s" $script -}}
     {{- end -}}
-    {{- $mainOpts := dict "targetPath" $script "defines" $defines "minify" (cond hugo.IsDevelopment false true) "sourceMap" (cond hugo.IsDevelopment "linked" "none") -}}
+    {{- $mainOpts := dict "targetPath" $script 
+                          "defines" $defines 
+                          "minify" (cond hugo.IsDevelopment false true) 
+                          "sourceMap" (cond hugo.IsDevelopment "linked" "none") -}}
 
     {{- $mainOpts = merge $mainOpts $additionalOpts -}}
     {{- $main := "" -}}

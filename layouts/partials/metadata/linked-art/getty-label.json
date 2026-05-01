@@ -1,5 +1,5 @@
 {{- $uri := .uri -}}
-{{- $gettyVocabServer := "http://data.getty.edu/vocab/" -}}
+{{- $gettyVocabServer := "https://data.getty.edu/vocab/" -}}
 {{- $lang := .lang | default "de" -}}
 {{- $langURI := printf "http://vocab.getty.edu/language/%s" $lang -}}
 {{- $fallbackLangURI := "http://vocab.getty.edu/language/en" -}}
@@ -11,9 +11,12 @@
 {{ $opts := dict
   "headers" (dict "Accept" "*/*")
 }}
-{{- $downloadURI := replace $uri "http://vocab.getty.edu/aat/" $gettyVocabServer -}}
+{{- $downloadURI := replace $uri "http://vocab.getty.edu/" $gettyVocabServer -}}
 
-{{- $jsonURL := printf "%s.jsonld" $downloadURI -}}
+{{- $jsonURL := $downloadURI -}}
+{{- if hasPrefix $downloadURI "http://vocab.getty.edu" -}}
+  {{- $jsonURL = printf "%s.jsonld" $downloadURI -}}
+{{- end -}}
 
 {{- with try (resources.GetRemote $jsonURL $opts) -}}
   {{- with .Err -}}
@@ -76,7 +79,7 @@
   {{- with $fallbackLabel -}}
     {{- . -}}
   {{- else -}}
-    {{- warnf "[metadata/linked-art/getty-label.json] No Label found for: %s (%s)" $uri $downloadURI -}}
+    {{- warnf "[metadata/linked-art/getty-label.json] No Label found for: %s (%s)" $uri $jsonURL -}}
     {{- $uri -}}
   {{- end -}}
 {{- end -}}

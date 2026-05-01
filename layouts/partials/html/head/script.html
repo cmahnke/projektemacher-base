@@ -1,11 +1,20 @@
 {{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
+{{- if hugo.IsServer -}}
+  {{- $defines = dict "process.env.NODE_ENV" `"development"` -}}
+{{- end -}}
+
+{{/*
+Example usage:
+  * ESM Format and spliting
+
+ partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm")) 
+
+*/}}
 
 {{- $defaultScriptEntrypoint := "js/main.js" -}}
-
 {{- with $.Page.Params.defaultScriptEntrypoint -}}
     {{- $defaultScriptEntrypoint = . -}}
 {{- end -}}
-
 {{- with $.Page.Params.defaultscriptentrypoint -}}
     {{- $defaultScriptEntrypoint = . -}}
 {{- else -}}
@@ -14,18 +23,29 @@
     {{- end -}}
 {{- end -}}
 
-{{- if hugo.IsServer -}}
-  {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
-{{- end -}}
-
 {{- $externals := slice "domain" -}}
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
 {{- $additionalOpts := dict -}}
 {{- $context := . -}}
+{{- $splitBundles := false -}}
+{{- $debug := partialCached "functions/debug/enabled.html" $context -}}
 
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
-    {{- if (isset . "js") -}}
+    {{- if isset . "ctx" -}}
+        {{- $context = .ctx -}}
+    {{- end -}}
+    {{- if isset . "context" -}}
+        {{- $context = .context -}}
+    {{- end -}}
+    {{- if isset . "opts" -}}
+        {{- $additionalOpts = .opts -}}
+        {{- warnf "[partials/html/head/script.html] Using additional JS Opts: %#v" $additionalOpts -}}
+    {{- end -}}
+    {{- if isset . "splitBundles" -}}
+        {{- $splitBundles = .splitBundles -}}
+    {{- end -}}
+    {{- if isset . "js" -}}
         {{- if reflect.IsSlice .js -}}
             {{- $js = .js -}}
         {{- else if ne .js "" -}}
@@ -39,48 +59,135 @@
                     {{- warnf "[partials/html/head/script.html] Can't read file %s maybe you've forgot to add a module mount?" $file -}}
                 {{- end -}}
             {{- else if eq (printf "%T" $file) "*resources.resourceAdapter" -}}
-                {{ $jsResources = $jsResources | append $file -}}
+                {{- $jsResources = $jsResources | append $file -}}
             {{- else if eq (printf "%T" $file) "resource.Resources" -}}
-                {{ $jsResources = $jsResources | append $file -}}
+                {{- $jsResources = $jsResources | append $file -}}
             {{- else -}}
                 {{- warnf "[partials/html/head/script.html] File %s needs to be string or ResourceAdapter" $file -}}
             {{- end -}}
         {{- end -}}
     {{- end -}}
-    {{- if (isset . "opts") -}}
-        {{- $additionalOpts = .opts -}}
-        {{ warnf "[partials/html/head/script.html] Using additional JS Opts: %#v" $additionalOpts -}}
-    {{- end -}}
-    {{- if (isset . "ctx") -}}
-        {{- $context = .ctx -}}
-    {{- end -}}
-    {{- if (isset . "context") -}}
-        {{- $context = .context -}}
-    {{- end -}}
 {{- else -}}
     {{- warnf "[partials/html/head/script.html] Called without params - just using %s" $defaultScriptEntrypoint -}}
 {{- end -}}
 
-{{- $mainOpts := dict "targetPath" "js/main.js" "externals" $externals "defines" $defines -}}
+{{- $mainOpts := dict "targetPath" "js/main.js"
+                      "externals" $externals
+                      "defines" $defines
+                      "minify" (cond hugo.IsDevelopment false true)
+                      "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+-}}
 {{- $mainOpts = merge $mainOpts $additionalOpts -}}
 {{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
 {{- $jsResources = union (slice $main) $jsResources -}}
 
-{{- $fileName := "" -}}
-{{- range $file := $jsResources -}}
-    {{- $fileName = printf "%s%s" $fileName $file.Name -}}
-{{- end -}}
-{{- $fileName = md5 $fileName -}}
+{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
 
-{{- $mainJs := "" -}}
-{{- if not hugo.IsServer -}}
-    {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | minify | fingerprint -}}
-{{- else -}}
-    {{- $mainJs = $jsResources | resources.Concat (printf "js/%s.js" $fileName) | fingerprint -}}
+{{- if and $debug (len $includes) -}}
+  {{- warnf "[partials/html/head/script.html] Got JS script(s) %#v for %s" $includes $context.File.Dir -}}
 {{- end -}}
 
+{{- $pageScripts := $context.Params.js -}}
+{{- if and (ne $pageScripts nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
+  {{- warnf "[partials/html/head/script.html] Ignoring page JS includes for %s" $context.File.Dir -}}
+  {{- $pageScripts = slice -}}
+{{- end -}}
+{{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
+  {{- $pageScripts = slice $pageScripts -}}
+{{- end -}}
+
+{{- $scripts := $pageScripts -}}
+{{- if len $includes -}}
+  {{- $scripts = union $pageScripts $includes -}}
+{{- end -}}
+
+{{- if and $debug (ne $scripts nil) (len $scripts) -}}
+  {{- warnf "[partials/html/head/script.html] All collected JS script(s) %#v for %s" $scripts $context.File.Dir -}}
+{{- end -}}
+
+{{/*
+  Build page/shortcode scripts
+*/}}
+{{- $pageJsResources := slice -}}
+{{- range $script := $scripts -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/script.html] Processing JS script %s" $script -}}
+  {{- end -}}
+  {{- $scriptOpts := dict "targetPath" $script
+                          "defines" $defines
+                          "minify" (cond hugo.IsDevelopment false true)
+                          "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+  -}}
+  {{- $scriptOpts = merge $scriptOpts $additionalOpts -}}
+  {{- $builtScript := "" -}}
+  {{- if not (or (hasPrefix $script "http") (hasPrefix $script "//")) -}}
+    {{- $scriptRes := resources.Get $script -}}
+    {{- if eq $scriptRes nil -}}
+      {{- errorf "[partials/html/head/script.html] Failed to load %s" $script -}}
+    {{- end -}}
+    {{- $builtScript = $scriptRes | js.Build $scriptOpts -}}
+  {{- else -}}
+    {{- $builtScript = resources.GetRemote $script | js.Build $scriptOpts -}}
+  {{- end -}}
+  {{- $pageJsResources = $pageJsResources | append $builtScript -}}
+{{- end -}}
+
+{{/*
+  Concatenate, fingerprint and output
+
+  splitBundles: false (default) → one combined <script> tag
+  splitBundles: true            → two separate <script> tags
+                                  (main bundle + page/shortcode bundle)
+*/}}
+{{- $scriptType := "" -}}
 {{- if and (isset . "opts") (isset .opts "format") (eq .opts.format "esm") -}}
-  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
+  {{- $scriptType = "module" -}}
+{{- end -}}
+
+{{- if $splitBundles -}}
+
+  {{/*  — Bundle 1: main + explicit js params — */}}
+  {{- $mainFileName := "" -}}
+  {{- range $file := $jsResources -}}
+    {{- $mainFileName = printf "%s%s" $mainFileName $file.Name -}}
+  {{- end -}}
+  {{- $mainJs := $jsResources | resources.Concat (printf "js/%s.js" (md5 $mainFileName)) | fingerprint -}}
+
+  {{- if eq $scriptType "module" -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
+  {{- else -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+  {{- end -}}
+
+  {{/*  — Bundle 2: page params + shortcodes — */}}
+  {{- if $pageJsResources -}}
+    {{- $pageFileName := "" -}}
+    {{- range $file := $pageJsResources -}}
+      {{- $pageFileName = printf "%s%s" $pageFileName $file.Name -}}
+    {{- end -}}
+    {{- $pageJs := $pageJsResources | resources.Concat (printf "js/%s.js" (md5 $pageFileName)) | fingerprint -}}
+
+    {{- if eq $scriptType "module" -}}
+      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" type="module"></script>
+    {{- else -}}
+      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}"></script>
+    {{- end -}}
+  {{- end -}}
+
 {{- else -}}
-  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+
+  {{/*  — Single combined bundle — */}}
+  {{- $allResources := $jsResources | append $pageJsResources -}}
+  {{- $fileName := "" -}}
+  {{- range $file := $allResources -}}
+    {{- $fileName = printf "%s%s" $fileName $file.Name -}}
+  {{- end -}}
+  {{- $mainJs := $allResources | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
+
+  {{- if eq $scriptType "module" -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
+  {{- else -}}
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+  {{- end -}}
+
 {{- end -}}
