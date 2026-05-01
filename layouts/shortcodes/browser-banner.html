@@ -28,8 +28,9 @@
         var browsers = {{ $browser | jsonify | safeJS }};
         var banner = document.getElementById('{{ $id }}');
         var parent = document.querySelector('{{ $parent }}');
-
-        browserBanner(banner, browsers, parent);
+        window.addEventListener('DOMContentLoaded', (event) => {
+          browserBanner(banner, browsers, parent);
+        });
     </script>
 </div>
 

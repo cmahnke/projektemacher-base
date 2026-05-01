@@ -33,10 +33,12 @@ Parameters:
 <div class="iiif">
   <div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>
   <script type="text/javascript">
-    var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
+    window.addEventListener('DOMContentLoaded', (event) => {
+      var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
+    });
   </script>
 </div>
 
-{{- define "_partials/shortcodes/iiif/presentation.html" -}}
+{{- define "_partials/shortcodes/iiif/presentation-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "js/iiif/tify.js") "scss" (slice "scss/iiif/presentation-tify.scss")) | jsonify -}}
 {{- end -}}

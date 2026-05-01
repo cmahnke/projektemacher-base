@@ -9,7 +9,9 @@
     </div>
     <script type="text/javascript">
         var player = document.getElementById('{{ $id }}');
-        audioplayer(player, '{{ $src }}', player.querySelector('button.audioplayer-button'));
+        window.addEventListener('DOMContentLoaded', (event) => {
+          audioplayer(player, '{{ $src }}', player.querySelector('button.audioplayer-button'));
+        });
     </script>
 </div>
 
