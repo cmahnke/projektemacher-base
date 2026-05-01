@@ -46,6 +46,7 @@
       <div class="lucienne" id="{{ $id }}">
       </div>
       <script type="text/javascript">
+        window.addEventListener('DOMContentLoaded', (event) => {
           var url = {{ partial "js/type.html" $src | htmlUnescape | safeJS }};
           {{ if $useLocation }}
             const urlParams = new URLSearchParams(window.location.search);
@@ -57,7 +58,8 @@
             }
           {{ end }}
           var elem = document.getElementById('{{ $id }}');
-          lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, url, {{ $shifts | safeJS }})
+          window.lucienne(elem, {{ $urlinput | safeJS }}, {{ $resize | safeJS }}, {{ $download | safeJS }}, {{ $autoLoad | safeJS }}, url, {{ $shifts | safeJS }})
+        });
       </script>
   </div>
 {{- else }}
