@@ -132,41 +132,29 @@ Example usage:
   {{- $pageJsResources = $pageJsResources | append $builtScript -}}
 {{- end -}}
 
-{{/*
-  Concatenate, fingerprint and output
-
-  splitBundles: false (default) → one combined <script> tag
-  splitBundles: true            → two separate <script> tags
-                                  (main bundle + page/shortcode bundle)
-*/}}
 {{- $scriptType := "" -}}
 {{- if and (isset . "opts") (isset .opts "format") (eq .opts.format "esm") -}}
   {{- $scriptType = "module" -}}
 {{- end -}}
 
 {{- if $splitBundles -}}
-
-  {{/*  — Bundle 1: main + explicit js params — */}}
   {{- $mainFileName := "" -}}
   {{- range $file := $jsResources -}}
     {{- $mainFileName = printf "%s%s" $mainFileName $file.Name -}}
   {{- end -}}
   {{- $mainJs := $jsResources | resources.Concat (printf "js/%s.js" (md5 $mainFileName)) | fingerprint -}}
-
   {{- if eq $scriptType "module" -}}
     <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
   {{- else -}}
     <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
   {{- end -}}
 
-  {{/*  — Bundle 2: page params + shortcodes — */}}
-  {{- if $pageJsResources -}}
+  {{- if gt (len $pageJsResources) 0 -}}
     {{- $pageFileName := "" -}}
     {{- range $file := $pageJsResources -}}
       {{- $pageFileName = printf "%s%s" $pageFileName $file.Name -}}
     {{- end -}}
     {{- $pageJs := $pageJsResources | resources.Concat (printf "js/%s.js" (md5 $pageFileName)) | fingerprint -}}
-
     {{- if eq $scriptType "module" -}}
       <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" type="module"></script>
     {{- else -}}
@@ -176,14 +164,17 @@ Example usage:
 
 {{- else -}}
 
-  {{/*  — Single combined bundle — */}}
-  {{- $allResources := $jsResources | append $pageJsResources -}}
+  {{- $allResources := $jsResources -}}
+  {{- if gt (len $pageJsResources) 0 -}}
+    {{- range $pageJsResources -}}
+      {{- $allResources = $allResources | append . -}}
+    {{- end -}}
+  {{- end -}}
   {{- $fileName := "" -}}
   {{- range $file := $allResources -}}
     {{- $fileName = printf "%s%s" $fileName $file.Name -}}
   {{- end -}}
   {{- $mainJs := $allResources | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
-
   {{- if eq $scriptType "module" -}}
     <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
   {{- else -}}
