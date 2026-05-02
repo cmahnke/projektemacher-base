@@ -84,10 +84,14 @@ Example usage:
 {{- $includes := dict -}}
 
 {{- if and (ne $context nil) (eq (printf "%T" $context) "*hugolib.pageState") -}}
-  {{- warnf "-> %#v" $context -}}
   {{- $includes = index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
+{{- else if eq (printf "%T" $context) "resource.Resources" -}}
+  {{- errorf "[html/head/script.html] ressource passed a context, this is certainly a bug" -}}
+{{/* {{- else if eq (printf "%T" $context) "map[string]interface {}" -}} */}}
+{{- else if reflect.IsMap $context -}}
+  {{- errorf "[html/head/script.html] context is dictionary, this is certainly a bug" -}}
 {{- else if $debug -}}
-  {{- warnf "[html/head/script.html] Context passed isn't a Page, but %#v" $context -}}
+  {{- warnf "[html/head/script.html] Context passed isn't a Page, but %#v (%T)" $context $context -}}
 {{- end -}}
 
 {{- if and $debug (len $includes) -}}
