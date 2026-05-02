@@ -7,7 +7,7 @@
 Example usage:
   * ESM Format and spliting
 
- partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm")) 
+ partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
 
 */}}
 
@@ -81,7 +81,14 @@ Example usage:
 {{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
 {{- $jsResources = union (slice $main) $jsResources -}}
 
-{{- $includes := index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
+{{- $includes := dict -}}
+
+{{- if and (ne $context nil) (eq (printf "%T" $context) "*hugolib.pageState") -}}
+  {{- warnf "-> %#v" $context -}}
+  {{- $includes = index (unmarshal (partial "shortcodes/shortcode-helper.html" $context)) "js" -}}
+{{- else if $debug -}}
+  {{- warnf "[html/head/script.html] Context passed isn't a Page, but %#v" $context -}}
+{{- end -}}
 
 {{- if and $debug (len $includes) -}}
   {{- warnf "[partials/html/head/script.html] Got JS script(s) %#v for %s" $includes $context.File.Dir -}}
