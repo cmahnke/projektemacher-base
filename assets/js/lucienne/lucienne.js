@@ -1,4 +1,4 @@
-import { CuttingTable } from "./lucienne-0.1.0.js";
+import { CuttingTable } from "@projektemacher/lucienne";
 
 function lucienne(element, urlInput, gridSelector, download, autoLoad, urls, shifts) {
 
