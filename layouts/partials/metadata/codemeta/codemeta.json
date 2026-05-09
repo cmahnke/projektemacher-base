@@ -1,8 +1,31 @@
 {{- $codemetaURISuffix := "#codemeta" -}}
 
 {{- $cffFile := "CITATION.cff" -}}
-{{- with .Resources.Get $cffFile -}}
-  {{- $cff := . | transform.Unmarshal (dict "format" "yaml") -}}
+{{- with .Params.cfffile -}}
+  {{- $cffFile = . -}}
+{{- end -}}
+
+
+{{ $opts := dict
+  "headers" (dict "Accept" "*/*")
+}}
+{{- $cff := dict -}}
+
+{{- if hasPrefix $cffFile "http" -}}
+  {{- with try (resources.GetRemote $cffFile $opts) -}}
+    {{- with .Err -}}
+      {{- errorf "[metadata/codemeta/codemeta.json] Can't get CITATION.cff item %s: %s" $cffFile .Err -}}
+    {{ else with .Value }}
+      {{- $cff = . | transform.Unmarshal (dict "format" "yaml") -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- with .Resources.Get $cffFile -}}
+    {{- $cff = . | transform.Unmarshal (dict "format" "yaml") -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $cff -}}
   {{- $codemeta := dict -}}
   {{- if $cff -}}
     {{- $authors := slice -}} 
