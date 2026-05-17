@@ -1,0 +1,5 @@
+{{- $id := .Get 0 -}}
+{{- $value := .Get 1 | markdownify -}}
+
+<sup id="fnref:{{ $id }}" class="foonote-ref-container"><a href="#fn:{{ $id }}" class="footnote-ref" role="doc-noteref">{{ $id }}</a></sup>
+{{ .Page.Store.SetInMap "footnotes" (string $id) $value }}
