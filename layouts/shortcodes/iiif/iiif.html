@@ -10,14 +10,15 @@ Parameters:
 
 {{/* TODO: The logic of this is flawed */}}
 
+{{/*
 {{- if not (.Get "includeSources") -}}
-    {{/* JavaScript */}}
     {{- $defines := dict "process.env.NODE_ENV" `"development"` -}}
     {{- $opts := dict "targetPath" "js/main.js" "defines" $defines -}}
     {{- $iiifViewer := resources.Get "js/iiif-image-viewer.js" | js.Build $opts -}}
     {{- $js := slice $iiifViewer | resources.Concat "js/iiif-ol.js" | minify | fingerprint -}}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
+ */}}
 
 {{- $src := .Get "src" -}}
 {{- $share := false -}}
@@ -36,3 +37,9 @@ Parameters:
 {{- end -}}
 
 {{ partial "iiif/_iiif-image.html" (dict "infoJson" $src "share" $share "downloadURL" $downloadURL "hdr" $hdr) }}
+
+{{/* TODO: Add shortcode metadata to get rid of gloabal IIIF viewer  */}}
+
+{{- define "_partials/shortcodes/iiif/iiif-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/iiif-image-viewer.js") "scss" (slice "scss/iiif.scss")) | jsonify -}}
+{{- end -}}

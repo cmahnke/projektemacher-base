@@ -1,0 +1,14 @@
+{{- with .Page.Store.Get "footnotes" -}}
+  <div class="footnotes" role="doc-endnotes">
+    <hr>
+    <ol>
+      {{- $list := . -}}
+      {{- range  $key, $value := $list -}}
+      <li id="fn:{{ $key }}">
+        <p>{{ $value }}&nbsp;<a href="#fnref:{{ $key }}" class="footnote-backref" role="doc-backlink">↩︎</a></p>
+      </li>
+      {{- end -}}
+    </ol>
+  </div>
+{{- end -}}
+{{- .Page.Store.Delete "footnotes" -}}

@@ -33,3 +33,6 @@ fi
 
 rm -rf assets/css/flags/* assets/css/fonts/* fonts/out/* assets/scss/npm-fonts/*
 git clean -f assets/scss/fonts/
+cd themes/projektemacher-base/
+git checkout flags/package-lock.json
+git checkout fonts/package-lock.json
