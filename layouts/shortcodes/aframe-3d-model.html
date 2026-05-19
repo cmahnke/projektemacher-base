@@ -52,7 +52,7 @@
 
 {{- $controls := printf "autoRotate: %s; enableDamping: true; dampingFactor: 0.05; minDistance: %d; maxDistance: %d; initialPosition: %s;" $autorotate $minDistance $maxDistance $initialPosition -}}
 
-<div class="{{ $class }}" id="{{ $id }}" {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
+<div class="{{ $class }} script" id="{{ $id }}" {{ if $style }}style="{{ $style | safeCSS }}"{{ end }}>
   <a-scene renderer="colorManagement: true; antialias: true" xr-mode-ui="enabled: {{ $xrMode }};" embedded>
     <a-assets>
       <a-asset-item id="{{ printf "%s-src" $id }}" src="{{ $src }}"></a-asset-item>
