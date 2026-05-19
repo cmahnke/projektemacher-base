@@ -60,7 +60,8 @@
     "@fontsource/roboto": "^5.2.10",
     "@fontsource/space-grotesk": "^5.2.10",
     "@fontsource/space-mono": "^5.2.9",
-    "@fontsource/special-elite": "^5.2.8"
+    "@fontsource/special-elite": "^5.2.8",
+    "@fontsource/strichpunkt-sans": "^5.2.1"
   },
   "devDependencies": {
     "@fontsource-utils/scss": "^0.2.2",
