@@ -16,7 +16,7 @@
 {{- end -}}
 {{- $id := md5 $geojson -}}
 {{- $var := printf "_%s" $id -}}
-<div class="map-wrapper">
+<div class="map-wrapper script">
   <div class="map" id="{{ $id }}"></div>
   <div id="{{ $id }}-popup" class="ol-popup">
     <a href="#" id="{{ $id }}-popup-closer" class="ol-popup-closer"></a>
