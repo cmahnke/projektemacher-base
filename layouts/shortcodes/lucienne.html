@@ -42,7 +42,7 @@
 {{- $id := printf "_lucienne-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
 
 {{- if and (ne $src "") (ne $src nil) }}
-  <div class="lucienne-container">
+  <div class="lucienne-container script">
       <div class="lucienne" id="{{ $id }}">
       </div>
       <script type="text/javascript">
