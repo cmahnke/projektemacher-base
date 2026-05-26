@@ -7,7 +7,7 @@
 {{- $scss := slice -}}
 
 {{- if or (not $.Site.Params.skipShortcodeAssets) (and $.Site.Params.skipShortcodeAssets (eq $.Site.Params.skipShortcodeAssets true)) -}}
-  {{- $includes := unmarshal (partialCached "shortcodes/shortcode-helper-cache.html" .) -}}
+  {{- $includes := partialCached "shortcodes/shortcode-helper-cache.html" . | transform.Unmarshal (dict "format" "json") -}}
   {{- if $debug -}}
     {{- warnf "[partials/shortcodes/shortcode-helper.html] Include cache is %#v (type %T)" $includes $includes -}}
   {{- end -}}
