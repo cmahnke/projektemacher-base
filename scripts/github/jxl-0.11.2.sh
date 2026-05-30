@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # See also https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/manual_imagick7.html
 
