@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 echo "Trying to set up Dart Sass"
 # Last known working is 1.94.2

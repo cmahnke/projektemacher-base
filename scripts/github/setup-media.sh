@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 RUN_DEPENDENCIES="ffmpeg"
 
 echo "Installing $RUN_DEPENDENCIES"
