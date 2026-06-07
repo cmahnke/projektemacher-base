@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 CTX_PATH="$(dirname $(realpath $0))"
 

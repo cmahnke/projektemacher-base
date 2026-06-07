@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 
 BASEDIR="$(dirname "$0")/../../"
 
