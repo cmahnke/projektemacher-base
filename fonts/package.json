@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@fontsource-variable/arimo": "^5.2.8",
+    "@fontsource-variable/besley": "^5.2.8",
     "@fontsource-variable/comfortaa": "^5.2.8",
     "@fontsource-variable/dosis": "^5.2.8",
     "@fontsource-variable/eb-garamond": "^5.2.7",
