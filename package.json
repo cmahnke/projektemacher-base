@@ -60,7 +60,7 @@
   "postcss-import": "^16.1.1",
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
-  "prettier": "^3.8.3",
+  "prettier": "^3.8.4",
   "puppeteer": "^25.1.0",
   "purgecss": "^8.0.0",
   "react": "^19.2.7",
