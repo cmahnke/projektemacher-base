@@ -49,7 +49,7 @@
   "gltf-pipeline": "^4.3.1",
   "gulp-cli": "^3.1.0",
   "jsonc-eslint-parser": "^3.1.0",
-  "markdownlint-cli": "~0.48.0",
+  "markdownlint-cli": "~0.49.0",
   "mktemp": "~1.0.1",
   "node-addon-api": "^8.8.0",
   "node-gyp": "^13.0.0",
