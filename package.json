@@ -45,7 +45,7 @@
   "eslint-plugin-jsonc": "^3.2.0",
   "eslint-plugin-toml": "1.1.1",
   "express": "^5.1.0",
-  "globals": "^17.6.0",
+  "globals": "^17.7.0",
   "gltf-pipeline": "^4.3.1",
   "gulp-cli": "^3.1.0",
   "jsonc-eslint-parser": "^3.1.0",
@@ -61,7 +61,7 @@
   "postcss-inline-svg": "^6.0.0",
   "postcss-utilities": "^0.8.4",
   "prettier": "^3.8.4",
-  "puppeteer": "^25.1.0",
+  "puppeteer": "^25.2.0",
   "purgecss": "^8.0.0",
   "react": "^19.2.7",
   "react-dom": "^19.2.7",
@@ -75,7 +75,7 @@
   "toml": "^4.1.1",
   "tslib": "^2.8.1",
   "typescript": "^6.0.3",
-  "typescript-eslint": "^8.61.1",
+  "typescript-eslint": "^8.62.0",
   "xslt3": "^2.7.0"
  },
  "scripts": {
