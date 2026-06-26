@@ -41,7 +41,7 @@
     };
     window.addEventListener('DOMContentLoaded', (event) => {
       PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
-    }
+    });
   </script>
   {{- if $download -}}
     <a class="pdf-preview-download" href="{{ $pdflink }}" download>
