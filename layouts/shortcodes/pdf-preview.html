@@ -39,7 +39,9 @@
       },
       fallbackLink: "<p class='{{ printf `%s-download-fallback` $class }}'><a href='{{ $pdflink }}'>{{ i18n "InlinePDFNotSupported" }}: PDF Download</a></p>"
     };
-    PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
+    window.addEventListener('DOMContentLoaded', (event) => {
+      PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
+    }
   </script>
   {{- if $download -}}
     <a class="pdf-preview-download" href="{{ $pdflink }}" download>
