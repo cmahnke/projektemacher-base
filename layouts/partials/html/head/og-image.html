@@ -97,6 +97,23 @@
   {{- end -}}
 {{- end -}}
 
+{{- $ctx := . -}}
+{{- with .Params.ogpreview -}}
+  {{ $absPath := path.Dir (path.Join $ctx.File.Dir .) }}
+  {{ $targetPage := site.GetPage $absPath }}
+  {{ $filename := path.Base . }}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Trying to load (%s) from param for %s" . .RelPermalink -}}
+  {{- end -}}
+  {{ with $targetPage }}
+    {{ with .Resources.Get $filename }}
+      {{- $previewImg = . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnf "[partials/html/head/og-image.html] Cant find page %s (%s) for ogPreview for %s" $absPath . $ctx.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
   <meta property="og:image" content="{{ $previewImg.Permalink }}" />
   <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
