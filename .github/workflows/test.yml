@@ -63,6 +63,22 @@ jobs:
           #npx eslint assets/js
           #npx eslint scripts
 
+  test_jxl_versions:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['0.11.1', '0.11.2', '0.12.0']
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Install JXL dependencies
+        run: |
+          ./scripts/github/jxl-${{ matrix.version }}.sh
+
+
   test_install:
     runs-on: ubuntu-24.04
     steps:
