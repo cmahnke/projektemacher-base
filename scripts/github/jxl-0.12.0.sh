@@ -16,8 +16,8 @@ sudo apt-get install -y libstdc++6 libtcmalloc-minimal4 libgcc-s1 libc6 libhwy-d
 mkdir -p /tmp/jxl
 cd /tmp/jxl
 
-wget https://github.com/libjxl/libjxl/releases/download/v0.12.0/jxl-debs-amd64-ubuntu-24.04-v0.12.0.tar.gz
-tar xzf jxl-debs-amd64-ubuntu-24.04-v0.12.0.tar.gz
+wget https://github.com/libjxl/libjxl/releases/download/v0.12.0/jxl-debs-amd64-ubuntu-24.04.tar
+tar xf jxl-debs-amd64-ubuntu-24.04-v0.12.0.tar
 
 sudo apt install -y -f ./libjxl_0.12.0_amd64.deb
 sudo apt install -y -f ./jxl_0.12.0_amd64.deb
