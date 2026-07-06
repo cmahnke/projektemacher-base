@@ -19,9 +19,9 @@ cd /tmp/jxl
 wget https://github.com/libjxl/libjxl/releases/download/v0.11.2/jxl-debs-amd64-ubuntu-24.04.zip
 unzip jxl-debs-amd64-ubuntu-24.04.zip
 
-sudo apt install -y -f ./libjxl_0.11.2_amd64.deb
-sudo apt install -y -f ./jxl_0.11.2_amd64.deb
-sudo apt install -y -f ./libjxl-dev_0.11.2_amd64.deb
+sudo apt install -y -f ./libjxl_0.11.2*_amd64.deb
+sudo apt install -y -f ./jxl_0.11.2*_amd64.deb
+sudo apt install -y -f ./libjxl-dev_0.11.2*_amd64.deb
 
 sudo apt-get -f install
 
