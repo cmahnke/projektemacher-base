@@ -103,7 +103,7 @@
   {{ $targetPage := site.GetPage $absPath }}
   {{ $filename := path.Base . }}
   {{- if $debug -}}
-    {{- warnf "[partials/html/head/og-image.html] Trying to load (%s) from param for %s" . .RelPermalink -}}
+    {{- warnf "[partials/html/head/og-image.html] Trying to load (%s) from param for %s" . $ctx.RelPermalink -}}
   {{- end -}}
   {{ with $targetPage }}
     {{ with .Resources.Get $filename }}
