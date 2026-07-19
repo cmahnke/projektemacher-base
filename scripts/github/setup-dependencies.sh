@@ -10,8 +10,13 @@ if [ "$( . /etc/lsb-release; echo $DISTRIB_RELEASE)" = "22.04" ] ; then
   for pkg in docker-buildx-plugin docker-ce docker-ce-cli ; do sudo apt-mark hold $pkg; done
 fi
 if [ "$( . /etc/lsb-release; echo $DISTRIB_RELEASE)" = "24.04" ] ; then
-  echo "Adding JXL to dependencies"
-  RUN_DEPENDENCIES="$RUN_DEPENDENCIES libjxl-tools"
+  JXLPKG=libjxl-tools
+  if dpkg-query -Wf'${db:Status-abbrev}' "$JXLPKG" 2>/dev/null | grep -q '^i'; then
+    echo "The package '$JXLPKG' _is_ already installed!"
+  else
+    echo "Adding JXL to dependencies"
+    RUN_DEPENDENCIES="$RUN_DEPENDENCIES $JXLPKG"
+  fi
 fi
 
 echo "Installing $RUN_DEPENDENCIES"
