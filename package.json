@@ -51,7 +51,7 @@
   "jsonc-eslint-parser": "^3.1.0",
   "markdownlint-cli": "~0.49.1",
   "mktemp": "~1.0.1",
-  "node-addon-api": "^8.9.0",
+  "node-addon-api": "^8.9.1",
   "node-gyp": "^13.0.1",
   "obj2gltf": "^3.2.0",
   "postcss": "^8.5.25",
