@@ -380,6 +380,23 @@ class Post:
 
         return list(keywords)
 
+    def getParam(name: str, lang=None):
+        metadata = self.getMetadata(lang)
+        found_in_root = name in metadata
+        params = metadata.get("params")
+        found_in_params = isinstance(params, dict) and name in params
+
+        if found_in_root and found_in_params:
+            raise RuntimeError(f"Key '{name}' was found in both root and 'params'.")
+
+        if found_in_root:
+            return metadata[name]
+
+        if found_in_params:
+            return params[name]
+
+        return None
+
     def __repr__(self):
         return f"{self.__class__.__name__}(files='{self.files}')"
 
