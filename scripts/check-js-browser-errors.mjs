@@ -25,7 +25,7 @@ const ignore404Contains = [
   'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com',
   'https://play.google.com/', 'livereload.js'
 ];
-const waitMs = 20000;
+const waitMs = 30000;
 var headless = true;
 let additionalBrowserArgs = [];
 
