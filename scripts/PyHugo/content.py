@@ -380,7 +380,7 @@ class Post:
 
         return list(keywords)
 
-    def getParam(name: str, lang=None):
+    def getParam(self, name: str, lang=None):
         metadata = self.getMetadata(lang)
         found_in_root = name in metadata
         params = metadata.get("params")
