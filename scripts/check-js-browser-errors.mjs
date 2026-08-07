@@ -54,6 +54,11 @@ const argv = yargs(hideBin(process.argv))
     description: 'Test configuration file (JSON)',
     type: 'string'
   })
+  .option('l', {
+    alias: 'log-server',
+    description: 'Log if the internal webserver could fulfill a request',
+    type: 'boolean'
+  })
   .help()
   .alias('help', 'h')
   .parse();
@@ -162,6 +167,35 @@ console.log('Wrote preference file to %s', prefFile);
 (async () => {
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
+
+    // NEW: Webserver logging middleware
+    if (argv.logServer) {
+        app.use((req, res, next) => {
+            res.on('finish', () => {
+                // Resolve the path to accurately log the file served (handling directories -> index.html)
+                let decodedPath = decodeURIComponent(req.path);
+                let resolvedPath = path.join(webRoot, decodedPath);
+                try {
+                    if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
+                        const indexPath = path.join(resolvedPath, 'index.html');
+                        if (fs.existsSync(indexPath)) {
+                            resolvedPath = indexPath;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore fs errors
+                }
+
+                if (res.statusCode >= 200 && res.statusCode < 400) {
+                    console.log(`[Webserver] Fulfilled request: ${req.url} -> ${resolvedPath}`);
+                } else {
+                    console.log(`[Webserver] Failed to fulfill request: ${req.url} (Status: ${res.statusCode})`);
+                }
+            });
+            next();
+        });
+    }
+
     app.use(express.static(webRoot));
 
     const server = app.listen(localPort, function () {
@@ -265,7 +299,6 @@ console.log('Wrote preference file to %s', prefFile);
         if (request.resourceType() === 'media') {
             console.log('[requestfailed] Ignoring failed media request for %s', request.url());
         } else {
-            // Fixed Python syntax error: split('/')[-1]
             const urlPath = request.url().split('?')[0];
             const fileName = urlPath.split('/').pop();
 
@@ -318,7 +351,9 @@ console.log('Wrote preference file to %s', prefFile);
         }
         console.log('-> Opening file %s', checkURL);
 
-        let timeout = argv.gpu ? waitMs : 0;
+        // FIX 1: Always use waitMs as timeout. `timeout: 0` disables Puppeteer's timeout entirely,
+        // which can lead to infinite hangs if the page never reaches `networkidle0` (e.g. unclosed sockets).
+        let timeout = waitMs;
         console.log(`Opening ${checkURL} with time out ${timeout}`);
         await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
 
@@ -371,5 +406,12 @@ console.log('Wrote preference file to %s', prefFile);
 
     console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`);
     await browser.close();
-    await new Promise(resolve => server.close(resolve)); // Properly await server closure
+
+    // FIX 2: `server.close()` does not close existing keep-alive connections, which can cause
+    // the script to hang at the very end waiting for sockets to close. We close it and then force exit.
+    server.close();
+    setTimeout(() => {
+        console.log('Forcing exit as server.close() might be waiting for keep-alive sockets.');
+        process.exit(0);
+    }, 1000).unref();
 })();
