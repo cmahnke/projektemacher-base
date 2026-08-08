@@ -1,4 +1,5 @@
 {{- $buildinIncludes := slice "node_modules/ol" "node_modules/normalize.css" "assets/css" "assets/css/fonts" "node_modules/tify/dist/" -}}
+{{- $scss := slice "scss/base.scss" -}}
 
 {{- with site.Params.css.includeDirs -}}
   {{- if ne . "" -}}
@@ -11,6 +12,9 @@
 {{- $context := "" -}}
 {{- if isset . "context" -}}
   {{- $context = .context -}}
+{{- end -}}
+{{- if isset . "base" -}}
+  {{- $scss = slice .base -}}
 {{- end -}}
 
 {{- $debug := partialCached "functions/debug/enabled.html" $context -}}
@@ -56,7 +60,7 @@
   {{ warnf "[partials/html/head/style.html] Include path for SCSS/CSS (Dart SASS) is '%s'" (delimit $includes ", ") }}
 {{- end -}}
 
-{{- $scss := slice "scss/base.scss" -}}
+
 {{- $pageSCSS := $context.Params.scss -}}
 {{- if and (ne $pageSCSS nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
   {{- warnf "[partials/html/head/style.html] Ignoring page SCSS includes for %s" $context.File.Dir -}}
