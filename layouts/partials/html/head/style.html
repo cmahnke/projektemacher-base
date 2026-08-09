@@ -14,7 +14,12 @@
   {{- $context = .context -}}
 {{- end -}}
 {{- if isset . "base" -}}
-  {{- $scss = slice .base -}}
+  {{- $baseSCSS := .base  -}}
+  {{- if reflect.IsMap $baseSCSS -}}
+    {{- $scss = $baseSCSS -}}
+  {{- else -}}
+    {{- $scss = slice $baseSCSS -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $debug := partialCached "functions/debug/enabled.html" $context -}}
