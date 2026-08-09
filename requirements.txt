@@ -46,6 +46,7 @@ pyexiv2
 academic
 # Indexer
 pagefind[bin]
+requests_ratelimiter
 beautifulsoup4
 #git+https://github.com/IIIF/presentation-validator
 # Archive
