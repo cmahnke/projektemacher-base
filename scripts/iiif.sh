@@ -65,6 +65,8 @@ if [ -z "$SKIP_IIIF" ] ; then
         if [[ $VIPS_MAJOR -lt 8 && $VIPS_MINOR -lt 10 ]] ; then
             echo "vips is to old, falling back to python"
             IIIF_STATIC_CMD="iiif_static.py"
+            echo "iiif_static.py can't handle JXL, existing!"
+            exit 1
         else
             IIIF_STATIC_CMD="vips"
         fi
