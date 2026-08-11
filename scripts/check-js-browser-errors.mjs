@@ -3,56 +3,68 @@
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import toml from 'toml';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import express from 'express';
 import cors from 'cors';
-import mktemp from 'mktemp';
+
 const app = express();
 
 /* Settings */
 const urlsFile = 'test-urls.txt';
 let testFile = 'test-urls.json';
 var configFile = ['config.toml', 'hugo.toml'];
-const contentDir = 'docs'
+const contentDir = 'docs';
 const localFilePrefix = 'file:./';
 const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
-const ignore404Contains =['https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com', 'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com', 'https://play.google.com/', 'livereload.js'];
-//const localBaseURLs = ["https://localhost:3000", "http://localhost:3000"];
-const waitMs = 20000;
+const ignore404Contains = [
+  'https://www.youtube.com', 'googleapis.com', 'https://www.youtube-nocookie.com',
+  'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com',
+  'https://play.google.com/', 'livereload.js'
+];
+const waitMs = 30000;
 var headless = true;
 let additionalBrowserArgs = [];
+
 if (process.env.PUPPETEER_DEBUG) {
   headless = false;
 }
 
-const argv = yargs().option('f', {
+const argv = yargs(hideBin(process.argv))
+  .option('f', {
     alias: 'force',
-    description: 'Don\'t ignore mising files',
+    description: 'Don\'t ignore missing files',
     type: 'boolean'
   })
   .option('g', {
     alias: 'gpu',
-    description: 'Enable 3D Apis',
+    description: 'Enable 3D APIs (GPU Emulation)',
     type: 'boolean'
   })
   .option('e', {
     alias: 'experimental',
-    description: 'Enable experimental plattform features',
+    description: 'Enable experimental platform features',
     type: 'boolean'
   })
   .option('c', {
     alias: 'config',
-    description: 'Configuration file',
+    description: 'Test configuration file (JSON)',
     type: 'string'
   })
+  .option('l', {
+    alias: 'log-server',
+    description: 'Log if the internal webserver could fulfill a request',
+    type: 'boolean'
+  })
   .help()
-  .alias('help', 'h').parse(hideBin(process.argv));
+  .alias('help', 'h')
+  .parse();
 
 if (argv.config) {
-  testFile = argv.config
+  testFile = argv.config;
 }
 
 if (!fs.existsSync(contentDir)) {
@@ -60,15 +72,16 @@ if (!fs.existsSync(contentDir)) {
     process.exit(1);
 }
 
+let activeConfigFile = null;
 for (const cf of configFile) {
   if (fs.existsSync(cf)) {
-    configFile = cf;
+    activeConfigFile = cf;
     break;
   }
 }
 
-if (!fs.existsSync(configFile)) {
-    console.log('Hugo configuration %s doesn\'t exist in current directory (%s), are you sure, it\'s containig a Hugo site?', configFile, process.cwd());
+if (!activeConfigFile) {
+    console.log('Hugo configuration %s doesn\'t exist in current directory (%s), are you sure it contains a Hugo site?', configFile, process.cwd());
     process.exit(2);
 }
 
@@ -97,86 +110,124 @@ if (fs.existsSync(testFile)) {
 } else if (fs.existsSync(urlsFile)) {
     var urls = fs.readFileSync(urlsFile).toString().split("\n");
     for (var i in urls) {
-        tests.push({'url': urls[i]});
+        if(urls[i].trim()) tests.push({'url': urls[i]});
     }
 } else if (argv.force) {
     console.log('URL file %s doesn\'t exist, exiting!', urlsFile);
     process.exit(3);
 } else {
     console.log('File %s not found!', urlsFile);
-    urls = ['/'];
+    tests = [{'url': '/'}];
 }
 
 if (argv.experimental) {
-  console.log("Enabling experimental plattform features");
-  additionalBrowserArgs = ['--enable-experimental-web-platform-features'];
-}
-if (!argv.gpu) {
-  console.log("Disabling Hardware 3D APIs (Software-Rendering)");
-  additionalBrowserArgs = [...additionalBrowserArgs, '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--disable-gpu']; //--disable-3d-apis
-} else {
-  console.log("Enable unsafe shader");
-  additionalBrowserArgs = [...additionalBrowserArgs, '', '--enable-unsafe-swiftshader', '--enable-unsafe-webgpu'];
+  console.log("Enabling experimental platform features");
+  additionalBrowserArgs.push('--enable-experimental-web-platform-features');
 }
 
-const hugoConfig = toml.parse(fs.readFileSync(configFile).toString());
+// GPU Emulation Logic
+if (!argv.gpu) {
+  console.log("Disabling 3D APIs completely");
+  additionalBrowserArgs.push('--disable-gpu', '--disable-3d-apis');
+} else {
+  console.log("Enabling GPU Emulation (SwiftShader/ANGLE)");
+  additionalBrowserArgs.push(
+    '--use-gl=angle',
+    '--use-angle=swiftshader-webgl', // Emulates WebGL using SwiftShader
+    '--ignore-gpu-blocklist',
+    '--enable-unsafe-swiftshader',
+    '--enable-unsafe-webgpu',       // For WebGPU emulation
+    '--enable-gpu-rasterization',
+    '--enable-accelerated-2d-canvas'
+  );
+}
+
+const hugoConfig = toml.parse(fs.readFileSync(activeConfigFile).toString());
 var baseURL = hugoConfig.baseURL;
 const remotePrefix = 'http://localhost:' + localPort + '/';
-if (baseURL == '') {
-    baseURL = remotePrefix
+if (baseURL === '' || !baseURL) {
+    baseURL = remotePrefix;
 }
 console.log('Base URL is %s', baseURL);
 
-/*
-  See https://bugs.chromium.org/p/chromium/issues/detail?id=761295
-  See https://github.com/microsoft/playwright/issues/3509#issuecomment-675441299
-*/
-const tmpDir = mktemp.createDirSync('XXX-XXX');
-fs.mkdirSync(`${tmpDir}/userdir/Default`, { recursive: true });
+// Use native Node.js temp directory instead of mktemp
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-'));
+const userDir = path.join(tmpDir, 'userdir');
+fs.mkdirSync(path.join(userDir, 'Default'), { recursive: true });
 
 const defaultPreferences = {
   plugins: {
     always_open_pdf_externally: true,
   },
-}
-const prefFile = `${tmpDir}/userdir/Default/Preferences`;
+};
+const prefFile = path.join(userDir, 'Default', 'Preferences');
 fs.writeFileSync(prefFile, JSON.stringify(defaultPreferences));
 console.log('Wrote preference file to %s', prefFile);
 
 (async () => {
-
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
-    /* TODO: This behaves differently then GitHub, redirect to URL ending in slash on request on directories. */
+
+    // NEW: Webserver logging middleware
+    if (argv.logServer) {
+        app.use((req, res, next) => {
+            res.on('finish', () => {
+                // Resolve the path to accurately log the file served (handling directories -> index.html)
+                let decodedPath = decodeURIComponent(req.path);
+                let resolvedPath = path.join(webRoot, decodedPath);
+                try {
+                    if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
+                        const indexPath = path.join(resolvedPath, 'index.html');
+                        if (fs.existsSync(indexPath)) {
+                            resolvedPath = indexPath;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore fs errors
+                }
+
+                if (res.statusCode >= 200 && res.statusCode < 400) {
+                    console.log(`[Webserver] Fulfilled request: ${req.url} -> ${resolvedPath}`);
+                } else {
+                    console.log(`[Webserver] Failed to fulfill request: ${req.url} (Status: ${res.statusCode})`);
+                }
+            });
+            next();
+        });
+    }
+
     app.use(express.static(webRoot));
-    var server = app.listen(localPort, function () {
+
+    const server = app.listen(localPort, function () {
         console.log('Webserver started, serving \'%s\'', webRoot);
     });
 
-    var headlessMode = "new";
+    var headlessMode = "shell"; // "shell" is the modern equivalent of "new" headless
     if (!headless) {
-      headlessMode = 'false';
+      headlessMode = false;
     }
 
-    const browser = await puppeteer.launch ({
-        /*userDataDir: path.resolve(__dirname, './puppeteerTmp'),*/
-        /*  https://developer.chrome.com/articles/new-headless/
-        headless: true,
-        */
+    const browser = await puppeteer.launch({
         headless: headlessMode,
         devtools: false,
-        //'--allow-running-insecure-content',
-        args:['--use-gl=egl', '--no-sandbox', '--disable-web-security', `--initial-preferences-file="${prefFile}"`, ...additionalBrowserArgs]
-         /* '--disable-web-security', '--allow-failed-policy-fetch-for-test', '--allow-running-insecure-content', '--unsafely-treat-insecure-origin-as-secure=' + baseURL] */
-    })
+        userDataDir: userDir, // Standard way to pass custom profile/preferences
+        args: [
+            '--no-sandbox',
+            '--disable-web-security',
+            ...additionalBrowserArgs
+        ]
+    });
+
     const page = await browser.newPage();
     await page.setRequestInterception(true);
 
+    // Intercept requests
     page.on('request', request => {
         const headers = request.headers();
-        var newRequestUrl;
+        let newRequestUrl;
+
         if (request.url().toLowerCase().endsWith("pdf")) {
-          console.log('Warning: Response would hang Puppeteer, aborting!');
+          console.log('Warning: Response would hang Puppeteer, aborting PDF!');
           request.abort();
           return;
         }
@@ -186,105 +237,72 @@ console.log('Wrote preference file to %s', prefFile);
           return;
         }
         if (request.url().startsWith(baseURL)) {
-            newRequestUrl = request.url().replace(baseURL, remotePrefix)
+            newRequestUrl = request.url().replace(baseURL, remotePrefix);
             console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({
-                url: newRequestUrl,
-                headers : headers
-            });
+            request.continue({ url: newRequestUrl, headers: headers });
             return;
         }
         if (request.url().startsWith("https://localhost:3000")) {
-            newRequestUrl = request.url().replace("https://localhost:3000", "http://localhost:3000")
+            newRequestUrl = request.url().replace("https://localhost:3000", "http://localhost:3000");
             console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({
-                url: newRequestUrl,
-                headers : headers
-            });
+            request.continue({ url: newRequestUrl, headers: headers });
             return;
         }
         request.continue();
-        })
-        .on('response', response => {
-            console.log('Browser: Got response for %s', response.url());
-        });
+    });
 
-    const checkedUrls = [];
-    for (var i in tests) {
-        var localFile, fragment;
-        if (typeof tests[i] === 'object' && tests[i] !== null && tests[i].hasOwnProperty('url')) {
-            localFile = tests[i]['url'];
-        } else {
-            localFile = tests[i];
-        }
-        if (localFile == '/') {
-            localFile = 'index.html';
-        }
-        localFile = localFile.replace(baseURL, '/')
-        if (localFile.split("#")[1] !== undefined) {
-          fragment = localFile.split("#")[1]
-          console.log(`Check for document fragment '${fragment}' requested`);
-        }
-        localFile = localFile.split("?")[0].split("#")[0]
-        if (localFile.startsWith('/')) {
-            localFile = localFile.substring(1);
-        }
+    page.on('response', response => {
+        console.log('Browser: Got response for %s', response.url());
+    });
 
-        var checkFile = path.join(process.cwd(),  contentDir, localFile)
-        if (!argv.force && !fs.existsSync(checkFile)) {
-            console.log('Local file %s doesn\'t exist, skipping!', checkFile);
-            continue;
-        } else if (argv.force && !fs.existsSync(checkFile)) {
-            console.log('Local file %s doesn\'t exist, exiting!', checkFile);
-            process.exit(3);
+    // EVENT LISTENERS MOVED OUTSIDE THE LOOP TO PREVENT MEMORY LEAKS & DUPLICATE LOGS
+    page.on('console', async msg => {
+        console.log('Browser console:', msg.text());
+        if (msg.text().includes('GPU stall due to ReadPixels')) {
+          console.log("Got GPU related error message: " + msg.text());
+          page.setDefaultTimeout(60*1000);
         }
-        //var response;
-        page.on('console', msg => {
-            console.log('Browser console:', msg.text());
-            if (msg.text().includes('GPU stall due to ReadPixels')) {
-              console.log("Got GPU relateted error message: " + msg.text())
-              page.setDefaultTimeout(60*1000);
-              /*
-              setTimeout(() => {
-
-              }, 60*1000)
-              */
-            }
-            if (checkMesages.length) {
-              for (const m of checkMesages) {
-                console.log('Checking for "%s"', m);
-                if (msg.text().includes(m)) {
-                  console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
-                  if (headless) {
-                    process.exit(122);
-                  } else {
-                    setTimeout(() => {
-                      console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                    }, waitMs)
-                  }
-                }
+        if (checkMesages.length) {
+          for (const m of checkMesages) {
+            console.log('Checking for "%s"', m);
+            if (msg.text().includes(m)) {
+              console.log('[console] Failing on message "%s" since it includes "%s"', msg.text(), m);
+              if (headless) {
+                process.exit(122);
+              } else {
+                console.log(`Debug mode, waiting ${waitMs}ms before exit`);
+                await new Promise(resolve => setTimeout(resolve, waitMs));
+                process.exit(122);
               }
             }
-          })
-          .on('pageerror', error => {
-            console.log('[pageerror] "' + error.message + '" on path / file:', localFile, error);
-            if (!argv.gpu && (error.message.includes('Error creating WebGL context') || error.message.includes('Unable to create WebGPU adapter'))) {
-              console.log(`Ignoring 3D error: ${error.message}`)
-              return
-            }
-            if (headless) {
-              process.exit(123);
-            } else {
-              setTimeout(() => {
-                console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-              }, waitMs)
-            }
-          })
-          .on('requestfailed', request => {
-            console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure().errorText, request.url());
-            if (request.resourceType() == 'media') {
-                console.log('[requestfailed] Ignoring failed media request for %s', request.url());
-            } else if (ignore404Exact.includes(request.url().split('/')[-1]) || ignore404Contains.some(v => request.url().includes(v))) {
+          }
+        }
+    });
+
+    page.on('pageerror', async error => {
+        console.log('[pageerror] "' + error.message + '" on path / file:', error);
+        if (!argv.gpu && (error.message.includes('Error creating WebGL context') || error.message.includes('Unable to create WebGPU adapter'))) {
+          console.log(`Ignoring 3D error: ${error.message}`);
+          return;
+        }
+        if (headless) {
+          process.exit(123);
+        } else {
+          console.log(`Debug mode, waiting ${waitMs}ms before exit`);
+          await new Promise(resolve => setTimeout(resolve, waitMs));
+          process.exit(123);
+        }
+    });
+
+    page.on('requestfailed', async request => {
+        console.log('[requestfailed] Got error \'%s\' for \'%s\'', request.failure()?.errorText, request.url());
+        if (request.resourceType() === 'media') {
+            console.log('[requestfailed] Ignoring failed media request for %s', request.url());
+        } else {
+            const urlPath = request.url().split('?')[0];
+            const fileName = urlPath.split('/').pop();
+
+            if (ignore404Exact.includes(fileName) || ignore404Contains.some(v => request.url().includes(v))) {
                 console.log('[requestfailed] Ignoring request for %s', request.url());
             } else if (request.url().toLowerCase().endsWith("pdf")) {
                 console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
@@ -292,24 +310,52 @@ console.log('Wrote preference file to %s', prefFile);
               if (headless) {
                 process.exit(124);
               } else {
-                setTimeout(() => {
-                  console.log(`Debug mode, waiting ${waitMs}ms instead of exit`)
-                }, waitMs)
+                console.log(`Debug mode, waiting ${waitMs}ms before exit`);
+                await new Promise(resolve => setTimeout(resolve, waitMs));
+                process.exit(124);
               }
             }
-        });
+        }
+    });
+
+    const checkedUrls = [];
+    // Fixed loop iteration
+    for (let i = 0; i < tests.length; i++) {
+        const testItem = tests[i];
+        let localFile = testItem.url || testItem;
+        let fragment;
+
+        if (localFile === '/') localFile = 'index.html';
+        localFile = localFile.replace(baseURL, '/');
+
+        if (localFile.split("#")[1] !== undefined) {
+          fragment = localFile.split("#")[1];
+          console.log(`Check for document fragment '${fragment}' requested`);
+        }
+
+        localFile = localFile.split("?")[0].split("#")[0];
+        if (localFile.startsWith('/')) localFile = localFile.substring(1);
+
+        var checkFile = path.join(process.cwd(), contentDir, localFile);
+        if (!argv.force && !fs.existsSync(checkFile)) {
+            console.log('Local file %s doesn\'t exist, skipping!', checkFile);
+            continue;
+        } else if (argv.force && !fs.existsSync(checkFile)) {
+            console.log('Local file %s doesn\'t exist, exiting!', checkFile);
+            process.exit(3);
+        }
 
         var checkURL = baseURL + localFile;
-        if (fragment !== undefined && fragment != "") {
+        if (fragment !== undefined && fragment !== "") {
           checkURL = checkURL + '#' + fragment;
         }
         console.log('-> Opening file %s', checkURL);
-        let timeout = 0;
-        if (argv.gpu) {
-          timeout = waitMs;
-        }
+
+        // FIX 1: Always use waitMs as timeout. `timeout: 0` disables Puppeteer's timeout entirely,
+        // which can lead to infinite hangs if the page never reaches `networkidle0` (e.g. unclosed sockets).
+        let timeout = waitMs;
         console.log(`Opening ${checkURL} with time out ${timeout}`);
-        const open = await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
+        await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
 
         const refreshSelector = "meta[http-equiv=refresh]";
         if (await page.$(refreshSelector) !== null) {
@@ -317,45 +363,55 @@ console.log('Wrote preference file to %s', prefFile);
           continue;
         }
 
-        if ('click' in tests[i]) {
-            for (let j in tests[i]['click']) {
-                const [response] = await Promise.all([
+        if ('click' in testItem) {
+            for (let j in testItem['click']) {
+                await Promise.all([
                     page.waitForNavigation(),
-                    page.click(tests[i]['click'][j]),
+                    page.click(testItem['click'][j]),
                 ]);
             }
         }
 
-        if ('selector' in tests[i] && 'property' in tests[i] && 'value' in tests[i]) {
-            page.evaluate(() => {
-                const element = document.querySelector(tests[i]['selector']);
+        if ('selector' in testItem && 'property' in testItem && 'value' in testItem) {
+            // Fixed page.evaluate context error: Pass testItem as argument and return result
+            const result = await page.evaluate((cfg) => {
+                const element = document.querySelector(cfg.selector);
                 if (element !== null) {
-                    var style;
-                    if ('pseudo' in tests[i]) {
-                        style = getComputedStyle(element, tests[i]['pseudo'])
+                    let style;
+                    if ('pseudo' in cfg && cfg.pseudo) {
+                        style = getComputedStyle(element, cfg.pseudo);
                     } else {
                         style = getComputedStyle(element);
-                        tests[i]['pseudo'] = '';
                     }
-                    const actualValue = style.getPropertyValue(tests[i]['property'])
-                    if (actualValue == tests[i]['value']) {
-                        console.log('Checking poperty \'%s\' of %s%s, expected value is \'%s\', actual value is \'%s\'', tests[i]['property'], tests[i]['selector'], tests[i]['pseudo'], tests[i]['value'], actualValue);
-                        process.exit(125);
-                    }
-                  } else {
-                    console.log('Element for selector \'%s\' not found!', tests[i]['selector'])
-                    process.exit(126);
-                  }
-            });
+                    const actualValue = style.getPropertyValue(cfg.property);
+                    return { found: true, actualValue: actualValue, match: actualValue === cfg.value };
+                } else {
+                    return { found: false };
+                }
+            }, testItem);
+
+            if (!result.found) {
+                console.log('Element for selector \'%s\' not found!', testItem.selector);
+                process.exit(126);
+            } else if (result.match) {
+                console.log('Checking property \'%s\' of %s%s, expected value is \'%s\', actual value is \'%s\'',
+                    testItem.property, testItem.selector, testItem.pseudo || '', testItem.value, result.actualValue);
+                process.exit(125);
+            }
         }
 
-        //Events doen't really work well, just wait :(
-        //await page.waitForTimeout(5000);
         await new Promise(r => setTimeout(r, 6000));
-        //await page.waitForNavigation();
-        checkedUrls.push(tests[i]['url'])
+        checkedUrls.push(testItem.url || testItem);
     }
-    console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`)
+
+    console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`);
     await browser.close();
-    await server.close();
+
+    // FIX 2: `server.close()` does not close existing keep-alive connections, which can cause
+    // the script to hang at the very end waiting for sockets to close. We close it and then force exit.
+    server.close();
+    setTimeout(() => {
+        console.log('Forcing exit as server.close() might be waiting for keep-alive sockets.');
+        process.exit(0);
+    }, 1000).unref();
 })();

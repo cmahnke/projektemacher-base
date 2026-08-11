@@ -325,6 +325,12 @@ other = "Digitale Souveränität"
 [CyberSecurity]
 other = "IT-Sicherheit"
 
+[DigitalEdition]
+other = "Digitale Edition"
+
+[ComputerArt]
+other = "Computerkunst"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

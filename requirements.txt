@@ -1,4 +1,4 @@
-numpy<2
+numpy
 wheel
 termcolor
 pyyaml
@@ -26,7 +26,7 @@ Pillow
 #https://github.com/foosoftsrl/jxlpy/releases/download/0.9.5/jxlpy-0.9.5-cp310-cp310-macosx_11_0_arm64.whl
 #jxlpy @ git+https://github.com/olokelo/jxlpy@4cc41c4ec51dc2099c5b4b65235859f869e98ea0
 jxlpy>=0.9.5
-#pyvips
+pyvips
 #PDF tools
 pikepdf
 fpdf2
@@ -45,6 +45,7 @@ pyexiv2
 academic
 # Indexer
 pagefind[bin]
+requests_ratelimiter
 beautifulsoup4
 #git+https://github.com/IIIF/presentation-validator
 # Archive

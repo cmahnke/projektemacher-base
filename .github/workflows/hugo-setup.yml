@@ -12,13 +12,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  HUGO_VERSION: 0.162.1
+  HUGO_VERSION: 0.164.0
 
 jobs:
   hugo:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: Install Hugo
