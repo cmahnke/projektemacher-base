@@ -37,7 +37,6 @@ requests
 requests-ratelimiter
 # HDR related
 ffmpeg-python
-opencv-python
 opencv-contrib-python-headless
 docker
 # Metadata for JXL
