@@ -25,6 +25,7 @@ exclude = [
     "www.worldcat.org",
     "www.wikidata.org",
 ]
+ignore_extensions = [".webp", ".bib", ".png", ".jpg", ".jpeg"]
 # Maximal age in days
 max_age = 60
 check_timeout = 5
@@ -165,6 +166,9 @@ async def archive(urls, client, access_key=None, secret_key=None):
     async_reqs = []
     for url in urls:
         archive_url = f"{archive_prefix}{url}"
+
+        if url.lower().endswith(tuple(ignore_extensions)):
+            continue
 
         try:
             available = await check_availability(url, client)
