@@ -250,7 +250,7 @@ console.log('Wrote preference file to %s', prefFile);
     await page.setRequestInterception(true);
 
     // Intercept requests
-    page.on('request', request => {
+    page.on('request', async (request) => {
       const url = request.url();
       try {
         if (page.isClosed() || !request.frame()) {
