@@ -223,49 +223,46 @@ console.log('Wrote preference file to %s', prefFile);
 
     // Intercept requests
     page.on('request', request => {
+        const url = request.url();
         const headers = request.headers();
-        let newRequestUrl;
 
         // Skip PDFs and livereload
-        if (request.url().toLowerCase().endsWith("pdf")) {
+        if (url.toLowerCase().endsWith("pdf")) {
             console.log('Warning: Response would hang Puppeteer, aborting PDF!');
             request.abort();
             return;
         }
-        if (request.url().includes("livereload.js")) {
+        if (url.includes("livereload.js")) {
             console.error('Got request for watcher, this happens if you try to check a development build!');
             request.abort();
             return;
         }
 
-        // ✅ Only continue if it's NOT a navigation request
+        // ✅ Handle navigation requests: rewrite to localhost
         if (request.isNavigationRequest()) {
-            // If it's a navigation, we don't want to rewrite the URL via continue()
-            // Instead, let the browser handle it normally
-            // But we still want to log the mapping
-            if (request.url().startsWith(baseURL)) {
-                newRequestUrl = request.url().replace(baseURL, remotePrefix);
-                console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-                // Don't call continue() — let the browser handle navigation
-                // This avoids the race condition
+            if (url.startsWith(baseURL)) {
+                const newUrl = url.replace(baseURL, remotePrefix);
+                console.log("Mapping navigation request '%s' to '%s'", url, newUrl);
+                request.continue({ url: newUrl, headers });
+                return;
             }
-            // Let the request proceed normally
+            // If not starting with baseURL, let it go
             request.continue();
             return;
         }
 
-        // ✅ For non-navigation requests (e.g., images, tiles, scripts, etc.)
-        if (request.url().startsWith(baseURL)) {
-            newRequestUrl = request.url().replace(baseURL, remotePrefix);
-            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({ url: newRequestUrl, headers: headers });
+        // ✅ Handle resource requests: rewrite to localhost
+        if (url.startsWith(baseURL)) {
+            const newUrl = url.replace(baseURL, remotePrefix);
+            console.log("Mapping resource request '%s' to '%s'", url, newUrl);
+            request.continue({ url: newUrl, headers });
             return;
         }
 
-        if (request.url().startsWith("https://localhost:3000")) {
-            newRequestUrl = request.url().replace("https://localhost:3000", "http://localhost:3000");
-            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({ url: newRequestUrl, headers: headers });
+        if (url.startsWith("https://localhost:3000")) {
+            const newUrl = url.replace("https://localhost:3000", "http://localhost:3000");
+            console.log("Mapping resource request '%s' to '%s'", url, newUrl);
+            request.continue({ url: newUrl, headers });
             return;
         }
 
