@@ -251,11 +251,11 @@ console.log('Wrote preference file to %s', prefFile);
     await page.setRequestInterception(true);
 
     // Intercept requests
-    page.on('request', async (request) => {
+    page.on('request', (request) => { //async 
       const url = request.url();
       try {
         if (page.isClosed() || !request.frame()) {
-          await request.abort('blockedbyclient').catch(() => {});
+          //await request.abort('blockedbyclient').catch(() => {});
           console.warn("Request for '%s' was canceled", url);
           return;
         }
