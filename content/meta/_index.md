@@ -8,9 +8,11 @@ sectionContent: false
 sitemap:
   disable: true
 cascade:
-  - _target:
+  - target:
       kind: '{page,section}'
-      lang: de
+      sites:
+        matrix:
+          languages: [de]
       path: '**'
     params:
       archive: false
