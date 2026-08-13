@@ -242,6 +242,7 @@ console.log('Wrote preference file to %s', prefFile);
         args: [
             '--no-sandbox',
             '--disable-web-security',
+            '--disable-extensions',
             ...additionalBrowserArgs
         ]
     });
