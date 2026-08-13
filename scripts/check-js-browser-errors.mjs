@@ -251,7 +251,14 @@ console.log('Wrote preference file to %s', prefFile);
 
     // Intercept requests
     page.on('request', request => {
-        const url = request.url();
+      const url = request.url();
+      try {
+        if (page.isClosed() || !request.frame()) {
+          await request.abort('blockedbyclient').catch(() => {});
+          console.warn("Request for '%s' was canceled", url);
+          return;
+        }
+
         const headers = request.headers();
 
         // Skip PDFs and livereload
@@ -295,6 +302,9 @@ console.log('Wrote preference file to %s', prefFile);
         }
 
         request.continue();
+      } catch (error) {
+        console.warn("Request for '%s' was canceled", url);
+      }
     });
 
     page.on('response', response => {
