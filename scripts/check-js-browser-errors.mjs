@@ -168,28 +168,56 @@ console.log('Wrote preference file to %s', prefFile);
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
 
-    // NEW: Webserver logging middleware
     if (argv.logServer) {
         app.use((req, res, next) => {
             res.on('finish', () => {
-                // Resolve the path to accurately log the file served (handling directories -> index.html)
                 let decodedPath = decodeURIComponent(req.path);
                 let resolvedPath = path.join(webRoot, decodedPath);
+                let displayPath = resolvedPath;
+
                 try {
-                    if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
+                    if (fs.existsSync(resolvedPath)) {
+                        const stat = fs.statSync(resolvedPath);
+                        if (stat.isDirectory()) {
+                            // Directory: check for index.html inside
+                            const indexPath = path.join(resolvedPath, 'index.html');
+                            if (fs.existsSync(indexPath)) {
+                                displayPath = indexPath;
+                            } else {
+                                displayPath = `${resolvedPath} (directory, no index.html)`;
+                            }
+                        }
+                        // else: it's a file, displayPath is already correct
+                    } else {
+                        // Path doesn't exist as-is: try appending index.html
+                        // (handles URLs like /about that map to /about/index.html)
                         const indexPath = path.join(resolvedPath, 'index.html');
                         if (fs.existsSync(indexPath)) {
-                            resolvedPath = indexPath;
+                            displayPath = indexPath;
+                        } else {
+                            displayPath = `${resolvedPath} (not found on disk)`;
                         }
                     }
                 } catch (e) {
-                    // Ignore fs errors
+                    displayPath = `${resolvedPath} (fs error: ${e.message})`;
                 }
 
                 if (res.statusCode >= 200 && res.statusCode < 400) {
-                    console.log(`[Webserver] Fulfilled request: ${req.url} -> ${resolvedPath}`);
+                    console.log(
+                        `[Webserver] %s %s -> %s (HTTP %d)`,
+                        req.method,
+                        req.url,
+                        displayPath,
+                        res.statusCode
+                    );
                 } else {
-                    console.log(`[Webserver] Failed to fulfill request: ${req.url} (Status: ${res.statusCode})`);
+                    console.log(
+                        `[Webserver] %s %s -> NOT FOUND on disk, served from: %s (HTTP %d)`,
+                        req.method,
+                        req.url,
+                        resolvedPath,
+                        res.statusCode
+                    );
                 }
             });
             next();
