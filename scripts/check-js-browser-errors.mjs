@@ -168,28 +168,56 @@ console.log('Wrote preference file to %s', prefFile);
     app.use(cors());
     const webRoot = path.join(process.cwd(), contentDir, '/');
 
-    // NEW: Webserver logging middleware
     if (argv.logServer) {
         app.use((req, res, next) => {
             res.on('finish', () => {
-                // Resolve the path to accurately log the file served (handling directories -> index.html)
                 let decodedPath = decodeURIComponent(req.path);
                 let resolvedPath = path.join(webRoot, decodedPath);
+                let displayPath = resolvedPath;
+
                 try {
-                    if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
+                    if (fs.existsSync(resolvedPath)) {
+                        const stat = fs.statSync(resolvedPath);
+                        if (stat.isDirectory()) {
+                            // Directory: check for index.html inside
+                            const indexPath = path.join(resolvedPath, 'index.html');
+                            if (fs.existsSync(indexPath)) {
+                                displayPath = indexPath;
+                            } else {
+                                displayPath = `${resolvedPath} (directory, no index.html)`;
+                            }
+                        }
+                        // else: it's a file, displayPath is already correct
+                    } else {
+                        // Path doesn't exist as-is: try appending index.html
+                        // (handles URLs like /about that map to /about/index.html)
                         const indexPath = path.join(resolvedPath, 'index.html');
                         if (fs.existsSync(indexPath)) {
-                            resolvedPath = indexPath;
+                            displayPath = indexPath;
+                        } else {
+                            displayPath = `${resolvedPath} (not found on disk)`;
                         }
                     }
                 } catch (e) {
-                    // Ignore fs errors
+                    displayPath = `${resolvedPath} (fs error: ${e.message})`;
                 }
 
                 if (res.statusCode >= 200 && res.statusCode < 400) {
-                    console.log(`[Webserver] Fulfilled request: ${req.url} -> ${resolvedPath}`);
+                    console.log(
+                        `[Webserver] %s %s -> %s (HTTP %d)`,
+                        req.method,
+                        req.url,
+                        displayPath,
+                        res.statusCode
+                    );
                 } else {
-                    console.log(`[Webserver] Failed to fulfill request: ${req.url} (Status: ${res.statusCode})`);
+                    console.log(
+                        `[Webserver] %s %s -> NOT FOUND on disk, served from: %s (HTTP %d)`,
+                        req.method,
+                        req.url,
+                        resolvedPath,
+                        res.statusCode
+                    );
                 }
             });
             next();
@@ -214,6 +242,7 @@ console.log('Wrote preference file to %s', prefFile);
         args: [
             '--no-sandbox',
             '--disable-web-security',
+            '--disable-extensions',
             ...additionalBrowserArgs
         ]
     });
@@ -222,54 +251,61 @@ console.log('Wrote preference file to %s', prefFile);
     await page.setRequestInterception(true);
 
     // Intercept requests
-    page.on('request', request => {
+    page.on('request', (request) => { //async 
+      const url = request.url();
+      try {
+        if (page.isClosed() || !request.frame()) {
+          //await request.abort('blockedbyclient').catch(() => {});
+          console.warn("Request for '%s' was canceled", url);
+          return;
+        }
+
         const headers = request.headers();
-        let newRequestUrl;
 
         // Skip PDFs and livereload
-        if (request.url().toLowerCase().endsWith("pdf")) {
+        if (url.toLowerCase().endsWith("pdf")) {
             console.log('Warning: Response would hang Puppeteer, aborting PDF!');
             request.abort();
             return;
         }
-        if (request.url().includes("livereload.js")) {
+        if (url.includes("livereload.js")) {
             console.error('Got request for watcher, this happens if you try to check a development build!');
             request.abort();
             return;
         }
 
-        // ✅ Only continue if it's NOT a navigation request
+        // ✅ Handle navigation requests: rewrite to localhost
         if (request.isNavigationRequest()) {
-            // If it's a navigation, we don't want to rewrite the URL via continue()
-            // Instead, let the browser handle it normally
-            // But we still want to log the mapping
-            if (request.url().startsWith(baseURL)) {
-                newRequestUrl = request.url().replace(baseURL, remotePrefix);
-                console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-                // Don't call continue() — let the browser handle navigation
-                // This avoids the race condition
+            if (url.startsWith(baseURL)) {
+                const newUrl = url.replace(baseURL, remotePrefix);
+                console.log("Mapping navigation request '%s' to '%s'", url, newUrl);
+                request.continue({ url: newUrl, headers });
+                return;
             }
-            // Let the request proceed normally
+            // If not starting with baseURL, let it go
             request.continue();
             return;
         }
 
-        // ✅ For non-navigation requests (e.g., images, tiles, scripts, etc.)
-        if (request.url().startsWith(baseURL)) {
-            newRequestUrl = request.url().replace(baseURL, remotePrefix);
-            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({ url: newRequestUrl, headers: headers });
+        // ✅ Handle resource requests: rewrite to localhost
+        if (url.startsWith(baseURL)) {
+            const newUrl = url.replace(baseURL, remotePrefix);
+            console.log("Mapping resource request '%s' to '%s'", url, newUrl);
+            request.continue({ url: newUrl, headers });
             return;
         }
 
-        if (request.url().startsWith("https://localhost:3000")) {
-            newRequestUrl = request.url().replace("https://localhost:3000", "http://localhost:3000");
-            console.log("Mapping request for '%s' to '%s'", request.url(), newRequestUrl);
-            request.continue({ url: newRequestUrl, headers: headers });
+        if (url.startsWith("https://localhost:3000")) {
+            const newUrl = url.replace("https://localhost:3000", "http://localhost:3000");
+            console.log("Mapping resource request '%s' to '%s'", url, newUrl);
+            request.continue({ url: newUrl, headers });
             return;
         }
 
         request.continue();
+      } catch (error) {
+        console.warn("Request for '%s' was canceled", url);
+      }
     });
 
     page.on('response', response => {
