@@ -336,13 +336,13 @@ jobs:
           ./scripts/github/jxl-0.11.1.sh
 
       - name: Install python dependencies
-        if: "!endsWith(matrix.version, '-dev')"
+        if: "!endsWith(matrix.version, '12')"
         continue-on-error: false
         run: |
           ./scripts/github/python-dependencies.sh
 
       - name: Install python dependencies
-        if: "endsWith(matrix.version, '-dev')"
+        if: "endsWith(matrix.version, '12')"
         continue-on-error: true
         run: |
           ./scripts/github/python-dependencies.sh
