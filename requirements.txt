@@ -50,3 +50,5 @@ beautifulsoup4
 #git+https://github.com/IIIF/presentation-validator
 # Archive
 #wayback-machine-archiver
+# Indexer
+pagefind-indexer @ git+https://github.com/cmahnke/pagefind-indexer@0.0.2
