@@ -63,7 +63,7 @@ jobs:
 
       - name: Index
         run: |
-          python scripts/indexer.py -c pagefind-index.yaml
+          pagefind-indexer -c pagefind-index.yaml
 
       - name: Deploy site
         uses: peaceiris/actions-gh-pages@v4.1.0
