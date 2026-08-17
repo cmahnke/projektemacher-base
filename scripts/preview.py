@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 
-import os, io, re, yaml, toml, sys
+import os, io, re, yaml, toml, sys, base64
 from termcolor import cprint
 from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import tempfile
 
+try:
+    import pyvips
+except ImportError:
+    pyvips = None
+
 configFile = "./config/_default/config.toml"
 contentPath = "./content"
-filePattern = "(_?)index(\.([a-zA-Z-]){2,5})?\.md"
+filePattern = "(_?)index(\\.([a-zA-Z-]){2,5})?\\.md"
 maxImageDimension = 17500
 
 namespaces = {
@@ -19,6 +24,7 @@ namespaces = {
 
 Image.MAX_IMAGE_PIXELS = maxImageDimension * maxImageDimension
 
+
 # TODO: Move to PyHugo
 def loadConfig(configFile):
     config = toml.load(configFile)
@@ -27,10 +33,11 @@ def loadConfig(configFile):
     else:
         return
 
+
 # TODO: Move to PyHugo
 def readMetadata(file):
     post = io.open(file, mode="r", encoding="utf-8").read()
-    header = re.sub(r"^---$.(.*?)^---$.*", "\\1", post, 0, re.MULTILINE | re.DOTALL)
+    header = re.sub(r"^---$.(.*?)^---$.*", "\\1", post, count=0, flags=re.MULTILINE | re.DOTALL)
     try:
         post = yaml.load(header, Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:
@@ -50,11 +57,38 @@ def readMetadata(file):
     return post
 
 
+def loadImageAsPNGBytes(path):
+    """
+    Load any image libvips understands (including formats PIL can't read,
+    e.g. JXL) and return it re-encoded as PNG bytes, entirely in memory.
+    """
+    if pyvips is None:
+        raise RuntimeError("pyvips is not available")
+    vipsImage = pyvips.Image.new_from_file(path, access="sequential")
+    return vipsImage.write_to_buffer(".png")
+
+
+def loadPILImage(path):
+    """
+    Return a PIL.Image for `path`. If PIL can't decode it directly (e.g. JXL),
+    fall back to pyvips to convert it in-memory to PNG bytes first.
+    No temporary files are created.
+    """
+    try:
+        img = Image.open(path)
+        img.load()
+        return img
+    except (UnidentifiedImageError, OSError):
+        pngBytes = loadImageAsPNGBytes(path)
+        return Image.open(io.BytesIO(pngBytes))
+
+
 def drawTitle(title, file, config):
     font = ImageFont.truetype(config["font"]["location"], config["font"]["size"])
     img = Image.new("RGBA", (config["size"]["width"], config["size"]["height"]), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    w, h = draw.textsize(title)
+    bbox = draw.textbbox((0, 0), title, font=font)
+    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text((15, 15), title, fill=config["font"]["color"], font=font)
     img.save(file)
 
@@ -77,7 +111,7 @@ def drawSVG(title, contentFile, outFile, config):
         if style == "" or style is None:
             cprint(f"No style in {template}", 'red')
             continue
-        for urlMatch, url in re.findall(r"(url\s*?\([\'\"]?(.*?)[\'\"]?\))", style, re.S | re.M):
+        for urlMatch, url in re.findall(r"(url\s*?$[\'\"]?(.*?)[\'\"]?$)", style, re.S | re.M):
             relLocation = os.path.normpath(os.path.join(templateBase, os.path.dirname(url)))
             targetPath = os.path.relpath(relLocation, os.path.dirname(outFile))
             newLocation = os.path.join(targetPath, os.path.basename(url))
@@ -98,25 +132,30 @@ def drawSVG(title, contentFile, outFile, config):
         return
     if config["source"] == "post" and previewImg != "":
         previewImg = os.path.join(path, previewImg)
+
+    previewElem = None
+
     if previewImg != "" and os.path.isfile(previewImg):
-        if str(previewImg).endswith(".jxl"):
-            if "jxlpy" not in sys.modules:
-                try:
-                    import jxlpy
-                    from jxlpy import JXLImagePlugin
-                except ImportError:
-                    cprint(f"Can't load `jxlpy` module, skipping!", "red")
-                    return
-            # Only on 3.12: , delete_on_close=False
-            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", prefix="ogPreview-tmp", dir=path, delete=False)
-            cprint(f"Preview image '{previewImg} is JXL creating JPEG variant {tmp.name} for further processing", "yellow")
-            img = Image.open(previewImg)
-            img.save(tmp.name)
-            previewImg = tmp.name
-        previewSrc = os.path.join(
-            os.path.relpath(os.path.dirname(previewImg), os.path.dirname(outFile)),
-            os.path.basename(previewImg),
-        )
+        if str(previewImg).lower().endswith(".jxl"):
+            if pyvips is None:
+                cprint("pyvips isn't installed, can't process JXL preview image, skipping!", "red")
+                return
+            cprint(
+                f"Preview image '{previewImg}' is JXL, converting in-memory via pyvips (no temp files)",
+                "yellow",
+            )
+            try:
+                pngBytes = loadImageAsPNGBytes(previewImg)
+            except Exception as e:
+                cprint(f"Can't convert JXL image '{previewImg}' with pyvips: {e}", "red")
+                return
+            b64 = base64.b64encode(pngBytes).decode("ascii")
+            previewSrc = f"data:image/png;base64,{b64}"
+        else:
+            previewSrc = os.path.join(
+                os.path.relpath(os.path.dirname(previewImg), os.path.dirname(outFile)),
+                os.path.basename(previewImg),
+            )
         cprint("Setting @id='preview-image' to '{}'".format(previewImg), "yellow")
         if svgTree.findall(imageXPath, namespaces):
             previewElem = svgTree.findall(imageXPath, namespaces)[0]
@@ -129,6 +168,7 @@ def drawSVG(title, contentFile, outFile, config):
                 previewElem = svgTree.findall(imageXPath, namespaces)[0]
                 parent.remove(previewElem)
                 cprint(f"Removed reference to missing image '{previewImg}'", "yellow")
+                previewElem = None
             else:
                 cprint(
                     "Can't find parent for missing preview image from template '{}'".format(template),
@@ -140,13 +180,13 @@ def drawSVG(title, contentFile, outFile, config):
 
     # TODO: This currently only scales to width
     # TODO: This currenly only centres
-    if previewImg != "" and "scale" in config["svg"]:
+    if previewImg != "" and previewElem is not None and "scale" in config["svg"]:
         try:
-            img = Image.open(previewImg)
+            img = loadPILImage(previewImg)
         except FileNotFoundError:
             cprint(f"Can't find image file '{previewImg}', skipping!", "red")
             return
-        except DecompressionBombError:
+        except Image.DecompressionBombError:
             cprint(f"Can't load image file '{previewImg}' since it's to large, skipping!", "red")
             return
         except UnidentifiedImageError:
@@ -210,6 +250,9 @@ def getPreviewImg(config, contentFile):
         cprint("Unknown source type: '{}'".format(config["source"]), "red")
         return False
 
+
+if sys.version_info[0] < 3 or sys.version_info[1] < 13:
+    raise Exception("Must be using Python 3.13")
 
 config = loadConfig(open(configFile, "r"))
 if config is None:

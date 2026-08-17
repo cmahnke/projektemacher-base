@@ -17,4 +17,6 @@ if [ -z "$SAXON" ] ; then
   exit 1
 fi
 
+echo "Running $SAXON $@"
+
 $SAXON "$@"

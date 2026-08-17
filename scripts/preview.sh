@@ -24,7 +24,7 @@ fi
 
 BASEDIR=$(dirname "$0")
 
-echo "Generating previews for $FILENAME from $SOURCE - background $BACKGROUND"
+echo "Generating previews for $FILENAME from $SOURCE - background $BACKGROUND, format $TARGETFORMAT"
 
 # Generate Previews
 python3 $BASEDIR/preview.py
