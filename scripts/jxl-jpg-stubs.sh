@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e -o pipefail
+
 IMAGES=$(find content -name '*.jxl')
 DOCKER_PREFIX="docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/iiif-action:latest-jxl "
 OUT_SUFFIX=".jpg"

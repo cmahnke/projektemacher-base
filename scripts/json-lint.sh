@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 JSON_PREFIX=content
 
 if [ -z "$DEPENDENCY_MANAGER" ] ; then
