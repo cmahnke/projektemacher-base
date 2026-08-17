@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 mkdir -p data
 
 COUNT=`hugo list all | tail -n +2 | wc -l | tr -d ' '`

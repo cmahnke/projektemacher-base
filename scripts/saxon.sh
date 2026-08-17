@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 SAXON_DIR="/opt/saxon"
 
 if [ -z "$SAXON" ] ; then
