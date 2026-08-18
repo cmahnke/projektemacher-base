@@ -21,6 +21,7 @@ echo "Installing $RUN_DEPENDENCIES"
 sudo apt-get install $RUN_DEPENDENCIES
 
 sudo mkdir -p $SAXON_DIR
+sudo touch SAXON_SCRIPT
 # Get Saxon
 SAXON_FILE=$(basename $SAXON_URL)
 RESOLVER_FILE=$(basename $RESOLVER_URL)
