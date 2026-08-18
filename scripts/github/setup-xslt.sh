@@ -9,7 +9,7 @@ RESOLVER_URL="https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/5.1.2/x
 # https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/6.0.9/xmlresolver-6.0.9-data.jar
 
 SAXON_DIR="/opt/saxon"
-SAXON_SCRIPT="$SAXON_DIR=/saxon"
+SAXON_SCRIPT="$SAXON_DIR/saxon"
 
 sudo apt update
 
