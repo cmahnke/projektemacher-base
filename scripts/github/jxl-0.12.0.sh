@@ -8,6 +8,8 @@ if test -z "`which sudo`" ; then
   apt-get install -y sudo wget
 fi
 
+sudo dpkg --remove --force-remove-reinstreq libjxl-tools
+
 # This needs the `software-properties-common` package
 #sudo add-apt-repository -y universe
 #sudo apt-get update

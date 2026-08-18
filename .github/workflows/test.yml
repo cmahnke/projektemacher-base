@@ -48,7 +48,7 @@ jobs:
 # Needed to check if the JXL Python plugin builds
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.1.sh
+          ./scripts/github/jxl-0.11.2.sh
 
 # Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
@@ -73,7 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.11.1', '0.11.2', '0.12.0']
+        version: ['0.11.2', '0.12.0']
 
     steps:
       - uses: actions/checkout@v7
@@ -82,7 +82,6 @@ jobs:
       - name: Install JXL dependencies
         run: |
           ./scripts/github/jxl-${{ matrix.version }}.sh
-
 
   test_install:
     runs-on: ubuntu-24.04
@@ -107,7 +106,7 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/jxl-0.11.1.sh
+          ./scripts/github/jxl-0.11.2.sh
           ./scripts/github/setup-xslt.sh
           ./scripts/github/setup-inkscape.sh
           ./scripts/github/setup-media.sh
@@ -284,7 +283,7 @@ jobs:
           submodules: true
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.1.sh
+          ./scripts/github/jxl-0.11.2.sh
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -333,7 +332,7 @@ jobs:
 
       - name: Install JXL
         run: |
-          ./scripts/github/jxl-0.11.1.sh
+          ./scripts/github/jxl-0.11.2.sh
 
       - name: Install python dependencies
         if: "!endsWith(matrix.version, '12') && !endsWith(matrix.version, '-dev')"

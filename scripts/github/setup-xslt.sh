@@ -1,7 +1,13 @@
 #!/bin/sh
 
+set -e -o pipefail
+
 SAXON_URL="https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/12.1/Saxon-HE-12.1.jar"
 RESOLVER_URL="https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/5.1.2/xmlresolver-5.1.2.jar"
+# https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/13.0/Saxon-HE-13.0.jar
+# https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/6.0.9/xmlresolver-6.0.9.jar
+# https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/6.0.9/xmlresolver-6.0.9-data.jar
+
 SAXON_DIR="/opt/saxon"
 SAXON_SCRIPT="$SAXON_DIR=/saxon"
 
