@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-
 set -e -o pipefail
 
-SAXON_URL="https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/12.1/Saxon-HE-12.1.jar"
-RESOLVER_URL="https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/5.1.2/xmlresolver-5.1.2.jar"
-# https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/13.0/Saxon-HE-13.0.jar
-# https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/6.0.9/xmlresolver-6.0.9.jar
-# https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/6.0.9/xmlresolver-6.0.9-data.jar
+# --- Update these as needed (check Maven Central for the latest) ---
+SAXON_VERSION="12.5"
+RESOLVER_VERSION="5.2.2"
+# ---------------------------------------------------------------------
+
+SAXON_URL="https://repo1.maven.org/maven2/net/sf/saxon/Saxon-HE/${SAXON_VERSION}/Saxon-HE-${SAXON_VERSION}.jar"
+RESOLVER_URL="https://repo1.maven.org/maven2/org/xmlresolver/xmlresolver/${RESOLVER_VERSION}/xmlresolver-${RESOLVER_VERSION}.jar"
 
 SAXON_DIR="/opt/saxon"
 SAXON_SCRIPT="$SAXON_DIR/saxon"
@@ -14,24 +15,28 @@ SAXON_SCRIPT="$SAXON_DIR/saxon"
 sudo apt update
 
 echo "Installing Java"
-
 RUN_DEPENDENCIES="openjdk-17-jdk curl"
-
 echo "Installing $RUN_DEPENDENCIES"
-sudo apt-get install $RUN_DEPENDENCIES
+sudo apt-get install -y $RUN_DEPENDENCIES
 
-sudo mkdir -p $SAXON_DIR
-sudo touch SAXON_SCRIPT
-# Get Saxon
-SAXON_FILE=$(basename $SAXON_URL)
-RESOLVER_FILE=$(basename $RESOLVER_URL)
-sudo curl $SAXON_URL --output $SAXON_DIR/$SAXON_FILE
-sudo curl $RESOLVER_URL --output $SAXON_DIR/$RESOLVER_FILE
-sudo ln -s $SAXON_DIR/$SAXON_FILE $SAXON_DIR/saxon.jar
-sudo ln -s $SAXON_DIR/$RESOLVER_FILE $SAXON_DIR/xmlresolver.jar
+sudo mkdir -p "$SAXON_DIR"
 
-sudo printf '#!/bin/sh\njava -Xmx1024m -cp $SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar net.sf.saxon.Transform "$@"' > $SAXON_SCRIPT
-sudo chmod +x $SAXON_SCRIPT
+SAXON_FILE=$(basename "$SAXON_URL")
+RESOLVER_FILE=$(basename "$RESOLVER_URL")
 
-echo "Installed Saxon to /opt/saxon:"
-ls -al /opt/saxon
+echo "Downloading Saxon $SAXON_VERSION and xmlresolver $RESOLVER_VERSION"
+sudo curl -fL "$SAXON_URL" --output "$SAXON_DIR/$SAXON_FILE"
+sudo curl -fL "$RESOLVER_URL" --output "$SAXON_DIR/$RESOLVER_FILE"
+
+sudo ln -sf "$SAXON_DIR/$SAXON_FILE" "$SAXON_DIR/saxon.jar"
+sudo ln -sf "$SAXON_DIR/$RESOLVER_FILE" "$SAXON_DIR/xmlresolver.jar"
+
+sudo tee "$SAXON_SCRIPT" > /dev/null <<EOF
+#!/bin/sh
+java -Xmx1024m -cp "$SAXON_DIR/saxon.jar:$SAXON_DIR/xmlresolver.jar" net.sf.saxon.Transform "\$@"
+EOF
+
+sudo chmod +x "$SAXON_SCRIPT"
+
+echo "Installed Saxon to $SAXON_DIR:"
+ls -al "$SAXON_DIR"
