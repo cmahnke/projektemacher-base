@@ -279,6 +279,7 @@ jobs:
         run: |
           echo "Creating clip path"
           ./scripts/saxon.sh -s:static/images/clipboard.svg -xsl:scripts/xslt/svg-clippath.xsl -o:static/images/clippath.svg
+          cat static/images/clippath.svg
 
   test_PyHugo:
     runs-on: ubuntu-24.04
