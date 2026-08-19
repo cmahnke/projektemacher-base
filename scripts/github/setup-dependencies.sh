@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
 set -eu
 
 RUN_DEPENDENCIES="bash coreutils imagemagick parallel rsync sshpass jq findutils pkg-config poppler-utils libvips-tools patchelf wget gifsicle libcairo2-dev libpango1.0-dev libgif-dev exiftool xmlstarlet librsvg2-bin"

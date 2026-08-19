@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -e -o pipefail
 
 # --- Update these as needed (check Maven Central for the latest) ---

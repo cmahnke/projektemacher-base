@@ -1,5 +1,6 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
+
+set -e -o pipefail
 
 echo "Trying to set up Dart Sass"
 # Last known working is 1.99.0

@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
 DEFAULT_VARIANT="extended_"
 DEFAULT_OS="linux"

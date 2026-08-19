@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
 if [ -z "$DEPENDENCY_MANAGER" ] ; then
   DEPENDENCY_MANAGER=npm

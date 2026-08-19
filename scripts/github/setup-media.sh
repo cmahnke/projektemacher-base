@@ -1,5 +1,6 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
+
+set -e -o pipefail
 
 RUN_DEPENDENCIES="ffmpeg"
 

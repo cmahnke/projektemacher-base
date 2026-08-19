@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 if [ -n "$1" ] ; then
   BASEDIR="$1"
 else
@@ -9,7 +11,7 @@ fi
 
 if [[ ${var:0:1} != / ]]  ; then
   BASEDIR=`realpath $BASEDIR`
-fi 
+fi
 
 echo "BASEDIR is set to $BASEDIR"
 

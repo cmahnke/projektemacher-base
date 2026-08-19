@@ -1,5 +1,6 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
+
+set -e -o pipefail
 
 # See also https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/manual_imagick7.html
 

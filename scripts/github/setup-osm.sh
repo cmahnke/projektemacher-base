@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
 echo "Install OSM tools"
 sudo apt install osmium-tool

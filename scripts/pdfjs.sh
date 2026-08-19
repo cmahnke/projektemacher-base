@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 PDFJS_STATIC_DIR=static/pdfjs
 PDFJS_URL=https://github.com/mozilla/pdf.js
 TMP_DIR=tmp-pdfjs

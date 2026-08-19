@@ -1,6 +1,6 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
 
+set -e -o pipefail
 
 BASEDIR="$(dirname "$0")/../../"
 
