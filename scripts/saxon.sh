@@ -8,7 +8,7 @@ SAXON_DIR="/opt/saxon"
 SAXON_SCRIPT="$SAXON_DIR/saxon"
 
 if [ -z "$SAXON" ] ; then
-  SAXON=`which saxon`
+  SAXON=$(command -v saxon || true)
 fi
 
 if [ -x "$SAXON_SCRIPT" ] ; then
