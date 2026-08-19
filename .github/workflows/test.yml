@@ -274,6 +274,7 @@ jobs:
       - name: List Saxon directory
         run: |
           ls -al /opt/saxon
+          cat /opt/saxon/saxon
       - name: Example transformation
         run: |
           echo "Creating clip path"
