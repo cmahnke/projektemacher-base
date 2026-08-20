@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e -o pipefail
-
 echo "Installing Docker"
 sudo apt install docker
 
