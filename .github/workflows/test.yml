@@ -180,7 +180,7 @@ jobs:
 
       - uses: pnpm/action-setup@v6.0.10
         with:
-          version: 9
+          version: 11
 
       - name: Install flags
         run: |
@@ -234,7 +234,7 @@ jobs:
 
       - uses: pnpm/action-setup@v6.0.10
         with:
-          version: 9
+          version: 11
 
       - name: Install fonts
         run: |
@@ -313,7 +313,7 @@ jobs:
           node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v6.0.10
         with:
-          version: 9
+          version: 11
       - name: Install with pnpm
         run: |
           pnpm install --ignore-scripts
