@@ -6,6 +6,8 @@ PYTHON=`$CTX/./find-python3.sh`
 PYTHON_PATH=`dirname $PYTHON`
 PYTHON_VERSION=`$PYTHON --version | cut -d' ' -f2 | cut -d'.' -f1,2`
 
+echo "This script is deprecated!! Try to avoid pyjxl, use pyvips instead"
+
 echo "Using $PYTHON, at $PYTHON_PATH, version $PYTHON_VERSION"
 
 brew install jpeg-xl

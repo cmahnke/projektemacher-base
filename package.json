@@ -15,6 +15,7 @@
   "jquery-ui": "^1.14.2",
   "js-cookie": "^3.0.8",
   "manifesto.js": "^4.3.5",
+  "mermaid": "^11.17.0",
   "normalize.css": "^8.0.1",
   "ol": "^10.10.0",
   "ol-mapbox-style": "^12.5.0",

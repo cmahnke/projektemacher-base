@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
 
 if ! command -v npm 2>&1 >/dev/null
 then

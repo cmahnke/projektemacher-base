@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e -o pipefail
+
 OS="`uname`"
 case "$OS" in
   'Darwin')
