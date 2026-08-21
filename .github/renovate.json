@@ -5,7 +5,7 @@
   ],
   "gitAuthor": "Christian Mahnke <194820+cmahnke@users.noreply.github.com>",
   "platform": "github",
-  "autodiscover:" true,
+  "autodiscover": true,
   "autodiscoverFilter": ["cmahnke/projektemacher-base"],
   "customManagers": [
     {
