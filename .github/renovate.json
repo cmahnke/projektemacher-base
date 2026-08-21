@@ -1,0 +1,24 @@
+{
+  "$schema": "https://renovatebot.com",
+  "extends": [
+    "config:recommended"
+  ],
+  "repositories": [
+    "cmahnke/projektemacher-base"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Automatically update HUGO_VERSION in GitHub Actions workflows",
+      "managerFilePatterns": [
+        "^\\.github/workflows/.*\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "^\\s*HUGO_VERSION:\\s*[\"']?(?<currentValue>[\\w.-]+)[\"']?"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "gohugoio/hugo",
+      "versioningTemplate": "semver"
+    }
+  ]
+}
