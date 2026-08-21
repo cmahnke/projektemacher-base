@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "gitAuthor": "Christian Mahnke <194820+cmahnke@users.noreply.github.com>",
   "customManagers": [
     {
       "customType": "regex",

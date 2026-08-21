@@ -18,3 +18,5 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           LOG_LEVEL: 'info'
+          autodiscover: 'true'
+          autodiscover-filter: 'cmahnke/projektemacher-base'
