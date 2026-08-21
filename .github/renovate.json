@@ -1,11 +1,8 @@
 {
-  "$schema": "https://renovatebot.com",
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
-  ],
-  "repositories": [
-    "cmahnke/projektemacher-base"
-  ],
+  ]
   "customManagers": [
     {
       "customType": "regex",
@@ -14,7 +11,7 @@
         "^\\.github/workflows/.*\\.ya?ml$"
       ],
       "matchStrings": [
-        "^\\s*HUGO_VERSION:\\s*[\"']?(?<currentValue>[\\w.-]+)[\"']?"
+        "HUGO_VERSION:\\s*[\"']?(?<currentValue>[\\w.-]+)[\"']?"
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "gohugoio/hugo",
