@@ -3,7 +3,6 @@
   "extends": [
     "config:recommended"
   ],
-  "gitAuthor": "Christian Mahnke <194820+cmahnke@users.noreply.github.com>",
   "platform": "github",
   "autodiscover": true,
   "autodiscoverFilter": ["cmahnke/projektemacher-base"],
