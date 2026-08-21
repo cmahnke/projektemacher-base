@@ -6,6 +6,12 @@
   "platform": "github",
   "autodiscover": true,
   "autodiscoverFilter": ["cmahnke/projektemacher-base"],
+  "packageRules": [
+    {
+      "matchCategories": ["js"],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
