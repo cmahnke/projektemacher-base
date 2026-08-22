@@ -83,6 +83,15 @@ jobs:
         run: |
           ./scripts/github/jxl-${{ matrix.version }}.sh
 
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.13
+
+      - name: Install python dependencies
+        run: |
+          ./scripts/github/python-dependencies.sh
+
   test_install:
     runs-on: ubuntu-24.04
     steps:

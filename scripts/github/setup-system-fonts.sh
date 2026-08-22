@@ -28,6 +28,7 @@ echo "Installing fonts"
 mkdir -p "$DECOMPRESS_DIR"
 find $BASEDIR -path "*static/fonts/*.woff2" -print -exec cp {} "$DECOMPRESS_DIR" \;
 cd $DECOMPRESS_DIR
+DECOMPRESS_DIR=`pwd`
 for file in `ls *.woff2` ;
 do
   echo "Decompressing font $file using Docker"
