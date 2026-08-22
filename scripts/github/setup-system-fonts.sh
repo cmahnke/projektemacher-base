@@ -21,8 +21,6 @@ DECOMPRESS_DIR=./tmp/fonts/
 FONT_LIST=../fonts.lst
 JOBS=`nproc --all`
 
-docker pull "$DOCKER_IMAGE"
-
 echo "Installing fonts"
 
 mkdir -p "$DECOMPRESS_DIR"
@@ -37,6 +35,7 @@ do
 done
 
 if [ -z "$FONT_CONVERT_CMD" ] ; then
+  docker pull "$DOCKER_IMAGE"
   FONT_CONVERT_CMD="docker run -w ${PWD} -v ${PWD}:${PWD} $DOCKER_IMAGE /usr/local/bin/woff2_decompress"
 fi
 
