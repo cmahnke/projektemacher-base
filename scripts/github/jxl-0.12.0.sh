@@ -2,11 +2,9 @@
 
 set -e -o pipefail
 
-# See also https://doc.owncloud.com/server/next/admin_manual/installation/manual_installation/manual_imagick7.html
-
 if test -z "`which sudo`" ; then
   apt-get update
-  apt-get install -y sudo wget
+  apt-get install -y sudo
 fi
 
 sudo dpkg --remove --force-remove-reinstreq libjxl-tools
@@ -19,7 +17,7 @@ sudo apt-get install -y libstdc++6 libtcmalloc-minimal4 libgcc-s1 libc6 libhwy-d
 mkdir -p /tmp/jxl
 cd /tmp/jxl
 
-wget https://github.com/libjxl/libjxl/releases/download/v0.12.0/jxl-debs-amd64-ubuntu-24.04.tar
+curl -fsSL -O https://github.com/libjxl/libjxl/releases/download/v0.12.0/jxl-debs-amd64-ubuntu-24.04.tar
 tar xf jxl-debs-amd64-ubuntu-24.04.tar
 
 sudo apt install -y -f ./libjxl_0.12.0*_amd64.deb
