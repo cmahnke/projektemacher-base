@@ -1,0 +1,15 @@
+{{- $class := .class -}}
+{{- $content := .content -}}
+{{- $context := .context -}}
+
+{{- if eq $class nil -}}
+  {{- $class = "" -}}
+{{- end -}}
+
+{{- if eq $content nil -}}
+  {{- errorf "[shortcodes/mermaid/block.html] Empty content for mermaid in %s" $context.RelPermalink -}}
+{{- end -}}
+
+<pre class="mermaid {{ $class }}">
+    {{- $content | safeHTML -}}
+</pre>

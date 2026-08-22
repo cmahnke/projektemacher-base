@@ -1,0 +1,12 @@
+{{- $class := "" -}}
+{{- if (.Get "class") -}}
+  {{- $class = .Get "class" -}}
+{{- end -}}
+
+{{- $content := .Inner -}}
+
+{{- partial "shortcodes/mermaid/block.html" (dict "context" .Page "class" $class "content" $content) -}}
+
+{{- define "_partials/shortcodes/mermaid-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/mermaid.js") "scss" slice) | jsonify -}}
+{{- end -}}
