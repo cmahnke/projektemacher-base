@@ -27,17 +27,20 @@ mkdir -p "$DECOMPRESS_DIR"
 find $BASEDIR -path "*static/fonts/*.woff2" -print -exec cp {} "$DECOMPRESS_DIR" \;
 cd $DECOMPRESS_DIR
 DECOMPRESS_DIR=`pwd`
-for file in `ls *.woff2` ;
-do
-  echo "Decompressing font $file using Docker"
-  echo $file >> $FONT_LIST
-  #docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress "$file" ;
-done
 
+METHOD="$FONT_CONVERT_CMD"
 if [ -z "$FONT_CONVERT_CMD" ] ; then
   docker pull "$DOCKER_IMAGE"
   FONT_CONVERT_CMD="docker run -w ${PWD} -v ${PWD}:${PWD} $DOCKER_IMAGE /usr/local/bin/woff2_decompress"
+  METHOD=Docker
 fi
+
+for file in `ls *.woff2` ;
+do
+  echo "Decompressing font $file using $METHOD"
+  echo $file >> $FONT_LIST
+  #docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress "$file" ;
+done
 
 cat $FONT_LIST | xargs -P $JOBS -n 1 $FONT_CONVERT_CMD
 
