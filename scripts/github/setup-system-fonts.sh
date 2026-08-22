@@ -2,6 +2,8 @@
 
 set -e -o pipefail
 
+DOCKER_IMAGE="ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress"
+
 if [ -n "$1" ] ; then
   BASEDIR="$1"
 else
@@ -9,7 +11,7 @@ else
   #BASEDIR="$(readlink -f "$0")/../../"
 fi
 
-if [[ ${var:0:1} != / ]]  ; then
+if [[ ${var:0:1} != / ]] ; then
   BASEDIR=`realpath $BASEDIR`
 fi
 
@@ -32,7 +34,12 @@ do
   echo $file >> $FONT_LIST
   #docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress "$file" ;
 done
-cat $FONT_LIST | xargs -P $JOBS -n 1 docker run -w ${PWD} -v ${PWD}:${PWD} ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress
+
+if [ -z "$FONT_CONVERT_CMD" ] ; then
+  FONT_CONVERT_CMD="docker run -w ${PWD} -v ${PWD}:${PWD} $DOCKER_IMAGE"
+fi
+
+cat $FONT_LIST | xargs -P $JOBS -n 1 $FONT_CONVERT_CMD
 
 echo "Created files (in $DECOMPRESS_DIR):"
 find . -name "*.ttf" -print
