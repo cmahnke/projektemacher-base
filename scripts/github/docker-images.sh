@@ -2,8 +2,8 @@
 
 set -e -o pipefail
 
-echo "Installing Docker"
-sudo apt install docker
+#echo "Installing Docker"
+#sudo apt install docker
 
 # Format ["TAG"]="GLOBAL NAME"
 # TAG is just the local name, not the name in  the registry!
