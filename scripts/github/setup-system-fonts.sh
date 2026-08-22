@@ -2,7 +2,7 @@
 
 set -e -o pipefail
 
-DOCKER_IMAGE="ghcr.io/cmahnke/font-action:latest /usr/local/bin/woff2_decompress"
+DOCKER_IMAGE="ghcr.io/cmahnke/font-action:latest"
 
 if [ -n "$1" ] ; then
   BASEDIR="$1"
@@ -21,7 +21,7 @@ DECOMPRESS_DIR=./tmp/fonts/
 FONT_LIST=../fonts.lst
 JOBS=`nproc --all`
 
-docker pull "ghcr.io/cmahnke/font-action:latest"
+docker pull "$DOCKER_IMAGE"
 
 echo "Installing fonts"
 
@@ -37,7 +37,7 @@ do
 done
 
 if [ -z "$FONT_CONVERT_CMD" ] ; then
-  FONT_CONVERT_CMD="docker run -w ${PWD} -v ${PWD}:${PWD} $DOCKER_IMAGE"
+  FONT_CONVERT_CMD="docker run -w ${PWD} -v ${PWD}:${PWD} $DOCKER_IMAGE /usr/local/bin/woff2_decompress"
 fi
 
 cat $FONT_LIST | xargs -P $JOBS -n 1 $FONT_CONVERT_CMD
