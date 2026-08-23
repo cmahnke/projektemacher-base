@@ -3,11 +3,7 @@
   {{ $siteLangs := .Site.Languages }}
 
   {{/* See https://discourse.gohugo.io/t/deprecations-in-v0-156-0/56732/13 */}}
-  {{ $collectedLangs := slice }}
-  {{ range hugo.Sites }}
-    {{ $collectedLangs = $collectedLangs | collections.Append .Language }}
-  {{ end }}
-  {{ $uniqueCollectedLangs := collections.Uniq $collectedLangs }}
+  {{ $uniqueCollectedLangs := partial "functions/i18n/site-langs" . }}
 
   {{ warnf ".Site.Languages (%d entries): %v" (len $siteLangs) $siteLangs }}
   {{ warnf "hugo.Sites unique languages (%d entries): %v" (len $uniqueCollectedLangs) $uniqueCollectedLangs }}
