@@ -39,7 +39,7 @@ case "$1" in
       exit 2
     fi
 
-    if [ "$HUGO_VERSION" = "latest"] ; then 
+    if [ "$HUGO_VERSION" = "latest" ] ; then 
       HUGO_VERSION=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep '"tag_name":' | cut -d '"' -f 4 | sed 's/^v//')
     fi
 
