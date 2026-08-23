@@ -1,4 +1,5 @@
 {{- if compare.Ge "0.165.0" hugo.Version -}}
+  {{- warnf "Legacy Hugo version detected: %s" hugo.Version -}}
   {{/* Legacy */}}
   {{ $siteLangs := .Site.Languages }}
 
@@ -34,5 +35,6 @@
   <div class="legacy-hugo-notice">
     <p>Executed: Hugo version is <strong>{{ hugo.Version }}</strong> (<= 0.165.0).</p>
   </div>
-  {{- warnf "Legacy Hugo version detected: %s" hugo.Version -}}
+{{ else }}
+  {{- warnf "Skipping test for version: %s" hugo.Version -}}
 {{ end }}
