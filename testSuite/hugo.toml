@@ -2,9 +2,9 @@ baseURL = ''
 theme = ["projektemacher-base"]
 title = "Projektemacher Base tests"
 locale = "en"
-defaultcontentlanguage = "en"
+defaultContentLanguage = "en"
 publishDir = "docs"
-canonifyurls = true
+canonifyURLs = true
 disablePathToLower = true
 
 [params.author]
@@ -16,4 +16,18 @@ disablePathToLower = true
   unsafe = true
 
 [imaging]
-    quality = 95
+  quality = 95
+
+# Multilingual Language Configurations
+[languages]
+  [languages.en]
+    locale = 'en'
+    label = 'English'
+    weight = 1
+    contentDir = 'content/en'
+
+  [languages.de]
+    locale = 'de'
+    label = 'Deutsch'
+    weight = 2
+    contentDir = 'content/de'
