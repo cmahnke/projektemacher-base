@@ -48,7 +48,7 @@
 
       {{- $tagTranslations := dict -}}
       {{- if hugo.IsMultilingual -}}
-        {{- $languages : partial "functions/i18n/site-langs" . -}}
+        {{- $languages := partial "functions/i18n/site-langs" . -}}
         {{- range $languages -}}
           {{- $i18nTag := $tag -}}
 
