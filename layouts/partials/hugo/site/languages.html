@@ -1,0 +1,13 @@
+{{/* See https://discourse.gohugo.io/t/deprecations-in-v0-156-0/56732/14 */}}
+{{/*
+  Usage:
+  {{ range partialCached "get-languages.html" .}}
+    {{ .Language.Label }}
+  {{ end }}
+
+  */}}
+{{ $languages := slice }}
+{{ range hugo.Sites }}
+  {{ $languages = $languages | collections.Append . }}
+{{ end }}
+{{ return (collections.Uniq $languages) }}
