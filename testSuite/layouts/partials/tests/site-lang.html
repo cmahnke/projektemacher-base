@@ -1,0 +1,40 @@
+{{- if compare.Ge "0.165.0" hugo.Version -}}
+  {{- warnf "Legacy Hugo version detected: %s" hugo.Version -}}
+  {{/* Legacy */}}
+  {{ $siteLangs := .Site.Languages }}
+
+  {{/* See https://discourse.gohugo.io/t/deprecations-in-v0-156-0/56732/13 */}}
+  {{ $uniqueCollectedLangs := partial "functions/i18n/site-langs" . }}
+
+  {{ warnf ".Site.Languages (%d entries): %v" (len $siteLangs) $siteLangs }}
+  {{ warnf "hugo.Sites unique languages (%d entries): %v" (len $uniqueCollectedLangs) $uniqueCollectedLangs }}
+
+  {{ $len1 := len $siteLangs }}
+  {{ $len2 := len $uniqueCollectedLangs }}
+
+  {{ if ne $len1 $len2 }}
+    {{ errorf ".Site.Languages count (%d) does not match hugo.Sites count (%d)." $len1 $len2 }}
+  {{ end }}
+
+  {{ range $index, $lang := $siteLangs }}
+    {{ $otherLang := index $uniqueCollectedLangs $index }}
+
+    {{ $itemType1 := printf "%T" $lang }}
+    {{ $itemType2 := printf "%T" $otherLang }}
+
+    {{ if ne $itemType1 $itemType2 }}
+      {{ errorf "Element type mismatch at index %d! Direct: '%s' | Iterated: '%s'" $index $itemType1 $itemType2 }}
+    {{ end }}
+
+    {{ if ne $lang $otherLang }}
+      {{ errorf " Language object value mismatch at index %d! Direct: %v | Iterated: %v" $index $lang $otherLang }}
+    {{ end }}
+  {{ end }}
+
+
+  <div class="legacy-hugo-notice">
+    <p>Executed: Hugo version is <strong>{{ hugo.Version }}</strong> (<= 0.165.0).</p>
+  </div>
+{{ else }}
+  {{- warnf "Skipping test for version: %s" hugo.Version -}}
+{{ end }}

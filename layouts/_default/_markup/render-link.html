@@ -44,7 +44,7 @@
     {{- with site.Params.useragent -}}
       {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
     {{- end -}}
-    {{- $query := printf `PREFIX wikibase: <http://wikiba.se/ontology#> </http:>PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX bd: <http://www.bigdata.com/rdf#> SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
+    {{- $query := printf `PREFIX wikibase: <http://wikiba.se/ontology#> PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX bd: <http://www.bigdata.com/rdf#> SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
         ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
         OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
       }` $target -}}

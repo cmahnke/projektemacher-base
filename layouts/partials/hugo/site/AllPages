@@ -1,0 +1,5 @@
+{{- $allPages := slice -}}
+{{- range hugo.Sites -}}
+  {{- $allPages = $allPages | append .Pages -}}
+{{- end -}}
+{{- return $allPages -}}
