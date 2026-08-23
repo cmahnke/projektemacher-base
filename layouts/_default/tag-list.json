@@ -1,4 +1,5 @@
-{{- $pages := where .Site.AllPages "Params.displayinlist" "!=" false -}}
+{{- $AllPages := partial "hugo/site/AllPages" . -}}
+{{- $pages := where $AllPages "Params.displayinlist" "!=" false -}}
 {{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 

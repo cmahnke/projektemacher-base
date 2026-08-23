@@ -1,5 +1,5 @@
 {{- $context := . -}}
-{{- $pages := site.AllPages -}}
+{{- $pages := partial "hugo/site/AllPages" . -}}
 {{- $op := "lt" -}}
 {{- $weight := 10000 -}}
 {{- if reflect.IsMap . -}}
