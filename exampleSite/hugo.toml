@@ -1,8 +1,7 @@
 baseURL = 'https://theme.projektemacher.org/'
 theme = ["projektemacher-base"]
 title = "Projektemacher Base"
-languageCode = "en"
-languagecode = "en"
+locale = "en"
 defaultcontentlanguage = "en"
 publishDir = "docs"
 canonifyurls = true
