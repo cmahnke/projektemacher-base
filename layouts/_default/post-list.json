@@ -1,5 +1,5 @@
 {{- $pages := where .Site.AllPages "Params.displayinlist" "!=" false -}}
-{{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
+{{- $pages = where $pages "Language.Lang" "==" site.Language.Lang -}}
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{- $pages = where $pages "Params.metaPage" "!=" true -}}
