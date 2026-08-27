@@ -52,4 +52,4 @@ beautifulsoup4
 #wayback-machine-archiver
 # Indexer
 pagefind-indexer @ git+https://github.com/cmahnke/pagefind-indexer@0.0.3
-qr-tools @ ggit+https://github.com/cmahnke/qr-tools@0.1.0
+qr-tools @ git+https://github.com/cmahnke/qr-tools@0.1.0
