@@ -31,6 +31,8 @@ updates:
         versions: '>1.133'
       - dependency-name: "eslint-plugin-toml"
         versions: '>=1'
+      - dependency-name: "typescript"
+        versions: '>=7'
   - package-ecosystem: "npm"
     versioning-strategy: increase
     directory: "/fonts/"
