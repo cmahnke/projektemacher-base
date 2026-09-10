@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  HUGO_VERSION: 0.165.0
+  HUGO_VERSION: 0.166.0
   PYTHON_VERSION: '3.13'
 
 jobs:
@@ -122,7 +122,7 @@ jobs:
           ./scripts/github/setup-osm.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
-          ./scripts/github/setup-minhtml.sh 
+          ./scripts/github/setup-minhtml.sh
 
   test_install_scss:
     runs-on: ubuntu-26.04
