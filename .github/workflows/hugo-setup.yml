@@ -12,11 +12,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
+<<<<<<< HEAD
   HUGO_VERSION: 0.167.0
+=======
+  HUGO_VERSION: 0.166.0
+>>>>>>> origin
 
 jobs:
   hugo:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:

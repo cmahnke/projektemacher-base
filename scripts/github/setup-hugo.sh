@@ -39,6 +39,10 @@ case "$1" in
       exit 2
     fi
 
+    if [ "$HUGO_VERSION" = "latest" ] ; then 
+      HUGO_VERSION=$(curl -s https://api.github.com/repos/gohugoio/hugo/releases/latest | grep '"tag_name":' | cut -d '"' -f 4 | sed 's/^v//')
+    fi
+
     ARCHIVE="hugo_${VARIANT}${HUGO_VERSION}_${OS}-${ARCH}.tar.gz"
     URL="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${ARCHIVE}"
     ;;

@@ -2,6 +2,7 @@
 <!-- https://github.com/gohugoio/hugo/issues/4406 -->
 <!-- https://github.com/gohugoio/hugo/issues/4562 -->
 {{ $image := .Get "src" }}
+
 <figure{{ with .Get "class" }} class="{{ . }}"{{ end }}>
     {{ if .Get "link"}}<a href="{{ .Get "link" }}"{{ with .Get "target" }} target="{{ . }}"{{ end }}{{ with .Get "rel" }} rel="{{ . }}"{{ end }}>{{ end }}
         {{ if (findRE "(^|:)//" $image) -}} <!-- If image link is a URL with protocol or two leading slashes, use just that unmodified. -->
@@ -13,6 +14,13 @@
         {{- else -}}
             {{- /* Below variable will always have a trailing slash, even with uglyURLs enabled. */ -}}
             {{- $permalink_pretty := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
+            {{- if $.Page.IsTranslated -}}
+              {{- range .Page.Translations -}}
+                {{- if .Language.IsDefault -}}
+                  {{- $permalink_pretty =  .Page.Permalink | replaceRE "\\.html$" "/" -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
             <img src="{{ (printf "%s%s" $permalink_pretty $image) }}"
         {{- end -}}
             {{- if (or (.Get "alt") (.Get "caption")) -}}

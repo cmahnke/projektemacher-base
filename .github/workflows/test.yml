@@ -16,12 +16,16 @@ permissions:
   contents: write
 
 env:
+<<<<<<< HEAD
   HUGO_VERSION: 0.167.0
+=======
+  HUGO_VERSION: 0.166.0
+>>>>>>> origin
   PYTHON_VERSION: '3.13'
 
 jobs:
   lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -48,7 +52,7 @@ jobs:
 # Needed to check if the JXL Python plugin builds
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.2.sh
+          ./scripts/github/jxl-0.12.0.sh
 
 # Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
@@ -69,11 +73,11 @@ jobs:
           #npx eslint scripts
 
   test_jxl_versions:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
-        version: ['0.11.2', '0.12.0']
+        version: ['0.12.0'] #'0.11.2',
 
     steps:
       - uses: actions/checkout@v7
@@ -93,7 +97,7 @@ jobs:
           ./scripts/github/python-dependencies.sh
 
   test_install:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -115,16 +119,17 @@ jobs:
       - name: Install required dependencies
         run: |
           ./scripts/github/setup-dependencies.sh
-          ./scripts/github/jxl-0.11.2.sh
+          ./scripts/github/jxl-0.12.0.sh
           ./scripts/github/setup-xslt.sh
           ./scripts/github/setup-inkscape.sh
           ./scripts/github/setup-media.sh
           ./scripts/github/setup-osm.sh
           ./scripts/github/python-dependencies.sh
           ./scripts/github/docker-images.sh
+          ./scripts/github/setup-minhtml.sh
 
   test_install_scss:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -148,7 +153,7 @@ jobs:
           sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss
 
   test_external_npm:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEPENDENCY_MANAGER: npm
     steps:
@@ -174,7 +179,7 @@ jobs:
           ./scripts/github/setup-system-fonts.sh
 
   test_external_pnpm:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEPENDENCY_MANAGER: pnpm
     steps:
@@ -187,7 +192,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - uses: pnpm/action-setup@v6.0.10
+      - uses: pnpm/action-setup@v6.1.0
         with:
           version: 9
 
@@ -204,7 +209,7 @@ jobs:
           ./scripts/github/setup-system-fonts.sh
 
   test_external_yarn:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DEPENDENCY_MANAGER: yarn
     steps:
@@ -230,7 +235,7 @@ jobs:
           ./scripts/github/setup-system-fonts.sh
 
   lint_fonts:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -241,7 +246,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - uses: pnpm/action-setup@v6.0.10
+      - uses: pnpm/action-setup@v6.1.0
         with:
           version: 9
 
@@ -256,7 +261,7 @@ jobs:
           npx stylelint --config ../.stylelintrc-postbuild.yaml '../assets/css/fonts/*'
 
   test_inkscape_install:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -269,7 +274,7 @@ jobs:
           ./scripts/github/setup-inkscape.sh
 
   test_xslt_install:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -291,14 +296,14 @@ jobs:
           cat static/images/clippath.svg
 
   test_PyHugo:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
           submodules: true
       - name: Install JXL dependencies
         run: |
-          ./scripts/github/jxl-0.11.2.sh
+          ./scripts/github/jxl-0.12.0.sh
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -311,7 +316,7 @@ jobs:
            python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
 
   test_pnpm:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -320,7 +325,7 @@ jobs:
         uses: actions/setup-node@v7.0.0
         with:
           node-version-file: '.nvmrc'
-      - uses: pnpm/action-setup@v6.0.10
+      - uses: pnpm/action-setup@v6.1.0
         with:
           version: 9
       - name: Install with pnpm
@@ -329,7 +334,7 @@ jobs:
           ls node_modules
 
   test_python_versions:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -347,7 +352,7 @@ jobs:
 
       - name: Install JXL
         run: |
-          ./scripts/github/jxl-0.11.2.sh
+          ./scripts/github/jxl-0.12.0.sh
 
       - name: Install python dependencies
         if: "!endsWith(matrix.version, '12') && !endsWith(matrix.version, '-dev')"
@@ -362,7 +367,7 @@ jobs:
           ./scripts/github/python-dependencies.sh
 
   test_hugo_versions:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     continue-on-error: ${{ matrix.can-fail }}
     strategy:
       fail-fast: false
@@ -370,10 +375,6 @@ jobs:
         version: ['0.156.0', '0.157.0', '0.158.0', '0.159.0', '0.160.0', '0.161.1', '0.162.1', '0.164.0', '0.165.0', '0.167.0', 'latest']
         can-fail: [false]
         include:
-          - version: 0.156.0
-            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
-          - version: 0.157.0
-            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.158.0
             args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
           - version: 0.159.0
@@ -417,11 +418,9 @@ jobs:
         run: |
           ./scripts/github/dart-sass.sh
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3.2.1
-        with:
-          hugo-version: ${{ matrix.version }}
-          extended: true
+      - name: Install Hugo
+        run: |
+          ./scripts/github/setup-hugo.sh ${{ matrix.version }}
 
       - name: Merge lang files
         if: ${{ matrix.args }}
@@ -436,5 +435,73 @@ jobs:
       - name: Build Hugo site (with arguments)
         if: ${{ matrix.args }}
         working-directory: exampleSite
+        run: |
+          hugo --themesDir ../.. ${{ matrix.args }}
+
+  run_hugo_deprecation_tests:
+    runs-on: ubuntu-26.04
+    continue-on-error: ${{ matrix.can-fail }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['0.158.0', '0.159.0', '0.160.0', '0.161.1', '0.162.1', '0.164.0', 'latest']
+        can-fail: [false]
+        include:
+          - version: 0.158.0
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.159.0
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.160.0
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.161.1
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.162.1
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: 0.164.0
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+          - version: latest
+            args: '--printI18nWarnings --printUnusedTemplates --logLevel=debug'
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          check-latest: true
+          node-version-file: '.nvmrc'
+
+      - name: Install required dependencies
+        run: |
+          ./scripts/setup.sh
+
+      - name: Install Dart SASS
+        run: |
+          ./scripts/github/dart-sass.sh
+
+      - name: Install Hugo
+        run: |
+          ./scripts/github/setup-hugo.sh ${{ matrix.version }}
+
+      - name: Merge lang files
+        if: ${{ matrix.args }}
+        run: |
+          ./scripts/init/i18n.sh i18n
+
+      - name: Build Hugo site
+        if: ${{ ! matrix.args }}
+        working-directory: testSuite
+        run: hugo --themesDir ../..
+
+      - name: Build Hugo site (with arguments)
+        if: ${{ matrix.args }}
+        working-directory: testSuite
         run: |
           hugo --themesDir ../.. ${{ matrix.args }}

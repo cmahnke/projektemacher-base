@@ -16,12 +16,16 @@ permissions:
   contents: write
 
 env:
+<<<<<<< HEAD
   HUGO_VERSION: 0.167.0
+=======
+  HUGO_VERSION: 0.166.0
+>>>>>>> origin
   PYTHON_VERSION: '3.13'
 
 jobs:
   bun:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:

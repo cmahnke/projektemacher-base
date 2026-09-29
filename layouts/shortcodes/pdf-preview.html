@@ -18,7 +18,16 @@
   {{- $download = . -}}
 {{- end -}}
 
-{{- $pdflink := printf "%s%s" .Page.Permalink $pdf -}}
+{{- $permalink_pretty := .Page.RelPermalink | replaceRE "\\.html$" "/" -}}
+{{- if .Page.IsTranslated -}}
+  {{- range .Page.Translations -}}
+    {{- if .Language.IsDefault -}}
+      {{- $permalink_pretty = .Page.RelPermalink | replaceRE "\\.html$" "/" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $pdflink := printf "%s%s" $permalink_pretty $pdf -}}
 
 {{- $file := path.Join .Page.Path $pdf -}}
 {{- if not (fileExists $file) -}}
@@ -40,7 +49,7 @@
       fallbackLink: "<p class='{{ printf `%s-download-fallback` $class }}'><a href='{{ $pdflink }}'>{{ i18n "InlinePDFNotSupported" }}: PDF Download</a></p>"
     };
     window.addEventListener('DOMContentLoaded', (event) => {
-      PDFObject.embed("{{ $pdf }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
+      PDFObject.embed("{{ $pdflink }}", "#{{ $id }}", options_{{ replace $id "-" "" | safeJS }});
     });
   </script>
   {{- if $download -}}

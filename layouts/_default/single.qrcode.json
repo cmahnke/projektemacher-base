@@ -1,6 +1,6 @@
 {
   {{- if .Aliases -}}
-    "url": [ "{{- .Permalink -}}"
+    "url": [ "{{- (.OutputFormats.Get "html").Permalink -}}"
       {{- $base := .Site.BaseURL -}}
       {{- range .Aliases -}}
         {{- $suffix := . -}}
@@ -11,7 +11,7 @@
       {{- end -}}
     ]
   {{- else -}}
-    "url": "{{- .Permalink -}}"
+    "url": "{{- (.OutputFormats.Get "html").Permalink -}}"
   {{- end -}}
   {{- if (isset .Params "qr-color") -}}
     , "color": "{{ index .Params "qr-color" }}"

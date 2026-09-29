@@ -1,0 +1,33 @@
+baseURL = ''
+theme = ["projektemacher-base"]
+title = "Projektemacher Base tests"
+locale = "en"
+defaultContentLanguage = "en"
+publishDir = "docs"
+canonifyURLs = true
+disablePathToLower = true
+
+[params.author]
+  email = 'mail@christianmahnke.de'
+  name = 'Christian Mahnke'
+  uri = 'http://www.wikidata.org/entity/Q137668638'
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[imaging]
+  quality = 95
+
+# Multilingual Language Configurations
+[languages]
+  [languages.en]
+    locale = 'en'
+    label = 'English'
+    weight = 1
+    contentDir = 'content/en'
+
+  [languages.de]
+    locale = 'de'
+    label = 'Deutsch'
+    weight = 2
+    contentDir = 'content/de'

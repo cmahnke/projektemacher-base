@@ -16,7 +16,7 @@ SAXON_SCRIPT="$SAXON_DIR/saxon"
 sudo apt update
 
 echo "Installing Java"
-RUN_DEPENDENCIES="openjdk-17-jdk curl"
+RUN_DEPENDENCIES="default-jdk curl"
 echo "Installing $RUN_DEPENDENCIES"
 sudo apt-get install -y $RUN_DEPENDENCIES
 

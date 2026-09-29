@@ -1,0 +1,11 @@
+{{- $dir := "partials/tests" -}}
+{{- range readDir (printf "layouts/%s" $dir) -}}
+  {{- if not .IsDir -}}
+    {{- $partialPath := printf "%s/%s" (strings.TrimPrefix "partials/" $dir) .Name -}}
+    <h2>Running {{ $partialPath }}</h2>
+    {{- partial $partialPath $ -}}
+    <hr>
+  {{- end -}}
+{{- else -}}
+  <h2>No tests found in {{ $dir }}</h2>
+{{- end -}}

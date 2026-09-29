@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e -o pipefail
+
 DEFAULT_SOURCE=content
 DEFAULT_FILENAME="ogPreview*.svg"
 DEFAULT_BACKGROUND=white
