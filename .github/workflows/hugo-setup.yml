@@ -12,11 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-<<<<<<< HEAD
   HUGO_VERSION: 0.167.0
-=======
-  HUGO_VERSION: 0.166.0
->>>>>>> origin
 
 jobs:
   hugo:
