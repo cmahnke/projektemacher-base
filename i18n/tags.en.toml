@@ -331,6 +331,9 @@ other = "Digital Edition"
 [ComputerArt]
 other = "Computer Art"
 
+[ArtDeco]
+other = "Art Deco"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
