@@ -337,6 +337,9 @@ other = "Art déco"
 [AgenticCoding]
 other = "Agentenbasierte Programmierung"
 
+[InteriorDesign]
+other = "Inneneinrichtung"
+
 # Tags for Ric
 [EBay]
 other = "eBay"

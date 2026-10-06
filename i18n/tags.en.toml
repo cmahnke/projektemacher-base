@@ -335,7 +335,10 @@ other = "Computer Art"
 other = "Art Deco"
 
 [AgenticCoding]
-other = "Agentic Coding"
+other = "Agentic coding"
+
+[InteriorDesign]
+other = "Interior design"
 
 # Tags for Ric
 [EBay]
