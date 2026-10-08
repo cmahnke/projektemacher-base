@@ -296,3 +296,5 @@ export function initMap(element, url, source, cluster, marker) {
         });
     return map;
 }
+
+window.initMap = initMap;

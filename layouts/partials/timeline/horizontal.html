@@ -23,9 +23,8 @@
     var timeline = addTimeline('timeline', issues, options);
 
     document.addEventListener("DOMContentLoaded", function() {
-        if ($(window).width() < 1024) {
+        if (window.innerWidth < 1024) {
             bootstrap.Tab.getInstance(document.getElementById('vertical-tab')).show()
-            //$('#vertical-tab').tab('show')
         }
     });
 </script>

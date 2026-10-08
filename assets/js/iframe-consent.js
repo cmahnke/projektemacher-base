@@ -38,3 +38,5 @@ export function addConsent(toggle, overlay, cookie, iframe) {
     toggle.disabled = false;
   }
 }
+
+window.addConsent = addConsent;

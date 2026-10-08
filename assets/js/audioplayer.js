@@ -1,4 +1,4 @@
-const {Howl, Howler} = require('howler');
+import { Howl } from 'howler';
 
 function audioplayer (elem, src, btn) {
 

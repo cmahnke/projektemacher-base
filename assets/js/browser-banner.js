@@ -1,4 +1,4 @@
-const { detect } = require('detect-browser');
+import { detect } from 'detect-browser';
 const detected = detect();
 
 function browserBanner(banner, browsers, parent) {
