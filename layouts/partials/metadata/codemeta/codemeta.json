@@ -24,7 +24,42 @@
 {{- end -}}
 
 {{- if $remoteOK -}}
-  {{- $remoteContent -}}
+  {{- $remoteMeta := dict -}}
+  {{- with try ($remoteContent | transform.Unmarshal) -}}
+    {{- with .Err -}}
+      {{- errorf "[metadata/codemeta/codemeta.json] codemeta URL %s returned invalid JSON: %s" $codemetaURL .Err -}}
+    {{ else with .Value }}
+      {{- $remoteMeta = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $ctxStrings := slice -}}
+  {{- with index $remoteMeta "@context" -}}
+    {{- if eq (printf "%T" .) "string" -}}
+      {{- $ctxStrings = slice . -}}
+    {{- else if reflect.IsSlice . -}}
+      {{- range $ctxItem := . -}}
+        {{- if eq (printf "%T" $ctxItem) "string" -}}
+          {{- $ctxStrings = $ctxStrings | append $ctxItem -}}
+        {{- else if reflect.IsMap $ctxItem -}}
+          {{- with index $ctxItem "codemeta" -}}
+            {{- $ctxStrings = $ctxStrings | append . -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $major := 0 -}}
+  {{- range $ctxString := $ctxStrings -}}
+    {{- $matches := findRESubmatch `w3id\.org/codemeta/(\d+)` $ctxString -}}
+    {{- with $matches -}}
+      {{- $major = int (index (index . 0) 1) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if lt $major 2 -}}
+    {{- errorf "[metadata/codemeta/codemeta.json] codemeta at %s: unsupported or missing version (need >= 2)" $codemetaURL -}}
+  {{- else -}}
+    {{- $remoteContent -}}
+  {{- end -}}
 {{- else -}}
 
 {{- $cffFile := "CITATION.cff" -}}
