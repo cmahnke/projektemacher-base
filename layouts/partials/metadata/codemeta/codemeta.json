@@ -1,4 +1,31 @@
+{{- $page := . -}}
 {{- $codemetaURISuffix := "#codemeta" -}}
+
+{{ $opts := dict
+  "headers" (dict "Accept" "*/*")
+}}
+
+{{- $codemetaURL := $page.Params.codemeta | default "" -}}
+{{- $remoteOK := false -}}
+{{- $remoteContent := "" -}}
+{{- $isURL := and (eq (printf "%T" $codemetaURL) "string") (hasPrefix $codemetaURL "http") -}}
+
+{{- if $isURL -}}
+  {{- with try (resources.GetRemote $codemetaURL $opts) -}}
+    {{- with .Err -}}
+      {{- errorf "[metadata/codemeta/codemeta.json] Can't get codemeta URL %s: %s" $codemetaURL . -}}
+    {{ else with .Value }}
+      {{- $remoteContent = .Content -}}
+      {{- $remoteOK = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if $codemetaURL -}}
+  {{- errorf "[metadata/codemeta/codemeta.json] codemeta field is not a URL: %s at %s" $codemetaURL $page.RelPermalink -}}
+{{- end -}}
+
+{{- if $remoteOK -}}
+  {{- $remoteContent -}}
+{{- else -}}
 
 {{- $cffFile := "CITATION.cff" -}}
 {{- with .Params.cfffile -}}
@@ -6,9 +33,6 @@
 {{- end -}}
 
 
-{{ $opts := dict
-  "headers" (dict "Accept" "*/*")
-}}
 {{- $cff := dict -}}
 
 {{- if hasPrefix $cffFile "http" -}}
@@ -68,4 +92,5 @@
   {{- $codemeta | jsonify -}}
 {{- else -}}
   {{- errorf "[metadata/codemeta.json] %s not found at %s" $cffFile .RelPermalink -}}
+{{- end -}}
 {{- end -}}
