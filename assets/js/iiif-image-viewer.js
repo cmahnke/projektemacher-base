@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import {Control, FullScreen, Rotate, Zoom} from 'ol/control';
 import {fromUserCoordinate, fromUserExtent} from 'ol/proj.js';
-import {defaultGetContextHDR, checkHDR, checkHDRCanvas} from 'hdr-canvas';
+import {defaultGetContextHDR, checkHDR, checkHDRCanvas} from '@projektemacher/hdr-canvas';
 
 class AnimatedView extends View {
   /**
