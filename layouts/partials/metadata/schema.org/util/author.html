@@ -1,19 +1,27 @@
 {{- if or (isset .Params "author") (isset .Params "authors") -}}
-  {{- errorf "[metadata/schema.org/util/author.html] Post params 'author' or 'authors' not supported by JSON-LD / Schema.org seialisation" -}}
+  {{- errorf "[metadata/schema.org/util/author.html] Post params 'author' or 'authors' not supported by JSON-LD / Schema.org serialisation" -}}
 {{- end -}}
 {{- $author := dict "@type" "Person" -}}
 {{- $authorName := "" -}}
+{{- $schemaPerson := site.Params.schemaPerson -}}
 {{- with site.Params.author -}}
   {{- if reflect.IsMap . -}}
     {{- with .name -}}
       {{- $author = $author | merge (dict "name" .) -}}
     {{- end -}}
-    {{- with .uri -}}
-      {{- $author = $author | merge (dict "@id" .) -}}
+    {{- if not $schemaPerson -}}
+      {{- with .uri -}}
+        {{- $author = $author | merge (dict "@id" .) -}}
+      {{- end -}}
     {{- end -}}
   {{- else -}}
     {{- $author =  $author | merge (dict "name" .) -}}
-    {{- $author = $author | merge (dict "@id" (printf "%s#person" site.BaseURL )) -}}
+    {{- if not $schemaPerson -}}
+      {{- $author =  $author | merge (dict "@id" (printf "%s#person" site.BaseURL )) -}}
+    {{- end -}}
   {{- end }}
+{{- end }}
+{{- with $schemaPerson -}}
+  {{- $author = $author | merge (dict "@id" .) -}}
 {{- end }}
 {{- $author | jsonify -}}

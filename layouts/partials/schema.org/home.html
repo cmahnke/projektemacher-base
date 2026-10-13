@@ -1,0 +1,81 @@
+{{- $lang := .Lang -}}
+{{- with site.Language.LanguageCode -}}
+  {{- $lang = . -}}
+{{- end -}}
+{{- $permalink := site.BaseURL -}}
+{{- with .OutputFormats.Get "html" -}}
+  {{- $permalink = .Permalink -}}
+{{- end -}}
+{{- $website := dict
+  "@context" "https://schema.org"
+  "@type" "WebSite"
+  "@id" $permalink
+  "url" $permalink
+  "name" site.Title
+  "inLanguage" $lang
+-}}
+{{- with .Description -}}
+  {{- $website = $website | merge (dict "description" .) -}}
+{{- else -}}
+  {{- with site.Params.description -}}
+    {{- $website = $website | merge (dict "description" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- with $author -}}
+  {{- $website = $website | merge (dict "author" $author) -}}
+{{- end -}}
+{{- $section := "post" -}}
+{{- with .Params.section -}}
+  {{- $section = . -}}
+{{- end -}}
+{{- $blog := slice -}}
+{{- if $section -}}
+  {{- with site.GetPage $section -}}
+    {{- with .OutputFormats.Get "html" -}}
+      {{- $blog = slice (dict "@type" "Blog" "@id" .Permalink "url" .Permalink "name" (printf "%s - %s" site.Title $.Title)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $blog -}}
+  {{- $website = $website | merge (dict "hasPart" .) -}}
+{{- end -}}
+{{- $publisher := dict -}}
+{{- $publisherLogo := "" -}}
+{{- with site.Params.publisher -}}
+  {{- if reflect.IsMap . -}}
+    {{- $publisher = dict "@type" "Organization" -}}
+    {{- with .name -}}
+      {{- $publisher = $publisher | merge (dict "name" .) -}}
+    {{- end -}}
+    {{- with .uri -}}
+      {{- $publisher = $publisher | merge (dict "@id" .) -}}
+    {{- end -}}
+    {{- with .url -}}
+      {{- $publisher = $publisher | merge (dict "url" .) -}}
+    {{- end -}}
+    {{- with .logo -}}
+      {{- $publisherLogo = . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $publisher = dict "@type" "Organization" "name" . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $publisherLogo -}}
+  {{- with site.Params.logo -}}
+    {{- $publisherLogo = . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $publisherLogo -}}
+  {{- $publisherLogo = "/images/cm-solid.svg" | absURL -}}
+{{- end -}}
+{{- $logo := dict "@type" "ImageObject" "url" $publisherLogo -}}
+{{- if gt ($publisher | len) 0 -}}
+  {{- $publisher = $publisher | merge (dict "logo" $logo) -}}
+  {{- $website = $website | merge (dict "publisher" $publisher) -}}
+{{- else -}}
+  {{- $website = $website | merge (dict "logo" $logo) -}}
+{{- end -}}
+<script type="application/ld+json">
+  {{- $website | jsonify | safeJS -}}
+</script>
