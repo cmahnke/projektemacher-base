@@ -17,7 +17,7 @@
             {{- if $.Page.IsTranslated -}}
               {{- range .Page.Translations -}}
                 {{- if .Language.IsDefault -}}
-                  {{- $permalink_pretty =  .Page.Permalink | replaceRE "\\.html$" "/" -}}
+                  {{- $permalink_pretty = .Page.Permalink | replaceRE "\\.html$" "/" -}}
                 {{- end -}}
               {{- end -}}
             {{- end -}}

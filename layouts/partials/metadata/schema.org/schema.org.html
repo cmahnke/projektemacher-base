@@ -5,13 +5,13 @@
   {{- if templates.Exists (printf "_partials/%s" $template) -}}
     {{- partial $template . -}}
   {{- else -}}
-    {{- warnf "[data/schema.org.html] Can't find %s" $template -}}
+    {{- warnf "[metadata/schema.org.html] Can't find %s" $template -}}
   {{- end -}}
 {{- else if .IsHome -}}
   {{- if templates.Exists "_partials/schema.org/home.html" -}}
     {{- partial "schema.org/home.html" . -}}
   {{- else -}}
-    {{- warnf "[data/schema.org.html] Can't find schema.org/home.html" -}}
+    {{- warnf "[metadata/schema.org.html] Can't find schema.org/home.html" -}}
   {{- end -}}
 {{- else -}}
   {{- $schemaTemplate := printf "schema.org/%s.html" .Kind -}}
