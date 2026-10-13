@@ -14,10 +14,22 @@
     {{- warnf "[metadata/schema.org.html] Can't find schema.org/home.html" -}}
   {{- end -}}
 {{- else -}}
+  {{- $schemaTemplateFound := false -}}
   {{- $schemaTemplate := printf "schema.org/%s.html" .Kind -}}
   {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
     {{- partial $schemaTemplate . -}}
+    {{- $schemaTemplateFound = true -}}
   {{- else if $debug -}}
     {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $schemaTemplate -}}
+  {{- end -}}
+  {{- $schemaTemplate := printf "schema.org/%s.html" .FirstSection -}}
+  {{- if and (templates.Exists (printf "_partials/%s" $schemaTemplate)) {{- $schemaTemplateFound = true -}} -}}
+    {{- partial $schemaTemplate . -}}
+    {{- $schemaTemplateFound = true -}}
+  {{- else if $debug -}}
+    {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $schemaTemplate -}}
+  {{- end -}}
+  {{- if and $debug not($schemaTemplateFound) -}}
+    {{- warnf "[metadata/schema.org/schema.org.html] Can't find schema template for %s" .RelPermalink -}}
   {{- end -}}
 {{- end -}}
