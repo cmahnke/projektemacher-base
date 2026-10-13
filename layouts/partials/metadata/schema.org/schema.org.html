@@ -5,31 +5,39 @@
   {{- if templates.Exists (printf "_partials/%s" $template) -}}
     {{- partial $template . -}}
   {{- else -}}
-    {{- warnf "[metadata/schema.org.html] Can't find %s" $template -}}
+    {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $template -}}
   {{- end -}}
 {{- else if .IsHome -}}
   {{- if templates.Exists "_partials/schema.org/home.html" -}}
     {{- partial "schema.org/home.html" . -}}
   {{- else -}}
-    {{- warnf "[metadata/schema.org.html] Can't find schema.org/home.html" -}}
+    {{- warnf "[metadata/schema.org/schema.org.html] Can't find schema.org/home.html" -}}
   {{- end -}}
 {{- else -}}
   {{- $schemaTemplateFound := false -}}
-  {{- $schemaTemplate := printf "schema.org/%s.html" .Kind -}}
-  {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
-    {{- partial $schemaTemplate . -}}
-    {{- $schemaTemplateFound = true -}}
-  {{- else if $debug -}}
-    {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $schemaTemplate -}}
+  {{- $schemaTemplate := "" -}}
+  {{- if eq .Kind "section" -}}
+    {{- $schemaTemplate = printf "schema.org/%s.html" .Section -}}
+    {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
+      {{- partial $schemaTemplate . -}}
+      {{- $schemaTemplateFound = true -}}
+    {{- end -}}
   {{- end -}}
-  {{- $schemaTemplate := printf "schema.org/%s.html" .FirstSection -}}
-  {{- if and (templates.Exists (printf "_partials/%s" $schemaTemplate)) {{- $schemaTemplateFound = true -}} -}}
-    {{- partial $schemaTemplate . -}}
-    {{- $schemaTemplateFound = true -}}
-  {{- else if $debug -}}
-    {{- warnf "[metadata/schema.org/schema.org.html] Can't find %s" $schemaTemplate -}}
+  {{- if not $schemaTemplateFound -}}
+    {{- $schemaTemplate = printf "schema.org/%s.html" .Kind -}}
+    {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
+      {{- partial $schemaTemplate . -}}
+      {{- $schemaTemplateFound = true -}}
+    {{- end -}}
   {{- end -}}
-  {{- if and $debug not($schemaTemplateFound) -}}
+  {{- if and (not $schemaTemplateFound) (ne .Kind "section") .Section -}}
+    {{- $schemaTemplate = printf "schema.org/%s.html" .Section -}}
+    {{- if templates.Exists (printf "_partials/%s" $schemaTemplate) -}}
+      {{- partial $schemaTemplate . -}}
+      {{- $schemaTemplateFound = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and $debug (not $schemaTemplateFound) -}}
     {{- warnf "[metadata/schema.org/schema.org.html] Can't find schema template for %s" .RelPermalink -}}
   {{- end -}}
 {{- end -}}

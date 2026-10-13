@@ -1,0 +1,51 @@
+{{- $lang := .Lang -}}
+{{- with site.Language.LanguageCode -}}
+  {{- $lang = . -}}
+{{- end -}}
+{{- $permalink := site.BaseURL -}}
+{{- with .OutputFormats.Get "html" -}}
+  {{- $permalink = .Permalink -}}
+{{- end -}}
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- $blog := dict
+  "@context" "https://schema.org"
+  "@type" "Blog"
+  "@id" $permalink
+  "url" $permalink
+  "name" (printf "%s - %s" site.Title .Title)
+  "inLanguage" $lang
+  "author" $author
+-}}
+{{- with .Description -}}
+  {{- $blog = $blog | merge (dict "description" .) -}}
+{{- else -}}
+  {{- with site.Params.description -}}
+    {{- $blog = $blog | merge (dict "description" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- $blogPosts := slice -}}
+{{- range $page := .Pages -}}
+  {{- if eq $page.Params.displayinlist false -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- with $page.OutputFormats.Get "html" -}}
+    {{- $postRef := dict
+      "@type" "BlogPosting"
+      "@id" .Permalink
+      "url" .Permalink
+      "headline" $page.Title
+      "datePublished" ($page.Date.Format "2006-01-02")
+      "dateModified" ($page.Lastmod.Format "2006-01-02")
+    -}}
+    {{- with $author -}}
+      {{- $postRef = $postRef | merge (dict "author" $author) -}}
+    {{- end -}}
+    {{- $blogPosts = $blogPosts | append $postRef -}}
+  {{- end -}}
+{{- end -}}
+{{- with $blogPosts -}}
+  {{- $blog = $blog | merge (dict "blogPost" .) -}}
+{{- end -}}
+<script type="application/ld+json">
+  {{- $blog | jsonify | safeJS -}}
+</script>
