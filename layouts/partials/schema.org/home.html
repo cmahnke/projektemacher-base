@@ -21,7 +21,7 @@
     {{- $website = $website | merge (dict "description" .) -}}
   {{- end -}}
 {{- end -}}
-{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" . (printf "%v" .Params.author) (printf "%v" .Params.authors)) -}}
 {{- with $author -}}
   {{- $website = $website | merge (dict "author" $author) -}}
 {{- end -}}

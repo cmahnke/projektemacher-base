@@ -16,7 +16,7 @@
 {{- range $page := $pages -}}
   {{- $schemaOrg := transform.Unmarshal (partial "metadata/schema.org/util/post.html" .) -}}
   {{- $schemaOrg = $schemaOrg | merge (dict "@type" "BlogPosting") -}}
-  {{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+  {{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" . (printf "%v" .Params.author) (printf "%v" .Params.authors)) -}}
 
   {{- $about := partial "metadata/schema.org/util/about.html" $page | transform.Unmarshal (dict "format" "json") -}}
   {{- with $about -}}
@@ -40,7 +40,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" . (printf "%v" .Params.author) (printf "%v" .Params.authors)) -}}
 {{- $blog := dict "@context" "https://schema.org/" "@type" $blogType
   "author" $author
   "blogPost" $pageList "@id" $siteURL "mainEntityOfPage" $siteURL "name" $name -}}

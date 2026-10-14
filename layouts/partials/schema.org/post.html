@@ -6,7 +6,7 @@
 {{- with .OutputFormats.Get "html" -}}
   {{- $permalink = .Permalink -}}
 {{- end -}}
-{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" .) -}}
+{{- $author := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" . (printf "%v" .Params.author) (printf "%v" .Params.authors)) -}}
 {{- $blog := dict
   "@context" "https://schema.org"
   "@type" "Blog"
@@ -37,8 +37,9 @@
       "datePublished" ($page.Date.Format "2006-01-02")
       "dateModified" ($page.Lastmod.Format "2006-01-02")
     -}}
-    {{- with $author -}}
-      {{- $postRef = $postRef | merge (dict "author" $author) -}}
+    {{- $pageAuthor := transform.Unmarshal (partialCached "metadata/schema.org/util/author.html" $page (printf "%v" $page.Params.author) (printf "%v" $page.Params.authors)) -}}
+    {{- with $pageAuthor -}}
+      {{- $postRef = $postRef | merge (dict "author" $pageAuthor) -}}
     {{- end -}}
     {{- $blogPosts = $blogPosts | append $postRef -}}
   {{- end -}}

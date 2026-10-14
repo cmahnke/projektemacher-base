@@ -1,27 +1,75 @@
-{{- if or (isset .Params "author") (isset .Params "authors") -}}
-  {{- errorf "[metadata/schema.org/util/author.html] Post params 'author' or 'authors' not supported by JSON-LD / Schema.org serialisation" -}}
-{{- end -}}
+{{- $page := . -}}
 {{- $author := dict "@type" "Person" -}}
-{{- $authorName := "" -}}
 {{- $schemaPerson := site.Params.schemaPerson -}}
-{{- with site.Params.author -}}
-  {{- if reflect.IsMap . -}}
-    {{- with .name -}}
-      {{- $author = $author | merge (dict "name" .) -}}
+
+{{- if or (isset $page.Params "author") (isset $page.Params "authors") -}}
+  {{- $pageAuthor := $page.Params.author -}}
+  {{- $pageAuthors := $page.Params.authors -}}
+  {{- if reflect.IsSlice $pageAuthor -}}
+    {{- $pageAuthors = $pageAuthor -}}
+  {{- else if $pageAuthor -}}
+    {{- if reflect.IsMap $pageAuthor -}}
+      {{- with $pageAuthor.name -}}
+        {{- $author = $author | merge (dict "name" .) -}}
+      {{- end -}}
+      {{- with $pageAuthor.uri -}}
+        {{- $author = $author | merge (dict "@id" .) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $author = $author | merge (dict "name" $pageAuthor) -}}
     {{- end -}}
-    {{- if not $schemaPerson -}}
+  {{- else if $pageAuthors -}}
+    {{- if not (reflect.IsSlice $pageAuthors) -}}
+      {{- $pageAuthors = slice $pageAuthors -}}
+    {{- end -}}
+    {{- $people := slice -}}
+    {{- range $pageAuthors -}}
+      {{- if reflect.IsMap . -}}
+        {{- $person := dict "@type" "Person" -}}
+        {{- with .name -}}
+          {{- $person = $person | merge (dict "name" .) -}}
+        {{- end -}}
+        {{- with .uri -}}
+          {{- $person = $person | merge (dict "@id" .) -}}
+        {{- end -}}
+        {{- $people = $people | append $person -}}
+      {{- else -}}
+        {{- $people = $people | append (dict "@type" "Person" "name" .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $author = $people -}}
+  {{- end -}}
+{{- else if $schemaPerson -}}
+  {{- with try (resources.GetRemote $schemaPerson (dict "headers" (dict "Accept" "application/json"))) -}}
+    {{- with .Err -}}
+      {{- errorf "[metadata/schema.org/util/author.html] Unable to get external person %q: %s" $schemaPerson . -}}
+    {{- else with .Value -}}
+      {{- $person := transform.Unmarshal .Content -}}
+      {{- $clean := dict -}}
+      {{- range $key, $value := $person -}}
+        {{- if ne $key "@context" -}}
+          {{- $clean = $clean | merge (dict $key $value) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $author = $clean -}}
+    {{- end -}}
+  {{- else -}}
+    {{- errorf "[metadata/schema.org/util/author.html] Unable to get external person %q" $schemaPerson -}}
+  {{- end -}}
+{{- else -}}
+  {{- with site.Params.author -}}
+    {{- if reflect.IsMap . -}}
+      {{- with .name -}}
+        {{- $author = $author | merge (dict "name" .) -}}
+      {{- end -}}
       {{- with .uri -}}
         {{- $author = $author | merge (dict "@id" .) -}}
       {{- end -}}
+    {{- else -}}
+      {{- $author = $author | merge (dict "name" .) -}}
+      {{- $author = $author | merge (dict "@id" (printf "%s#person" site.BaseURL)) -}}
     {{- end -}}
-  {{- else -}}
-    {{- $author =  $author | merge (dict "name" .) -}}
-    {{- if not $schemaPerson -}}
-      {{- $author =  $author | merge (dict "@id" (printf "%s#person" site.BaseURL )) -}}
-    {{- end -}}
-  {{- end }}
-{{- end }}
-{{- with $schemaPerson -}}
-  {{- $author = $author | merge (dict "@id" .) -}}
-{{- end }}
+  {{- end -}}
+{{- end -}}
+
 {{- $author | jsonify -}}
