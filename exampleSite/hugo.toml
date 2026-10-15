@@ -21,6 +21,8 @@ disablePathToLower = true
 [mediaTypes]
   [mediaTypes."application/x-qrcode-template"]
     suffixes = ["json"]
+  [mediaTypes."application/ld+json"]
+    suffixes = ["json"]
 
 [outputFormats]
   [outputFormats.qrcode]
@@ -29,7 +31,25 @@ disablePathToLower = true
     isHTML = false
     baseName = "qrcode"
     notAlternative = true
+  [outputFormats.iiif-manifest]
+    mediaType = "application/ld+json"
+    baseName = "manifest"
+    isPlainText = true
+    isHTML = false
 
 [security]
   [security.http]
     mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
+
+# Multilingual Language Configurations
+[languages]
+  [languages.en]
+    locale = 'en'
+    label = 'English'
+    weight = 1
+    contentDir = 'content'
+  [languages.de]
+    locale = 'de'
+    label = 'Deutsch'
+    weight = 2
+    contentDir = 'content/de'

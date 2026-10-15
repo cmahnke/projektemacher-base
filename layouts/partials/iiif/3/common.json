@@ -1,5 +1,7 @@
 {{- $defaultBehavior := "paged" -}}
-{{- $common := dict "@context" "http://iiif.io/api/presentation/3/context.json" "type" "Manifest" "id" (.OutputFormats.Get "iiif-manifest").Permalink "viewingDirection" "left-to-right" -}}
+{{- $version := partial "functions/iiif/presentation-version.html" . -}}
+{{- $context := printf "http://iiif.io/api/presentation/%d/context.json" $version -}}
+{{- $common := dict "@context" $context "type" "Manifest" "id" (.OutputFormats.Get "iiif-manifest").Permalink "viewingDirection" "left-to-right" -}}
 
 {{- if isset .Params "iiifMetadata" -}}
   {{- errorf "[single.iiii-metadata.json] .Params.iiifMetadata isn't supported anymore use .Params.iiif.metadata" -}}

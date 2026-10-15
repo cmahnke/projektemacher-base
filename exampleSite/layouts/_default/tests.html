@@ -1,0 +1,8 @@
+{{- define "main" -}}
+  <h1>{{- .Title -}}</h1>
+  {{- if ne hugo.Environment "production" -}}
+    {{- partial "runner.html" . -}}
+  {{- else -}}
+    <p>Tests are only executed in non-production builds (<code>hugo --environment tests</code>).</p>
+  {{- end -}}
+{{- end -}}

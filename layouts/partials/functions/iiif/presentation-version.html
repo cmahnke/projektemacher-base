@@ -1,0 +1,24 @@
+{{- /*
+  Resolves the IIIF Presentation API version for a page.
+  Priority: page param `.Params.iiif.presentationVersion` > site param `[params.iiif] presentationVersion` > default 3
+  Expects a page (or any context carrying `.Params`) as input, returns an int (3 or 4).
+*/ -}}
+{{- $version := 3 -}}
+{{- with site.Params.iiif -}}
+  {{- with .presentationVersion -}}
+    {{- $version = int . -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Params -}}
+  {{- with .iiif -}}
+    {{- with .presentationVersion -}}
+      {{- $version = int . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (in (slice 3 4) $version) -}}
+  {{- $path := "" -}}
+  {{- with $.File -}}{{- $path = .Path -}}{{- end -}}
+  {{- errorf "[functions/iiif/presentation-version] Unsupported IIIF Presentation API version %d for %s, only 3 and 4 (draft) are supported" $version $path -}}
+{{- end -}}
+{{- return $version -}}

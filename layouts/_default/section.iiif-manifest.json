@@ -1,1 +1,2 @@
-{{- partial "iiif/3/manifest.json" . -}}
+{{- $version := partial "functions/iiif/presentation-version.html" . -}}
+{{- partial (printf "iiif/%d/manifest.json" $version) . -}}
