@@ -83,3 +83,7 @@ disablePathToLower = true
   name = 'Todo'
   pageRef = 'todo'
   weight = 7
+[[languages.en.menu.main]]
+  name = 'Templates'
+  pageRef = 'templates'
+  weight = 8
