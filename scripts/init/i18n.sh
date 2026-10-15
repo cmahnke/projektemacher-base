@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+#
+# Merges i18n fragments named '<id>.<lang>.toml' into '<lang>.toml' and deletes
+# the fragments afterwards. The merged files are gitignored, the fragments are
+# tracked. MUST be run before building multilingual sites (exampleSite, CI) —
+# if fragments are present at build time, Hugo's multilingual i18n loader fails
+# with '"art-x-<id>.<lang>": language: tag is not well-formed' because it parses
+# the filename as a BCP47 language tag. See README.md, section 'i18n language
+# files'. Note: when '<lang>.toml' already exists this script skips everything,
+# so stale fragments are NOT removed — delete them manually in that case.
 
 echo "Merging language files"
 

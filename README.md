@@ -22,6 +22,24 @@ To generate IIIF JSON manifests you need to add the `JSON` output format to the 
 
 # Scripts
 
+## i18n language files (IMPORTANT: run before building)
+
+The `i18n/` directory contains source fragments named `<id>.<lang>.toml` (e.g. `iiif.en.toml`, `theme.de.toml`). The merged files `i18n/en.toml` and `i18n/de.toml` are **generated** (gitignored) and are what Hugo actually loads.
+
+```
+./scripts/init/i18n.sh i18n
+```
+
+This merges all fragments into `i18n/<lang>.toml` and **deletes the fragments from the worktree** in the process. CI always runs this before any Hugo build (see `.github/workflows/test.yml` and `.github/workflows/deploy.yaml`).
+
+**Gotcha:** if the fragment files are present at build time (e.g. after `git checkout` / `git restore` of `i18n/`), multilingual site builds (exampleSite) fail with a cryptic error like:
+
+```
+ERROR error building site: "art-x-3d.de": language: tag is not well-formed
+```
+
+That's Hugo's i18n loader parsing the fragment filename `3d.de.toml` as a BCP47 language tag (Go maps the unknown base `3d` to the private-use tag `art-x-3d`). Fix: make sure the fragments are deleted before building — if `i18n/de.toml`/`i18n/en.toml` already exist the merge script skips and leaves them, so either delete the `*.<lang>.toml` fragments manually or remove the merged files and re-run `./scripts/init/i18n.sh i18n`.
+
 To enable the merging of node dependencies including the `script` section you may want to add the following snippet to your setup
 
 ```

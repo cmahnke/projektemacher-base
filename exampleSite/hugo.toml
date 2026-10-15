@@ -53,3 +53,33 @@ disablePathToLower = true
     label = 'Deutsch'
     weight = 2
     contentDir = 'content/de'
+
+# Main navigation: link all content sections
+[[languages.en.menu.main]]
+  name = 'IIIF'
+  pageRef = 'iiif'
+  weight = 1
+[[languages.en.menu.main]]
+  name = 'Shortcodes'
+  pageRef = 'shortcodes'
+  weight = 2
+[[languages.en.menu.main]]
+  name = 'Posts'
+  pageRef = 'posts'
+  weight = 3
+[[languages.en.menu.main]]
+  name = 'Wikidata'
+  pageRef = 'wikidata'
+  weight = 4
+[[languages.en.menu.main]]
+  name = 'Git'
+  pageRef = 'git'
+  weight = 5
+[[languages.en.menu.main]]
+  name = 'Config'
+  pageRef = 'config'
+  weight = 6
+[[languages.en.menu.main]]
+  name = 'Todo'
+  pageRef = 'todo'
+  weight = 7
