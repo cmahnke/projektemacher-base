@@ -7,6 +7,10 @@ publishDir = "docs"
 canonifyurls = true
 disablePathToLower = true
 
+[params]
+  favicon_32 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
+  favicon_16 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
+
 [params.author]
   email = 'mail@christianmahnke.de'
   name = 'Christian Mahnke'
@@ -55,35 +59,37 @@ disablePathToLower = true
     contentDir = 'content/de'
 
 # Main navigation: link all content sections
+# Note: URLs must be absolute (including the baseURL path), since Hugo's
+# 'absURL'/'absLangURL' drop the baseURL path for root-relative URLs
 [[languages.en.menu.main]]
   name = 'IIIF'
-  pageRef = 'iiif'
+  url = 'https://cmahnke.github.io/projektemacher-base/iiif/'
   weight = 1
 [[languages.en.menu.main]]
   name = 'Shortcodes'
-  pageRef = 'shortcodes'
+  url = 'https://cmahnke.github.io/projektemacher-base/shortcodes/'
   weight = 2
 [[languages.en.menu.main]]
   name = 'Posts'
-  pageRef = 'posts'
+  url = 'https://cmahnke.github.io/projektemacher-base/posts/'
   weight = 3
 [[languages.en.menu.main]]
   name = 'Wikidata'
-  pageRef = 'wikidata'
+  url = 'https://cmahnke.github.io/projektemacher-base/wikidata/'
   weight = 4
 [[languages.en.menu.main]]
   name = 'Git'
-  pageRef = 'git'
+  url = 'https://cmahnke.github.io/projektemacher-base/git/'
   weight = 5
 [[languages.en.menu.main]]
   name = 'Config'
-  pageRef = 'config'
+  url = 'https://cmahnke.github.io/projektemacher-base/config/'
   weight = 6
 [[languages.en.menu.main]]
   name = 'Todo'
-  pageRef = 'todo'
+  url = 'https://cmahnke.github.io/projektemacher-base/todo/'
   weight = 7
 [[languages.en.menu.main]]
   name = 'Templates'
-  pageRef = 'templates'
+  url = 'https://cmahnke.github.io/projektemacher-base/templates/'
   weight = 8
