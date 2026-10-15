@@ -1,4 +1,4 @@
-baseURL = 'https://theme.projektemacher.org/'
+baseURL = 'https://cmahnke.github.io/projektemacher-base/'
 theme = ["projektemacher-base"]
 title = "Projektemacher Base"
 locale = "en"
