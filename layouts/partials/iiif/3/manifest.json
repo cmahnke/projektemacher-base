@@ -85,8 +85,8 @@
     {{- end -}}
     {{- continue -}}
   {{- end -}}
-  {{- if and $debug (eq $imageRes nil) -}}
-    {{- errorf "[iiif/3/manifest.json] Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
+  {{- if eq $imageRes nil -}}
+    {{- errorf "[iiif/3/manifest.json] Couldn't resolve resource %s for page %s, check the resource's 'src' entry" ($res | jsonify) $.RelPermalink -}}
   {{- end -}}
 
   {{- $mediatype := string $imageRes.MediaType -}}
