@@ -14,7 +14,7 @@ A shortcode declares its requirements with an inline partial named `_partials/sh
 
 ```html
 {{- define "_partials/shortcodes/code-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/shortcodes/code.js") "scss" (slice "scss/shortcodes/code.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/code.ts") "scss" (slice "scss/shortcodes/code.scss")) | jsonify -}}
 {{- end -}}
 ```
 

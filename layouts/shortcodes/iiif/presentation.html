@@ -40,5 +40,5 @@ Parameters:
 </div>
 
 {{- define "_partials/shortcodes/iiif/presentation-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/iiif/tify.js") "scss" (slice "scss/iiif/presentation-tify.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/iiif/tify.ts") "scss" (slice "scss/iiif/presentation-tify.scss")) | jsonify -}}
 {{- end -}}

@@ -54,6 +54,11 @@ disablePathToLower = true
 [security]
   [security.http]
     mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
+  # The theme's asset pipeline imports packages (howler, mermaid, ol, pdfobject,
+  # tify, …) from the node_modules directory of the theme repository one level up
+  [security.node]
+    [security.node.permissions]
+      allowRead = ['../node_modules']
 
 # Multilingual Language Configurations
 [languages]

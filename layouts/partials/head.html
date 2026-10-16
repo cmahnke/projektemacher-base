@@ -29,7 +29,7 @@
 {{- $mainJs := "" -}}
 {{- if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/image/") -}}
     {{- $iiifOpts := dict "targetPath" "js/iiif-image-viewer.js" "defines" $defines "minify" true -}}
-    {{- $iiif := resources.Get "js/iiif-image-viewer.js" | js.Build $iiifOpts -}}
+    {{- $iiif := resources.Get "ts/iiif-image-viewer.ts" | js.Build $iiifOpts -}}
     {{- $mainJs = slice $main $iiif | resources.Concat "js/main-iiif-i.js" | minify | fingerprint -}}
 {{- else if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/presentation/") -}}
     {{- $iiifOpts := dict "targetPath" "js/iiif-presentation-viewer.js" "defines" $defines "minify" true -}}

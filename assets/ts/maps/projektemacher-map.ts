@@ -1,5 +1,5 @@
 import { Map, View } from 'ol';
-import { Options as ViewOptions } from 'ol/View';
+import { ViewOptions } from 'ol/View';
 import Attribution from 'ol/control/Attribution.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -24,8 +24,10 @@ import {
   loadOrParse,
   setupMarker,
   featurePopUp,
+  type Lang,
 } from './base-map';
 import { center as turf_center } from '@turf/turf';
+import type Interaction from 'ol/interaction/Interaction';
 import { Control, FullScreen, Zoom, MousePosition } from 'ol/control';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
@@ -38,7 +40,7 @@ const defaultFonts = '/css/fonts/{font-family}.css';
 const defaultAttribution =
   '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>';
 
-interface GeoJSONFeatureCollection {
+export interface GeoJSONFeatureCollection {
   type: string;
   features: unknown[];
   [key: string]: unknown;
@@ -103,7 +105,7 @@ interface ProjektemacherViewOptions extends ViewOptions {
 
 interface MapControlsConfig {
   controls?: Control[];
-  interactions?: unknown[];
+  interactions?: Interaction[];
 }
 
 export async function projektemacherMap(
@@ -125,19 +127,18 @@ export async function projektemacherMap(
   font?: string,
   attribution?: string
 ): Promise<Map> {
-  let geojsonObj: GeoJSONFeatureCollection | undefined;
+  const geojsonObj = (await loadOrParse(geojson as string)) as GeoJSONFeatureCollection;
   let styleObj: any;
   let bboxObj: number[][] | undefined;
   let centerObj: Coordinate | undefined;
   let markerObj: object | StyleLike | undefined;
 
   const lang = getLang();
+  const langKey = (lang in toolTips ? lang : 'en') as Lang;
   source = absUrl(source as string);
 
-  geojsonObj = (await loadOrParse(geojson as string)) as GeoJSONFeatureCollection;
-
   if (bbox !== undefined) {
-    let rawBbox = (await loadOrParse(bbox as string)) as number[] | number[][];
+    const rawBbox = (await loadOrParse(bbox as string)) as number[] | number[][];
     if ((rawBbox as number[]).length === 4) {
       const flat = rawBbox as number[];
       bboxObj = [
@@ -229,7 +230,7 @@ export async function projektemacherMap(
       undefined,
       undefined,
       bboxObj,
-      centerObj,
+      centerObj as [number, number],
       background,
       absUrl(defaultSprites),
       defaultFonts,
@@ -256,10 +257,10 @@ export async function projektemacherMap(
   } else {
     controls.controls = [
       new Zoom({
-        zoomInTipLabel: toolTips[lang]['zoomIn'],
-        zoomOutTipLabel: toolTips[lang]['zoomOut'],
+        zoomInTipLabel: toolTips[langKey]['zoomIn'],
+        zoomOutTipLabel: toolTips[langKey]['zoomOut'],
       }),
-      new FullScreen({ tipLabel: toolTips[lang]['fullscreen'] }),
+      new FullScreen({ tipLabel: toolTips[langKey]['fullscreen'] }),
       new Attribution({ collapsible: true }),
     ];
   }

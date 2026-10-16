@@ -17,16 +17,40 @@ import {
   Icon,
 } from 'ol/style.js';
 import Feature from 'ol/Feature';
+import type { FeatureLike } from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
 import { Coordinate } from 'ol/coordinate';
 import { Options as IconOptions } from 'ol/style/Icon';
 
-export function bboxExtent(bbox: string | (string | number)[]): Extent {
+type Lang = 'de' | 'en';
+
+interface ToolTipStrings {
+  zoomIn: string;
+  zoomOut: string;
+  fullscreen: string;
+}
+
+const toolTips: Record<Lang, ToolTipStrings> = {
+  de: {
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
+    fullscreen: 'Vollbildansicht',
+  },
+  en: {
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    fullscreen: 'Toggle full-screen',
+  },
+};
+
+export function bboxExtent(
+  bbox: string | (string | number)[] | (string | number)[][]
+): Extent {
   let bboxArr: (string | number)[];
   if (typeof bbox === 'string') {
     bboxArr = bbox.split(',');
   } else {
-    bboxArr = bbox;
+    bboxArr = bbox.flat();
   }
   const stringBbox: string[] = bboxArr.flat().map((e) => e.toString());
   // NOTE: fromLonLat expects numeric Coordinate; original code passed strings here.
@@ -61,7 +85,7 @@ function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   return featureArray[0];
 }
 
-export function addOverlay(map: Map, markerOptions?: IconOptions): Overlay {
+export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
   const target = map.getTargetElement();
   const container = target?.parentElement?.querySelector('.ol-popup') as HTMLElement;
   const content = container.querySelector('.ol-popup-content') as HTMLElement;
@@ -69,7 +93,7 @@ export function addOverlay(map: Map, markerOptions?: IconOptions): Overlay {
 
   function featurePopUpLocal(feature: Feature<Geometry>, overlay: Overlay) {
     const geometry = feature.getGeometry();
-    const coord = geometry?.getCoordinates?.();
+    const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
     let popup = '<h1>' + feature.get('name') + '</h1>';
     popup += feature.get('popupContent');
     content.innerHTML = popup;
@@ -79,9 +103,6 @@ export function addOverlay(map: Map, markerOptions?: IconOptions): Overlay {
   const overlay = new Overlay({
     element: container,
     autoPan: true,
-    autoPanAnimation: {
-      duration: 250,
-    },
   });
 
   map.addOverlay(overlay);
@@ -113,7 +134,7 @@ export function featurePopUp(
   content: HTMLElement
 ): void {
   const geometry = feature.getGeometry();
-  const coord = geometry?.getCoordinates?.();
+  const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
   let popup = '<h1>' + feature.get('name') + '</h1>';
   popup += feature.get('popupContent');
   content.innerHTML = popup;
@@ -161,7 +182,7 @@ function setupMap(
     }
   }
 
-  function clusterStyle(feature: Feature<Geometry>): Style | Style[] {
+  function clusterStyle(feature: FeatureLike): Style | Style[] {
     const size = (feature.get('features') as Feature<Geometry>[]).length;
     if (size > 1) {
       if (marker !== undefined && marker) {
@@ -271,10 +292,8 @@ function setupMap(
 
   const overlay = new Overlay({
     element: container,
+    // OL 10 dropped the legacy 'autoPanAnimation' option, autoPan uses its default animation
     autoPan: true,
-    autoPanAnimation: {
-      duration: 250,
-    },
   });
 
   map.addOverlay(overlay);
@@ -342,7 +361,7 @@ function setupMap(
             ) {
               // Show an expanded view of the cluster members.
               if (clusterMembers.length === 1) {
-                clickFeature = features[0];
+                clickFeature = features[0] as Feature<Geometry>;
               } else {
                 clickFeature = mergeFeaturesLocal(clusterMembers);
               }
@@ -396,10 +415,13 @@ function setupMap(
     })
   );
 
-  map.getView().fit(vectorSource.getExtent(), {
-    size: map.getSize(),
-    padding: padding,
-  });
+  const sourceExtent = vectorSource.getExtent();
+  if (sourceExtent !== null) {
+    map.getView().fit(sourceExtent, {
+      size: map.getSize(),
+      padding: padding,
+    });
+  }
 
   /*
                   })

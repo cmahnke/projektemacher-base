@@ -1,17 +1,5 @@
-import 'tify';
-
-function addTify (selector, uri, lang = 'en') {
-  if (document.documentElement.lang !== undefined) {
-    lang = document.documentElement.lang;
-  }
-
-  const tify = new Tify({
-    container: selector,
-    manifestUrl: uri,
-    language: lang,
-    translationsDirUrl: '/tify/translations/'
-  });
-  return tify;
-}
-
-window.iiifPresentationViewer = addTify;
+/*
+ * DEPRECATED shim — the implementation moved to `assets/ts/iiif/tify.ts`.
+ * Kept for sites referencing the old path; will be removed in a future release.
+ */
+import '../../ts/iiif/tify.ts';

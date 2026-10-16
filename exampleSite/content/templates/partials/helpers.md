@@ -21,7 +21,7 @@ Utility partials — most of them return a value and are used like functions. Th
 | `functions/debug/var.html` | Debug dumps a variable with `printf "%#v"` |
 | `functions/i18n/default-lang` | Returns the default site language name |
 | `functions/i18n/page-for-lang.html` | Returns a page's translation for a language (input: `context`, `lang`) |
-| `functions/i18n/site-langs` | Returns all configured site languages, Hugo version aware |
+| `functions/i18n/site-langs` | Returns all configured site languages |
 | `functions/tags/tag2str` | Normalizes tag input (string, `Term` or taxonomy entry) to a string |
 | `functions/iiif/presentation-version.html` | Resolves the [IIIF Presentation version](../iiif-templates/#presentation-api-version) for a page |
 | `hugo/site/AllPages` | All pages of all sites, multilingual aware — workaround for Hugo's `.Site.AllPages` behavior |

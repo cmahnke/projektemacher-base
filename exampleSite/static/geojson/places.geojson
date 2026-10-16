@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "name": "places",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Berlin" },
+      "geometry": { "type": "Point", "coordinates": [13.404954, 52.520008] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Potsdam" },
+      "geometry": { "type": "Point", "coordinates": [13.065662, 52.390569] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Leipzig" },
+      "geometry": { "type": "Point", "coordinates": [12.373075, 51.339695] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dresden" },
+      "geometry": { "type": "Point", "coordinates": [13.737262, 51.050407] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Halle (Saale)" },
+      "geometry": { "type": "Point", "coordinates": [11.972899, 51.482578] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Magdeburg" },
+      "geometry": { "type": "Point", "coordinates": [11.629167, 52.127367] }
+    }
+  ]
+}

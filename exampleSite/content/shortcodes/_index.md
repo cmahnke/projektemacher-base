@@ -9,7 +9,8 @@ metaPage: true
 This theme ships a collection of shortcodes. This section documents each of them, one page per shortcode, and explains the [shortcode helper system](shortcode-helper/) that automatically loads the assets (JS/SCSS/CSS) a shortcode requires.
 
 - [Shortcode helper system](shortcode-helper/)
-- [Demos](demo/) — live example pages (code, tag cloud)
+- [Demos](demo/) — additional example pages (code, tag cloud)
+- Every shortcode page that requires JavaScript includes a live, working demo inline
 
 ## General purpose
 

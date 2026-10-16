@@ -10,7 +10,7 @@ These partials are **not shipped with the theme** — the theme's templates call
 
 ## `li.html` (required for list pages)
 
-Called for every page in [list templates](../single-list/) — it renders a single list entry. Place it in `layouts/_partials/li.html` (or `layouts/partials/li.html` for older Hugo versions).
+Called for every page in [list templates](../single-list/) — it renders a single list entry. Place it in `layouts/_partials/li.html`.
 
 - Input: the page
 - If missing, the build emits `Missing li.html template` warnings and falls back to a plain `<a>` link

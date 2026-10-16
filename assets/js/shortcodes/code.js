@@ -1,16 +1,5 @@
-function addCopyToClipboard(button, content) {
-  button.addEventListener("click", (e)  => {
-    const text = content.value;
-
-    navigator.clipboard.writeText(text).then(() => {
-      /*console.log(`Wrote '${text}' to clipboard`);*/
-    }, () => {
-      console.warn("Failed to write to clipboard!");
-    });
-  })
-
-}
-
-window.addCopyToClipboard = addCopyToClipboard
-
-//export { addCopyToClipboardButtons }
+/*
+ * DEPRECATED shim — the implementation moved to `assets/ts/shortcodes/code.ts`.
+ * Kept for sites referencing the old path; will be removed in a future release.
+ */
+import '../../ts/shortcodes/code.ts';

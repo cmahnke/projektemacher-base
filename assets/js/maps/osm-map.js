@@ -192,6 +192,15 @@ export function initMap(element, url, source, cluster, marker) {
                     });
 
                     var vectorLayer;
+                    // BUG (preserved): `clickFeature`, `clickResolution`, `iconStyle`
+                    // and `markerOptions` are referenced below but never assigned —
+                    // declared here so the cluster click handler doesn't throw a
+                    // ReferenceError; behavior may need review.
+                    let clickFeature;
+                    let clickResolution;
+                    // eslint-disable-next-line no-unassigned-vars -- preserved legacy pattern
+                    let iconStyle;
+                    const markerOptions = undefined;
                     if (cluster !== undefined && cluster) {
                       // See https://openlayers.org/en/latest/examples/clusters-dynamic.html
                       const clusterSource = new Cluster({

@@ -23,9 +23,15 @@ Embeds a single image via the [IIIF Image API](https://iiif.io/api/image/3.0/) u
 {{</* iiif/iiif src="https://iiif.example.org/page0001/info.json" share="true" */>}}
 ```
 
+## Live demo
+
+Loads an [Image API 2 info.json](https://iiif.bodleian.ox.ac.uk/iiif/image/9cca8f78-5cba-4a7f-9871-1e5c7a475b5a/info.json) from the Bodleian Library with the share bar enabled:
+
+{{< iiif/iiif src="https://iiif.bodleian.ox.ac.uk/iiif/image/9cca8f78-5cba-4a7f-9871-1e5c7a475b5a/info.json" share="true" >}}
+
 ## Assets
 
-Via the shortcode helper: JS `js/iiif-image-viewer.js`, SCSS `scss/iiif.scss`. See [IIIF configuration](/iiif/configuration/) for the site-wide viewer settings.
+Via the shortcode helper: JS `ts/iiif-image-viewer.ts`, SCSS `scss/iiif.scss`. See [IIIF configuration](/iiif/configuration/) for the site-wide viewer settings.
 
 ## Notes
 

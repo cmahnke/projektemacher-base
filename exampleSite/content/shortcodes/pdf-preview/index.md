@@ -25,8 +25,14 @@ Embeds an inline PDF preview via [PDFObject](https://pdfobject.com/) (`PDFObject
 
 ## Assets
 
-Via the shortcode helper: JS `js/pdf-preview.js`, SCSS `scss/pdf-preview.scss`.
+Via the shortcode helper: JS `ts/pdf-preview.ts`, SCSS `scss/pdf-preview.scss`.
 
 ## Warnings
 
 - `warnf "File <page path>/<pdf> doens't exist!"` when the file can't be found on disk (rendering continues)
+
+## Live demo
+
+Embeds the [demo.pdf](demo.pdf) page resource of this page:
+
+{{< pdf-preview pdf="demo.pdf" download="true" >}}

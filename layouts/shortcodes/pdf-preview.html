@@ -60,5 +60,5 @@
 {{- end -}}
 
 {{- define "_partials/shortcodes/pdf-preview-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/pdf-preview.js") "scss" (slice "scss/pdf-preview.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/pdf-preview.ts") "scss" (slice "scss/pdf-preview.scss")) | jsonify -}}
 {{- end -}}

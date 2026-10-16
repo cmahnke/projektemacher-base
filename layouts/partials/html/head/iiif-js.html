@@ -3,7 +3,7 @@
 {{- $context := "" -}}
 {{- $isServer := hugo.IsServer -}}
 
-{{- $iiifImageViewerJS := "js/iiif-image-viewer.js" -}}
+{{- $iiifImageViewerJS := "ts/iiif-image-viewer.ts" -}}
 {{- with $.Site.Params.iiif.imageViewer -}}
   {{- if ne . "" -}}
     {{- $iiifImageViewerJS = . -}}
@@ -13,7 +13,7 @@
 {{/*
 {{- $iiifPresentationViewerJS := "js/iiif-presentation-viewer.js" -}}
 */}}
-{{- $iiifPresentationViewerJS := "js/iiif/tify.js" -}}
+{{- $iiifPresentationViewerJS := "ts/iiif/tify.ts" -}}
 {{- with $.Site.Params.iiif.presentationViewer -}}
   {{- if ne . "" -}}
     {{- $iiifPresentationViewerJS = . -}}
@@ -48,12 +48,15 @@
 {{- $iiifJs := slice -}}
 
 {{- if (hasPrefix $prefix "http://iiif.io/api/image/") -}}
-  {{- $iiifOpts := dict "targetPath" $iiifImageViewerJS "defines" $defines "minify" $minify -}}
+  {{/* esbuild compiles TypeScript sources, but the built output must be published with a .js targetPath */}}
+  {{- $iiifTargetPath := replaceRE "\\.ts$" ".js" $iiifImageViewerJS -}}
+  {{- $iiifOpts := dict "targetPath" $iiifTargetPath "defines" $defines "minify" $minify -}}
   {{- $iiifJs = $iiifJs | append (resources.Get $iiifImageViewerJS | js.Build $iiifOpts) -}}
 {{- end -}}
 
 {{- if (hasPrefix $prefix "http://iiif.io/api/presentation/") -}}
-  {{- $iiifOpts := dict "targetPath" $iiifPresentationViewerJS "defines" $defines "minify" $minify -}}
+  {{- $iiifTargetPath := replaceRE "\\.ts$" ".js" $iiifPresentationViewerJS -}}
+  {{- $iiifOpts := dict "targetPath" $iiifTargetPath "defines" $defines "minify" $minify -}}
   {{- $iiifJs = $iiifJs | append (resources.Get $iiifPresentationViewerJS | js.Build $iiifOpts) -}}
 {{- end -}}
 

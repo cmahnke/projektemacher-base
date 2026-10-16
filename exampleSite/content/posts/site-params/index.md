@@ -3,7 +3,7 @@
 
 ```
 [params.iiif]
-  presentationViewer = "js/iiif/tify.js"
+  presentationViewer = "ts/iiif/tify.ts"
 
 [params.css]
   includeDirs = ["node_modules/tify/dist/"]

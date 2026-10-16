@@ -22,6 +22,12 @@ Renders an OpenStreetMap container for OpenLayers: `div.map-wrapper.script` with
 {{</* maps/osm src="/geojson/places.geojson" cluster="true" */>}}
 ```
 
+## Live demo
+
+Loads the example GeoJSON from [`static/geojson/`](https://github.com/cmahnke/projektemacher-base/tree/main/exampleSite/static/geojson) with clustering enabled:
+
+{{< maps/osm src="/geojson/places.geojson" cluster="true" >}}
+
 ## Notes
 
 - The OpenLayers/map JS and CSS are expected to be loaded globally — the shortcode declares no metadata

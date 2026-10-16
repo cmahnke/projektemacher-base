@@ -1,5 +1,5 @@
 name = "Projektemacher Base"
-min_version = "0.158.0"
+min_version = "0.165.0"
 
 [author]
   name = "Christian Mahnke"
@@ -32,11 +32,6 @@ min_version = "0.158.0"
     baseName = "map"
     notAlternative = true
 
-
-#[module]
-#  [module.hugoVersion]
-#    extended = true
-#    min = '0.146.7'
 
 [security]
   [security.http]

@@ -103,7 +103,7 @@ Mapping table for all legacy keys:
 
 ## 3. Viewers
 
-The default presentation viewer (`js/iiif/tify.js`, TIFY via
+The default presentation viewer (`ts/iiif/tify.ts`, TIFY via
 `[params.iiif] presentationViewer`) supports API 3. No action required unless
 the site pins an API 2-only viewer — then switch to TIFY or the bundled
 Mirador (`js/iiif/mirador.js`, see `exampleSite/content/posts/mirador/`).
@@ -349,3 +349,43 @@ handwritten `@font-face` file.
 4. Leave handwritten rules for non-npm fonts (custom families) untouched.
 5. Verify: run the missing-file loop from section 3, then build with `hugo` —
    done when the build is green and no font request 404s in the built site.
+
+# Upgrading shortcode scripts from `assets/js` to TypeScript (`assets/ts`)
+
+The JavaScript entry points bound to the shortcodes moved from `assets/js/` to
+TypeScript sources in `assets/ts/`. Hugo's `js.Build` compiles them with esbuild
+— no extra build step is required.
+
+## Moved files
+
+| Old path (deprecated shim) | New path |
+|---|---|
+| `assets/js/shortcodes/code.js` | `assets/ts/shortcodes/code.ts` |
+| `assets/js/mermaid.js` | `assets/ts/mermaid.ts` |
+| `assets/js/lucienne/lucienne.js` | `assets/ts/lucienne/lucienne.ts` |
+| `assets/js/browser-banner.js` | `assets/ts/browser-banner.ts` |
+| `assets/js/audioplayer.js` | `assets/ts/audioplayer.ts` |
+| `assets/js/pdf-preview.js` | `assets/ts/pdf-preview.ts` |
+| `assets/js/iiif-image-viewer.js` | `assets/ts/iiif-image-viewer.ts` |
+| `assets/js/iiif/tify.js` | `assets/ts/iiif/tify.ts` |
+| `assets/js/pdf-viewer.js` | `assets/ts/pdf-viewer.ts` |
+| `assets/js/iframe-consent.js` | `assets/ts/iframe-consent.ts` |
+
+The old `.js` files are kept as thin, deprecated shims importing the TypeScript
+sources, so sites referencing the old paths (page front matter `js:` entries or
+the `[params.iiif]` `imageViewer` / `presentationViewer` settings) keep working.
+They will be removed in a future release — update the references to the
+`ts/` paths instead.
+
+## 1. Required steps for all consuming sites
+
+1. Update `[params.iiif]` viewer settings to the new paths:
+   ```toml
+   [params.iiif]
+     presentationViewer = "ts/iiif/tify.ts"
+     imageViewer = "ts/iiif-image-viewer.ts"
+   ```
+2. Update page front matter `js:` entries pointing at the moved files.
+3. Verify: `npm run typecheck` (runs `tsc --noEmit`, strict) and
+   `npm run lint` (ESLint now lints `assets/ts/` too) — then build with
+   `hugo`. The built bundles keep their `.js` target paths.

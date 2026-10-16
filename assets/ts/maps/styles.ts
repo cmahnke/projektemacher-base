@@ -1,6 +1,5 @@
 //import type { AnySourceData, Style as MBStyle, VectorSourceImpl } from "mapbox-gl";
 import type {
-  LngLatLike,
   StyleSpecification,
   VectorSourceSpecification,
   BackgroundLayerSpecification,
@@ -8,7 +7,7 @@ import type {
   LineLayerSpecification,
   CircleLayerSpecification,
   LayerSpecification,
-} from 'maplibre-gl';
+} from '@maplibre/maplibre-gl-style-spec';
 
 import { absUrl } from './base-map';
 
@@ -37,7 +36,7 @@ interface LayerPaint {
  * Using a concrete tuple type instead of `unknown[]` lets us avoid any
  * `Array.isArray()` narrowing-to-`any[]` tricks later on.
  */
-type ZoomFontStop = [number, string];
+type ZoomFontStop = [number, string[]];
 
 interface LayerLayout {
   "text-font"?: string[] | { stops?: ZoomFontStop[] };
@@ -75,7 +74,7 @@ export function updateStyle(
   minzoom?: number,
   maxzoom?: number,
   bounds?: number[][],
-  center?: LngLatLike,
+  center?: [number, number],
   background?: string,
   sprites?: string,
   fontPath?: string,
@@ -186,7 +185,7 @@ export function setupDefaultStyle(
   minzoom?: number,
   maxzoom?: number,
   bounds?: number[][],
-  center?: LngLatLike,
+  center?: [number, number],
   background?: string
 ): StyleSpecification {
   const style: StyleSpecification = buildDefaultStyle(source);
@@ -196,7 +195,7 @@ export function setupDefaultStyle(
   if (minzoom !== undefined) src.minzoom = minzoom;
   if (maxzoom !== undefined) src.maxzoom = maxzoom;
   if (bounds !== undefined) {
-    src.bounds = bounds.flat().map((e: number) => Number(e));
+    src.bounds = bounds.flat().map((e: number) => Number(e)) as [number, number, number, number];
   }
   if (background !== undefined) {
     const bgLayer = style.layers[0] as BackgroundLayerSpecification;
@@ -305,7 +304,7 @@ export function getSourceName (style: StyleSpecification): string {
  * arrays across all symbol layers of a style. */
 export function collectFontFamilies(style: StyleSpecification): string[] {
   const families = new Set<string>();
-  style.layers.forEach((layer) => {
+  style.layers.forEach((layer: LayerSpecification) => {
     if (layer.type === 'symbol' && layer.layout && 'text-font' in layer.layout) {
       const textFont = (layer.layout)['text-font'];
       if (Array.isArray(textFont)) {

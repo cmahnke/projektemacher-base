@@ -124,7 +124,9 @@ Example usage:
   {{- if $debug -}}
     {{- warnf "[partials/html/head/script.html] Processing JS script %s" $script -}}
   {{- end -}}
-  {{- $scriptOpts := dict "targetPath" $script
+  {{/* esbuild compiles TypeScript sources, but the built output must be published with a .js targetPath */}}
+  {{- $targetPath := replaceRE "\\.ts$" ".js" $script -}}
+  {{- $scriptOpts := dict "targetPath" $targetPath
                           "defines" $defines
                           "minify" (cond hugo.IsDevelopment false true)
                           "sourceMap" (cond hugo.IsDevelopment "linked" "none")

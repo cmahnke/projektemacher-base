@@ -1,19 +1,5 @@
-import PDFObject from 'pdfobject';
-
-window.addPDFViewer = function (elemId, url, options) {
-  if (options === undefined) {
-    options = {
-      pdfOpenParams: {
-        navpanes: 1,
-        toolbar: 1,
-        statusbar: 1,
-        scrollbar: 1,
-        view: "FitH"
-      },
-      //forcePDFJS: true,
-      PDFJS_URL: "/pdfjs/web/viewer.html"
-    }
-  }
-
-  return  PDFObject.embed(url, elemId, options);
-}
+/*
+ * DEPRECATED shim — the implementation moved to `assets/ts/pdf-viewer.ts`.
+ * Kept for sites referencing the old path; will be removed in a future release.
+ */
+import '../ts/pdf-viewer.ts';

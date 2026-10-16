@@ -14,12 +14,12 @@ All IIIF related settings live in `[params.iiif]`:
   # Can be overridden per page, see 'Presentation 4'
   presentationVersion = 3
 
-  # JS asset for the Presentation API viewer, default: 'js/iiif/tify.js' (TIFY)
+  # JS asset for the Presentation API viewer, default: 'ts/iiif/tify.ts' (TIFY)
   # Alternative: 'js/iiif/mirador.js' (Mirador), see /posts/mirador/
-  presentationViewer = "js/iiif/tify.js"
+  presentationViewer = "ts/iiif/tify.ts"
 
-  # JS asset for the Image API viewer, default: 'js/iiif-image-viewer.js' (OpenLayers)
-  imageViewer = "js/iiif-image-viewer.js"
+  # JS asset for the Image API viewer, default: 'ts/iiif-image-viewer.ts' (OpenLayers)
+  imageViewer = "ts/iiif-image-viewer.ts"
 ```
 
 In production, manifest and canvas IDs can be reprefixed to point to a dedicated IIIF server:

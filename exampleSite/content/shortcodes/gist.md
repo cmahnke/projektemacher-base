@@ -23,3 +23,13 @@ Positional arguments:
 ```text
 {{</* gist cmahnke 1234567890abcdef */>}}
 ```
+
+## Live demo
+
+Embeds a [real gist](https://gist.github.com/cmahnke/5049d42cd6dabc19cfd6c85161947fa2):
+
+{{< gist cmahnke 5049d42cd6dabc19cfd6c85161947fa2 >}}
+
+The same gist, restricted to a single file:
+
+{{< gist cmahnke 5049d42cd6dabc19cfd6c85161947fa2 indexer.py >}}

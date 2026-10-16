@@ -22,6 +22,12 @@ Positional arguments:
 {{</* mastodon "https://mastodon.social/@user/1234567890" */>}}
 ```
 
+## Live demo
+
+Embeds a [public post](https://openbiblio.social/@cmahnke/116855467937850503) from [@cmahnke@openbiblio.social](https://openbiblio.social/@cmahnke):
+
+{{< mastodon "https://openbiblio.social/@cmahnke/116855467937850503" >}}
+
 ## Errors
 
 - `errorf "The %q shortcode requires a positional parameter: the url of the post…"` when the argument is missing

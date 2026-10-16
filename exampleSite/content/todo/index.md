@@ -12,6 +12,5 @@ There are several sources for issues:
 # General goals
 
 * Finish this site as documentation
-* Deprecate Hugo versions before 0.123
 * Remove duplicate functionality
 * Use shortcode metadata for every shortcode

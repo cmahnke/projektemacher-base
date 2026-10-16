@@ -33,9 +33,19 @@ graph TD
 {{</* /mermaid */>}}
 ```
 
+## Live demo
+
+{{< mermaid >}}
+graph LR
+    A[Hugo] --> B[Shortcode helper]
+    B --> C{Assets needed?}
+    C -- yes --> D[Load per page]
+    C -- no --> E[Nothing included]
+{{< /mermaid >}}
+
 ## Assets
 
-Via the shortcode helper: JS `js/mermaid.js`.
+Via the shortcode helper: JS `ts/mermaid.ts`.
 
 ## Errors
 

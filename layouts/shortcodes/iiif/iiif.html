@@ -14,7 +14,7 @@ Parameters:
 {{- if not (.Get "includeSources") -}}
     {{- $defines := dict "process.env.NODE_ENV" `"development"` -}}
     {{- $opts := dict "targetPath" "js/main.js" "defines" $defines -}}
-    {{- $iiifViewer := resources.Get "js/iiif-image-viewer.js" | js.Build $opts -}}
+    {{- $iiifViewer := resources.Get "ts/iiif-image-viewer.ts" | js.Build $opts -}}
     {{- $js := slice $iiifViewer | resources.Concat "js/iiif-ol.js" | minify | fingerprint -}}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{ end }}
@@ -41,5 +41,5 @@ Parameters:
 {{/* TODO: Add shortcode metadata to get rid of gloabal IIIF viewer  */}}
 
 {{- define "_partials/shortcodes/iiif/iiif-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/iiif-image-viewer.js") "scss" (slice "scss/iiif.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/iiif-image-viewer.ts") "scss" (slice "scss/iiif.scss")) | jsonify -}}
 {{- end -}}

@@ -24,6 +24,14 @@ The inner content is the `<iframe>` markup (passed through `safeHTML`).
 {{</* /html/iframe-consent */>}}
 ```
 
+## Live demo
+
+Wraps the embed of a [public Mastodon post](https://openbiblio.social/@cmahnke/116855467937850503) — the content only loads after accepting:
+
+{{< html/iframe-consent >}}
+<iframe src="https://openbiblio.social/@cmahnke/116855467937850503/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" title="Mastodon post"></iframe>
+{{< /html/iframe-consent >}}
+
 ## Notes
 
-The consent JavaScript and styles are loaded globally (`assets/js/iframe-consent.js`), not via shortcode metadata.
+The consent JavaScript and styles are loaded globally (`assets/ts/iframe-consent.ts`), not via shortcode metadata.

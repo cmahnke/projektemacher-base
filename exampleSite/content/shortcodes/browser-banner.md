@@ -27,8 +27,16 @@ This site works best in a Chromium based browser.
 {{</* /browser-banner */>}}
 ```
 
+## Live demo
+
+Shows a banner for Firefox users only — visible when this page is opened in Firefox:
+
+{{< browser-banner browser="firefox" >}}
+This site works best in a Chromium based browser.
+{{< /browser-banner >}}
+
 ## Assets
 
-Via the shortcode helper: JS `js/browser-banner.js`, SCSS `scss/browser-banner.scss`.
+Via the shortcode helper: JS `ts/browser-banner.ts`, SCSS `scss/browser-banner.scss`.
 
 See also [browser-hide-selector](../browser-hide-selector/).

@@ -27,6 +27,12 @@ Embeds an [A-Frame](https://aframe.io/) `<a-scene>` (WebXR enabled) that loads a
 {{</* aframe-3d-model src="/models/example.glb" maxDistance="20" */>}}
 ```
 
+## Live demo
+
+Loads the example model from the [3D model manifest post](/posts/3d-model/):
+
+{{< aframe-3d-model src="/posts/3d-model/model/example.glb" maxDistance="20" >}}
+
 ## Assets
 
 Via the shortcode helper: external JS `aframe.min.js` (1.5.0) and `aframe-orbit-controls` (1.3.2), SCSS `scss/3d/3d-model.scss`.

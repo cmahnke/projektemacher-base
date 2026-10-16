@@ -23,6 +23,12 @@ Renders an audio player placeholder (`div.audioplayer` with a play button) initi
 {{</* audioplayer src="audio/recording.mp3" */>}}
 ```
 
+## Live demo
+
+Plays the example audio file from [`static/audio/`](https://github.com/cmahnke/projektemacher-base/tree/main/exampleSite/static/audio):
+
+{{< audioplayer src="/audio/demo.wav" >}}
+
 ## Assets
 
-Via the shortcode helper: JS `js/audioplayer.js`, SCSS `scss/audioplayer.scss`.
+Via the shortcode helper: JS `ts/audioplayer.ts`, SCSS `scss/audioplayer.scss`.

@@ -1,4 +1,4 @@
-import { projektemacherMap } from './projektemacher-map';
+import { projektemacherMap, GeoJSONFeatureCollection } from './projektemacher-map';
 import { Style, Fill, Stroke, Icon } from 'ol/style.js';
 import { StyleFunction } from 'ol/style/Style';
 import Feature from 'ol/Feature';
@@ -28,7 +28,7 @@ declare global {
       marker?: string | IconOptions,
       font?: string
     ) => Promise<Map>;
-    projektemacher: {
+    projektemacher?: {
       maps: Record<string, Map>;
     };
   }
@@ -95,7 +95,7 @@ window.projektemacherMap = async function (
 
   const map = await projektemacherMap(
     elem,
-    geojson,
+    geojson as string | GeoJSONFeatureCollection | undefined,
     source,
     style,
     bbox,
@@ -112,10 +112,10 @@ window.projektemacherMap = async function (
     font
   );
 
-  if (!('projektemacher' in window)) {
+  if (window.projektemacher === undefined) {
     window.projektemacher = { maps: {} };
   }
-  if (!('maps' in window.projektemacher)) {
+  if (window.projektemacher.maps === undefined) {
     window.projektemacher.maps = {};
   }
   window.projektemacher.maps[elem as string] = map;

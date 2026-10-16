@@ -30,9 +30,16 @@ navigator.clipboard.writeText(text)
 {{</* /code */>}}
 ```
 
+## Live demo
+
+{{< code lang="js" title="Live example" >}}
+const answer = 42
+console.log(`The answer is ${answer}`)
+{{< /code >}}
+
 ## Assets
 
-Via the shortcode helper: JS `js/shortcodes/code.js` (`addCopyToClipboard`), SCSS `scss/shortcodes/code.scss`.
+Via the shortcode helper: JS `ts/shortcodes/code.ts` (`addCopyToClipboard`), SCSS `scss/shortcodes/code.scss`.
 
 ## References
 
