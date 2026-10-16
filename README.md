@@ -22,6 +22,21 @@ To generate IIIF JSON manifests you need to add the `JSON` output format to the 
 
 # Scripts
 
+## Fonts
+
+Fonts are provided by the Fontsource npm packages in `fonts/package.json` and
+copied into `static/fonts/` together with generated CSS (`assets/css/fonts/`)
+and SCSS (`assets/scss/npm-fonts/`) by:
+
+```
+./scripts/fonts.sh
+```
+
+Run it before building — sites consuming the theme as a submodule use
+`scripts/init/get-fonts.sh` instead. See `Upgrade.md` ("Upgrading fonts to the
+npm (Fontsource) based system") for the integration options and the SCSS
+migration guide.
+
 ## i18n language files (IMPORTANT: run before building)
 
 The `i18n/` directory contains source fragments named `<id>.<lang>.toml` (e.g. `iiif.en.toml`, `theme.de.toml`). The merged files `i18n/en.toml` and `i18n/de.toml` are **generated** (gitignored) and are what Hugo actually loads.
@@ -82,7 +97,6 @@ The [example site](https://cmahnke.github.io/projektemacher-base/) is currently 
 
 # TODO
 * Finish example site
-* Finish migration to new font infrastructure
 * Include nomalize.js by default
 * Finish shortcode metadata
 

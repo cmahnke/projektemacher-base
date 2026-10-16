@@ -13,15 +13,24 @@ public
 docs
 .hugo_build.lock
 resources
-static/fonts/*.woff
-static/fonts/*.woff2
+# Fonts in static/fonts are generated from the Fontsource npm packages by
+# scripts/fonts.sh - only fonts that aren't available via npm are tracked.
+static/fonts/*
+!static/fonts/DSBehrensschrift.otf
+!static/fonts/DSBehrensschrift.ttf
+!static/fonts/FuturaRenner-Regular.eot
+!static/fonts/FuturaRenner-Regular.svg
+!static/fonts/FuturaRenner-Regular.ttf
+!static/fonts/FuturaRenner-Regular.woff
+!static/fonts/FuturaRenner-Regular.woff2
+!static/fonts/alata-regular-webfont.woff
+!static/fonts/alata-regular-webfont.woff2
 tmp/fonts*
 hugo_stats.json
 fonts/pnpm-lock.yaml
 fonts/out/**
 assets/css/fonts/*
 .DS_Store
-#static/fonts/*
 pnpm-lock.yaml
 images.tmp/
 
