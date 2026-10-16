@@ -59,7 +59,38 @@ For section manifests, `resources` of the section page itself and of all child p
 
 ### Plain images
 
-The `iiif` path is optional for pages: a resource without it is embedded as a plain image — the canvas references the file itself instead of an Image API service (no `service` entry in the manifest). The canvas label then falls back to the file name without extension. Audio resources work the same way and are emitted as `Sound` bodies. Resources without `params.iiif` that are neither image nor audio are skipped with a debug warning. Note that leaflet mode (below) and section manifests still require `params.iiif`.
+The `iiif` path is optional for pages: a resource without it is embedded as a plain image — the canvas references the file itself instead of an Image API service (no `service` entry in the manifest). The canvas label then falls back to the file name without extension. Audio resources work the same way and are emitted as `Sound` bodies. Resources without `params.iiif` that are neither image, audio nor model are skipped with a debug warning. Note that leaflet mode (below) and section manifests still require `params.iiif`.
+
+### 3D models
+
+GLB resources (`model/gltf-binary`) are painted into [Presentation API 4 `Scene` containers](https://iiif.io/api/presentation/4.0/#scene) with an annotation whose body has the type `Model` — the API 3 canvas model has no depth, so 3D models require `iiif.presentationVersion: 4` and abort the build otherwise:
+
+```yaml
+---
+title: Example
+outputs: [html, iiif-manifest]
+iiif:
+  presentationVersion: 4
+  behavior: individuals
+resources:
+  - src: model/example.glb
+    params:
+      label: Example model
+---
+```
+
+Rules and options:
+
+- The Scene has no `height`/`width` — the Presentation 4 `Scene` container is boundless by design
+- A sibling image file named like the GLB (`example.jpg` next to `example.glb`) is used as thumbnail for the Scene and the manifest — a missing poster just omits the thumbnail, the build doesn't fail
+- Resources outside the page bundle are supported for GLB models: a `src` starting with `/` or `http` is referenced by URL
+- For section manifests, GLB resources need a truthy `params.iiif` marker like image resources
+- The site must register the media type:
+
+```toml
+[mediaTypes."model/gltf-binary"]
+  suffixes = ["glb"]
+```
 
 ### Leaflet mode
 

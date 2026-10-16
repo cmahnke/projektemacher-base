@@ -1,0 +1,56 @@
+{{- /*
+  Builds a Presentation 4 Scene container for a 3D model resource (GLB), see
+  https://iiif.io/api/presentation/4.0/#scene. Called from the shared
+  iiif/3/manifest.json resource loop. Presentation API 3 has no 3D support
+  (a Canvas has no depth), so this partial aborts the build for any other
+  version.
+  Expects a dict with:
+    page        the page (used for version lookup and resource access)
+    urlBase     URL prefix for the container and annotation IDs
+    src         the resource's src (page resource path or external URL)
+    external    true when src references a resource outside the page bundle
+    res         the resolved page resource (empty for external resources)
+    slug        container name (resource 'name' param or path derived)
+    manifestDir path fragment used for the annotation IDs
+    label       the container label (language map)
+*/ -}}
+{{- $version := partial "functions/iiif/presentation-version.html" .page -}}
+{{- if ne $version 4 -}}
+  {{- errorf "[iiif/4/scene.json] 3D model resource %s requires Presentation API 4, set 'iiif.presentationVersion: 4' for %s" .src .page.RelPermalink -}}
+{{- end -}}
+
+{{- /* Model URL: external resources are referenced by URL, bundle resources by their permalink */ -}}
+{{- $modelId := "" -}}
+{{- if .external -}}
+  {{- if hasPrefix .src "http" -}}
+    {{- $modelId = .src -}}
+  {{- else -}}
+    {{- $modelId = printf "%s%s" hugo.Sites.Default.BaseURL (strings.TrimPrefix "/" .src) -}}
+  {{- end -}}
+{{- else -}}
+  {{- $modelId = .res.Permalink -}}
+{{- end -}}
+{{- $format := "model/gltf-binary" -}}
+{{- if not .external -}}
+  {{- $format = string .res.MediaType -}}
+{{- end -}}
+
+{{- $sceneId := printf "%sscene/%s" .urlBase .slug -}}
+{{- $scene := dict "id" $sceneId "type" "Scene" "label" .label -}}
+
+{{- /* Optional poster image (sibling file next to the GLB) as thumbnail, a missing poster just omits it */ -}}
+{{- if not .external -}}
+  {{- $posterSrc := printf "%s.jpg" (strings.TrimSuffix (path.Ext .src) .src) -}}
+  {{- with .page.Resources.Get $posterSrc -}}
+    {{- $posterRes := .Resize "300x" -}}
+    {{- $scene = $scene | merge (dict "thumbnail" (slice (dict "id" $posterRes.Permalink "format" (string $posterRes.MediaType) "type" "Image" "height" $posterRes.Height "width" $posterRes.Width))) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $annotationId := printf "%sannotation/%s" .urlBase .manifestDir -}}
+{{- $body := dict "id" $modelId "type" "Model" "format" $format -}}
+{{- $annotation := dict "id" (printf "%s/model" $annotationId) "type" "Annotation" "motivation" (slice "painting") "body" $body "target" (dict "id" $sceneId "type" "Scene") -}}
+{{- $annotationPage := dict "id" $annotationId "type" "AnnotationPage" "items" (slice $annotation) -}}
+{{- $scene = $scene | merge (dict "items" (slice $annotationPage)) -}}
+
+{{- return $scene -}}

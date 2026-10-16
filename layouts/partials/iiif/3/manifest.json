@@ -1,4 +1,10 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
+{{- /*
+  Shared manifest implementation for Presentation API 3 and 4 (see
+  iiif/4/manifest.json which delegates to this partial). 3D model resources
+  (GLB) can't be painted into a Canvas (no depth) and are delegated to the
+  Presentation 4 only partial iiif/4/scene.json.
+*/ -}}
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
@@ -75,21 +81,36 @@
   {{- if eq $.Kind "section" -}}
     {{- $imageUrlBase = printf "%s%s" $urlBase $res.relpath -}}
   {{- end -}}
-  {{- $imageRes := $.Resources.Get $res.src -}}
+  {{- /* Resources outside the page bundle are referenced by URL, only GLB models are supported */ -}}
+  {{- $isExternal := false -}}
+  {{- if or (hasPrefix $res.src "/") (hasPrefix $res.src "http") -}}
+    {{- $isExternal = true -}}
+    {{- if not (eq (path.Ext $res.src) ".glb") -}}
+      {{- errorf "[iiif/3/manifest.json] External resources are only supported for GLB models, got %s for %s" $res.src $.RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $isModel := or $isExternal (eq (path.Ext $res.src) ".glb") -}}
+  {{- $imageRes := "" -}}
+  {{- if not $isExternal -}}
+    {{- $imageRes = $.Resources.Get $res.src -}}
+  {{- end -}}
   {{- if and (eq $.Kind "section") (isset $res "res") -}}
     {{- $imageRes = $res.res -}}
   {{- end -}}
-  {{- if and (not .params.iiif) (ne $imageRes nil) (not (in (slice "image" "audio") $imageRes.MediaType.MainType)) -}}
+  {{- if and (not .params.iiif) (ne $imageRes nil) (not (or $isModel (in (slice "image" "audio" "model") $imageRes.MediaType.MainType))) -}}
     {{- if $debug -}}
       {{- warnf "[iiif/3/manifest.json] Skipping non media resource %s for page %s" $res.src $.RelPermalink -}}
     {{- end -}}
     {{- continue -}}
   {{- end -}}
-  {{- if eq $imageRes nil -}}
+  {{- if and (not $isExternal) (eq $imageRes nil) -}}
     {{- errorf "[iiif/3/manifest.json] Couldn't resolve resource %s for page %s, check the resource's 'src' entry" ($res | jsonify) $.RelPermalink -}}
   {{- end -}}
 
-  {{- $mediatype := string $imageRes.MediaType -}}
+  {{- $mediatype := "model/gltf-binary" -}}
+  {{- if not $isExternal -}}
+    {{- $mediatype = string $imageRes.MediaType -}}
+  {{- end -}}
   {{/* Check for JXL */}}
   {{- if eq $mediatype "image/jxl" -}}
     {{- $previewLoc := "" -}}
@@ -103,18 +124,23 @@
     {{- end -}}
     {{- $imageRes = $.Resources.Get $previewLoc -}}
   {{- end -}}
-  {{- if eq $imageRes nil -}}
+  {{- if and (not $isExternal) (eq $imageRes nil) -}}
     {{- errorf "[iiif/3/manifest.json] failed to load from %#v" $res -}}
   {{- end -}}
 
   {{- $manifestDir := "" -}}
-  {{- if hasPrefix $mediatype "audio" -}}
-    {{- $manifestDir = strings.TrimSuffix .src (path.Ext .src) -}}
+  {{- /* Note Hugo's strings.TrimSuffix takes the suffix as the first argument */ -}}
+  {{- if $isExternal -}}
+    {{- $manifestDir = strings.TrimSuffix (path.Ext .src) (path.Base .src) -}}
+  {{- else if $isModel -}}
+    {{- /* 3D models always derive their slug from the resource path, a params.iiif marker (needed for section manifests) is only used as a flag */ -}}
+    {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
+  {{- else if hasPrefix $mediatype "audio" -}}
   {{ else if .params.iiif }}
     {{- $manifestDir = path.Dir .params.iiif -}}
   {{- else -}}
     {{- /* Plain image resource: use the resource path without extension */ -}}
-    {{- $manifestDir = strings.TrimSuffix .src (path.Ext .src) -}}
+    {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
   {{- end -}}
 
   {{- $canvas := "" -}}
@@ -156,7 +182,17 @@
     {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
   {{- else -}}
     {{- /* Fall back to the file name (without extension) as label */ -}}
-    {{- $pageLabel = dict "none" (slice (strings.TrimSuffix (path.Base $manifestDir) (path.Ext $manifestDir))) -}}
+    {{- $pageLabel = dict "none" (slice (strings.TrimSuffix (path.Ext $manifestDir) (path.Base $manifestDir))) -}}
+  {{- end -}}
+
+  {{- /* 3D models are delegated to the Presentation 4 Scene partial, they can't be painted into a Canvas (no depth) */ -}}
+  {{- if $isModel -}}
+    {{- $canvas := partial "iiif/4/scene.json" (dict "page" $ "urlBase" $imageUrlBase "src" .src "external" $isExternal "res" $imageRes "slug" $canvas "manifestDir" $manifestDir "label" $pageLabel) -}}
+    {{- if .params.hint -}}
+      {{- $canvas = $canvas | merge (dict "behavior" (slice .params.hint)) -}}
+    {{- end -}}
+    {{- $manifestItems = $manifestItems | append $canvas -}}
+    {{- continue -}}
   {{- end -}}
 
   {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}

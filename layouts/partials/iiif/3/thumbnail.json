@@ -17,7 +17,15 @@
 {{- end -}}
 
 {{- if and (isset .Params "preview") .Params.preview -}}
-  {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
+  {{- if reflect.IsMap .Params.preview -}}
+    {{- /* Map shaped preview param (e.g. preview.image/hide): match the resource by src, no resource name can ever match a map */ -}}
+    {{- $previewMatches := where .Params.resources "src" (index .Params.preview "image") -}}
+    {{- if gt (len $previewMatches) 0 -}}
+      {{- $previewReference = index $previewMatches 0 -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
+  {{- end -}}
 {{- else if isset .Params "resources" -}}
   {{- if (gt (where .Params.resources "name" "preview" | len) 0) -}}
     {{- $previewReference = index (where .Params.resources "name" "preview") 0 -}}

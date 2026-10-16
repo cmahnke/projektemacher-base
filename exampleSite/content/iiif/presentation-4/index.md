@@ -14,7 +14,7 @@ resources:
 
 # Presentation API 4 draft
 
-The theme supports generating [Presentation API 4](https://iiif.io/api/presentation/4.0/) (version 4.0.0-draft) manifests. The draft is structurally compatible with API 3 — the templates in `layouts/partials/iiif/3/` are the single implementation, `layouts/partials/iiif/4/manifest.json` only delegates and serves as the place for future API 4 specific overrides. Currently only the `@context` differs. The same applies to the leaflet layout: `layouts/partials/iiif/4/manifest-leaflet.json` delegates to the shared API 3 implementation, see [Page metadata](../page-metadata/#leaflet-mode).
+The theme supports generating [Presentation API 4](https://iiif.io/api/presentation/4.0/) (version 4.0.0-draft) manifests. The draft is structurally compatible with API 3 — the templates in `layouts/partials/iiif/3/` are the single implementation, `layouts/partials/iiif/4/manifest.json` only delegates and `layouts/partials/iiif/4/scene.json` is the version specific override building the 3D Scene containers (see [Page metadata](../page-metadata/#3d-models)). The same applies to the leaflet layout: `layouts/partials/iiif/4/manifest-leaflet.json` delegates to the shared API 3 implementation, see [Page metadata](../page-metadata/#leaflet-mode).
 
 ## Version switch
 

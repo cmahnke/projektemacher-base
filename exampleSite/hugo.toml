@@ -27,6 +27,8 @@ disablePathToLower = true
     suffixes = ["json"]
   [mediaTypes."application/ld+json"]
     suffixes = ["json"]
+  [mediaTypes."model/gltf-binary"]
+    suffixes = ["glb"]
 
 [outputFormats]
   [outputFormats.qrcode]
@@ -40,6 +42,14 @@ disablePathToLower = true
     baseName = "manifest"
     isPlainText = true
     isHTML = false
+  [outputFormats.iiif-collection]
+    mediaType = "application/ld+json"
+    baseName = "collection"
+    isPlainText = true
+    isHTML = false
+
+[outputs]
+  home = ["html", "iiif-collection"]
 
 [security]
   [security.http]
