@@ -1,0 +1,7 @@
+{{- /*
+  IIIF Presentation API 4 manifest for two-sided leaflets (spec draft 4.0.0, see https://iiif.io/api/presentation/4.0/)
+  The draft is structurally compatible with Presentation API 3 (items → Canvas → AnnotationPage),
+  only the @context differs. The API 3 leaflet partial is reused as the single implementation;
+  version specific overrides belong here.
+*/ -}}
+{{- partial "iiif/3/manifest-leaflet.json" . -}}

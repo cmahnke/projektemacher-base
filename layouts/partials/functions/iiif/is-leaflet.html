@@ -1,0 +1,36 @@
+{{- /*
+  Returns true if the given page or section should use the two-sided leaflet
+  manifest (front / back canvases) instead of the default manifest.
+
+  Leaflet mode is triggered by at least one resource carrying
+  `params.hint == "leaflet-front"` or `"leaflet-back"`.
+
+  For sections, own resources as well as resources of descendant pages
+  (`.CurrentSection.Pages`) are checked, mirroring the aggregation in
+  `iiif/3/manifest.json`.
+*/ -}}
+{{- $isLeaflet := false -}}
+{{- if eq .Kind "page" -}}
+  {{- $leaflet := where .Params.resources "params.hint" "in" (slice "leaflet-front" "leaflet-back") -}}
+  {{- if gt ($leaflet | len) 0 -}}
+    {{- $isLeaflet = true -}}
+  {{- end -}}
+{{- else if eq .Kind "section" -}}
+  {{- $own := slice -}}
+  {{- with .Params.resources -}}
+    {{- $own = where . "params.hint" "in" (slice "leaflet-front" "leaflet-back") -}}
+  {{- end -}}
+  {{- if gt ($own | len) 0 -}}
+    {{- $isLeaflet = true -}}
+  {{- else -}}
+    {{- range .CurrentSection.Pages -}}
+      {{- if not $isLeaflet -}}
+        {{- $child := where .Params.resources "params.hint" "in" (slice "leaflet-front" "leaflet-back") -}}
+        {{- if gt ($child | len) 0 -}}
+          {{- $isLeaflet = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $isLeaflet -}}
