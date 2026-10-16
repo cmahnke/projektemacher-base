@@ -30,7 +30,7 @@
   "@projektemacher/tify-plugin-core": "^0.2.0",
   "@projektemacher/tify-plugin-annotorious": "^0.2.0",
   "@projektemacher/tify-plugin-hdr": "^0.2.0",
-  "@projektemacher/@projektemacher/tify-plugin-musicxml": "^0.2.0"
+  "@projektemacher/tify-plugin-musicxml": "^0.2.0"
  },
  "devDependencies": {
   "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
