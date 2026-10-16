@@ -26,7 +26,7 @@ Pages without an explicit `outputs` entry are collected into collections only if
 | `iiif.presentationVersion` | int | `3` (default) or `4` (draft), see [Presentation 4](presentation-4/) |
 | `iiif.behavior` | string | Manifest `behavior`, e.g. `paged` (default), `continuous`, `individuals` |
 | `iiif.metadata` | list | Descriptive `metadata` labels/values as JSON list |
-| `iiif.structure` | list | JSON list of `structures` (ranges) |
+| `iiif.structure` | list | Logical structure (ranges) from `label`/`page`/`end`/`items` entries — range and canvas IDs are generated at build time, see [Structure](#structure) |
 | `iiif.rights` | string | Rights statement URL |
 | `iiif.logo.img` | string | Logo image URL |
 | `iiif.logo.url` | string | IIIF Image API service endpoint for the logo |
@@ -120,6 +120,42 @@ resources:
       hint: leaflet-back
 ---
 ```
+
+## Structure
+
+The `iiif.structure` key describes the logical structure of a manifest — table of contents entries, chapters, significant full-page illustrations — as nested entries. Range and canvas identifiers are generated at build time with the same deployment prefix as the rest of the manifest, so the front matter carries no IDs or URLs:
+
+```yaml
+---
+title: Example
+outputs: [html, iiif-manifest]
+iiif:
+  structure:
+    - label: {de: ["Einband"]}
+      page: front
+    - label: {de: ["Kapitel 1"]}
+      page: page012
+      items:
+        - label: {de: ["Kapitel 1.1"]}
+          page: page012
+        - label: {de: ["Illustration"]}
+          page: page014
+    - label: {de: ["Kapitel 2"]}
+      page: page016
+      end: page021
+---
+```
+
+Rules:
+
+- `label` is a required IIIF label object, passed through to the range
+- `page` references a resource of the page bundle, resolved by the resource's `name`, its `params.iiif` directory or its `src` basename (without extension) — the same chain used for canvas naming
+- `end` (optional) spans the range over all canvases from `page` to `end`, inclusive
+- `items` nests entries with the same shape; an entry without `page` is a grouping node
+- An entry must resolve to at least one canvas or group nested items, otherwise the build fails
+- Hand-written `id`s or legacy IIIF Range entries abort the build
+- `iiif.structure` is only expanded on pages; sections keep the raw value (leaflet mode computes its own ranges and ignores the key, see above)
+- The same structure data drives the PDF bookmarks in `scripts/pdf.py`
 
 ## Viewers
 

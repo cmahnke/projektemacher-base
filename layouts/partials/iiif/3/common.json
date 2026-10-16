@@ -51,7 +51,10 @@
   {{- $common = $common | merge (dict "metadata" .) -}}
 {{- end -}}
 {{- with .Params.iiif.structure -}}
-  {{- $common = $common | merge (dict "structures" .) -}}
+  {{- $structures := partial "iiif/3/structures.html" (dict "page" $ "entries" .) -}}
+  {{- if $structures -}}
+    {{- $common = $common | merge (dict "structures" $structures) -}}
+  {{- end -}}
 {{- end -}}
 {{- with .Params.iiif.rights -}}
   {{- $common = $common | merge (dict "rights" .Params.iiif.rights) -}}

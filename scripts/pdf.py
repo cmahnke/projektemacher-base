@@ -20,13 +20,6 @@ PDF_DPI = 300
 TRANSCODE = True
 DEFAULT_IN_DPI = 600
 
-CANVAS_TYPE = "Canvas"
-RANGE_TYPE = "Range"
-
-
-def canvas_name(canvas_id) -> str:
-    return str(canvas_id).rstrip("/").rsplit("/", 1)[-1]
-
 
 def resource_page_number(name: str, resources: list):
     for i, r in enumerate(resources):
@@ -34,8 +27,13 @@ def resource_page_number(name: str, resources: list):
         if os.path.splitext(src)[0] == name:
             return i
         iiif = r.get("params", {}).get("iiif")
-        if iiif and os.path.basename(str(iiif).rstrip("/")) == name:
-            return i
+        if iiif:
+            base = os.path.basename(str(iiif).rstrip("/"))
+            if os.path.splitext(base)[0] == name:
+                return i
+            parent = os.path.basename(os.path.dirname(str(iiif).rstrip("/")))
+            if parent and os.path.splitext(parent)[0] == name:
+                return i
     return None
 
 
@@ -53,26 +51,30 @@ def parse_structure(entries, resources: list) -> list:
     for entry in entries or []:
         if not isinstance(entry, dict):
             continue
+        if entry.get("id") is not None or entry.get("type") is not None:
+            cprint(
+                f"Skipping legacy structure entry with id/type '{entry.get('id', entry.get('type'))}', "
+                "use the label/page/items shorthand",
+                "yellow",
+            )
+            continue
         title = structure_title(entry)
         if title is None:
-            cprint(f"Skipping structure entry without label: {entry.get('id', '?')}", "yellow")
+            cprint(f"Skipping structure entry without label: {entry.get('page', '?')}", "yellow")
             continue
         page = None
         children = []
+        ref = entry.get("page")
+        if ref is not None:
+            number = resource_page_number(str(ref), resources)
+            if number is None:
+                cprint(f"Page reference not found in resources: {ref}", "yellow")
+            else:
+                page = number
         for child in entry.get("items") or []:
             if not isinstance(child, dict):
                 continue
-            if child.get("type") == RANGE_TYPE:
-                children.extend(parse_structure([child], resources))
-            elif child.get("type") == CANVAS_TYPE:
-                number = resource_page_number(canvas_name(child.get("id", "")), resources)
-                if number is None:
-                    cprint(f"Canvas not found in resources: {child.get('id')}", "yellow")
-                    continue
-                if page is None:
-                    page = number
-                else:
-                    cprint(f"Ignoring additional canvas in structure entry '{title}': {child.get('id')}", "yellow")
+            children.extend(parse_structure([child], resources))
         outline.append({"title": title, "page": page, "children": children})
     return outline
 

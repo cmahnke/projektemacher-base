@@ -1,0 +1,145 @@
+{{- /*
+  Expands the strict front-matter structure shorthand (`.Params.iiif.structure`)
+  into IIIF Presentation `structures`. Called from `iiif/3/common.json`.
+
+  Contract (per entry):
+    label: {de: ["Titel"]}   required, IIIF label object, passed through
+    page:  page012           reference to one of the page's `resources`,
+                             resolved by the resource's `name`, the
+                             `params.iiif` directory, or the `src` basename
+                             (without extension) - the same chain
+                             `iiif/3/manifest.json` uses for canvas names
+    end:   page015           optional span end (inclusive), expands to the
+                             canvas list from `page` to `end`
+    items:                   optional nested entries with the same shape;
+                             an entry without `page` acts as a grouping node
+
+  Range and Canvas identifiers are generated at build time (hierarchical,
+  depth first: range/0, range/0-1, ...) using the same deployment prefix
+  computation as `iiif/3/manifest.json`, so they always match the manifest's
+  own canvas identifiers in every environment. Hand-written `id`s or legacy
+  IIIF Range entries abort the build.
+
+  Only page bundles are expanded; sections keep their raw value (leaflet
+  mode computes its own ranges and warns, see `manifest-leaflet.json`).
+*/ -}}
+
+{{- $page := .page -}}
+{{- $entries := .entries -}}
+{{- $urlBase := .urlBase | default "" -}}
+{{- $canvasNames := .canvasNames | default slice -}}
+{{- $refIndex := .refIndex | default dict -}}
+{{- $prefix := .prefix | default "" -}}
+
+{{- if ne $page.Kind "page" -}}
+  {{- with $entries -}}
+    {{- warnf "[iiif/3/structures.html] iiif.structure is only supported on pages, keeping the raw value for %s" $page.RelPermalink -}}
+  {{- end -}}
+  {{- return $entries -}}
+{{- end -}}
+
+{{- if eq $urlBase "" -}}
+  {{- /* Deployment prefix, identical to layouts/partials/iiif/3/manifest.json */ -}}
+  {{- $defaultContentPage := $page -}}
+  {{- if hugo.IsMultilingual -}}
+    {{- $defaultContentPage = index (where $page.AllTranslations ".Lang" "eq" hugo.Sites.Default.Language.Lang) 0 -}}
+  {{- end -}}
+  {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
+  {{- if or hugo.IsServer (not (isset $page.Site.Params "productioniiifurlprefix")) -}}
+    {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
+  {{- else -}}
+    {{- $urlBase = printf "%s%s" $page.Site.Params.productionIIIFURLPrefix $localPath -}}
+  {{- end -}}
+
+  {{- /* Reference lookup: ordered canvas names + ref -> resource index */ -}}
+  {{- range $i, $res := $page.Params.resources -}}
+    {{- $src := printf "%v" ($res.src | default "") -}}
+    {{- $name := printf "%v" ($res.name | default "") -}}
+    {{- $iiifDir := "" -}}
+    {{- with $res.params -}}
+      {{- with index . "iiif" -}}
+        {{- $iiifDir = path.BaseName (path.Dir (printf "%v" .)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $isMedia := false -}}
+    {{- with $page.Resources.Get $src -}}
+      {{- if in (slice "image" "audio" "model") (index (split (string .MediaType) "/") 0) -}}
+        {{- $isMedia = true -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $isMedia -}}
+      {{- $canvas := $name -}}
+      {{- if eq $canvas "" -}}
+        {{- if ne $iiifDir "" -}}
+          {{- $canvas = $iiifDir -}}
+        {{- else -}}
+          {{- $canvas = path.BaseName $src -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $canvasNames = $canvasNames | append $canvas -}}
+      {{- range slice (path.BaseName $src) $name $iiifDir -}}
+        {{- if ne . "" -}}
+          {{- if not (isset $refIndex .) -}}
+            {{- $refIndex = merge $refIndex (dict . $i) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $canvasNames = $canvasNames | append "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $out := slice -}}
+{{- range $i, $entry := $entries -}}
+  {{- if not (reflect.IsMap $entry) -}}
+    {{- errorf "[iiif/3/structures.html] structure entry #%d is not an object (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+  {{- with index $entry "id" -}}
+    {{- errorf "[iiif/3/structures.html] structure entry #%d has a hand-written id '%v', identifiers are generated - use the label/page/items shorthand (%s)" $i . $page.RelPermalink -}}
+  {{- end -}}
+  {{- with index $entry "type" -}}
+    {{- errorf "[iiif/3/structures.html] structure entry #%d uses the legacy 'type: %v' format - use the label/page/items shorthand (%s)" $i . $page.RelPermalink -}}
+  {{- end -}}
+  {{- $label := index $entry "label" -}}
+  {{- if or (not $label) (not (reflect.IsMap $label)) -}}
+    {{- errorf "[iiif/3/structures.html] structure entry #%d has no label object (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+  {{- $items := slice -}}
+  {{- $ref := printf "%v" ($entry.page | default "") -}}
+  {{- $hasPage := ne $ref "" -}}
+  {{- if $hasPage -}}
+    {{- if not (isset $refIndex $ref) -}}
+      {{- errorf "[iiif/3/structures.html] structure entry #%d references unknown page '%v' (%s)" $i $ref $page.RelPermalink -}}
+    {{- end -}}
+    {{- $startIdx := index $refIndex $ref -}}
+    {{- $endIdx := $startIdx -}}
+    {{- $endRef := printf "%v" ($entry.end | default "") -}}
+    {{- if ne $endRef "" -}}
+      {{- if not (isset $refIndex $endRef) -}}
+        {{- errorf "[iiif/3/structures.html] structure entry #%d references unknown end page '%v' (%s)" $i $endRef $page.RelPermalink -}}
+      {{- end -}}
+      {{- $endIdx = index $refIndex $endRef -}}
+      {{- if lt $endIdx $startIdx -}}
+        {{- errorf "[iiif/3/structures.html] structure entry #%d has end page '%v' before start page '%v' (%s)" $i $endRef $ref $page.RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
+    {{- range $j := seq $startIdx $endIdx -}}
+      {{- $canvas := index $canvasNames $j -}}
+      {{- if ne $canvas "" -}}
+        {{- $items = $items | append (dict "id" (printf "%scanvas/%s" $urlBase $canvas) "type" "Canvas") -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with index $entry "items" -}}
+    {{- range $sub := (partial "iiif/3/structures.html" (dict "page" $page "entries" . "urlBase" $urlBase "canvasNames" $canvasNames "refIndex" $refIndex "prefix" (printf "%s%d-" $prefix $i))) -}}
+      {{- $items = $items | append $sub -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq (len $items) 0 -}}
+    {{- errorf "[iiif/3/structures.html] structure entry #%d has neither a resolvable page nor nested items (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+  {{- $out = $out | append (dict "id" (printf "%srange/%s%d" $urlBase $prefix $i) "type" "Range" "label" $label "items" $items) -}}
+{{- end -}}
+
+{{- return $out -}}

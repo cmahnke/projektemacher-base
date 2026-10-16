@@ -164,3 +164,37 @@ Follow this recipe strictly. Do not delete page content — only rewrite keys.
    replacement — fix those manually. Then run the eslint validation from
    section 4. Done when the build is green and all `docs/**/manifest.json`
    validate.
+
+# Upgrading `iiif.structure` to the shorthand format
+
+Structure entries with hand-written `id`s (IIIF Range objects with absolute
+URLs) are no longer supported — the build aborts with an `errorf` on such
+entries. Range and canvas identifiers are now generated at build time with
+the deployment prefix, so the front matter carries no IDs or URLs and the
+generated `structures` always match the manifest's own canvas identifiers.
+
+Migrate affected pages to the shorthand:
+
+```yaml
+# Before (legacy)
+iiif:
+  structure:
+    - id: https://static.example.org/post/example/range/vorwort
+      type: Range
+      label: {de: ["Vorwort"]}
+      items:
+        - {type: Canvas, id: https://static.example.org/post/example/canvas/page003}
+
+# After (shorthand)
+iiif:
+  structure:
+    - label: {de: ["Vorwort"]}
+      page: page003
+```
+
+- A `page` reference resolves by the resource's `name`, its `params.iiif`
+  directory or its `src` basename (without extension)
+- `end:` spans a range over several canvases, nested `items` work as before
+- The format is documented in the example site, see
+  `exampleSite/content/iiif/page-metadata.md`
+- The same shorthand drives the PDF bookmarks in `scripts/pdf.py`
