@@ -39,6 +39,8 @@ Pages without an explicit `outputs` entry are collected into collections only if
 
 Legacy keys (`iiifMetadata`, `iiifStructure`) abort the build — use `iiif.metadata` / `iiif.structure`.
 
+Pages with an `issueYear` front matter param get an automatic `Erscheinungsjahr` / `Year of publication` entry appended to the manifest `metadata`; `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
+
 ## Resources
 
 Each entry in `resources` describes one canvas:

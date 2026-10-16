@@ -123,6 +123,8 @@ def add_metadata(file, metadata, labels=None, toc=None):
             meta["xmp:MetadataDate"] = datetime.now(datetime.utcnow().astimezone().tzinfo).isoformat()
             # Doesn't work with Python 3.10
             # meta["xmp:MetadataDate"] = datetime.now(UTC).isoformat()
+            if "issueYear" in metadata:
+                meta["dc:date"] = [str(metadata["issueYear"])]
         if labels is not None:
             try:
                 pdf.Root.PageLabels

@@ -47,8 +47,8 @@
   {{- $common = $common | merge (dict "thumbnail" $thumbnails) -}}
 {{- end -}}
 
+{{- $metadata := slice -}}
 {{- with .Params.iiif.metadata -}}
-  {{- $metadata := slice -}}
   {{- range $entry := . -}}
     {{- if not (reflect.IsMap $entry) -}}
       {{- errorf "[iiif/3/common.json] iiif.metadata entry is not an object (%s)" $.RelPermalink -}}
@@ -62,7 +62,13 @@
     {{- end -}}
     {{- $metadata = $metadata | append $coerced -}}
   {{- end -}}
-  {{- $common = $common | merge (dict "metadata" $metadata) -}}
+{{- end -}}
+{{- with .Params.issueYear -}}
+  {{- $year := printf "%v" . -}}
+  {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year of publication") "de" (slice "Erscheinungsjahr")) "value" (dict "en" (slice $year) "de" (slice $year))) -}}
+{{- end -}}
+{{- with $metadata -}}
+  {{- $common = $common | merge (dict "metadata" .) -}}
 {{- end -}}
 {{- with .Params.iiif.structure -}}
   {{- $structures := partial "iiif/3/structures.html" (dict "page" $ "entries" .) -}}
