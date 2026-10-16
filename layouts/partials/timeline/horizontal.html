@@ -9,7 +9,9 @@
 
     var issues = [
         {{- range $entries -}}
-                {{- $year := .Params.year -}}
+                {{- /* Front matter param holding the year, sites can override (kinderbuecher: issueYear) */ -}}
+                {{- $yearKey := $.yearKey | default "year" -}}
+                {{- $year := index .Params $yearKey -}}
                 {{- $month := 1 -}}
                 {{- if isset .Params "month" -}}
                     {{- $month = .Params.month -}}

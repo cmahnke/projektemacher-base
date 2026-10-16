@@ -27,6 +27,13 @@ The deployment prefix follows the same scheme as the generated manifests
 - development (hugo server) or no 'productionIIIFURLPrefix' set: site base URL + page path
 - production: 'productionIIIFURLPrefix' + page path
 Any other manifest version is passed through unchanged.
+
+Optional structures injection (Presentation 3 only): if `.Params.iiif.structure`
+is set and non-empty, it is expanded via partial "iiif/3/structures.html" (using
+the same deployment prefix as the URL rewriting above, so generated range and
+canvas identifiers always match the rewritten manifest items) and **replaces**
+any `structures` present in the pre-made manifest (a warning is emitted when
+replacing). Pre-made manifests without front-matter structures keep their own.
 */}}
 {{- $result := dict "exists" false "content" "" -}}
 {{- $manifestRef := "" -}}
@@ -173,6 +180,23 @@ Any other manifest version is passed through unchanged.
         {{- $manifest = merge $manifest (dict "rendering" $newManifestRenderings) -}}
       {{- end -}}
       {{- $manifest = merge $manifest (dict "items" $newItems) -}}
+      {{- /* Optional structures injection: front matter always replaces the
+            pre-made manifest's own structures (see header contract) */ -}}
+      {{- $fmStructures := "" -}}
+      {{- with $.Params.iiif -}}
+        {{- if reflect.IsMap . -}}
+          {{- with index . "structure" -}}{{- $fmStructures = . -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with $fmStructures -}}
+        {{- $structures := partial "iiif/3/structures.html" (dict "page" $ "entries" . "urlBase" $urlBase) -}}
+        {{- if $structures -}}
+          {{- if isset $manifest "structures" -}}
+            {{- warnf "[partials/iiif/existing-manifest.html] %s: replacing pre-made manifest's structures with front matter iiif.structure" $.File.Path -}}
+          {{- end -}}
+          {{- $manifest = merge $manifest (dict "structures" $structures) -}}
+        {{- end -}}
+      {{- end -}}
       {{- $result = dict "exists" true "content" ($manifest | jsonify) -}}
     {{- else -}}
       {{/* Not a Presentation 3.0 manifest, pass the content through unchanged */}}
