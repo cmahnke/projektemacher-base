@@ -20,6 +20,75 @@ PDF_DPI = 300
 TRANSCODE = True
 DEFAULT_IN_DPI = 600
 
+CANVAS_TYPE = "Canvas"
+RANGE_TYPE = "Range"
+
+
+def canvas_name(canvas_id) -> str:
+    return str(canvas_id).rstrip("/").rsplit("/", 1)[-1]
+
+
+def resource_page_number(name: str, resources: list):
+    for i, r in enumerate(resources):
+        src = os.path.basename(str(r.get("src", "")))
+        if os.path.splitext(src)[0] == name:
+            return i
+        iiif = r.get("params", {}).get("iiif")
+        if iiif and os.path.basename(str(iiif).rstrip("/")) == name:
+            return i
+    return None
+
+
+def structure_title(entry: dict):
+    label = entry.get("label")
+    if isinstance(label, dict) and label:
+        values = list(label.values())[0]
+        if values:
+            return str(values[0])
+    return None
+
+
+def parse_structure(entries, resources: list) -> list:
+    outline = []
+    for entry in entries or []:
+        if not isinstance(entry, dict):
+            continue
+        title = structure_title(entry)
+        if title is None:
+            cprint(f"Skipping structure entry without label: {entry.get('id', '?')}", "yellow")
+            continue
+        page = None
+        children = []
+        for child in entry.get("items") or []:
+            if not isinstance(child, dict):
+                continue
+            if child.get("type") == RANGE_TYPE:
+                children.extend(parse_structure([child], resources))
+            elif child.get("type") == CANVAS_TYPE:
+                number = resource_page_number(canvas_name(child.get("id", "")), resources)
+                if number is None:
+                    cprint(f"Canvas not found in resources: {child.get('id')}", "yellow")
+                    continue
+                if page is None:
+                    page = number
+                else:
+                    cprint(f"Ignoring additional canvas in structure entry '{title}': {child.get('id')}", "yellow")
+        outline.append({"title": title, "page": page, "children": children})
+    return outline
+
+
+def outline_items(nodes: list) -> list:
+    items = []
+    for node in nodes:
+        if node["page"] is not None:
+            item = pikepdf.OutlineItem(node["title"], node["page"], pikepdf.PageLocation.Fit)
+        else:
+            item = pikepdf.OutlineItem(node["title"])
+        if node["children"]:
+            item.children.extend(outline_items(node["children"]))
+        items.append(item)
+    return items
+
 
 def scale_image(image: Image, dpi: int):
     if "dpi" in image.info:
@@ -40,7 +109,7 @@ def scale_image(image: Image, dpi: int):
 
 
 # See https://py-pdf.github.io/fpdf2/Metadata.html
-def add_metadata(file, metadata, labels=None):
+def add_metadata(file, metadata, labels=None, toc=None):
     with pikepdf.open(file, allow_overwriting_input=True) as pdf:
         with pdf.open_metadata(set_pikepdf_as_editor=False) as meta:
             meta["dc:title"] = metadata["title"]
@@ -72,6 +141,9 @@ def add_metadata(file, metadata, labels=None):
                         pagelabels[i] = pikepdf.Dictionary(P=labels[i])
                 else:
                     raise NotImplementedError
+        if toc:
+            with pdf.open_outline() as outline:
+                outline.root.extend(outline_items(toc))
         pdf.save()
 
 
@@ -123,6 +195,12 @@ def processSingle(post: Post, out: pathlib.Path):
     if "params" in metadata and "iiif" in metadata["params"]:
         additional_metadata = metadata["params"]["iiif"]
         pdf_metadata = metadata | additional_metadata
+    structure = None
+    if isinstance(metadata.get("iiif"), dict):
+        structure = metadata["iiif"].get("structure")
+    elif isinstance(metadata.get("params"), dict) and isinstance(metadata["params"].get("iiif"), dict):
+        structure = metadata["params"]["iiif"].get("structure")
+    toc = parse_structure(structure, metadata.get("resources", [])) if structure else None
     if "resources" in metadata:
         pdf = FPDF(unit="mm")
         if TRANSCODE:
@@ -155,7 +233,7 @@ def processSingle(post: Post, out: pathlib.Path):
 
         cprint(f"Saving to {out}", "green")
         pdf.output(str(out))
-        add_metadata(out, pdf_metadata, labels)
+        add_metadata(out, pdf_metadata, labels, toc)
         # add_labels(out, labels)
 
 
