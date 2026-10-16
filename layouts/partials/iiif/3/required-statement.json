@@ -17,7 +17,7 @@
   {{ else }}
       {{ $attrValue = index $defaultAttribution $lang }}
   {{ end }}
-  {{ $value = merge $value (dict $lang (slice $attrValue)) }}
+  {{ $value = merge $value (dict $lang (slice (printf "%v" $attrValue))) }}
 {{ end }}
 
 {{- $requiredStatement := dict "label" (dict "en" (slice "Attribution") "de" (slice "Namensnennung")) "value" $value -}}

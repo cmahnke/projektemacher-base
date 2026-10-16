@@ -48,7 +48,21 @@
 {{- end -}}
 
 {{- with .Params.iiif.metadata -}}
-  {{- $common = $common | merge (dict "metadata" .) -}}
+  {{- $metadata := slice -}}
+  {{- range $entry := . -}}
+    {{- if not (reflect.IsMap $entry) -}}
+      {{- errorf "[iiif/3/common.json] iiif.metadata entry is not an object (%s)" $.RelPermalink -}}
+    {{- end -}}
+    {{- /* Build a fresh dict: Hugo's merge deep-merges and would keep the original nested values */ -}}
+    {{- $coerced := dict -}}
+    {{- range $field := slice "label" "value" -}}
+      {{- with index $entry $field -}}
+        {{- $coerced = $coerced | merge (dict $field (partial "functions/iiif/coerce-language-map.html" .)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $metadata = $metadata | append $coerced -}}
+  {{- end -}}
+  {{- $common = $common | merge (dict "metadata" $metadata) -}}
 {{- end -}}
 {{- with .Params.iiif.structure -}}
   {{- $structures := partial "iiif/3/structures.html" (dict "page" $ "entries" .) -}}

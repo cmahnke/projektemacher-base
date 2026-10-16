@@ -153,7 +153,7 @@
 
   {{- $pageLabel := "" -}}
   {{- if .params.label -}}
-    {{- $pageLabel = dict "none" (slice .params.label) -}}
+    {{- $pageLabel = dict "none" (slice (printf "%v" .params.label)) -}}
   {{- else if findRE `page0*(\d+)` $manifestDir -}}
     {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
   {{- else if findRE `page-(.+)` $manifestDir -}}

@@ -154,7 +154,7 @@
     {{- $fragment := printf "%d,0,%d,%d" $x $w $h -}}
     {{- $pageLabel := dict "en" (slice (printf "Page %d" (add $i 1))) -}}
     {{- with $res.params.label -}}
-      {{- $pageLabel = dict "none" (slice .) -}}
+      {{- $pageLabel = dict "none" (slice (printf "%v" .)) -}}
     {{- end -}}
     {{- $body := dict "id" (printf "%s%s" $serviceId $fullResImgSuffix) "type" "Image" "format" "image/jpeg" "width" $w "height" $h "service" (slice (dict "id" $serviceId "type" "ImageService2" "profile" "level0")) -}}
     {{- $itemId := printf "%sannotation/%s/p%03d" $urlBase $side.key (add $i 1) -}}

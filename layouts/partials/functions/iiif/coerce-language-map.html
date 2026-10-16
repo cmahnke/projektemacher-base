@@ -1,0 +1,33 @@
+{{- /*
+  Normalizes an IIIF language map (Presentation 3 `label`/`value` shape) so
+  every value is an array of strings. The spec requires strings, but YAML
+  front matter happily holds numbers (e.g. `label: 7`), which breaks
+  validation downstream. Scalar values are wrapped in a single-element
+  array, non-string members are coerced with `printf "%v"`. Nested objects
+  or arrays can't appear in a language map and abort the build.
+
+  Expects a map as input, returns the coerced copy. Hugo < 0.166 supports
+  only one `return` statement with a value per partial.
+*/ -}}
+
+{{- $in := . -}}
+{{- if not (reflect.IsMap $in) -}}
+  {{- errorf "[functions/iiif/coerce-language-map] expected a language map (object), got %T" $in -}}
+{{- end -}}
+
+{{- $out := dict -}}
+{{- range $lang, $values := $in -}}
+  {{- if not (reflect.IsSlice $values) -}}
+    {{- $values = slice $values -}}
+  {{- end -}}
+  {{- $coerced := slice -}}
+  {{- range $v := $values -}}
+    {{- if or (reflect.IsMap $v) (reflect.IsSlice $v) -}}
+      {{- errorf "[functions/iiif/coerce-language-map] language '%s' contains a nested object or array, expected scalar values" $lang -}}
+    {{- end -}}
+    {{- $coerced = $coerced | append (printf "%v" $v) -}}
+  {{- end -}}
+  {{- $out = merge $out (dict $lang $coerced) -}}
+{{- end -}}
+
+{{- return $out -}}

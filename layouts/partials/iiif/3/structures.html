@@ -3,7 +3,7 @@
   into IIIF Presentation `structures`. Called from `iiif/3/common.json`.
 
   Contract (per entry):
-    label: {de: ["Titel"]}   required, IIIF label object, passed through
+    label: {de: ["Titel"]}   required, IIIF label object, coerced to strings
     page:  page012           reference to one of the page's `resources`,
                              resolved by the resource's `name`, the
                              `params.iiif` directory, or the `src` basename
@@ -107,6 +107,7 @@
     {{- if or (not $label) (not (reflect.IsMap $label)) -}}
       {{- errorf "[iiif/3/structures.html] structure entry #%d has no label object (%s)" $i $page.RelPermalink -}}
     {{- end -}}
+    {{- $label = partial "functions/iiif/coerce-language-map.html" $label -}}
     {{- $items := slice -}}
     {{- $ref := printf "%v" ($entry.page | default "") -}}
     {{- $hasPage := ne $ref "" -}}
