@@ -7,7 +7,7 @@
               {{- range .CurrentSection.Pages.Reverse -}}
                   <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
               {{- end -}}
-          <ul>
+          </ul>
       </div>
 {{- else if ne .CurrentSection.File.Dir "" -}}
 {{/* else if ne .CurrentSection.Dir "" */}}

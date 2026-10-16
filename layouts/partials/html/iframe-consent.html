@@ -18,14 +18,14 @@
         </div>
       </div>
     </div>
-    <div class="iframe-content" id="{{ $id }}-content">
+    <div class="iframe-content" id="{{ $id }}-content" aria-live="polite">
     </div>
     <div class="switch-wrapper">
       <label class="opt-in-switch">
-        <input type="checkbox">
+        <input type="checkbox" aria-labelledby="{{ $id }}-confirm">
         <span class="opt-in-slider"></span>
       </label>
-      <span class="opt-in-confirm">{{ i18n "accept" }}</span>
+      <span class="opt-in-confirm" id="{{ $id }}-confirm">{{ i18n "accept" }}</span>
     </div>
   </div>
   <script>

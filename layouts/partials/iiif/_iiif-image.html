@@ -54,7 +54,7 @@
   {{- if $heading -}}
     <div class="iiif-image-heading">{{ $heading }}</div>
   {{- end -}}
-  <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}"></div>
+  <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}" role="region"{{ with $heading }} aria-label="{{ . }}"{{ end }}></div>
 
   <script type="text/javascript">
     {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");

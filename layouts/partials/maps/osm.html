@@ -17,13 +17,19 @@
 {{- $id := md5 $geojson -}}
 {{- $var := printf "_%s" $id -}}
 <div class="map-wrapper script">
-  <div class="map" id="{{ $id }}"></div>
+  <div class="map" id="{{ $id }}" aria-label="{{ i18n "interactiveMap" }}"></div>
   <div id="{{ $id }}-popup" class="ol-popup">
-    <a href="#" id="{{ $id }}-popup-closer" class="ol-popup-closer"></a>
-    <div id="{{ $id }}-popup-content"></div>
+    <a href="#" id="{{ $id }}-popup-closer" class="ol-popup-closer" role="button" aria-label="{{ i18n "close" }}"></a>
+    <div id="{{ $id }}-popup-content" aria-live="polite"></div>
   </div>
 </div>
 <script type="text/javascript">
-  var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm', {{ $cluster | safeJS }} {{ if $marker }}, {{ $marker | safeJS}}  {{ end }});
+  var {{ $var | safeJS }} = window.initMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', 'osm', {{ $cluster | safeJS }} {{ if $marker }}, {{ $marker | safeJS}}  {{ end }});
   {{ $var | safeJS }}.updateSize();
+  document.getElementById('{{ $id | safeJS }}-popup-closer').addEventListener('keydown', function(event) {
+    if (event.key === ' ' || event.key === 'Spacebar') {
+      event.preventDefault();
+      this.click();
+    }
+  });
 </script>

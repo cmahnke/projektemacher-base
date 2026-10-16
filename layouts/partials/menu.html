@@ -4,9 +4,9 @@
     {{- $basePath = trim .File.Dir "/" -}}
   {{- end -}}
   {{- $basePath = replaceRE "^(.*)/.*$" "$1" $basePath -}}
-  <nav class="top top-menu">
-    <input type="checkbox" id="menu-toggle" />
-    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon"></i></label>
+  <nav class="top top-menu" aria-label="{{ i18n "mainNavigation" }}">
+    <input type="checkbox" id="menu-toggle" aria-label="{{ i18n "mainNavigation" }}" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
     <ul class="navigation-list">
       {{- with .Site.Menus.main -}}
         {{- range sort . -}}
@@ -16,12 +16,14 @@
           {{- $class := trim (path.Base .URL) "/" -}}
           {{- $class = replaceRE "^/$" "root" $class -}}
           {{- $class = printf "navto-%s" $class -}}
+          {{- $current := false -}}
           {{- if eq (trim (path.Base .URL) "/") $basePath -}}
             {{- $class = printf "current %s" $class -}}
+            {{- $current = true -}}
           {{- end -}}
           <li class="navigation-item {{ $class }}">
             {{- if not .Params.html -}}
-              <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}">{{ .Name }}<i class="link-icon"></i></a>
+              <a class="navigation-link" href="{{ .URL | absLangURL }}" title="{{ .Name }}"{{ if $current }} aria-current="page"{{ end }}>{{ .Name }}<i class="link-icon" aria-hidden="true"></i></a>
             {{- else -}}
               {{- .Name | safeHTML -}}
             {{- end -}}
@@ -32,7 +34,7 @@
         {{- range (default .Site.Home.AllTranslations .Translations) -}}
           {{- if ne $.Site.Language .Language -}}
             <li class="navigation-item lang">
-              <a href="{{ .Permalink }}" title="{{ .Language.Label }}">{{ .Language.Label }}</a>
+              <a href="{{ .Permalink }}" title="{{ .Language.Label }}" hreflang="{{ .Language.Lang }}" lang="{{ .Language.Lang }}">{{ .Language.Label }}</a>
             </li>
           {{- end -}}
         {{- end -}}

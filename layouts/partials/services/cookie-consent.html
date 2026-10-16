@@ -7,15 +7,14 @@
     {{- $privacyPolicyLink = .link -}}
   {{- end -}}
 {{- end -}}
-<div id="cookie-notice">
-  {{/* TODO Add clode button */}}
+<div id="cookie-notice" role="region" aria-label="{{ i18n "cookieNotice" }}">
   {{/* TODO make about link configurable */}}
-  <i class="close"></i>
+  <i class="close" role="button" tabindex="0" aria-label="{{ i18n "close" }}"></i>
   <div class="cookie-notice-text">{{ i18n "cookieText" }}</div>
-  <a href="#" class="cookie-notice-accept button">
+  <a href="#" class="cookie-notice-accept button" role="button">
     <span>{{ i18n "cookieAccept" }}</span>
   </a>
-  <a href="#" class="cookie-notice-deny button">
+  <a href="#" class="cookie-notice-deny button" role="button">
     <span>{{ i18n "cookieDeny" }}</span>
   </a>
   {{- if $privacyPolicyLink -}}
@@ -69,5 +68,14 @@
   document.querySelector('#cookie-notice .cookie-notice-deny').addEventListener("click", function() {
     createCookie('cookie-notice-option','false',31);
     document.getElementById('cookie-notice').classList.add('hidden');
+  });
+
+  document.querySelectorAll('#cookie-notice [role="button"]').forEach(function(element) {
+    element.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        element.click();
+      }
+    });
   });
 </script>

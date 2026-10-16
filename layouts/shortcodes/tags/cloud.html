@@ -34,7 +34,7 @@
                 {{- $fontStep := div (sub (math.Log .Count) (math.Log $lowest)) $divisor -}}
                 {{- $fontSize := add $min (mul (sub $max $min) $fontStep) -}}
                 {{- $fontSize = math.Floor $fontSize -}}
-                <a href="{{ $tagURL }}" class="btn btn-default cloud-tag" role="button" style="font-size: {{ $fontSize }}px;">
+                <a href="{{ $tagURL }}" class="btn btn-default cloud-tag" style="font-size: {{ $fontSize }}px;">
                     {{ partial (printf "tagcloud/%s.html" $tag) . }} <span class="badge">({{ .Count }})</span>
                 </a>
             {{- end -}}

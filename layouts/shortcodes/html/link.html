@@ -18,6 +18,6 @@
 
 <div class="download-link">
   {{ if $content }}
-    <a class="{{ $class }}" href="{{ $filename }}" target="_blank">{{ $content | safeHTML }}</a>
+    <a class="{{ $class }}" href="{{ $filename }}" target="_blank" rel="noopener noreferrer">{{ $content | safeHTML }}</a>
   {{ end }}
 </div>
