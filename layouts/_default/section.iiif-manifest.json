@@ -1,2 +1,7 @@
 {{- $version := partial "functions/iiif/presentation-version.html" . -}}
-{{- partial (printf "iiif/%d/manifest.json" $version) . -}}
+{{- $isLeaflet := partial "functions/iiif/is-leaflet.html" . -}}
+{{- if $isLeaflet -}}
+  {{- partial (printf "iiif/%d/manifest-leaflet.json" $version) . -}}
+{{- else -}}
+  {{- partial (printf "iiif/%d/manifest.json" $version) . -}}
+{{- end -}}

@@ -105,3 +105,31 @@ other = "Related posts"
 # Dates
 [updatedOn]
 other = "Updated on"
+
+# Accessibility
+[skipToContent]
+other = "Skip to content"
+
+[close]
+other = "Close"
+
+[audioPlay]
+other = "Play"
+
+[audioPause]
+other = "Pause"
+
+[mainNavigation]
+other = "Main navigation"
+
+[footerNavigation]
+other = "Footer navigation"
+
+[copyToClipboard]
+other = "Copy code to clipboard"
+
+[collapseCode]
+other = "Collapse code block"
+
+[interactiveMap]
+other = "Interactive map"

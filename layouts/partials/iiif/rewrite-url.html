@@ -1,0 +1,25 @@
+{{/*
+Rewrites one manifest URL for the deployment environment.
+
+Params (dict): "url" (string), "cut" (declared generator prefix, may be ""),
+"base" (deployment prefix, may be "").
+
+- URL starting with "cut" (absolute manifest branch): cut it off, prepend "base".
+- Any other absolute URL ("http", e.g. external resources): untouched.
+- "#" fragments and empty values: untouched.
+- Anything else (relative manifest branch): prepend "base".
+*/}}
+{{- $url := printf "%v" (.url | default "") -}}
+{{- $cut := .cut | default "" -}}
+{{- $base := .base | default "" -}}
+{{- $out := $url -}}
+{{- if ne $url "" -}}
+  {{- if and (ne $cut "") (hasPrefix $url $cut) -}}
+    {{- $out = printf "%s%s" $base (substr $url (len $cut)) -}}
+  {{- else if not (hasPrefix $url "http") -}}
+    {{- if not (hasPrefix $url "#") -}}
+      {{- $out = printf "%s%s" $base $url -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

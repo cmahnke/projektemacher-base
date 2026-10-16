@@ -8,7 +8,7 @@ metaPage: true
 
 This theme generates [IIIF](https://iiif.io/) resources at three levels:
 
-- **Manifests** ([Presentation API](https://iiif.io/api/presentation/3.0/)) — one manifest per page opt-in, rendering the page's `resources` as canvases. Selected via the `iiif-manifest` output format.
+- **Manifests** ([Presentation API](https://iiif.io/api/presentation/3.0/)) — one manifest per page opt-in, rendering the page's `resources` as canvases. Plain images (resources without an Image API path) are embedded directly, GLB model resources become Presentation 4 `Scene` containers (see [Page metadata](page-metadata/#3d-models)), and a two-sided "leaflet" layout can be triggered with the `hint: leaflet-front` / `leaflet-back` resource params — see [Page metadata](page-metadata/). Selected via the `iiif-manifest` output format.
 - **Collections** ([Presentation API](https://iiif.io/api/presentation/3.0/)) — aggregations of manifests on home and term pages. Selected via the `iiif-collection` output format.
 - **Images** ([Image API](https://iiif.io/api/image/3.0/)) — tile generation is handled outside of Hugo, see `scripts/iiif.sh`.
 

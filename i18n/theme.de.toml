@@ -105,3 +105,31 @@ other = "Verwandte Beiträge"
 # Dates
 [updatedOn]
 other = "Aktualisiert am"
+
+# Accessibility
+[skipToContent]
+other = "Zum Inhalt springen"
+
+[close]
+other = "Schließen"
+
+[audioPlay]
+other = "Abspielen"
+
+[audioPause]
+other = "Pause"
+
+[mainNavigation]
+other = "Hauptnavigation"
+
+[footerNavigation]
+other = "Fußzeilen-Navigation"
+
+[copyToClipboard]
+other = "Code in die Zwischenablage kopieren"
+
+[collapseCode]
+other = "Codeblock einklappen"
+
+[interactiveMap]
+other = "Interaktive Karte"

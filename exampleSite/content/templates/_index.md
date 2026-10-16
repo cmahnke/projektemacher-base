@@ -39,6 +39,11 @@ These templates are selected via the `outputs` front matter or the site `outputs
 | [`codemeta`](metadata-formats/) | `single.codemeta.json` | CodeMeta software metadata |
 | [`linkedart`](metadata-formats/) | `single.linkedart.json`, `linked-art-collection.json` | Linked Art metadata |
 | `schemaorg` | [`schema-org.json`](metadata-formats/#schemaorg) | schema.org JSON-LD |
+| [`bibtex`](bibtex/) | `single.bib` (reference site only) | BibTeX citation export |
+| [`pdf-article`](pdf-article/) | `single.pdf-article.html`, `baseof.pdf-article.html` (reference site only) | Printable article variant for PDF generation |
+| [`activity-pub-actor`](activity-pub-actor/) | `single.activity-pub-actor.json` (reference site only) | ActivityStreams actor |
+| [`activity-pub-outbox`](activity-pub-outbox/) | `home.activity-pub-outbox.json` (reference site only) | ActivityStreams outbox collection |
+| [`llms`](llms/) | no page template — see `llms.txt` note | Placeholder plain-text format |
 | [`redirect`](redirect/) | `redirect/single.html` | Meta refresh redirects |
 
 ## Data templates
@@ -78,6 +83,11 @@ The templates rely on the following page parameters. Most of them control in- or
 - [GeoJSON](geojson/)
 - [Redirects](redirect/)
 - [IIIF templates](iiif-templates/)
+- [BibTeX](bibtex/)
+- [PDF article](pdf-article/)
+- [ActivityPub actor](activity-pub-actor/)
+- [ActivityPub outbox](activity-pub-outbox/)
+- [LLMS](llms/)
 - [Partials](partials/) — reusable building blocks and extension points
 
 ## See also

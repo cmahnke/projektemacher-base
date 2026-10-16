@@ -6,13 +6,20 @@
 
 {{- $isServer := hugo.IsServer -}}
 
+{{- $manifestParam := "" -}}
+{{- if isset .Params "iiifmanifest" -}}
+  {{- $manifestParam = .Params.iiifManifest -}}
+{{- else if isset .Params "iiif" -}}
+  {{- $manifestParam = index .Params.iiif "manifest" -}}
+{{- end -}}
+
 {{/*
 {{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
 */}}
-    {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" .Params.iiifManifest) -}}
+    {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
 {{/*
 {{- else -}}
-    {{- $manifestUrl = printf "%s%s/%s" .Site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" .Params.iiifManifest) -}}
+    {{- $manifestUrl = printf "%s%s/%s" .Site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
 {{- end -}}
 */}}
 

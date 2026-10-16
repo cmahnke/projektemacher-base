@@ -17,7 +17,15 @@
 {{- end -}}
 
 {{- if and (isset .Params "preview") .Params.preview -}}
-  {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
+  {{- if reflect.IsMap .Params.preview -}}
+    {{- /* Map shaped preview param (e.g. preview.image/hide): match the resource by src, no resource name can ever match a map */ -}}
+    {{- $previewMatches := where .Params.resources "src" (index .Params.preview "image") -}}
+    {{- if gt (len $previewMatches) 0 -}}
+      {{- $previewReference = index $previewMatches 0 -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $previewReference = index (where .Params.resources "name" .Params.preview) 0 -}}
+  {{- end -}}
 {{- else if isset .Params "resources" -}}
   {{- if (gt (where .Params.resources "name" "preview" | len) 0) -}}
     {{- $previewReference = index (where .Params.resources "name" "preview") 0 -}}
@@ -59,7 +67,7 @@
 {{- $thumbnails := slice -}}
 {{- if and (ne $previewImg nil) (ne $previewImg "") -}}
   {{- $thumbnailRes := $previewImg.Resize "300x" -}}
-  {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
+  {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
   {{- /* Add IIIF Image Service for preview if not section */ -}}
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}
     {{- with $previewReference.params.iiif -}}

@@ -50,6 +50,12 @@
   {{- range $i, $item := $iiifPages -}}
     {{- with $item.Params.iiifManifest -}}
       {{- $manifest = path.Base . -}}
+    {{- else -}}
+      {{- with $item.Params.iiif -}}
+        {{- with index . "manifest" -}}
+          {{- $manifest = path.Base . -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
     {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest) "type" "Manifest" -}}
     {{- $thumbnails := partial "iiif/3/thumbnail.json" . -}}
@@ -79,6 +85,12 @@
     {{- range $i, $iiifPage := $iiifPages -}}
       {{- with $iiifPage.Params.iiifManifest -}}
         {{- $manifest = path.Base . -}}
+      {{- else -}}
+        {{- with $iiifPage.Params.iiif -}}
+          {{- with index . "manifest" -}}
+            {{- $manifest = path.Base . -}}
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
       {{- $thumnails := partial "iiif/3/thumbnail.json" . -}}
       {{- $label := dict site.Language.Lang (slice $iiifPage.Title) -}}

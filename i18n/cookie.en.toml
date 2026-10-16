@@ -9,3 +9,6 @@ other = "Deny"
 
 [cookieMore]
 other = "More information"
+
+[cookieNotice]
+other = "Cookie notice"

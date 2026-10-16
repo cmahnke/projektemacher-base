@@ -8,6 +8,6 @@
         {{ $content | markdownify }}
     </div>
     <div class="link">
-        <a href="{{ .RelPermalink }}">{{ i18n "readmore" }}</a>
+        <a href="{{ .RelPermalink }}" aria-label="{{ i18n "readmore" }}: {{ .Title }}">{{ i18n "readmore" }}</a>
     </div>
 </div>

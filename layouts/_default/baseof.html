@@ -16,9 +16,10 @@
         {{- $class = printf "%s %s" $class "meta" -}}
     {{ end }}
     <body class="home blog {{ $class }}">
+    <a class="skip-link" href="#main" style="position:absolute;left:-9999px;">{{ i18n "skipToContent" }}</a>
 {{ end }}
 
-    <header id="site-header" class="site-header" role="banner">
+    <header id="site-header" class="site-header">
       <div class='top-navigation'>
         {{ partial "topnavigation.html" . }}
       </div>
@@ -28,7 +29,7 @@
       </div>
     </header>
 
-    <main id="main" class="main" role="main">
+    <main id="main" class="main">
 
       {{ block "main" . }}
       {{ end }}
