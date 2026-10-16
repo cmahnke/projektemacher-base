@@ -1,0 +1,183 @@
+{{/*
+Checks if the page has a pre-made IIIF manifest in its page bundle.
+Returns a dict: "exists" (bool) and "content" (manifest as JSON string).
+
+Front matter contract:
+- the manifest file: `iiif.manifest`, falling back to the legacy
+  `iiifManifest` key, e.g. `./manifest.json`. Only the file name is used;
+  the file has to live in the page bundle itself (looked up as a page
+  resource, so this works with any content directory name).
+- the generator base prefix: `iiif.baseURL` (front matter spells it with a
+  capital URL; Hugo exposes it as `.baseurl`), e.g. the `--base-url` the
+  manifest was generated with. MANDATORY when the manifest contains absolute
+  URLs: the build fails with an error if absolute URLs are found without it.
+  Manifests with relative URLs only need no param.
+
+For Presentation 3.0 manifests every URL-bearing field is rewritten for the
+deployment environment via partial "iiif/rewrite-url.html": absolute URLs
+starting with the declared baseURL are cut to the deployment prefix
+(leftover absolute URLs, e.g. external resources, are kept); relative URLs
+are prepended with the deployment prefix. Covered fields: canvas ids,
+thumbnail ids, annotation ids, annotation targets (remapped consistently
+with the canvas ids), painting body ids + service ids, and rendering ids on
+canvas and manifest level. The top-level manifest `id` is left untouched
+(it documents the source file; consumers fetch the served URL).
+The deployment prefix follows the same scheme as the generated manifests
+(layouts/partials/iiif/3/manifest.json):
+- development (hugo server) or no 'productionIIIFURLPrefix' set: site base URL + page path
+- production: 'productionIIIFURLPrefix' + page path
+Any other manifest version is passed through unchanged.
+*/}}
+{{- $result := dict "exists" false "content" "" -}}
+{{- $manifestRef := "" -}}
+{{- $cutPrefix := "" -}}
+{{- with .Params.iiif -}}
+  {{- if reflect.IsMap . -}}
+    {{- with .manifest -}}{{- $manifestRef = . -}}{{- end -}}
+    {{- with .baseurl -}}{{- $cutPrefix = . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq $manifestRef "" -}}
+  {{- with .Params.iiifManifest -}}{{- $manifestRef = . -}}{{- end -}}
+{{- end -}}
+{{- if and (ne $cutPrefix "") (not (hasSuffix $cutPrefix "/")) -}}
+  {{- $cutPrefix = printf "%s/" $cutPrefix -}}
+{{- end -}}
+{{- with $manifestRef -}}
+  {{- with $.Resources.GetMatch (path.Base .) -}}
+    {{- $raw := .Content -}}
+    {{- $manifest := $raw | transform.Unmarshal -}}
+    {{- if and (reflect.IsMap $manifest) (isset $manifest "@context") (hasPrefix (index $manifest "@context") "http://iiif.io/api/presentation/3/") -}}
+      {{/* Deployment prefix, like layouts/partials/iiif/3/manifest.json does */}}
+      {{- $localPath := printf "%s/" (substr (path.Dir $.RelPermalink) 1) -}}
+      {{- $urlBase := "" -}}
+      {{- if or hugo.IsServer (not (isset $.Site.Params "productioniiifurlprefix")) -}}
+        {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
+      {{- else -}}
+        {{- $urlBase = printf "%s%s" $.Site.Params.productionIIIFURLPrefix $localPath -}}
+      {{- end -}}
+      {{/* Absolute URLs need a declared cut prefix, otherwise the build fails */}}
+      {{- $probe := slice -}}
+      {{- with index $manifest "id" -}}{{- $probe = $probe | append (printf "%v" .) -}}{{- end -}}
+      {{- range $canvas := ($manifest.items | default slice) -}}
+        {{- with index $canvas "id" -}}{{- $probe = $probe | append (printf "%v" .) -}}{{- end -}}
+        {{- range $r := ((index $canvas "rendering") | default slice) -}}
+          {{- with index $r "id" -}}{{- $probe = $probe | append (printf "%v" .) -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $absolute := false -}}
+      {{- range $u := $probe -}}
+        {{- if hasPrefix $u "http" -}}{{- $absolute = true -}}{{- end -}}
+      {{- end -}}
+      {{- if and $absolute (eq $cutPrefix "") -}}
+        {{- errorf "[partials/iiif/existing-manifest.html] %s: manifest '%s' contains absolute URLs but no 'iiif.baseURL' front matter param is set" $.File.Path $manifestRef -}}
+      {{- end -}}
+      {{- $newItems := slice -}}
+      {{- range $canvas := ($manifest.items | default slice) -}}
+        {{- if and (reflect.IsMap $canvas) (isset $canvas "id") -}}
+          {{- $canvas = merge $canvas (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $canvas "id") "cut" $cutPrefix "base" $urlBase))) -}}
+        {{- end -}}
+        {{- $thumbs := index $canvas "thumbnail" -}}
+        {{- if reflect.IsMap $thumbs -}}{{- $thumbs = slice $thumbs -}}{{- end -}}
+        {{- $newThumbs := slice -}}
+        {{- range $thumb := ($thumbs | default slice) -}}
+          {{- if and (reflect.IsMap $thumb) (isset $thumb "id") -}}
+            {{- $thumb = merge $thumb (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $thumb "id") "cut" $cutPrefix "base" $urlBase))) -}}
+          {{- end -}}
+          {{- $newThumbs = $newThumbs | append $thumb -}}
+        {{- end -}}
+        {{- if isset $canvas "thumbnail" -}}
+          {{- $canvas = merge $canvas (dict "thumbnail" $newThumbs) -}}
+        {{- end -}}
+        {{- $newAnnotationPages := slice -}}
+        {{- range $annotationPage := (($canvas.items) | default slice) -}}
+          {{- if and (reflect.IsMap $annotationPage) (isset $annotationPage "id") -}}
+            {{- $annotationPage = merge $annotationPage (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $annotationPage "id") "cut" $cutPrefix "base" $urlBase))) -}}
+          {{- end -}}
+          {{- $newAnnotations := slice -}}
+          {{- range $annotation := ((index $annotationPage "items") | default slice) -}}
+            {{- if and (reflect.IsMap $annotation) (isset $annotation "id") -}}
+              {{- $annotation = merge $annotation (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $annotation "id") "cut" $cutPrefix "base" $urlBase))) -}}
+            {{- end -}}
+            {{- with index $annotation "target" -}}
+              {{- $target := . -}}
+              {{- if reflect.IsMap $target -}}
+                {{- with index $target "source" -}}
+                  {{- $target = merge $target (dict "source" (partial "iiif/rewrite-url.html" (dict "url" (printf "%v" .) "cut" $cutPrefix "base" $urlBase))) -}}
+                {{- end -}}
+                {{- with index $target "id" -}}
+                  {{- $target = merge $target (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (printf "%v" .) "cut" $cutPrefix "base" $urlBase))) -}}
+                {{- end -}}
+              {{- else if eq (printf "%T" $target) "string" -}}
+                {{- $target = partial "iiif/rewrite-url.html" (dict "url" $target "cut" $cutPrefix "base" $urlBase) -}}
+              {{- end -}}
+              {{- $annotation = merge $annotation (dict "target" $target) -}}
+            {{- end -}}
+            {{- $bodies := index $annotation "body" -}}
+            {{- if reflect.IsMap $bodies -}}{{- $bodies = slice $bodies -}}{{- end -}}
+            {{- $newBodies := slice -}}
+            {{- $sawBodies := false -}}
+            {{- range $body := ($bodies | default slice) -}}
+              {{- if reflect.IsMap $body -}}
+                {{- $sawBodies = true -}}
+                {{- with index $body "id" -}}
+                  {{- $body = merge $body (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (printf "%v" .) "cut" $cutPrefix "base" $urlBase))) -}}
+                {{- end -}}
+                {{- $services := index $body "service" -}}
+                {{- if reflect.IsMap $services -}}{{- $services = slice $services -}}{{- end -}}
+                {{- $newServices := slice -}}
+                {{- range $service := ($services | default slice) -}}
+                  {{- if and (reflect.IsMap $service) (isset $service "id") -}}
+                    {{- $service = merge $service (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $service "id") "cut" $cutPrefix "base" $urlBase))) -}}
+                  {{- end -}}
+                  {{- $newServices = $newServices | append $service -}}
+                {{- end -}}
+                {{- if isset $body "service" -}}
+                  {{- $body = merge $body (dict "service" $newServices) -}}
+                {{- end -}}
+              {{- end -}}
+              {{- $newBodies = $newBodies | append $body -}}
+            {{- end -}}
+            {{- if $sawBodies -}}
+              {{- $annotation = merge $annotation (dict "body" $newBodies) -}}
+            {{- end -}}
+            {{- $newAnnotations = $newAnnotations | append $annotation -}}
+          {{- end -}}
+          {{- $annotationPage = merge $annotationPage (dict "items" $newAnnotations) -}}
+        {{- end -}}
+        {{- $canvasRenderings := index $canvas "rendering" -}}
+        {{- if reflect.IsMap $canvasRenderings -}}{{- $canvasRenderings = slice $canvasRenderings -}}{{- end -}}
+        {{- $newRenderings := slice -}}
+        {{- range $rendering := ($canvasRenderings | default slice) -}}
+          {{- if and (reflect.IsMap $rendering) (isset $rendering "id") -}}
+            {{- $rendering = merge $rendering (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $rendering "id") "cut" $cutPrefix "base" $urlBase))) -}}
+          {{- end -}}
+          {{- $newRenderings = $newRenderings | append $rendering -}}
+        {{- end -}}
+        {{- if isset $canvas "rendering" -}}
+          {{- $canvas = merge $canvas (dict "rendering" $newRenderings) -}}
+        {{- end -}}
+        {{- $canvas = merge $canvas (dict "items" $newAnnotationPages) -}}
+        {{- $newItems = $newItems | append $canvas -}}
+      {{- end -}}
+      {{- $manifestRenderings := index $manifest "rendering" -}}
+      {{- if reflect.IsMap $manifestRenderings -}}{{- $manifestRenderings = slice $manifestRenderings -}}{{- end -}}
+      {{- $newManifestRenderings := slice -}}
+      {{- range $rendering := ($manifestRenderings | default slice) -}}
+        {{- if and (reflect.IsMap $rendering) (isset $rendering "id") -}}
+          {{- $rendering = merge $rendering (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $rendering "id") "cut" $cutPrefix "base" $urlBase))) -}}
+        {{- end -}}
+        {{- $newManifestRenderings = $newManifestRenderings | append $rendering -}}
+      {{- end -}}
+      {{- if isset $manifest "rendering" -}}
+        {{- $manifest = merge $manifest (dict "rendering" $newManifestRenderings) -}}
+      {{- end -}}
+      {{- $manifest = merge $manifest (dict "items" $newItems) -}}
+      {{- $result = dict "exists" true "content" ($manifest | jsonify) -}}
+    {{- else -}}
+      {{/* Not a Presentation 3.0 manifest, pass the content through unchanged */}}
+      {{- $result = dict "exists" true "content" $raw -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}
