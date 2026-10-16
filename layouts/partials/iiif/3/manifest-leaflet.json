@@ -16,6 +16,8 @@
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
+{{- $version := partial "functions/iiif/presentation-version.html" . -}}
+
 {{- $common := partial "iiif/3/common.json" . -}}
 
 {{- $seeAlso := dict -}}
@@ -157,8 +159,15 @@
       {{- $pageLabel = dict "none" (slice (printf "%v" .)) -}}
     {{- end -}}
     {{- $body := dict "id" (printf "%s%s" $serviceId $fullResImgSuffix) "type" "Image" "format" "image/jpeg" "width" $w "height" $h "service" (slice (dict "id" $serviceId "type" "ImageService2" "profile" "level0")) -}}
+    {{- /* Presentation 4 requires array motivations and object targets, 3 requires strings */ -}}
+    {{- $motivation := "painting" -}}
+    {{- $target := printf "%s#xywh=%s" $canvasId $fragment -}}
+    {{- if eq $version 4 -}}
+      {{- $motivation = slice "painting" -}}
+      {{- $target = dict "id" (printf "%s#xywh=%s" $canvasId $fragment) "type" "SpecificResource" "source" (dict "id" $canvasId "type" "Canvas") -}}
+    {{- end -}}
     {{- $itemId := printf "%sannotation/%s/p%03d" $urlBase $side.key (add $i 1) -}}
-    {{- $annotations = $annotations | append (dict "id" $itemId "type" "Annotation" "motivation" "painting" "label" (dict "none" (slice $manifestDir)) "body" $body "target" (printf "%s#xywh=%s" $canvasId $fragment)) -}}
+    {{- $annotations = $annotations | append (dict "id" $itemId "type" "Annotation" "motivation" $motivation "label" (dict "none" (slice $manifestDir)) "body" $body "target" $target) -}}
     {{- $pageRanges = $pageRanges | append (dict "id" (printf "%srange/page/%s" $imageUrlBase $manifestDir) "type" "Range" "label" $pageLabel "items" (slice (dict "id" (printf "%s#xywh=%s" $canvasId $fragment) "type" "Canvas"))) -}}
     {{- $x = add $x $w -}}
   {{- end -}}

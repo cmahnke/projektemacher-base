@@ -66,7 +66,12 @@
 {{- end -}}
 {{- $thumbnails := slice -}}
 {{- if and (ne $previewImg nil) (ne $previewImg "") -}}
-  {{- $thumbnailRes := $previewImg.Resize "300x" -}}
+  {{- /* Presentation 4 canvases and scenes also carry thumbnails of the same image (300x/240x), use a smaller derivative at the manifest level to keep ids unique */ -}}
+  {{- $thumbWidth := "300x" -}}
+  {{- if eq (partial "functions/iiif/presentation-version.html" .) 4 -}}
+    {{- $thumbWidth = "200x" -}}
+  {{- end -}}
+  {{- $thumbnailRes := $previewImg.Resize $thumbWidth -}}
   {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
   {{- /* Add IIIF Image Service for preview if not section */ -}}
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}

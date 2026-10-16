@@ -10,6 +10,7 @@
 
 {{- $imageIdSuffix := "" -}}
 {{- $manifest := dict -}}
+{{- $version := partial "functions/iiif/presentation-version.html" . -}}
 
 {{- $common := partial "iiif/3/common.json" . -}}
 
@@ -240,7 +241,14 @@
     {{- errorf "[iiif/3/manifest.json] Unsupported media type %s for %s" $imageRes.MediaType.MainType $imageId -}}
   {{- end -}}
 
-  {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" "painting" "body" $body "target" $canvasId -}}
+  {{- /* Presentation 4 requires array motivations and object targets, 3 requires strings */ -}}
+  {{- $motivation := "painting" -}}
+  {{- $target := $canvasId -}}
+  {{- if eq $version 4 -}}
+    {{- $motivation = slice "painting" -}}
+    {{- $target = dict "id" $canvasId "type" "Canvas" -}}
+  {{- end -}}
+  {{- $item := dict "id" ( printf "%s/%s" $annnotationId (index (split $mediatype "/") 0)) "type" "Annotation" "motivation" $motivation "body" $body "target" $target -}}
 
   {{- $annotationPage := dict "id" $annnotationId "type" "AnnotationPage" "items" (slice $item) -}}
 

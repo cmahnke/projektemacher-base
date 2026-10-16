@@ -11,7 +11,7 @@
     external    true when src references a resource outside the page bundle
     res         the resolved page resource (empty for external resources)
     slug        container name (resource 'name' param or path derived)
-    manifestDir path fragment used for the annotation IDs
+    manifestDir path fragment of the resource (unused for ids, kept for parity)
     label       the container label (language map)
 */ -}}
 {{- $version := partial "functions/iiif/presentation-version.html" .page -}}
@@ -38,16 +38,17 @@
 {{- $sceneId := printf "%sscene/%s" .urlBase .slug -}}
 {{- $scene := dict "id" $sceneId "type" "Scene" "label" .label -}}
 
-{{- /* Optional poster image (sibling file next to the GLB) as thumbnail, a missing poster just omits it */ -}}
+{{- /* Optional poster image (sibling file next to the GLB) as thumbnail, a missing poster just omits it. 240x keeps the id unique against the 300x canvas thumbnails of the same image */ -}}
 {{- if not .external -}}
   {{- $posterSrc := printf "%s.jpg" (strings.TrimSuffix (path.Ext .src) .src) -}}
   {{- with .page.Resources.Get $posterSrc -}}
-    {{- $posterRes := .Resize "300x" -}}
+    {{- $posterRes := .Resize "240x" -}}
     {{- $scene = $scene | merge (dict "thumbnail" (slice (dict "id" $posterRes.Permalink "format" (string $posterRes.MediaType) "type" "Image" "height" $posterRes.Height "width" $posterRes.Width))) -}}
   {{- end -}}
 {{- end -}}
 
-{{- $annotationId := printf "%sannotation/%s" .urlBase .manifestDir -}}
+{{- /* Namespaced under 'scene/' to keep the id unique against the image AnnotationPages, which also derive from the resource path */ -}}
+{{- $annotationId := printf "%sannotation/scene/%s" .urlBase .slug -}}
 {{- $body := dict "id" $modelId "type" "Model" "format" $format -}}
 {{- $annotation := dict "id" (printf "%s/model" $annotationId) "type" "Annotation" "motivation" (slice "painting") "body" $body "target" (dict "id" $sceneId "type" "Scene") -}}
 {{- $annotationPage := dict "id" $annotationId "type" "AnnotationPage" "items" (slice $annotation) -}}

@@ -1,7 +1,8 @@
 {{- $labels := dict "en" (slice "Projektemacher") "de" (slice "Projektemacher") -}}
 
+{{- /* Agent and homepage must not share an id, the validator rejects duplicates */ -}}
 {{- $homepage := dict "id" "https://projektemacher.org/" "type" "Text" "label" $labels "format" "text/html" -}}
-{{- $provider := dict "id" "https://projektemacher.org/" "type" "Agent" "label" $labels "homepage" (slice $homepage) -}}
+{{- $provider := dict "id" "https://projektemacher.org/#projektemacher" "type" "Agent" "label" $labels "homepage" (slice $homepage) -}}
 {{- $logo := slice -}}
 {{- if and (isset .Params "iiif") (isset .Params.iiif "logo") -}}
   {{- $logo = $logo | append (dict "id" .Params.iiif.logo.img "service" (dict "@context" "http://iiif.io/api/image/2/context.json" "id" .Params.iiif.logo.url "profile" "http://iiif.io/api/image/2/level0.json")) -}}
