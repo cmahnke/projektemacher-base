@@ -59,7 +59,7 @@
 {{- $thumbnails := slice -}}
 {{- if and (ne $previewImg nil) (ne $previewImg "") -}}
   {{- $thumbnailRes := $previewImg.Resize "300x" -}}
-  {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
+  {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
   {{- /* Add IIIF Image Service for preview if not section */ -}}
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}
     {{- with $previewReference.params.iiif -}}

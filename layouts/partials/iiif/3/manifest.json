@@ -34,7 +34,7 @@
 {{- $iiifResources := slice -}}
 
 {{- if eq .Kind "page" -}}
-  {{- $iiifResources = where .Params.resources "params.iiif" "ne" nil -}}
+  {{- $iiifResources = .Params.resources -}}
 {{- else if eq .Kind "section" -}}
   {{- if (isset .Params "resources") -}}
     {{- range $res := where .Params.resources "params.iiif" "ne" nil -}}
@@ -75,12 +75,15 @@
   {{- if eq $.Kind "section" -}}
     {{- $imageUrlBase = printf "%s%s" $urlBase $res.relpath -}}
   {{- end -}}
-  {{- if not .params.iiif -}}
-    {{- continue -}}
-  {{- end -}}
   {{- $imageRes := $.Resources.Get $res.src -}}
   {{- if and (eq $.Kind "section") (isset $res "res") -}}
     {{- $imageRes = $res.res -}}
+  {{- end -}}
+  {{- if and (not .params.iiif) (ne $imageRes nil) (not (in (slice "image" "audio") $imageRes.MediaType.MainType)) -}}
+    {{- if $debug -}}
+      {{- warnf "[iiif/3/manifest.json] Skipping non media resource %s for page %s" $res.src $.RelPermalink -}}
+    {{- end -}}
+    {{- continue -}}
   {{- end -}}
   {{- if and $debug (eq $imageRes nil) -}}
     {{- errorf "[iiif/3/manifest.json] Couldn't load image from %s for page %s" ($res | jsonify) ($.RelPermalink) -}}
@@ -105,10 +108,13 @@
   {{- end -}}
 
   {{- $manifestDir := "" -}}
-  {{- if hasPrefix $mediatype "image" -}}
+  {{- if hasPrefix $mediatype "audio" -}}
+    {{- $manifestDir = strings.TrimSuffix .src (path.Ext .src) -}}
+  {{ else if .params.iiif }}
     {{- $manifestDir = path.Dir .params.iiif -}}
-  {{ else if hasPrefix $mediatype "audio" }}
-    {{- $manifestDir = strings.TrimSuffix (path.Ext .src) .src -}}
+  {{- else -}}
+    {{- /* Plain image resource: use the resource path without extension */ -}}
+    {{- $manifestDir = strings.TrimSuffix .src (path.Ext .src) -}}
   {{- end -}}
 
   {{- $canvas := "" -}}
@@ -149,8 +155,8 @@
   {{- else if hasPrefix $mediatype "audio" -}}
     {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
   {{- else -}}
-    {{- warnf "[iiif/3/manifest.json] Unhandled page label: %s" $manifestDir -}}
-    {{- $pageLabel = dict "en" (slice "uncounted") "de" (slice "ungezählt") -}}
+    {{- /* Fall back to the file name (without extension) as label */ -}}
+    {{- $pageLabel = dict "none" (slice (strings.TrimSuffix (path.Base $manifestDir) (path.Ext $manifestDir))) -}}
   {{- end -}}
 
   {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" $pageLabel -}}
@@ -164,7 +170,7 @@
     {{- if or (not $thumbnailRes.Height) (not $thumbnailRes.Width) -}}
       {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
     {{- end -}}
-    {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
+    {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
     {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
   {{- end -}}
   {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
@@ -173,7 +179,12 @@
   {{- $imageId := "" -}}
 
   {{- if eq $imageRes.MediaType.MainType "image" -}}
-    {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
+    {{- if .params.iiif -}}
+      {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
+    {{- else -}}
+      {{- /* Plain image resource without Image API: reference the file itself */ -}}
+      {{- $imageId = $imageRes.Permalink -}}
+    {{- end -}}
   {{ else if eq $imageRes.MediaType.MainType "audio" }}
     {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
   {{- else -}}
@@ -182,8 +193,11 @@
 
   {{- $body := dict -}}
   {{- if eq $imageRes.MediaType.MainType "image" -}}
-    {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
-    {{- $body = dict "id" $imageId "type" "Image" "format" "image/jpeg" "height" $imageRes.Height "width" $imageRes.Width "service" (slice $service) -}}
+    {{- $body = dict "id" $imageId "type" "Image" "format" (string $imageRes.MediaType) "height" $imageRes.Height "width" $imageRes.Width -}}
+    {{- if .params.iiif -}}
+      {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
+      {{- $body = $body | merge (dict "service" (slice $service)) -}}
+    {{- end -}}
   {{- else if eq $imageRes.MediaType.MainType "audio" -}}
     {{- $body = dict "id" $imageId "type" "Sound" "format" $mediatype -}}
   {{- else -}}
