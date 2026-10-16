@@ -148,10 +148,11 @@ iiif:
 
 Rules:
 
-- `label` is a required IIIF label object, passed through to the range
+- `label` is a required IIIF label object, coerced to strings
 - `page` references a resource of the page bundle, resolved by the resource's `name`, its `params.iiif` directory or its `src` basename (without extension) — the same chain used for canvas naming
 - `end` (optional) spans the range over all canvases from `page` to `end`, inclusive
 - `items` nests entries with the same shape; an entry without `page` is a grouping node
+- Entries with nested `items` are emitted as a full canvas span: their first and last `items` entry are Canvas references (wrapping the inline child ranges), so viewers that derive a range's page span from the first and last item (e.g. Tify's table of contents) cover the whole section — grouping nodes without `page` get both a leading and a trailing canvas reference
 - An entry must resolve to at least one canvas or group nested items, otherwise the build fails
 - Hand-written `id`s or legacy IIIF Range entries abort the build
 - `iiif.structure` is only expanded on pages; sections keep the raw value (leaflet mode computes its own ranges and ignores the key, see above)

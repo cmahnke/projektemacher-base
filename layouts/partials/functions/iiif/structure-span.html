@@ -1,0 +1,44 @@
+{{- /*
+  Computes the canvas index span covered by a structure entry and all of its
+  descendants. Called from `iiif/3/structures.html`.
+
+  Input (dict):
+    entry:     structure entry using the `page`/`end`/`items` shorthand
+    refIndex:  reference -> resource index map, as built by `iiif/3/structures.html`
+    fallback:  canvas index used when the entry itself has no `page`
+               (grouping nodes), -1 when unknown
+  Returns a dict with `start` and `end` canvas indexes (ints, inclusive).
+
+  Uses a single top-level `return`: Hugo < 0.166 supports only one `return`
+  statement with a value per partial.
+*/ -}}
+{{- $entry := .entry -}}
+{{- $refIndex := .refIndex -}}
+{{- $fallback := -1 -}}
+{{- if isset . "fallback" -}}
+  {{- $fallback = int .fallback -}}
+{{- end -}}
+
+{{- $start := $fallback -}}
+{{- $end := $fallback -}}
+{{- with index $entry "page" -}}
+  {{- $start = index $refIndex (printf "%v" .) -}}
+  {{- $end = $start -}}
+{{- end -}}
+{{- with index $entry "end" -}}
+  {{- $end = index $refIndex (printf "%v" .) -}}
+{{- end -}}
+
+{{- range $child := (index $entry "items" | default slice) -}}
+  {{- $span := partial "functions/iiif/structure-span.html" (dict "entry" $child "refIndex" $refIndex "fallback" $start) -}}
+  {{- $childStart := index $span "start" -}}
+  {{- $childEnd := index $span "end" -}}
+  {{- if and (ge $childStart 0) (or (lt $start 0) (lt $childStart $start)) -}}
+    {{- $start = $childStart -}}
+  {{- end -}}
+  {{- if and (ge $childEnd 0) (lt $end $childEnd) -}}
+    {{- $end = $childEnd -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (dict "start" $start "end" $end) -}}
