@@ -792,3 +792,28 @@ at a time):
   (`npm run postbuild-lint`, stylelint against `docs/css/*.css`).
   Consuming sites can adopt the same post-build check to catch regressions
   that only appear in the compiled output.
+
+# Upgrading pages that load styles through `partials/head.html`
+
+`layouts/partials/head.html` no longer compiles and links `scss/base.scss`
+itself. `layouts/_default/baseof.html` already emits the stylesheet via
+`partials/html/head/style.html`, which covers a superset of the old rules
+(plus shortcode and page specific SCSS/CSS). With both in place the compiled
+CSS was linked twice per page (same content, different file names), costing
+bandwidth and hiding style regressions.
+
+## 1. Consumer migration
+
+- Sites using the theme's `baseof.html` unchanged need no action.
+- Sites with a custom `baseof.html` that calls `partials/head.html` but not
+  `partials/html/head/style.html` get no stylesheet at all any more — add
+  `{{ partial "html/head/style.html" (dict "context" . "css" "css/style.css") }}`
+  to their `<head>`.
+- Sites with a copy of `partials/head.html` carry an unused duplicate —
+  delete the `scss/base.scss` resource block there to match the theme.
+
+## 2. Verification
+
+Build the site and confirm every page has exactly one stylesheet `<link>`
+per merged CSS bundle, and that shortcode styles still load (check pages
+using shortcodes with dedicated SCSS/CSS includes).
