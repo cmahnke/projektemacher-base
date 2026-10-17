@@ -8,7 +8,7 @@ mkdir -p ~/.config/pip
 printf "[global]\nbreak-system-packages = true\n" >> ~/.config/pip/pip.conf
 sudo find /usr/lib -name EXTERNALLY-MANAGED -exec rm -f {} \;
 
-PACKAGE_DEPENDENCIES="python3-matplotlib python3-numpy python3-pillow python3-yaml python3-termcolor python3-wheel python3-cairosvg python3-icalendar cython3 python3-opencv"
+PACKAGE_DEPENDENCIES="python3-matplotlib python3-numpy python3-pillow python3-yaml python3-termcolor python3-wheel python3-cairosvg python3-icalendar cython3 python3-opencv libvips-dev"
 
 if [ "$( . /etc/lsb-release; echo $DISTRIB_RELEASE)" = "22.04" ] ; then
   PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES python3-pytoml"
