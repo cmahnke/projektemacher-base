@@ -505,6 +505,12 @@ same assets per page.
   `@import "ol";` (no `.css` suffix, and the file must not be named `ol.scss`):
   a `.css` suffix is kept as a plain CSS `@import` statement (styles missing at
   runtime), and `ol.scss` would import itself (circular load build error).
+* **Generated npm-fonts in CI** — `scss/map.scss` (now loaded by `maps/osm`
+  pages) imports the generated `assets/scss/npm-fonts/*` files. Every workflow
+  that builds a site using this theme must run `scripts/fonts.sh` (or
+  `scripts/init/get-fonts.sh`) before `hugo` — otherwise the build fails with
+  "Can't find stylesheet to import". The theme's own CI does this in all
+  build jobs.
 
 ## 1. Required steps for all consuming sites
 
