@@ -65,15 +65,6 @@ echo "Merging $PACKAGE_FILES"
 PACKAGE=$(jq -s 'reduce .[] as $d ({}; . *= $d)' $(echo $PACKAGE_FILES))
 echo "$PACKAGE" > package.json
 
-OS="`uname`"
-ARCH="`uname -m`"
-if [ "$OS" = 'Darwin' ] ; then
-    if [ "$ARCH" = 'arm64' ] ; then
-        echo "OS is '$OS', Architecture is '$ARCH'"
-        export PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=true
-    fi
-fi
-
 if [ -d patches ] ; then
     rm -rf patches
 fi
@@ -109,12 +100,9 @@ if [ $ERR -ne 0 ] ; then
     exit $ERR
 fi
 
-if [ -z "$(ls -A ./node_modules/puppeteer-core/.local-chromium/)" ]; then
-    echo "Chrome dependency seems to be missing, downloading again!"
-    if grep puppeteer package.json ; then
-        echo "Running './node_modules/puppeteer/install.mjs"
-        cd node_modules/puppeteer
-        node install.mjs
-        cd ../..
-    fi
+# Install the browsers used by Puppeteer; uses the build pinned by the installed
+# puppeteer package and is a no-op if they are already in the cache
+if grep -q '"puppeteer"' package.json ; then
+    npx puppeteer browsers install chrome
+    npx puppeteer browsers install chrome-headless-shell
 fi
