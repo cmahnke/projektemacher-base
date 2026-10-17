@@ -710,6 +710,35 @@ assets they use) before `hugo` in CI, and delete vendored copies of
 generated assets instead of pinning them — pinned copies go stale and mask
 upstream updates, exactly like the duplicate templates above.
 
+## Reuse and merge the theme's i18n strings
+
+Hugo merges translations per key: the site's `i18n/<lang>.toml` wins for
+every key it defines, and missing keys fall back to the theme's
+`i18n/<lang>.toml`. Consuming sites therefore never copy the theme's
+strings — the site file only needs keys that are actually overridden or
+genuinely new.
+
+Find keys that are defined in both places (deletion candidates) from the
+site root:
+
+```bash
+for f in i18n/*.toml; do
+  lang="${f##*/}"
+  theme="themes/projektemacher-base/i18n/$lang"
+  [ -f "$theme" ] || continue
+  echo "== $lang: keys defined in both site and theme"
+  comm -12 <(grep -E '^\[' "$f" | sort) <(grep -E '^\[' "$theme" | sort)
+done
+```
+
+A site file that is a full copy of the theme's is the failure mode: it
+silently pins stale translations. Missing keys are harmless (the theme
+provides them), outdated values are the real danger — the same problem as
+with duplicated templates above.
+
+Verify: the scan reports zero duplicated keys, and the multilingual build
+renders both overridden and fallback strings.
+
 ## Extend lint coverage
 
 The lint setup has known blind spots worth closing (all optional, done one
