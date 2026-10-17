@@ -528,3 +528,71 @@ runtime but wastes bandwidth:
    additional `<script>` tags).
 3. `npm run typecheck` stays green (`ts/maps/osm-map.ts` is part of the strict
    TypeScript setup now).
+
+# Hugo site parsers merged into PyHugo
+
+The repository previously had multiple independent Hugo site parsers: the
+`scripts/PyHugo` package, a deprecated `Posts.py` class inside it and an inline
+configuration/front matter parser in `scripts/preview.py`. Everything now uses
+`scripts/PyHugo` exclusively, and its README documents the resulting API.
+
+## What was removed
+
+* `scripts/PyHugo/Posts.py` — the deprecated parser class (it exited the
+  process on construction). Use `PyHugo.Content` / `PyHugo.Post` instead.
+* `scripts/PyHugo/setup.py` — build file of the long-deleted Go based
+  prototype. The package stays importable in place; `pyproject.toml` remains
+  for packaging.
+* `scripts/preview.py` — the inline `loadConfig()`/`readMetadata()` functions
+  (both carried a "Move to PyHugo" TODO). Site configuration is now loaded via
+  `PyHugo.Config`, front matter via `PyHugo.Post`.
+
+## 1. Consumer migration
+
+Scripts parsing Hugo sites should use the PyHugo API:
+
+```python
+import sys, os
+sys.path.append(os.path.dirname(__file__))  # the scripts/ directory
+from PyHugo import Config, Content, Post
+
+config = Config(".")                        # site configuration, merged from config/_default
+content = Content(config.contentDir(), config=config)
+for post in content.posts:                  # includes section pages
+    for lang, file in post.files.items():   # language variants of the bundle
+        title = post.getMetadata(lang).get("title")
+```
+
+* `from content import Post, Content` (with `scripts/PyHugo` on `sys.path`)
+  must become `from PyHugo import Post, Content` (with `scripts/` on
+  `sys.path`), as done in `scripts/pdf.py`.
+* `Posts.Posts(paths).postList()` has no replacement — use `Content` per
+  content directory, as done in `scripts/post-calendar.py`. Note that the old
+  class crashed on construction, so nothing was using it successfully.
+* Front matter lookups now go through `Post.getMetadata()` /
+  `Post.getParam()`; the old `readMetadata()` flattened the `params` section
+  into the root metadata — use the `params`-aware helpers instead.
+
+## 2. Behaviour changes
+
+* `Config`/`Site` also find `config/_default/config.toml` (previously only
+  root `config.toml`/`hugo.toml`) and merge the `config/_default/*.toml`
+  overrides recursively instead of replacing sections.
+* A relative `publishDir` in `Published` is resolved against the site's base
+  directory (previously against the process working directory).
+* `Tags`, `Tag`, `Published.postList()` and `Post.addMetadata()` were broken
+  (crashed on use) and are fixed now.
+* Front matter lookups with an unloaded language fall back to the unsuffixed
+  file instead of raising `KeyError`.
+* `post-calendar.py` now deduplicates language variants sharing an unsuffixed
+  file (one event per post instead of one per file) and honours
+  `displayInList`/`draft` front matter keys case insensitively — posts with
+  `displayinlist: false` are excluded from the calendar now (previously a
+  bug kept them in).
+
+## 3. Verification
+
+1. `python3 scripts/PyHugo/test-pyhugo.py -b exampleSite/` passes.
+2. `preview.py` produces the same `ogPreview*.svg` output as before (titles,
+   font size auto shrink, `textLength` attributes).
+3. `post-calendar.py` emits a valid ICS calendar (`BEGIN:VCALENDAR`).

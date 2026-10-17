@@ -315,6 +315,9 @@ jobs:
       - name: "Test PyHugolib"
         run: |
            python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
+      - name: "Test PyHugo based scripts"
+        run: |
+           python ./scripts/PyHugo/test-consumers.py
 
   test_pnpm:
     runs-on: ubuntu-26.04
@@ -366,6 +369,12 @@ jobs:
         continue-on-error: true
         run: |
           ./scripts/github/python-dependencies.sh
+
+      - name: Run PyHugo tests
+        if: "!endsWith(matrix.version, '12') && !endsWith(matrix.version, '-dev')"
+        run: |
+          python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
+          python ./scripts/PyHugo/test-consumers.py
 
   test_hugo_versions:
     runs-on: ubuntu-26.04
