@@ -735,6 +735,7 @@ guide above), meanwhile the pattern covers:
 | `scripts/init/get-fonts.sh` | Fonts in `static/`, CSS/SCSS in `assets/` |
 | `scripts/init/get-map-styles.sh` | `static/map-styles/` VersaTiles sprites |
 | `scripts/init/get-flags.sh` | Flag images for language switches |
+| `scripts/init/get-favicons.sh` | Favicon set in `static/images/` |
 | `scripts/init/i18n.sh` | Merged `i18n/<lang>.toml` files |
 | `scripts/init/package.json.sh` | Merged `package.json` |
 

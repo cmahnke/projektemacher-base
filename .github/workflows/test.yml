@@ -443,6 +443,12 @@ jobs:
         run: |
           ./scripts/fonts.sh
 
+      - name: Generate favicons
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick xmlstarlet librsvg2-bin
+          ./scripts/init/get-favicons.sh
+
       - name: Build Hugo site
         working-directory: exampleSite
         run: hugo --themesDir ../.. --environment tests ${{ matrix.args }}
