@@ -23,6 +23,13 @@ declare global {
       baseURL?: string,
       hdr?: boolean,
     ): unknown;
+    initMap(
+      element: string,
+      url: string,
+      source?: string,
+      cluster?: boolean,
+      marker?: string | boolean | object,
+    ): unknown;
     animatedMap(
       element: string | HTMLElement,
       url: string,

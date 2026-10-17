@@ -22,3 +22,7 @@
     <a href="{{ $pdf_permalink }}" class="pdf-link">PDF Download</a>
   </div>
 {{- end -}}
+
+{{- define "_partials/shortcodes/pdf-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/pdf-viewer.ts") "scss" (slice "scss/pdf-viewer.scss")) | jsonify -}}
+{{- end -}}

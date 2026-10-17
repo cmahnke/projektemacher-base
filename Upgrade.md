@@ -377,6 +377,52 @@ the `[params.iiif]` `imageViewer` / `presentationViewer` settings) keep working.
 They will be removed in a future release — update the references to the
 `ts/` paths instead.
 
+## How to find direct inclusions fast (agent scan)
+
+Run these from the site root to locate every reference that must be updated:
+
+```bash
+# 1. Front matter asset references (page/post bundles)
+grep -rnE '^\s*(js|scss|css):' content --include='*.md' | \
+  grep -E 'assets/(js|ts)/|(js|ts|scss)/'
+
+# 2. Theme viewer settings in site configuration
+grep -rn 'imageViewer\|presentationViewer' config hugo.toml config.toml 2>/dev/null
+
+# 3. Direct <script>/<link> includes of the moved assets in layouts
+grep -rnE '(src|href)="(assets/)?(js|ts)/' layouts/
+
+# 4. resources.Get / js.Build references in overridden theme partials
+grep -rnE 'resources\.Get "(js|ts)/' layouts/
+```
+
+## Risks / breakage
+
+* **Shim removal (future release)** — the deprecated `assets/js/*.js` shims will
+  be deleted. Sites that don't migrate keep building until then, but bundle
+  output for shim entries keeps the *shim's* path as targetPath, so URLs
+  don't change; only an update of the reference does.
+* **Overridden `script.html`/`iiif-js.html` partials** — sites that copied these
+  theme partials must port the `targetPath` `.ts` → `.js` remap
+  (`replaceRE "\\.ts$" ".js" $script`). Without it, esbuild output is published
+  as a `.ts` file with a non-executable media type and browsers won't run it —
+  the page renders but the shortcodes stay dead (no console build error,
+  only a browser `404`/wrong MIME type).
+* **Strict type checking** — `npm run typecheck` now runs `tsc --noEmit` with
+  `strict: true` over `assets/ts/**`. A site's own TypeScript added under
+  `assets/ts/` must pass strict mode or the lint job fails.
+* **Hugo ≥ 0.167 security model** — `js.Build`/`css.Build` refuse to read files
+  outside the project working directory (GHSA-r4xx-89rf-5424). Sites building
+  from a subdirectory (like this theme's own `exampleSite/`) need
+  `security.node.permissions.allowRead` for the theme's `node_modules`, and
+  sites bundling their own TS must keep their `node_modules` inside the
+  project root.
+* **ESLint coverage change** — `lint-js` now lints `assets/js` and `assets/ts`
+  recursively. Files that were never linted before (subdirectories, e.g.
+  `assets/js/maps/`) can produce new findings, including real bugs
+  (the migration itself fixed a `clickFeature` ReferenceError in
+  `osm-map.js` found this way).
+
 ## 1. Required steps for all consuming sites
 
 1. Update `[params.iiif]` viewer settings to the new paths:
@@ -385,7 +431,94 @@ They will be removed in a future release — update the references to the
      presentationViewer = "ts/iiif/tify.ts"
      imageViewer = "ts/iiif-image-viewer.ts"
    ```
-2. Update page front matter `js:` entries pointing at the moved files.
+2. Update page front matter `js:` entries pointing at the moved files
+   (find them with the agent scan above).
 3. Verify: `npm run typecheck` (runs `tsc --noEmit`, strict) and
    `npm run lint` (ESLint now lints `assets/ts/` too) — then build with
    `hugo`. The built bundles keep their `.js` target paths.
+
+# Shortcodes now load their assets via the shortcode helper
+
+The `pdf`, `html/iframe-consent` and `maps/osm` shortcodes used to require their
+JS/CSS to be included globally by the site. They now declare shortcode metadata
+and load their assets automatically:
+
+| Shortcode | JS (via metadata) | SCSS (via metadata) |
+|---|---|---|
+| `pdf` | `ts/pdf-viewer.ts` | `scss/pdf-viewer.scss` |
+| `html/iframe-consent` | `ts/iframe-consent.ts` | `scss/iframe-consent.scss` |
+| `maps/osm` | `ts/maps/osm-map.ts` (moved from `assets/js/maps/osm-map.js`, which is now a deprecated shim) | `scss/map.scss`, `scss/openlayers.scss` (inlines `node_modules/ol/ol.css` via the Sass include path) |
+
+This removes the last global-function requirements: `addPDFViewer()`,
+`addConsent()` and `window.initMap()` are now only guaranteed to exist on pages
+that actually use the corresponding shortcode.
+
+## How to find direct inclusions fast (agent scan)
+
+Every reference that should be **removed** from a consuming site (the assets
+now load automatically):
+
+```bash
+# 1. Page front matter / bundle params loading the moved assets globally
+grep -rnE '^\s*(js|scss|css):' content --include='*.md' | \
+  grep -E 'pdf-viewer|iframe-consent|osm-map|map\.scss|openlayers|ol\.css'
+
+# 2. Direct script/link tags in overridden layouts and head partials
+grep -rnE 'pdf-viewer|iframe-consent|osm-map|openlayers|ol\.css' layouts/ | \
+  grep -E '<script|<link|resources\.Get|\.js|\.css'
+
+# 3. Sites that bundled the maps JS themselves
+grep -rn 'initMap\|addConsent\|addPDFViewer' layouts/
+```
+
+Each hit is a candidate for deletion — the shortcode helper now attaches the
+same assets per page.
+
+## Risks / breakage
+
+* **`skipShortcodeAssets: true` disables automatic loading** — sites with this
+  parameter MUST keep their manual includes for these three shortcodes; the
+  helper won't load anything for any shortcode then.
+* **Shortcodes inside non-parsed content aren't detected** — the helper relies
+  on Hugo's `HasShortcode`. Shortcode calls inside content fetched at runtime
+  (e.g. via `html/include` from external files, or injected into
+  `html/rawhtml`) are invisible to it — those pages keep needing manual
+  includes of the assets above.
+* **OpenLayers base CSS is now inlined per osm page** — pages using
+  `maps/osm` grow by the full `ol.css` (~6 KB minified) plus `scss/map.scss`.
+  Sites with custom OpenLayers CSS overrides loaded after the theme bundle are
+  unaffected (source order: theme head bundles come before site CSS); sites
+  that patched `ol.css` behavior by *omitting* it get a behavior change — the
+  default OpenLayers control styles now apply.
+* **Double inclusion** — keeping old manual includes alongside the metadata
+  loading is harmless at runtime (the globals are only reassigned, no listeners
+  are bound at module scope), but wastes bandwidth and can cause
+  "load order lottery" if the site's own copy loads *after* the theme bundle:
+  the site's version of `initMap`/`addConsent`/`addPDFViewer` would win.
+  Remove the manual includes instead of relying on that.
+* **`maps/osm` behavior fix** — the TypeScript port of `osm-map.js` declares
+  the previously-undeclared `clickFeature`/`iconStyle` variables; the cluster
+  click popup no longer throws a `ReferenceError`. Sites that (accidentally)
+  depended on the old broken behavior of silently doing nothing on cluster
+  clicks will see popups now.
+* **Sass include-path pitfalls** — `scss/openlayers.scss` must keep
+  `@import "ol";` (no `.css` suffix, and the file must not be named `ol.scss`):
+  a `.css` suffix is kept as a plain CSS `@import` statement (styles missing at
+  runtime), and `ol.scss` would import itself (circular load build error).
+
+## 1. Required steps for all consuming sites
+
+Remove the now redundant global includes for these assets (page front matter
+`js:`/`scss:` entries or head includes) — loading them twice is harmless at
+runtime but wastes bandwidth:
+* `ts/pdf-viewer.ts` / `assets/js/pdf-viewer.js`
+* `ts/iframe-consent.ts` / `assets/js/iframe-consent.js` and `scss/iframe-consent.scss`
+* `assets/js/maps/osm-map.js`, the OpenLayers CSS and `scss/map.scss`
+
+## 2. Verification
+
+1. `hugo` builds without warnings about missing assets.
+2. The affected pages load their per-page bundles (visible in the built HTML as
+   additional `<script>` tags).
+3. `npm run typecheck` stays green (`ts/maps/osm-map.ts` is part of the strict
+   TypeScript setup now).

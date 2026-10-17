@@ -2,14 +2,13 @@
 title: pdf
 displayinlist: false
 metaPage: true
-js: ts/pdf-viewer.ts
 ---
 
 # pdf
 
 Renders a PDF viewer container (`div.pdf-viewer`) initialized by the global `addPDFViewer()` JS function, plus an optional download link. The path is relative to the page permalink.
 
-Unlike [pdf-preview](../pdf-preview/) this shortcode declares no metadata — its viewer JS/CSS must be loaded globally (e.g. `assets/ts/pdf-viewer.ts`).
+JS `ts/pdf-viewer.ts` and SCSS `scss/pdf-viewer.scss` are loaded automatically via the shortcode metadata.
 
 ## Parameters
 

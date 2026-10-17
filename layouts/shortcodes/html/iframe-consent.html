@@ -9,6 +9,10 @@
 
 {{- partial "html/iframe-consent.html" (dict "iframe" $iframe "preview" $preview  ) -}}
 
+{{- define "_partials/shortcodes/html/iframe-consent-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/iframe-consent.ts") "scss" (slice "scss/iframe-consent.scss")) | jsonify -}}
+{{- end -}}
+
 {{/*
 {{- $iframe := .Inner | safeHTML -}}
 {{- $preview := "" -}}

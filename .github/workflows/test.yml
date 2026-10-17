@@ -145,6 +145,10 @@ jobs:
         run: |
           npm install --ignore-scripts
 
+      - name: Generate fonts
+        run: |
+          ./scripts/fonts.sh
+
       - name: Run Dart SASS
         run: |
           sass -I assets/scss/ -I node_modules/ol assets/scss/lint_dummy.scss

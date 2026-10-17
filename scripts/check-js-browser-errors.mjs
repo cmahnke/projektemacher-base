@@ -17,7 +17,6 @@ const urlsFile = 'test-urls.txt';
 let testFile = 'test-urls.json';
 var configFile = ['config.toml', 'hugo.toml'];
 const contentDir = 'docs';
-const localFilePrefix = 'file:./';
 const localPort = 3000;
 const ignore404Exact = ['favicon.ico'];
 const ignore404Contains = [
@@ -303,7 +302,7 @@ console.log('Wrote preference file to %s', prefFile);
         }
 
         request.continue();
-      } catch (error) {
+      } catch {
         console.warn("Request for '%s' was canceled", url);
       }
     });
