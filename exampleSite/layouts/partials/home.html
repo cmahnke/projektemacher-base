@@ -1,0 +1,17 @@
+<div class="content home">
+    <section class="container centered">
+      <div class="about-container">
+         <div class="about">
+           {{ partial "about.html" (dict "context" . "avatar" (.Site.Params.logoUrl1 | absURL) "link" .Site.Params.logoLink "author" .Site.Params.homeTitle "info" .Site.Params.info) }}
+         </div>
+         <div class="about-foreground">
+           {{ partial "about.html" (dict "context" . "avatar" (.Site.Params.logoUrl2 | absURL) "link" .Site.Params.logoLink "author" .Site.Params.homeTitle "info" .Site.Params.info) }}
+         </div>
+       </div>
+    </section>
+    {{- with .Content -}}
+      <div class="home-intro container">
+        {{ . }}
+      </div>
+    {{- end -}}
+</div>

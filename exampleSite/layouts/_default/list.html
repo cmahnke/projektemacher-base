@@ -1,0 +1,35 @@
+{{ define "title" }}
+  {{- if eq .Kind "term" -}}
+    {{- i18n .Data.Singular | title -}}
+    {{- print ": " -}}
+  {{- end -}}
+
+  {{- .Title }} · {{ .Site.Title -}}
+{{ end }}
+{{ define "content" }}
+  {{- if .IsHome -}}
+    {{ partial "home.html" . }}
+  {{- else -}}
+    <div class="content list">
+      <section class="container list">
+        <article>
+          <header>
+            <h1 class="title header">
+              {{- if eq .Kind "term" -}}
+                {{- i18n .Data.Singular | title -}}
+                {{- print ": " -}}
+              {{- end -}}
+              {{- .Title -}}
+            </h1>
+          </header>
+          {{- partial "list.html" . -}}
+          {{- with .Content -}}
+            <div class="post-list-content">
+              {{ . }}
+            </div>
+          {{- end -}}
+        </article>
+      </section>
+    </div>
+  {{- end -}}
+{{ end }}

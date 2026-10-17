@@ -8,8 +8,18 @@ canonifyurls = true
 disablePathToLower = true
 
 [params]
-  favicon_32 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
-  favicon_16 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
+  description = 'Demo and documentation site for the Projektemacher Base theme'
+  # Header (nav) and home page (avatar) images, see
+  # layouts/partials/header.html, home.html and about.html
+  headerimage = 'images/laborant.svg'
+  homeTitle = 'Projektemacher Base'
+  info = 'Blogfabrik'
+  logoUrl1 = 'images/laborant.svg'
+  logoUrl2 = 'images/laborant.svg'
+  colorscheme = 'light'
+  copyrightYears = '2022 - 2026'
+  favicon_32 = 'images/cm-solid.svg'
+  favicon_16 = 'images/cm-solid.svg'
 
 [params.author]
   email = 'mail@christianmahnke.de'
@@ -52,6 +62,8 @@ disablePathToLower = true
   home = ["html", "iiif-collection"]
 
 [security]
+  # Allow HTML files in content bundles, needed by the html-body template
+  allowContent = ['^text/html$', '^text/markdown$']
   [security.http]
     mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
   # The theme's asset pipeline imports packages (howler, mermaid, ol, pdfobject,
