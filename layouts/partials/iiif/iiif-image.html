@@ -92,7 +92,7 @@
         <span class="image-heading">{{ .heading }}</span>
     {{- end -}}
     */}}
-    <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}" role="region"{{ with .heading }} aria-label="{{ . }}"{{ end }}></div>
+    <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}" role="region"{{ with .heading }} aria-label="{{ . }}"{{ else }} aria-label="{{ i18n "preview" }}"{{ end }}></div>
 
     {{ $rotation := 0 }}
     {{ if .context.params.rotate }}

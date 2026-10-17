@@ -105,8 +105,8 @@ Mapping table for all legacy keys:
 
 The default presentation viewer (`ts/iiif/tify.ts`, TIFY via
 `[params.iiif] presentationViewer`) supports API 3. No action required unless
-the site pins an API 2-only viewer — then switch to TIFY or the bundled
-Mirador (`js/iiif/mirador.js`, see `exampleSite/content/posts/mirador/`).
+the site pins an API 2-only viewer — then switch to TIFY. The bundled Mirador
+integration is deprecated (see the deprecation guide below).
 
 ## 4. Verification
 
@@ -596,3 +596,337 @@ for post in content.posts:                  # includes section pages
 2. `preview.py` produces the same `ogPreview*.svg` output as before (titles,
    font size auto shrink, `textLength` attributes).
 3. `post-calendar.py` emits a valid ICS calendar (`BEGIN:VCALENDAR`).
+
+# Deprecation of the Mirador viewer
+
+The Mirador integration is deprecated — the `iiif/presentation` shortcode no
+longer uses it and renders the TIFY based viewer (`ts/iiif/tify.ts`) instead.
+Deprecated parts:
+
+| File | Role |
+| --- | --- |
+| `layouts/partials/iiif/presentation/mirador.html` | Viewer partial — emits a `DEPRECATED` build warning when called |
+| `assets/js/iiif/mirador.js` | `window.addMirador` bootstrap for the partial |
+| `assets/scss/mirador.scss` | Viewer styles |
+
+The files stay in place for now (with the warning) and will be removed in a
+future release.
+
+## 1. Consumer migration
+
+- Replace direct `partial "iiif/presentation/mirador.html"` calls with the
+  [`iiif/presentation` shortcode](exampleSite/content/shortcodes/iiif/presentation.md)
+  (TIFY based), or adopt Mirador site locally: copy the partial and
+  `assets/js/iiif/mirador.js` / `assets/scss/mirador.scss` into the site's
+  own `layouts/` / `assets/` and maintain them there (Mirador is bundled by
+  the site itself, see `exampleSite/content/posts/mirador/`).
+- Update `[params.iiif] presentationViewer` if it points to
+  `js/iiif/mirador.js` — switch to `ts/iiif/tify.ts` (or a site local
+  viewer).
+
+## 2. Verification
+
+1. `hugo` — the build finishes and no longer reports
+   `[partials/iiif/presentation/mirador.html] DEPRECATED`.
+2. Presentation pages render with the TIFY viewer.
+
+# Housekeeping
+
+The changes in this section are **optional**: no consuming site has to apply
+them to keep building against the current theme release. They bundle work that
+keeps a site aligned with the theme's direction — finishing half-done
+migrations, dropping dead compatibility code and adopting the theme's tooling.
+Pick items as time allows; each one stands on its own.
+
+## Finish the JS → TypeScript migration
+
+The migration guide above covers the shortcodes that moved to `assets/ts/`.
+A few plain-JavaScript sources remain without a TypeScript counterpart:
+
+| Remaining JS source | Notes |
+| --- | --- |
+| `assets/js/fullscreen.js` | Small helper, no dependencies |
+| `assets/js/search.js` | Pagefind UI glue |
+| `assets/js/timeline.js` | Thin vis-timeline wrapper |
+| `assets/js/iiif/mirador.js` | Mirador viewer bootstrap (deprecated, see the Mirador guide above) |
+| `assets/js/maps/projektemacher-map.js` | Vector tile map bootstrap |
+
+Port them to `assets/ts/` and update every reference (page front matter
+`js:` entries, `[params.iiif]` viewer settings). The rules from the existing
+guide apply unchanged: bundles keep their `.js` targetPath via the
+`replaceRE` remap in `script.html`/`iiif-js.html`, and the deprecated
+`assets/js` shims can be deleted once nothing references them anymore.
+
+Verify with `npm run typecheck` (strict) and `npm run lint`.
+
+## Add accessibility checks
+
+The theme ships no automated accessibility testing yet. A lightweight setup
+for consuming sites: run [axe-core](https://github.com/dequelabs/axe-core)
+through the already-present `puppeteer` devDependency against the built
+pages. Sketch (not part of the theme — copy and adapt):
+
+```js
+import puppeteer from 'puppeteer';
+import axe from 'axe-core'; // npm i -D axe-core
+
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('http://localhost:1313/some-page/', {waitUntil: 'networkidle0'});
+await page.addScriptTag({content: axe.source});
+const violations = await page.evaluate(() =>
+  axe.run().then((r) => r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)));
+console.log(violations.join('\n'));
+```
+
+Iterate over the built HTML files (or a representative subset) and wire the
+script as an optional CI job — non-blocking at first, turning it into a
+build breaker once the findings are triaged.
+
+### Known false positive: "Zoom blocked"
+
+The theme deliberately blocks pinch zoom on mobile: the viewport partial
+(`layouts/partials/html/head/viewport.html`) emits `user-scalable=no` when
+`[params] disableScale = true` is set. Accessibility tools report this as
+the `meta-viewport` violation ("Zoom blocked"). This is **intended
+behaviour** — never "fix" it. Exclude the `meta-viewport` rule from the
+scan instead.
+
+## Remove downward compatibility (Hugo < 0.165.0)
+
+The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
+hard floor. Consuming sites should:
+
+1. Pin Hugo ≥ 0.165.0 in CI and deployment scripts (the theme's own
+   workflows use `hugo-setup.yml` for this).
+2. Remove fallbacks and version guards kept for older Hugo releases.
+
+Known remaining compatibility code: three partials keep a single top-level
+`return` statement, because Hugo < 0.166 supports only one value-return per
+partial — `layouts/partials/iiif/3/structures.html`,
+`layouts/partials/functions/iiif/coerce-language-map.html` and
+`layouts/partials/functions/iiif/structure-span.html`. Once a site
+guarantees Hugo ≥ 0.166, the natural multi-`return` code can be restored.
+
+## Deduplicate shortcodes and templates against the theme
+
+Sites that started as forks or copied theme files into their own `layouts/`
+often carry stale overrides: identical copies that shadow the theme's
+version and silently miss every upstream fix. Find them from the site root:
+
+```bash
+# Site-local layout files that also exist in the theme
+find layouts -type f | while read -r f; do
+  theme="themes/projektemacher-base/$f"
+  if [ -f "$theme" ]; then
+    if diff -q "$f" "$theme" > /dev/null; then
+      echo "IDENTICAL (delete): $f"
+    else
+      echo "DRIFTED (review):   $f"
+    fi
+  fi
+done
+```
+
+Delete the identical copies. For drifted ones, check whether the local
+change is still needed — if not, delete the override so the theme's version
+applies again; if yes, re-sync everything else from the theme version to
+minimize the diff.
+
+## Adopt the init scripts for generated assets
+
+The theme generates more and more assets at build time instead of tracking
+them in the repository — fonts were the first (see the fonts migration
+guide above), meanwhile the pattern covers:
+
+| Script | Generates |
+| --- | --- |
+| `scripts/init/get-fonts.sh` | Fonts in `static/`, CSS/SCSS in `assets/` |
+| `scripts/init/get-map-styles.sh` | `static/map-styles/` VersaTiles sprites |
+| `scripts/init/get-flags.sh` | Flag images for language switches |
+| `scripts/init/get-favicons.sh` | Favicon set in `static/images/` |
+| `scripts/init/i18n.sh` | Merged `i18n/<lang>.toml` files |
+| `scripts/init/package.json.sh` | Merged `package.json` |
+
+Consuming sites should run the full init set (or at least the scripts for
+assets they use) before `hugo` in CI, and delete vendored copies of
+generated assets instead of pinning them — pinned copies go stale and mask
+upstream updates, exactly like the duplicate templates above.
+
+## Reuse and merge the theme's i18n strings
+
+Hugo merges translations per key: the site's `i18n/<lang>.toml` wins for
+every key it defines, and missing keys fall back to the theme's
+`i18n/<lang>.toml`. Consuming sites therefore never copy the theme's
+strings — the site file only needs keys that are actually overridden or
+genuinely new.
+
+Find keys that are defined in both places (deletion candidates) from the
+site root:
+
+```bash
+for f in i18n/*.toml; do
+  lang="${f##*/}"
+  theme="themes/projektemacher-base/i18n/$lang"
+  [ -f "$theme" ] || continue
+  echo "== $lang: keys defined in both site and theme"
+  comm -12 <(grep -E '^\[' "$f" | sort) <(grep -E '^\[' "$theme" | sort)
+done
+```
+
+A site file that is a full copy of the theme's is the failure mode: it
+silently pins stale translations. Missing keys are harmless (the theme
+provides them), outdated values are the real danger — the same problem as
+with duplicated templates above.
+
+Verify: the scan reports zero duplicated keys, and the multilingual build
+renders both overridden and fallback strings.
+
+## Extend lint coverage
+
+The lint setup has known blind spots worth closing (all optional, done one
+at a time):
+
+- **SCSS is linted non-recursively** — `lint-scss` runs
+  `stylelint 'assets/scss/*'`, so the subdirectories (`scss/shortcodes/`,
+  `scss/iiif/`, …) are never linted. Change the glob to
+  `'assets/scss/**/*.scss'` — expect new findings in files that were never
+  linted, the same effect the `lint-js` coverage change documented in the
+  TypeScript guide.
+- **Markdown is not linted at all** — `markdownlint-cli` is already a
+  devDependency, but no script uses it. Add `lint-md` over the content
+  directory (with a `.markdownlint.json` config) to catch broken heading
+  hierarchies and inconsistent lists in docs and posts.
+- **Generated CSS is not checked** — the theme lints its built CSS
+  (`npm run postbuild-lint`, stylelint against `docs/css/*.css`).
+  Consuming sites can adopt the same post-build check to catch regressions
+  that only appear in the compiled output.
+
+## Remove legacy browser support (pre-2024 browsers)
+
+Browsers released before 2024 are history — sites can drop the accumulated
+hacks for them from their own assets. The theme's own SCSS ships no such
+code (no vendor prefixes, no `@supports` fallbacks), so this applies to site
+assets and to copied theme overrides — the deduplication guide above covers
+the latter.
+
+Find the candidates from the site root:
+
+```bash
+# 1. CSS hacks and prefixes in site SCSS/CSS
+grep -rnE '\-(ms|webkit|moz|o)-|@supports|progid:|expression\(|@-moz-document|fill-available' assets/ layouts/
+
+# 2. Browser detection in scripts, shortcodes and layouts
+grep -rnE 'userAgent|documentMode|Trident|detect-browser' assets/ layouts/
+grep -rn 'browser-banner\|browser-hide-selector' content/ layouts/
+```
+
+Remove:
+
+* vendor prefixes and fallback rules for engines that no longer need them —
+  every removal must be justified by the new browser floor, not done blindly
+* `@supports` guards that only paper over pre-2024 browsers (guards
+  enabling *new* features stay)
+* UA sniffing blocks and IE guards (`documentMode`, conditional comments)
+* `browser-banner` / `browser-hide-selector` calls configured for browsers
+  that are gone — both shortcodes match browsers by name via
+  `detect-browser` (see `assets/ts/browser-banner.ts`)
+
+Tighten the browser floor itself while at it: the theme ships a
+`browserslist` file (`> 0.5%`, `last 2 versions`, `Firefox ESR`, `not dead`)
+that already prunes dead browsers — sites can narrow it further (e.g. add
+`since 2024`), which also shrinks the output of any prefixing tool.
+
+Verify: `hugo` builds green, the affected pages render unchanged in current
+Chrome, Firefox and Safari, and `npm run lint` passes.
+
+# Upgrading pages that load styles through `partials/head.html`
+
+`layouts/partials/head.html` no longer compiles and links `scss/base.scss`
+itself. `layouts/_default/baseof.html` already emits the stylesheet via
+`partials/html/head/style.html`, which covers a superset of the old rules
+(plus shortcode and page specific SCSS/CSS). With both in place the compiled
+CSS was linked twice per page (same content, different file names), costing
+bandwidth and hiding style regressions.
+
+## 1. Consumer migration
+
+- Sites using the theme's `baseof.html` unchanged need no action.
+- Sites with a custom `baseof.html` that calls `partials/head.html` but not
+  `partials/html/head/style.html` get no stylesheet at all any more — add
+  `{{ partial "html/head/style.html" (dict "context" . "css" "css/style.css") }}`
+  to their `<head>`.
+- Sites with a copy of `partials/head.html` carry an unused duplicate —
+  delete the `scss/base.scss` resource block there to match the theme.
+
+## 2. Verification
+
+Build the site and confirm every page has exactly one stylesheet `<link>`
+per merged CSS bundle, and that shortcode styles still load (check pages
+using shortcodes with dedicated SCSS/CSS includes).
+
+# Accessible navigation menu (progressively enhanced checkbox hack)
+
+The theme's menu previously used a pure CSS checkbox hack
+(`input#menu-toggle` + `label.menu-button`). The `<label>` toggle was not
+keyboard operable (WCAG 2.1.1), exposed no `aria-expanded`/`aria-controls`
+(WCAG 4.1.2), and the `:checked + label + ul` sibling selector broke
+silently when consumers restructured the markup. The menu is now
+progressively enhanced and self-installing:
+
+- `layouts/partials/menu.html` keeps the checkbox hack as the no-JS
+  fallback and additionally loads a small script (`assets/ts/menu.ts`,
+  built and emitted by the partial itself — no `main.js` wiring needed).
+- Once the script runs, the `<label>` is replaced by a real `<button>`
+  with `aria-expanded`/`aria-controls`, the list gets `inert` while
+  closed, Escape closes the menu and returns focus to the toggle, and
+  the menu closes on outside clicks or when focus leaves it.
+- `assets/scss/menu.scss` keys the open state on `data-menu-open` /
+  `data-menu-js` attributes instead of the sibling chain and adds
+  `:focus-visible` styles plus `prefers-reduced-motion` handling.
+- New i18n keys `openNavigation` and `closeNavigation` label the toggle;
+  sites with custom i18n files can add their own translations.
+
+## 1. Consumer migration
+
+- Sites using the theme's `menu.html` unchanged need no action — the
+  enhancement ships with the partial. With JavaScript disabled or the
+  script failing, the untouched checkbox hack remains fully functional
+  (the JS-mode marker is only set after successful enhancement).
+- Sites that copied `menu.html` into their own layouts keep the old
+  checkbox-hack behaviour until they adopt the theme's partial.
+- Sites overriding `assets/scss/menu.scss` or the `.menu-button` styles:
+  when the enhancement is active the toggle is a `<button class=
+  "menu-button">` instead of a `<label>` (same classes and icon). Update
+  selectors targeting `label.menu-button` specifically, and note that
+  `#menu-toggle:checked + label + ul` no longer matches once the script
+  has run — key custom open states off `.top-menu[data-menu-open="true"]`
+  instead.
+- Sites with their own toggle bound to `#menu-toggle`: the hidden
+  checkbox stays in the DOM and the script syncs its `change` events
+  with the button state.
+- The script tag is emitted per page by `menu.html`; sites that inline
+  their whole `<head>`/header without the theme partial get no
+  enhancement and keep the (accessible enough) no-JS fallback.
+
+## 2. Behaviour changes
+
+- With JavaScript enabled the toggle is announced as a button
+  ("Open main navigation"/"Close main navigation", `aria-expanded`).
+- Links in the closed mobile menu are no longer tabbable (`inert`),
+  including when consumer CSS overrides the hiding rules.
+- Escape, outside clicks and focus leaving the open mobile menu close it
+  and return focus to the toggle.
+
+## 3. Verification
+
+- Keyboard only: tab to the burger button, toggle with Enter/Space,
+  close with Escape (focus returns to the button), tab through the
+  links while open.
+- Screen reader: the toggle announces name, role and
+  expanded/collapsed state; list links are unreachable while collapsed.
+- Disable JavaScript and confirm the menu still opens/closes via the
+  checkbox hack (also test with "Emulate focused page"/scripting off in
+  devtools).
+- Confirm `prefers-reduced-motion: reduce` disables the open/close
+  animation.

@@ -1,5 +1,9 @@
-
-
+---
+title: Site parameters
+description: "Example page demonstrating site wide parameter usage"
+displayinlist: false
+metaPage: true
+---
 
 ```
 [params.iiif]
@@ -7,5 +11,4 @@
 
 [params.css]
   includeDirs = ["node_modules/tify/dist/"]
-
 ```

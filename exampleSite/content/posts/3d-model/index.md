@@ -1,5 +1,7 @@
 ---
 title: 3D model manifest
+description: "Demo of a IIIF Presentation 4 manifest including a 3D model"
+date: 2024-01-15
 outputs: [html, iiif-manifest]
 iiif:
   presentationVersion: 4

@@ -2,6 +2,7 @@
 title: Templates
 displayinlist: false
 metaPage: true
+toc: true
 ---
 
 # Templates
@@ -71,24 +72,7 @@ The templates rely on the following page parameters. Most of them control in- or
 | `news` | bool | `true` | Set to `false` to remove a page from `sitemap.xml` |
 | `archive` | bool | `true` | Set to `false` to remove a page from `sitemap.xml` |
 
-## Pages in this section
-
-- [Base template](baseof/)
-- [Single and list templates](single-list/)
-- [Search page](search/)
-- [404 and robots.txt](404-robots/)
-- [Data lists](data-lists/) — `post-list.json`, `tag-list.json`, `wikidata-list.json`
-- [Metadata formats](metadata-formats/) — schema.org, CodeMeta, Linked Art
-- [QR codes](qrcode/)
-- [GeoJSON](geojson/)
-- [Redirects](redirect/)
-- [IIIF templates](iiif-templates/)
-- [BibTeX](bibtex/)
-- [PDF article](pdf-article/)
-- [ActivityPub actor](activity-pub-actor/)
-- [ActivityPub outbox](activity-pub-outbox/)
-- [LLMS](llms/)
-- [Partials](partials/) — reusable building blocks and extension points
+The example site additionally uses the `toc` parameter to enable the [table of contents sidebar](/templates/partials/structural/#toc) on section pages.
 
 ## See also
 

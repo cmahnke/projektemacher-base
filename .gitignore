@@ -38,3 +38,9 @@ assets/scss/lucienne/lucienne-*
 assets/js/lucienne/lucienne-*
 assets/scss/flags/flags.scss
 assets/scss/npm-fonts/*.scss
+
+# The example site's favicons are generated from the theme's
+# static/images/cm.svg by scripts/init/get-favicons.sh (see the
+# 'test_hugo_versions' and 'deploy_exampleSite' CI jobs)
+exampleSite/static/images/favicon*
+exampleSite/static/images/apple-touch-icon.png

@@ -12,7 +12,7 @@ from PyHugo import Config, Post, Content
 
 try:
     import pyvips
-except ImportError:
+except (ImportError, OSError):
     pyvips = None
 
 contentPath = "./content"

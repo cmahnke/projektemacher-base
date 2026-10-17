@@ -8,6 +8,8 @@ IMAGEMAGIC="convert"
 # Favicons
 echo "Generating favicons from $SOURCE"
 
+mkdir -p static/images
+
 # See https://gist.github.com/pfig/1808188
 case "$SOURCE" in
   *.svg)
