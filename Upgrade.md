@@ -724,9 +724,10 @@ const violations = await page.evaluate(() =>
 console.log(violations.join('\n'));
 ```
 
-Iterate over the built HTML files (or a representative subset) and wire the
-script as an optional CI job — non-blocking at first, turning it into a
-build breaker once the findings are triaged.
+Iterate over the built HTML files (or a representative subset) and run the
+script locally. These are suggested static checks of the generated pages
+only — the theme ships no additional scripts and sets up no CI job; copy
+and adapt the sketch to the site's own tooling.
 
 ### Known false positive: "Zoom blocked"
 
