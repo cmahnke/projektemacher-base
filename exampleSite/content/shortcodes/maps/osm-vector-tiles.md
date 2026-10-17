@@ -29,8 +29,11 @@ vector tile maps).
 ## Example
 
 ```text
-{{</* maps/osm-vector-tiles src="/post/map.geojson" style="map-styles/shortbread.json" marker="{src: '/images/geomarker.svg', scale: 0.1, anchorXUnits: 'fraction', anchorYUnits: 'fraction', anchor: [0.9, 1]}" */>}}
+{{</* maps/osm-vector-tiles src="/post/map.geojson" style="map-styles/shortbread.json" marker="{src: '/images/map-marker.svg', scale: 1, anchorXUnits: 'fraction', anchorYUnits: 'fraction', anchor: [0.5, 1]}" */>}}
 ```
+
+The theme ships a generic pin at `static/images/map-marker.svg` (anchor at
+the tip, `[0.5, 1]`); sites can replace it with their own marker graphic.
 
 ## Notes
 
