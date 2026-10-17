@@ -81,6 +81,23 @@ if ! git ls-files --error-unmatch purgecss.config.js &> /dev/null ; then
   cp ./themes/projektemacher-base/purgecss.config.js .
 fi
 
+# Hugo >= 0.161 (gohugoio/hugo#14852) needs pnpm's hoisted linker
+if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
+  if ! grep -Eq '^[[:space:]]*node-linker[[:space:]]*=[[:space:]]*hoisted' .npmrc 2>/dev/null ; then
+    if grep -Eq '^[[:space:]]*node-linker[[:space:]]*=' .npmrc 2>/dev/null ; then
+      # Has a different value - replace it
+      $SED -i 's|^[[:space:]]*node-linker[[:space:]]*=.*|node-linker=hoisted|' .npmrc
+    else
+      # Not present - append it
+      printf '\n# Required by Hugo >= 0.161 (gohugoio/hugo#14852)\nnode-linker=hoisted\n' >> .npmrc
+    fi
+  fi
+else
+  if [ ! -f .npmrc ] ; then
+    cp ./themes/projektemacher-base/.npmrc .
+  fi
+fi
+
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
   yarn config set ignore-engines true
   INSTALL_OPTS="--ignore-engines"
