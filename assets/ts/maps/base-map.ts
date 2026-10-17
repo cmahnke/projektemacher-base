@@ -150,7 +150,7 @@ export function loadGeoJSON(url: string): void {
     });
 }
 
-function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
+export function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   let title = '';
   let popupContent = '';
 
@@ -169,11 +169,29 @@ function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   return featureArray[0];
 }
 
-export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
+export function createOverlay(map: Map): { overlay: Overlay; content: HTMLElement } {
   const target = map.getTargetElement();
   const container = target?.parentElement?.querySelector('.ol-popup') as HTMLElement;
   const content = container.querySelector('.ol-popup-content') as HTMLElement;
   const closer = container.querySelector('.ol-popup-closer') as HTMLElement;
+
+  const overlay = new Overlay({
+    element: container,
+    autoPan: true,
+  });
+
+  map.addOverlay(overlay);
+
+  closer.onclick = function () {
+    overlay.setPosition(undefined);
+    closer.blur();
+    return false;
+  };
+  return { overlay, content };
+}
+
+export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
+  const { overlay, content } = createOverlay(map);
 
   function featurePopUpLocal(feature: Feature<Geometry>, overlay: Overlay) {
     const geometry = feature.getGeometry();
@@ -183,13 +201,6 @@ export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): O
     content.innerHTML = popup;
     overlay.setPosition(coord);
   }
-
-  const overlay = new Overlay({
-    element: container,
-    autoPan: true,
-  });
-
-  map.addOverlay(overlay);
 
   map.on('singleclick', function (event) {
     const features = map.getFeaturesAtPixel(event.pixel) as Feature<Geometry>[];
@@ -203,12 +214,6 @@ export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): O
       featurePopUpLocal(feature, overlay);
     }
   });
-
-  closer.onclick = function () {
-    overlay.setPosition(undefined);
-    closer.blur();
-    return false;
-  };
   return overlay;
 }
 

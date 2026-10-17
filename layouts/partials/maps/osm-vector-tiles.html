@@ -1,5 +1,9 @@
 {{- $context := .context -}}
 {{- $geojson := .geojson -}}
+{{- $cluster := .cluster -}}
+{{- if or (eq $cluster nil) (eq $cluster false) -}}
+  {{- $cluster = false -}}
+{{- end -}}
 {{- $marker := .marker -}}
 {{- if or (eq $marker nil) (eq $marker false) -}}
   {{- $marker = "undefined" -}}
@@ -48,5 +52,5 @@
   </div>
 </div>
 <script type="text/javascript">
-  var {{ $var | safeJS }} = window.projektemacherMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', '{{ $source | safeJS }}', {{ $styleJS | safeJS }}, {{ $bbox | safeJS }}, {{ $center | safeJS }}, undefined, undefined, undefined, false, false, true, undefined, false, {{ $marker | safeJS }});
+  var {{ $var | safeJS }} = window.projektemacherMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', '{{ $source | safeJS }}', {{ $styleJS | safeJS }}, {{ $bbox | safeJS }}, {{ $center | safeJS }}, undefined, undefined, undefined, {{ $cluster | safeJS }}, false, true, undefined, false, {{ $marker | safeJS }});
 </script>

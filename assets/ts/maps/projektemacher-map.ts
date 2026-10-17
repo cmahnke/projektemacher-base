@@ -8,8 +8,9 @@ import VectorTileLayer from 'ol/layer/VectorTile.js';
 import VectorTileSource from 'ol/source/VectorTile.js';
 import TileLayer from 'ol/layer/Tile.js';
 import { TileDebug } from 'ol/source.js';
+import { Cluster } from 'ol/source.js';
 import MVT from 'ol/format/MVT';
-import { boundingExtent, getCenter, Extent } from 'ol/extent';
+import { boundingExtent, getCenter, Extent, createEmpty, extend, getWidth, getHeight } from 'ol/extent';
 import { fromLonLat } from 'ol/proj';
 import { apply, applyStyle } from 'ol-mapbox-style';
 import { debugStyle, setupDefaultStyle } from './projektemacher-default-map-style';
@@ -19,6 +20,8 @@ import {
   defaultPadding,
   getLang,
   addOverlay,
+  createOverlay,
+  mergeFeatures,
   absUrl,
   bboxExtent,
   loadOrParse,
@@ -30,10 +33,13 @@ import { center as turf_center } from '@turf/turf';
 import type Interaction from 'ol/interaction/Interaction';
 import { Control, FullScreen, Zoom, MousePosition } from 'ol/control';
 import Feature from 'ol/Feature';
+import type { FeatureLike } from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
 import BaseLayer from 'ol/layer/Base';
 import { Coordinate } from 'ol/coordinate';
 import { StyleLike } from 'ol/style/Style';
+import { Circle as CircleStyle, Fill, Icon, Stroke, Style, Text } from 'ol/style.js';
+import type { Options as IconOptions } from 'ol/style/Icon';
 
 const defaultSprites = '/map-styles/sprite';
 const defaultFonts = '/css/fonts/{font-family}.css';
@@ -178,9 +184,6 @@ export async function projektemacherMap(
       [180, 85.051129],
     ];
   }
-  if (cluster !== undefined && cluster !== false) {
-    throw new Error("Clustering isn't implemented for this type of map yet!");
-  }
 
   // Disabled should also stop popups
   if (disabled === undefined) {
@@ -279,14 +282,98 @@ export async function projektemacherMap(
     layers.push(debugLayer);
   }
 
-  const geojsonLayer = new VectorLayer({
-    source: geojsonSource,
-  });
-  if (markerObj !== undefined) {
-    if (!(typeof marker === 'function')) {
-      setupMarker(markerObj as any, geojsonLayer as any);
-    } else {
-      geojsonLayer.setStyle(markerObj as StyleLike);
+  let geojsonLayer: VectorLayer;
+  if (cluster === true) {
+    const clusterSource = new Cluster({
+      distance: 25,
+      source: geojsonSource,
+    });
+
+    const outerCircleFill = new Fill({ color: 'rgba(255, 255, 255, 0.7)' });
+    const innerCircleFill = new Fill({ color: 'rgba(255, 255, 255, 0.3)' });
+    const innerCircle = new CircleStyle({
+      radius: 8,
+      fill: innerCircleFill,
+      stroke: new Stroke({ color: 'rgba(51, 153, 204, 0.7)', width: 1.25 }),
+    });
+    const outerCircle = new CircleStyle({
+      radius: 15,
+      fill: outerCircleFill,
+      stroke: new Stroke({ color: 'rgba(51, 153, 204, 0.3)', width: 1.25 }),
+    });
+    const textFill = new Fill({ color: '#fff' });
+    const textStroke = new Stroke({ color: 'rgba(0, 0, 0, 0.6)', width: 3 });
+
+    const markerIcon =
+      markerObj !== undefined && !(typeof markerObj === 'function')
+        ? new Icon(markerObj as IconOptions)
+        : undefined;
+
+    const clusterMemberStyle = (clusterMember: Feature<Geometry>): Style => {
+      if (markerIcon !== undefined) {
+        return new Style({
+          geometry: clusterMember.getGeometry(),
+          image: markerIcon,
+        });
+      }
+      return new Style({
+        geometry: clusterMember.getGeometry(),
+        image: innerCircle,
+      });
+    };
+
+    const clusterStyle = (feature: FeatureLike): Style | Style[] => {
+      const size = (feature.get('features') as Feature<Geometry>[]).length;
+      if (size > 1) {
+        if (markerIcon !== undefined) {
+          return [
+            new Style({ image: markerIcon }),
+            new Style({
+              image: new CircleStyle({
+                radius: 15,
+                displacement: [-10, 25],
+                fill: new Fill({ color: 'rgba(255, 255, 255, 0.7)' }),
+              }),
+              text: new Text({
+                text: size.toString(),
+                fill: textFill,
+                stroke: textStroke,
+                offsetY: -25,
+                offsetX: -10,
+              }),
+            }),
+          ];
+        }
+        return [
+          new Style({ image: outerCircle }),
+          new Style({
+            image: innerCircle,
+            text: new Text({
+              text: size.toString(),
+              fill: textFill,
+              stroke: textStroke,
+            }),
+          }),
+        ];
+      }
+      const originalFeature = (feature.get('features') as Feature<Geometry>[])[0];
+      return clusterMemberStyle(originalFeature);
+    };
+
+    geojsonLayer = new VectorLayer({
+      source: clusterSource,
+      style: clusterStyle,
+    });
+  } else {
+    geojsonLayer = new VectorLayer({
+      source: geojsonSource,
+    });
+    if (markerObj !== undefined) {
+      if (!(typeof marker === 'function')) {
+        setupMarker(markerObj as any, geojsonLayer as any);
+      } else {
+        geojsonLayer.setStyle(markerObj as StyleLike);
+      }
     }
   }
   layers.push(geojsonLayer);
@@ -326,9 +413,38 @@ export async function projektemacherMap(
   });
 
   if (geojson !== undefined) {
-    const markerOptions = { hitTolerance: 10 };
     if (!disabled && popup) {
-      const overlay = addOverlay(map, markerOptions);
+      if (cluster === true) {
+        const { overlay, content } = createOverlay(map);
+        map.on('click', (event) => {
+          geojsonLayer.getFeatures(event.pixel).then((features) => {
+            if (features.length === 0) {
+              return;
+            }
+            const clusterMembers = features[0].get('features') as Feature<Geometry>[];
+            if (clusterMembers.length > 1) {
+              const extent = createEmpty();
+              clusterMembers.forEach((feature) =>
+                extend(extent, feature.getGeometry()!.getExtent())
+              );
+              const view = map.getView();
+              const resolution = map.getView().getResolution() as number;
+              if (
+                view.getZoom() === view.getMaxZoom() ||
+                (getWidth(extent) < resolution && getHeight(extent) < resolution)
+              ) {
+                featurePopUp(mergeFeatures(clusterMembers), overlay, content);
+              } else {
+                view.fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
+              }
+            } else if (clusterMembers.length === 1) {
+              featurePopUp(clusterMembers[0], overlay, content);
+            }
+          });
+        });
+      } else {
+        addOverlay(map, { hitTolerance: 10 });
+      }
     }
 
     if (geojsonObj.features.length) {

@@ -19,12 +19,14 @@ inline script calling `window.projektemacherMap(...)`. The logic lives in
 | `src` | string | yes | — | URL/path of the GeoJSON source |
 | `style` | string | yes | — | Mapbox style — either an asset path (resolved via `resources.Get`, inlined) or a URL (loaded client side) |
 | `source` | string | no | from style | Tile URL overriding the style's source, e.g. `https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}` |
-| `marker` | string | no | `undefined` | OpenLayers icon options as JavaScript object literal, e.g. `{src: '/images/geomarker.svg', scale: 0.1}` |
+| `marker` | string | no | `undefined` | OpenLayers icon options as JavaScript object literal, e.g. `{src: '/images/map-marker.svg', scale: 0.1}` |
+| `cluster` | any | no | `false` | Cluster point features; clicking a cluster either zooms in or shows a merged popup |
 | `bbox` | string | no | `undefined` | Bounding box `[minLon, minLat, maxLon, maxLat]` |
 | `center` | string | no | `undefined` | Map center `[lon, lat]`, defaults to the GeoJSON center |
 
-Unlike `maps/osm` this shortcode offers no clustering (not implemented for
-vector tile maps).
+Unlike `maps/osm` this shortcode renders vector tiles via
+[ol-mapbox-style](https://github.com/openlayers/ol-mapbox-style) — the `style`
+parameter expects a Mapbox style JSON, not a tile layer name.
 
 ## Example
 

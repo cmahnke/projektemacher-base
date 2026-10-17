@@ -1,4 +1,8 @@
 {{ $geojson := .Get "src" }}
+{{- $cluster := false -}}
+{{- if (.Get "cluster") -}}
+  {{- $cluster = .Get "cluster" -}}
+{{- end -}}
 {{- $style := "" -}}
 {{- if (.Get "style") -}}
   {{- $style = .Get "style" -}}
@@ -19,7 +23,7 @@
 {{- if (.Get "center") -}}
   {{- $center = .Get "center" -}}
 {{- end -}}
-{{- partial "maps/osm-vector-tiles.html" (dict "context" . "geojson" $geojson "style" $style "source" $source "marker" $marker "bbox" $bbox "center" $center) -}}
+{{- partial "maps/osm-vector-tiles.html" (dict "context" . "geojson" $geojson "style" $style "source" $source "marker" $marker "bbox" $bbox "center" $center "cluster" $cluster) -}}
 {{- define "_partials/shortcodes/maps/osm-vector-tiles-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "ts/maps/mapWrapper.ts") "scss" (slice "scss/map.scss")) | jsonify -}}
 {{- end -}}
