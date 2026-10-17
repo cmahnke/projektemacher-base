@@ -11,6 +11,36 @@ git submodule add https://github.com/cmahnke/projektemacher-base.git themes/proj
 
 # Site configuration
 
+## CSS deduplication (PostCSS)
+
+On production builds the theme runs the concatenated stylesheet through
+PostCSS (`postcss-discard-duplicates`) to remove rules duplicated across
+the individually compiled SCSS resources and the plain CSS resources. The
+PostCSS configuration ships with the theme
+(`assets/_jsconfig/postcss.config.js`) and is picked up automatically by
+Hugo — no PostCSS setup is needed in the site. The required npm packages
+(`postcss`, `postcss-cli`, `postcss-discard-duplicates`) are part of the
+theme's `package.json` and installed with the site's dependencies by
+`scripts/init/package.json.sh`.
+
+Notes:
+
+* The step is skipped for `hugo server` (development) builds.
+* It can be turned off with:
+
+```toml
+[params.css]
+  dedupe = false
+```
+
+* Without a working Node.js/npm setup the production build fails with
+  Hugo's "You need to install PostCSS" error — run the npm install (see
+  above) or disable the feature. A missing `postcss-discard-duplicates`
+  package alone is not fatal; the CSS then passes through unprocessed.
+* Sites providing their own PostCSS configuration should place it in
+  `assets/_jsconfig/postcss.config.js` of the site — it takes precedence
+  over the theme's file.
+
 ## IIIF manifests
 
 To generate IIIF JSON manifests you need to add the `JSON` output format to the site `config.toml`.

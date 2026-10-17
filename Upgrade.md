@@ -1,3 +1,48 @@
+# CSS pipeline: PostCSS deduplication added
+
+Production builds now run the concatenated stylesheet through PostCSS
+(`css.PostCSS` with `postcss-discard-duplicates`) after `resources.Concat`
+and before `minify`. This removes rules duplicated across the individually
+compiled SCSS resources and the plain CSS resources (around 20–25% smaller
+output for the example site). The theme ships its PostCSS configuration as
+`assets/_jsconfig/postcss.config.js`, which Hugo picks up automatically —
+sites need no PostCSS configuration of their own.
+
+## What sites need to do
+
+Nothing, if the site was set up with the theme's init scripts
+(`scripts/init/package.json.sh`): the required packages (`postcss`,
+`postcss-cli`, `postcss-discard-duplicates`) are part of the theme's
+`package.json` and get merged into the site's `package.json`.
+
+Otherwise install them once in the site root:
+
+```
+npm install --save-dev postcss postcss-cli postcss-discard-duplicates
+```
+
+## Behaviour and opt-out
+
+* The step only runs for production builds — `hugo server` is unaffected.
+* Disable it with:
+
+```toml
+[params.css]
+  dedupe = false
+```
+
+* Without `postcss-cli` the build fails with Hugo's "You need to install
+  PostCSS" error. If only the `postcss-discard-duplicates` package is
+  missing, the build degrades gracefully and the CSS passes through
+  unprocessed.
+* A site's own `assets/_jsconfig/postcss.config.js` overrides the theme's.
+  Note that Hugo resolves the configuration from `assets/_jsconfig/` first,
+  so a `postcss.config.js` in the site root is no longer used for this
+  pipeline.
+* The exampleSite resolves its dependencies via the new
+  `exampleSite/node_modules -> ../node_modules` symlink, since the build
+  runs from `exampleSite/` with `--themesDir ../..`.
+
 # Upgrading IIIF Presentation API 2 → 3
 
 This theme no longer generates Presentation API 2 manifests. The templates
