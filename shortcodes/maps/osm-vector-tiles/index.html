@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>maps/osm-vector-tiles </title><meta name="description" content="Demo and documentation site for the Projektemacher Base theme" />
+
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<script src="https://cmahnke.github.io/projektemacher-base/js/main.min.e8ee0d7d1c263f6afb201b2403721f8c4e5fb73e9cb63cd981fbc74e4ef433ee.js" integrity="sha256-6O4NfRwmP2r7IBskA3IfjE5ftz6ctjzZgfvHTk70M&#43;4="></script>
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/concated.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="32x32">
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="16x16">
+
+
+
+
+
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+<script src="https://cmahnke.github.io/projektemacher-base/js/5d85c20c8f862f9ecfa0aee0edbc8fe4.8669f048a0e9a5d47dc657306109ab437da6683ad925fbd6a451aef72542a787.js" integrity="sha256-hmnwSKDppdR9xlcwYQmrQ32maDrZJfvWpFGu9yVCp4c="></script></head>
+
+    <body class="home blog  meta">
+    <a class="skip-link" href="#main" style="position:absolute;left:-9999px;">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/"><img alt="Logo" class="header-logo" src="https://cmahnke.github.io/projektemacher-base/images/laborant.svg" />
+        Projektemacher Base</a><nav class="top top-menu" aria-label="Main navigation">
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes" aria-current="page">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-todo"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/todo/" title="Todo">Todo<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="0001-01-01T00:00:00Z">Monday, January 1, 1</time>
+        </div>
+        <header>
+          <h1 class="header">maps/osm-vector-tiles</h1>
+        </header>
+        <h1 id="mapsosm-vector-tiles">maps/osm-vector-tiles</h1>
+<p>Renders an OpenStreetMap vector tile map using OpenLayers with an
+<a href="https://github.com/openlayers/ol-mapbox-style" target="_blank" rel="noopener noreferrer">ol-mapbox-style</a> compatible
+style: <code>div.map-wrapper.script</code> with a <code>div.map</code> and a popup div, then an
+inline script calling <code>window.projektemacherMap(...)</code>. The logic lives in
+<code>ts/maps/</code> (<code>mapWrapper.ts</code> / <code>projektemacher-map.ts</code>).</p>
+<h2 id="parameters">Parameters</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Type</th>
+					<th>Required</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>src</code></td>
+					<td>string</td>
+					<td>yes</td>
+					<td>—</td>
+					<td>URL/path of the GeoJSON source</td>
+			</tr>
+			<tr>
+					<td><code>style</code></td>
+					<td>string</td>
+					<td>yes</td>
+					<td>—</td>
+					<td>Mapbox style — either an asset path (resolved via <code>resources.Get</code>, inlined) or a URL (loaded client side)</td>
+			</tr>
+			<tr>
+					<td><code>source</code></td>
+					<td>string</td>
+					<td>no</td>
+					<td>from style</td>
+					<td>Tile URL overriding the style&rsquo;s source, e.g. <code>https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}</code></td>
+			</tr>
+			<tr>
+					<td><code>marker</code></td>
+					<td>string</td>
+					<td>no</td>
+					<td><code>undefined</code></td>
+					<td>OpenLayers icon options as JavaScript object literal, e.g. <code>{src: '/images/geomarker.svg', scale: 0.1}</code></td>
+			</tr>
+			<tr>
+					<td><code>bbox</code></td>
+					<td>string</td>
+					<td>no</td>
+					<td><code>undefined</code></td>
+					<td>Bounding box <code>[minLon, minLat, maxLon, maxLat]</code></td>
+			</tr>
+			<tr>
+					<td><code>center</code></td>
+					<td>string</td>
+					<td>no</td>
+					<td><code>undefined</code></td>
+					<td>Map center <code>[lon, lat]</code>, defaults to the GeoJSON center</td>
+			</tr>
+	</tbody>
+</table>
+<p>Unlike <code>maps/osm</code> this shortcode offers no clustering (not implemented for
+vector tile maps).</p>
+<h2 id="example">Example</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>{{&lt; maps/osm-vector-tiles src=&#34;/post/map.geojson&#34; style=&#34;map-styles/shortbread.json&#34; marker=&#34;{src: &#39;/images/map-marker.svg&#39;, scale: 1, anchorXUnits: &#39;fraction&#39;, anchorYUnits: &#39;fraction&#39;, anchor: [0.5, 1]}&#34; &gt;}}
+</span></span></code></pre></div><p>The theme ships a generic pin at <code>static/images/map-marker.svg</code> (anchor at
+the tip, <code>[0.5, 1]</code>); sites can replace it with their own marker graphic.
+The sprite sheets are expected under <code>/map-styles/sprites/</code> and can be
+vendored with <code>scripts/init/get-map-styles.sh</code> (downloads the sprites
+release of <a href="https://github.com/versatiles-org/versatiles-style" target="_blank" rel="noopener noreferrer">versatiles-org/versatiles-style</a>).</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The shortcode declares a <code>*-metadata</code> include, so <code>ts/maps/mapWrapper.ts</code>
+and <code>scss/map.scss</code> are loaded automatically on pages using it</li>
+<li>Map labels are rendered with local webfonts (the style&rsquo;s <code>glyphs</code> entry is
+removed by the map wrapper), fonts are loaded from
+<code>/css/fonts/{font-family}.css</code> — publish them via <code>partials/fonts/css.html</code></li>
+<li>The style&rsquo;s sprites are expected under <code>/map-styles/sprites/</code></li>
+<li>Wrap the shortcode in <code>html/iframe-consent</code> when the external tile service
+requires consent</li>
+</ul>
+</article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Base is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>

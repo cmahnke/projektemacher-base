@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Shortcode helper system </title><meta name="description" content="Demo and documentation site for the Projektemacher Base theme" />
+
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<script src="https://cmahnke.github.io/projektemacher-base/js/main.min.e8ee0d7d1c263f6afb201b2403721f8c4e5fb73e9cb63cd981fbc74e4ef433ee.js" integrity="sha256-6O4NfRwmP2r7IBskA3IfjE5ftz6ctjzZgfvHTk70M&#43;4="></script>
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/concated.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="32x32">
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="16x16">
+
+
+
+
+
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+<script src="https://cmahnke.github.io/projektemacher-base/js/5d85c20c8f862f9ecfa0aee0edbc8fe4.8669f048a0e9a5d47dc657306109ab437da6683ad925fbd6a451aef72542a787.js" integrity="sha256-hmnwSKDppdR9xlcwYQmrQ32maDrZJfvWpFGu9yVCp4c="></script></head>
+
+    <body class="home blog  meta">
+    <a class="skip-link" href="#main" style="position:absolute;left:-9999px;">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/"><img alt="Logo" class="header-logo" src="https://cmahnke.github.io/projektemacher-base/images/laborant.svg" />
+        Projektemacher Base</a><nav class="top top-menu" aria-label="Main navigation">
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes" aria-current="page">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-todo"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/todo/" title="Todo">Todo<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="0001-01-01T00:00:00Z">Monday, January 1, 1</time>
+        </div>
+        <header>
+          <h1 class="header">Shortcode helper system</h1>
+        </header>
+        <h1 id="shortcode-helper-system">Shortcode helper system</h1>
+<p>Shortcodes often need page specific JavaScript and styles. This theme ships a helper system that detects which shortcodes a page uses and includes only the required assets for that page — no global asset bloat.</p>
+<h2 id="declaring-shortcode-assets">Declaring shortcode assets</h2>
+<p>A shortcode declares its requirements with an inline partial named <code>_partials/shortcodes/&lt;name&gt;-metadata.html</code>, returning a JSON object with <code>css</code>, <code>js</code> and/or <code>scss</code> lists:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>{{- define &#34;_partials/shortcodes/code-metadata.html&#34; -}}
+</span></span><span style="display:flex;"><span>  {{- (dict &#34;css&#34; slice &#34;js&#34; (slice &#34;ts/shortcodes/code.ts&#34;) &#34;scss&#34; (slice &#34;scss/shortcodes/code.scss&#34;)) | jsonify -}}
+</span></span><span style="display:flex;"><span>{{- end -}}
+</span></span></code></pre></div><p>Paths starting with <code>http</code> are treated as external resources, everything else is resolved from <code>assets/</code>.</p>
+<h2 id="how-it-works">How it works</h2>
+<ol>
+<li><strong>Cache</strong> — <code>partials/shortcodes/shortcode-helper-cache.html</code> (rendered once per build via <code>partialCached</code>) scans the raw content of all site pages with a regular expression to find every used shortcode name. For each name it reads <code>layouts/shortcodes/&lt;name&gt;.html</code> from disk, extracts the inline <code>-metadata</code> partial, executes it and normalizes <code>js</code>/<code>scss</code>/<code>css</code> to slices. The result is returned as JSON: shortcode name → asset lists. In debug mode every entry is sanity checked — local files missing from <code>assets/</code> abort the build with an <code>errorf</code>.</li>
+<li><strong>Per page filter</strong> — <code>partials/shortcodes/shortcode-helper.html</code> unmarshals the cache and checks <code>$.Page.HasShortcode &lt;name&gt;</code> for every entry, returning the merged <code>{&quot;js&quot;: […], &quot;scss&quot;: […], &quot;css&quot;: […]}</code> requirements for the current page only.</li>
+<li><strong>Consumers</strong>:
+<ul>
+<li><code>partials/html/head/script.html</code> — bundles the <code>js</code> entries (local files via <code>resources.Get</code> + <code>js.Build</code>, external ones via <code>resources.GetRemote</code>) into a single fingerprinted <code>&lt;script&gt;</code></li>
+<li><code>partials/html/head/style.html</code> — compiles the <code>scss</code> entries together with the page&rsquo;s own SCSS (Dart SASS) and appends the <code>css</code> entries, producing a single fingerprinted <code>&lt;link&gt;</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="parameters">Parameters</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Level</th>
+					<th>Key</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Site</td>
+					<td><code>skipShortcodeAssets</code></td>
+					<td>Intended to disable shortcode asset processing. Note: the current guard in <code>shortcode-helper.html</code> evaluates to true in every case, so the setting has no effect yet</td>
+			</tr>
+			<tr>
+					<td>Page</td>
+					<td><code>ignoreincludes</code></td>
+					<td>Drops page level js/scss/css includes from <code>html/head/script.html</code> / <code>html/head/style.html</code></td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="file-includes-from-shortcodes">File includes from shortcodes</h2>
+<p>Shortcodes that read files use the <code>partials/html/html-body.html</code> partial, which has two calling conventions:</p>
+<ul>
+<li><strong>Shortcode context</strong> (<code>*hugolib.ShortcodeWithPage</code>, e.g. <a href="../html/include/">html/include</a>): the file is taken from the shortcode&rsquo;s <code>file</code> parameter, resolved relative to the page&rsquo;s directory</li>
+<li><strong>Page context</strong> (<code>*hugolib.pageState</code>): the file comes from the page params, joined with the page directory</li>
+</ul>
+<p>The partial extracts the content between <code>&lt;body&gt;…&lt;/body&gt;</code> and errors (<code>errorf</code>) when the file is missing, empty or the arguments are unusable.</p>
+</article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Base is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>

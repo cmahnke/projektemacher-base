@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Developing shortcodes </title><meta name="description" content="Demo and documentation site for the Projektemacher Base theme" />
+
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+
+<script src="https://cmahnke.github.io/projektemacher-base/js/main.min.e8ee0d7d1c263f6afb201b2403721f8c4e5fb73e9cb63cd981fbc74e4ef433ee.js" integrity="sha256-6O4NfRwmP2r7IBskA3IfjE5ftz6ctjzZgfvHTk70M&#43;4="></script>
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/concated.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="32x32">
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg" sizes="16x16">
+
+
+
+
+
+
+<link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.b0212a518e6dd7de79fcf03f768376651aba915ec5f10735429d07960d786de2.css" rel="stylesheet" integrity="sha256-sCEqUY5t1955/PA/doN2ZRq6kV7F8Qc1Qp0Hlg14beI=">
+<script src="https://cmahnke.github.io/projektemacher-base/js/5d85c20c8f862f9ecfa0aee0edbc8fe4.8669f048a0e9a5d47dc657306109ab437da6683ad925fbd6a451aef72542a787.js" integrity="sha256-hmnwSKDppdR9xlcwYQmrQ32maDrZJfvWpFGu9yVCp4c="></script></head>
+
+    <body class="home blog  meta">
+    <a class="skip-link" href="#main" style="position:absolute;left:-9999px;">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/"><img alt="Logo" class="header-logo" src="https://cmahnke.github.io/projektemacher-base/images/laborant.svg" />
+        Projektemacher Base</a><nav class="top top-menu" aria-label="Main navigation">
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts" aria-current="page">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-todo"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/todo/" title="Todo">Todo<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="0001-01-01T00:00:00Z">Monday, January 1, 1</time>
+        </div>
+        <header>
+          <h1 class="header">Developing shortcodes</h1>
+        </header>
+        <h1 id="seting-up">Seting up</h1>
+<p>To use the example site locally you need to set up the language files:</p>
+<pre tabindex="0"><code>./scripts/setup.sh
+</code></pre><h1 id="running-the-example-site">Running the example site</h1>
+<pre tabindex="0"><code>hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
+</code></pre><p>Afterwards the example site can be generated or <code>serve</code>&rsquo;d.</p>
+<h1 id="cleaning-up">Cleaning up</h1>
+<p>Before commiting changes one can clean up the language files:</p>
+<pre tabindex="0"><code>./scripts/cleanup.sh
+</code></pre></article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Base is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>

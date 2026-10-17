@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Projektemacher Base Vorlage on Projektemacher Base</title>
+		<link>https://cmahnke.github.io/projektemacher-base/de/</link>
+		<description>Recent content in Projektemacher Base Vorlage on Projektemacher Base</description>
+		<generator>Hugo</generator>
+		<language>en</language>
+		
+			<managingEditor>mail@christianmahnke.de (Christian Mahnke)</managingEditor>
+		
+		
+			<webMaster>mail@christianmahnke.de (Christian Mahnke)</webMaster>
+		
+		
+		
+			<atom:link href="https://cmahnke.github.io/projektemacher-base/de/index.xml" rel="self" type="application/rss+xml" />
+	</channel>
+</rss>
