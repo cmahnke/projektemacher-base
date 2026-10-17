@@ -34,6 +34,9 @@ vector tile maps).
 
 The theme ships a generic pin at `static/images/map-marker.svg` (anchor at
 the tip, `[0.5, 1]`); sites can replace it with their own marker graphic.
+The sprite sheets are expected under `/map-styles/sprites/` and can be
+vendored with `scripts/init/get-map-styles.sh` (downloads the sprites
+release of [versatiles-org/versatiles-style](https://github.com/versatiles-org/versatiles-style)).
 
 ## Notes
 
