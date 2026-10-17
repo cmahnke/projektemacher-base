@@ -61,6 +61,13 @@ disablePathToLower = true
 [outputs]
   home = ["html", "iiif-collection"]
 
+[module]
+  # Expose the theme's i18n files as data for the 'i18n strings' page
+  # (see content/i18n and layouts/shortcodes/i18n-strings.html)
+  [[module.mounts]]
+    source = '../i18n'
+    target = 'data/i18n'
+
 [security]
   # Allow HTML files in content bundles, needed by the html-body template
   allowContent = ['^text/html$', '^text/markdown$']
@@ -120,3 +127,7 @@ disablePathToLower = true
   name = 'Templates'
   url = 'https://cmahnke.github.io/projektemacher-base/templates/'
   weight = 8
+[[languages.en.menu.main]]
+  name = 'i18n'
+  url = 'https://cmahnke.github.io/projektemacher-base/i18n/'
+  weight = 9
