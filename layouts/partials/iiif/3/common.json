@@ -63,7 +63,8 @@
     {{- $metadata = $metadata | append $coerced -}}
   {{- end -}}
 {{- end -}}
-{{- with .Params.issueYear -}}
+{{- $year := or .Params.issueYear .Params.year -}}
+{{- with $year -}}
   {{- $year := printf "%v" . -}}
   {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year of publication") "de" (slice "Erscheinungsjahr")) "value" (dict "en" (slice $year) "de" (slice $year))) -}}
 {{- end -}}

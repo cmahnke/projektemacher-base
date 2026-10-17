@@ -125,6 +125,8 @@ def add_metadata(file, metadata, labels=None, toc=None):
             # meta["xmp:MetadataDate"] = datetime.now(UTC).isoformat()
             if "issueYear" in metadata:
                 meta["dc:date"] = [str(metadata["issueYear"])]
+            elif "year" in metadata:
+                meta["dc:date"] = [str(metadata["year"])]
         if labels is not None:
             try:
                 pdf.Root.PageLabels
