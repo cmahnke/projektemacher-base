@@ -74,7 +74,13 @@ disablePathToLower = true
   # tify, …) from the node_modules directory of the theme repository one level up
   [security.node]
     [security.node.permissions]
-      allowRead = ['../node_modules']
+      # NOTE: setting 'allowRead' REPLACES the default ['.'] — the working
+      # directory and the project root must stay in the list, since Node's CJS
+      # resolver and Browserslist walk up the directory tree reading
+      # 'package.json' and config candidates ('browserslist' file). A too
+      # narrow list breaks css.PostCSS with 'Error: Access to this API has
+      # been restricted. Use --allow-fs-read to manage permissions.'
+      allowRead = ['.', '..', '../node_modules']
 
 # Multilingual Language Configurations
 [languages]

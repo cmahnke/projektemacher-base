@@ -8,6 +8,34 @@ output for the example site). The theme ships its PostCSS configuration as
 `assets/_jsconfig/postcss.config.js`, which Hugo picks up automatically —
 sites need no PostCSS configuration of their own.
 
+> [!IMPORTANT]
+> Hugo ≥ 0.161 runs Node tools like PostCSS with Node's `--permission` model
+> (`security.node.permissions`). If a site overrides
+> `security.node.permissions.allowRead`, the value **replaces** Hugo's default
+> `['.']` — it is *not* merged. A list that omits the working directory or the
+> project root breaks production builds, because Node's CJS resolver and
+> Browserslist walk up the directory tree reading `package.json` and config
+> candidates (`browserslist` file) and hit a denied path:
+>
+> ```
+> POSTCSS: failed to transform "/css/….css" (text/css): Error: Access to this
+> API has been restricted. Use --allow-fs-read to manage permissions.
+> ```
+>
+> When narrowing `allowRead`, always keep the working directory and the project
+> root readable — for a build from a subdirectory (like this theme's
+> `exampleSite/`):
+>
+> ```toml
+> [security.node]
+>   [security.node.permissions]
+>     allowRead = ['.', '..', '../node_modules']
+> ```
+>
+> Note that `hugo server` masks the problem, since the PostCSS dedupe step is
+> skipped for the dev server. If a denial persists, the denied `resource` in
+> the error's stack trace shows which path to add.
+
 ## What sites need to do
 
 Nothing, if the site was set up with the theme's init scripts
@@ -459,9 +487,12 @@ grep -rnE 'resources\.Get "(js|ts)/' layouts/
 * **Hugo ≥ 0.167 security model** — `js.Build`/`css.Build` refuse to read files
   outside the project working directory (GHSA-r4xx-89rf-5424). Sites building
   from a subdirectory (like this theme's own `exampleSite/`) need
-  `security.node.permissions.allowRead` for the theme's `node_modules`, and
-  sites bundling their own TS must keep their `node_modules` inside the
-  project root.
+  `security.node.permissions.allowRead` covering the working directory, the
+  project root and the theme's `node_modules` (see the **IMPORTANT** note at
+  the top of this file — an override replaces the default `['.']` and must not
+  omit them, or `css.PostCSS` fails with "Access to this API has been
+  restricted"), and sites bundling their own TS must keep their `node_modules`
+  inside the project root.
 * **ESLint coverage change** — `lint-js` now lints `assets/js` and `assets/ts`
   recursively. Files that were never linted before (subdirectories, e.g.
   `assets/js/maps/`) can produce new findings, including real bugs
