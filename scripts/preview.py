@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, io, re, yaml, toml, sys, base64
+import os, io, re, yaml, toml, sys, base64, math
 from termcolor import cprint
 from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 import xml.etree.ElementTree as ET
@@ -93,6 +93,77 @@ def drawTitle(title, file, config):
     img.save(file)
 
 
+def getTemplateFont(svgTree, template):
+    """
+    Try to find a font file referenced by the template's @font-face rules that
+    PIL (FreeType) can read, for measuring text. Prefers TTF, then WOFF.
+    """
+    templateBase = os.path.dirname(template)
+    for styleElem in svgTree.findall(".//svg:style", namespaces):
+        style = styleElem.text
+        if style == "" or style is None:
+            continue
+        for extension in ("ttf", "woff"):
+            for urlMatch, url in re.findall(r"(url\s*\(\s*[\'\"]?(.*?)[\'\"]?\s*\))", style, re.S | re.M):
+                if not url.lower().endswith("." + extension):
+                    continue
+                fontPath = os.path.normpath(os.path.join(templateBase, url))
+                if os.path.isfile(fontPath):
+                    return fontPath
+    return None
+
+
+def measureTitle(title, fontPath, fontSize):
+    if fontPath is None:
+        return None
+    try:
+        font = ImageFont.truetype(fontPath, int(fontSize))
+        draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+        return draw.textlength(title, font=font)
+    except Exception as e:
+        cprint(f"Can't measure title with font '{fontPath}': {e}", "yellow")
+        return None
+
+
+def fitTitleToBox(textElem, svgTree, template, config, title):
+    """
+    Shrink the font size of the template's text element until the title fits
+    into the width of the 'textbox' shape (used via shape-inside), so long
+    titles don't overflow. Scaling fonts is linear, so a single measurement
+    at the template's font size is enough.
+    """
+    style = textElem.get("style")
+    sizeMatch = re.search(r"font-size:\s*([\d.]+)px", style or "")
+    if not style or not sizeMatch or not title:
+        return
+    fontSize = float(sizeMatch.group(1))
+
+    textboxes = svgTree.findall(".//*[@id = 'textbox']", namespaces)
+    if len(textboxes) == 0 or textboxes[0].get("width") is None:
+        cprint(f"No textbox with a width found in template '{template}', can't fit title", "yellow")
+        return
+    maxWidth = float(textboxes[0].get("width"))
+
+    textWidth = measureTitle(title, getTemplateFont(svgTree, template), fontSize)
+    if textWidth is None:
+        textWidth = len(title) * fontSize * 0.55
+        cprint("Using estimated title width", "yellow")
+
+    if textWidth <= maxWidth:
+        return
+
+    minSize = float(config["svg"].get("minFontSize", 24))
+    newSize = max(minSize, math.floor(fontSize * maxWidth / textWidth))
+    if newSize >= fontSize:
+        return
+    textElem.set("style", re.sub(r"font-size:\s*[\d.]+px", "font-size:{:d}px".format(int(newSize)), style, count=1))
+    # Renderers may fall back to a different (wider) font than measured, so
+    # force the text to fit the textbox with textLength
+    textElem.set("textLength", str(int(maxWidth * 0.99)))
+    textElem.set("lengthAdjust", "spacingAndGlyphs")
+    cprint(f"Title '{title}' doesn't fit, shrinking font size to {int(newSize)}px", "yellow")
+
+
 def drawSVG(title, contentFile, outFile, config):
     global namespaces
     path = os.path.dirname(contentFile)
@@ -111,7 +182,7 @@ def drawSVG(title, contentFile, outFile, config):
         if style == "" or style is None:
             cprint(f"No style in {template}", 'red')
             continue
-        for urlMatch, url in re.findall(r"(url\s*?$[\'\"]?(.*?)[\'\"]?$)", style, re.S | re.M):
+        for urlMatch, url in re.findall(r"(url\s*\([\'\"]?(.*?)[\'\"]?\))", style, re.S | re.M):
             relLocation = os.path.normpath(os.path.join(templateBase, os.path.dirname(url)))
             targetPath = os.path.relpath(relLocation, os.path.dirname(outFile))
             newLocation = os.path.join(targetPath, os.path.basename(url))
@@ -204,7 +275,9 @@ def drawSVG(title, contentFile, outFile, config):
             raise NotImplementedError
 
     # Update text
-    svgTree.findall(".//*[@id = 'text-container']", namespaces)[0].text = title
+    textElem = svgTree.findall(".//*[@id = 'text-container']", namespaces)[0]
+    fitTitleToBox(textElem, svgTree, template, config, title)
+    textElem.text = title
 
     cprint("Writing {}".format(outFile), "green")
     svgTree.write(outFile)
