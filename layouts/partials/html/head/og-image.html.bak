@@ -1,0 +1,68 @@
+{{/*
+    Pinterest sizes: https://louisem.com/228434/pinterest-pin-size
+    Open Graph sizees: https://iamturns.com/open-graph-image-size/
+    */}}
+{{- $debug := partialCached "partials/functions/debug/enabled.html" . -}}
+
+{{- $ogHeight := 630 -}}
+{{- $ogWidth := 1200 -}}
+{{- if isset $.Site.Params "preview" -}}
+  {{- if $.Site.Params.preview.size.height -}}
+    {{- $ogHeight = $.Site.Params.preview.size.height -}}
+  {{- end -}}
+  {{- if $.Site.Params.preview.size.width -}}
+    {{- $ogWidth = $.Site.Params.preview.size.width -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $previewImg := "" -}}
+{{- if (templates.Exists "partials/preview/image.html") -}}
+    {{- $previewImg = partial "preview/image.html" (dict "context" . "height" $ogHeight "width" $ogWidth) -}}
+{{- else -}}
+    {{- $previewImg = partial "preview/prerendered.html" (dict "context" .) -}}
+{{- end -}}
+
+{{/* TODO: Finish this check */}}
+{{/*
+{{- if eq (printf "%T" $previewImg) "string" -}}
+  {{- $previewImg = .Resources.Get $previewImg -}}
+{{- end -}}
+*/}}
+
+{{- $filePath := "" -}}
+{{- with .File -}}
+  {{- $filePath = .File.Path -}}
+{{- end -}}
+
+{{- if ne (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Image resource (%s) for %s is of wrong type (%T)" $previewImg $filePath $previewImg -}}
+  {{- end -}}
+{{- end -}}
+{{/*
+{{- if eq (string $previewImg.MediaType) "image/jxl" -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Generarting OpenGraph preview image from JXL isn't implemented for %s" $filePath -}}
+  {{- end -}}
+{{- end -}}
+*/}}
+
+{{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
+  <meta property="og:image" content="{{ $previewImg.Permalink }}" />
+  <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
+  <meta property="og:image:width" content="{{ $previewImg.Width }}" />
+  <meta property="og:image:height" content="{{ $previewImg.Height }}" />
+{{- else -}}
+{{/*
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
+*/}}
+  {{ $path := "" }}
+  {{ with .File }}
+    {{ $path = .Path }}
+  {{ else }}
+    {{ $path = .Path }}
+  {{ end }}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" .File.Path }}
+  {{- end -}}
+{{- end -}}

@@ -1,0 +1,25 @@
+{{ $geojson := .Get "src" }}
+{{- $style := "" -}}
+{{- if (.Get "style") -}}
+  {{- $style = .Get "style" -}}
+{{- end -}}
+{{- $source := "" -}}
+{{- if (.Get "source") -}}
+  {{- $source = .Get "source" -}}
+{{- end -}}
+{{- $marker := false -}}
+{{- if (.Get "marker") -}}
+  {{- $marker = .Get "marker" -}}
+{{- end -}}
+{{- $bbox := false -}}
+{{- if (.Get "bbox") -}}
+  {{- $bbox = .Get "bbox" -}}
+{{- end -}}
+{{- $center := false -}}
+{{- if (.Get "center") -}}
+  {{- $center = .Get "center" -}}
+{{- end -}}
+{{- partial "maps/osm-vector-tiles.html" (dict "context" . "geojson" $geojson "style" $style "source" $source "marker" $marker "bbox" $bbox "center" $center) -}}
+{{- define "_partials/shortcodes/maps/osm-vector-tiles-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/maps/mapWrapper.ts") "scss" (slice "scss/map.scss")) | jsonify -}}
+{{- end -}}

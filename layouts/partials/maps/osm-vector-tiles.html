@@ -1,0 +1,52 @@
+{{- $context := .context -}}
+{{- $geojson := .geojson -}}
+{{- $marker := .marker -}}
+{{- if or (eq $marker nil) (eq $marker false) -}}
+  {{- $marker = "undefined" -}}
+{{- end -}}
+{{- $bbox := .bbox -}}
+{{- if or (eq $bbox nil) (eq $bbox false) -}}
+  {{- $bbox = "undefined" -}}
+{{- end -}}
+{{- $center := .center -}}
+{{- if or (eq $center nil) (eq $center false) -}}
+  {{- $center = "undefined" -}}
+{{- end -}}
+
+{{- $style := .style -}}
+{{- $styleJS := "undefined" -}}
+{{- if ne $style nil -}}
+  {{- with resources.Get $style -}}
+    {{- $styleJS = .Content -}}
+  {{- else -}}
+    {{/* Not an asset, pass as URL for client side loading */}}
+    {{- $styleJS = printf "'%s'" $style -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $source := .source -}}
+{{- if or (eq $source nil) (eq $source "") -}}
+  {{/* Fall back to the tile URL from the style definition */}}
+  {{- $source = "" -}}
+  {{- with resources.Get $style -}}
+    {{- $styleData := transform.Unmarshal . -}}
+    {{- range $key, $value := index $styleData "sources" -}}
+      {{- with index $value "tiles" -}}
+        {{- $source = index . 0 -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $id := md5 $geojson -}}
+{{- $var := printf "_%s" $id -}}
+<div class="map-wrapper script">
+  <div class="map" id="{{ $id }}" aria-label="{{ i18n "interactiveMap" }}"></div>
+  <div id="{{ $id }}-popup" class="ol-popup">
+    <a href="#" id="{{ $id }}-popup-closer" class="ol-popup-closer" role="button" aria-label="{{ i18n "close" }}"></a>
+    <div id="{{ $id }}-popup-content" class="ol-popup-content" aria-live="polite"></div>
+  </div>
+</div>
+<script type="text/javascript">
+  var {{ $var | safeJS }} = window.projektemacherMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', '{{ $source | safeJS }}', {{ $styleJS | safeJS }}, {{ $bbox | safeJS }}, {{ $center | safeJS }}, undefined, undefined, undefined, false, false, true, undefined, false, {{ $marker | safeJS }});
+</script>

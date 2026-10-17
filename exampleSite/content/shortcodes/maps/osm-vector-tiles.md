@@ -1,0 +1,44 @@
+---
+title: maps/osm-vector-tiles
+displayinlist: false
+metaPage: true
+---
+
+# maps/osm-vector-tiles
+
+Renders an OpenStreetMap vector tile map using OpenLayers with an
+[ol-mapbox-style](https://github.com/openlayers/ol-mapbox-style) compatible
+style: `div.map-wrapper.script` with a `div.map` and a popup div, then an
+inline script calling `window.projektemacherMap(...)`. The logic lives in
+`ts/maps/` (`mapWrapper.ts` / `projektemacher-map.ts`).
+
+## Parameters
+
+| Parameter | Type | Required | Default | Purpose |
+|---|---|---|---|---|
+| `src` | string | yes | — | URL/path of the GeoJSON source |
+| `style` | string | yes | — | Mapbox style — either an asset path (resolved via `resources.Get`, inlined) or a URL (loaded client side) |
+| `source` | string | no | from style | Tile URL overriding the style's source, e.g. `https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}` |
+| `marker` | string | no | `undefined` | OpenLayers icon options as JavaScript object literal, e.g. `{src: '/images/geomarker.svg', scale: 0.1}` |
+| `bbox` | string | no | `undefined` | Bounding box `[minLon, minLat, maxLon, maxLat]` |
+| `center` | string | no | `undefined` | Map center `[lon, lat]`, defaults to the GeoJSON center |
+
+Unlike `maps/osm` this shortcode offers no clustering (not implemented for
+vector tile maps).
+
+## Example
+
+```text
+{{</* maps/osm-vector-tiles src="/post/map.geojson" style="map-styles/shortbread.json" marker="{src: '/images/geomarker.svg', scale: 0.1, anchorXUnits: 'fraction', anchorYUnits: 'fraction', anchor: [0.9, 1]}" */>}}
+```
+
+## Notes
+
+- The shortcode declares a `*-metadata` include, so `ts/maps/mapWrapper.ts`
+  and `scss/map.scss` are loaded automatically on pages using it
+- Map labels are rendered with local webfonts (the style's `glyphs` entry is
+  removed by the map wrapper), fonts are loaded from
+  `/css/fonts/{font-family}.css` — publish them via `partials/fonts/css.html`
+- The style's sprites are expected under `/map-styles/sprites/`
+- Wrap the shortcode in `html/iframe-consent` when the external tile service
+  requires consent
