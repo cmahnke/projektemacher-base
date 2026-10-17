@@ -1,0 +1,76 @@
+/*
+ * Section table of contents sidebar: the theme's partials/toc.html
+ * renders an <aside class="section-toc"> which the site's
+ * _default/list.html places next to the article on section pages with
+ * the front matter parameter `toc: true`.
+ *
+ * The section container (coder's .container) becomes a two column grid;
+ * on narrow screens the aside falls back to a block above the article.
+ */
+
+.container.with-toc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    column-gap: 4rem;
+    align-items: start;
+
+    @media only screen and (max-width: 999px) {
+        display: block;
+    }
+}
+
+.section-toc {
+    position: sticky;
+    top: 7rem;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    /* Align with the article's coder header margin (6.4rem) */
+    margin-top: 6.4rem;
+    font-family: $heading-font-family;
+
+    @media only screen and (max-width: 999px) {
+        position: static;
+        max-height: none;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .toc-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 2.2rem;
+        margin: 0 0 1rem;
+    }
+
+    .toc ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        ul {
+            margin: 0.4rem 0 0.4rem 1.6rem;
+        }
+    }
+
+    .toc li {
+        margin: 0.4rem 0;
+        line-height: 2rem;
+    }
+
+    .toc li.toc-group {
+        font-weight: 700;
+        margin: 1.2rem 0 0.4rem;
+    }
+
+    .toc a {
+        color: $link-color;
+        text-decoration: none;
+
+        &:active,
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

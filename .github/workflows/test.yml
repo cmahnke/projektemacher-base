@@ -315,6 +315,9 @@ jobs:
       - name: "Test PyHugolib"
         run: |
            python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
+      - name: "Test PyHugo based scripts"
+        run: |
+           python ./scripts/PyHugo/test-consumers.py
 
   test_pnpm:
     runs-on: ubuntu-26.04
@@ -366,6 +369,26 @@ jobs:
         continue-on-error: true
         run: |
           ./scripts/github/python-dependencies.sh
+
+      - name: Run PyHugo tests
+        if: "!endsWith(matrix.version, '12') && !endsWith(matrix.version, '-dev')"
+        run: |
+          python ./scripts/PyHugo/test-pyhugo.py -b exampleSite/
+          python ./scripts/PyHugo/test-consumers.py
+
+  test_i18n:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Check for missing translations
+        run: |
+          python ./scripts/check_i18n.py i18n
 
   test_hugo_versions:
     runs-on: ubuntu-26.04
@@ -419,6 +442,12 @@ jobs:
       - name: Generate fonts
         run: |
           ./scripts/fonts.sh
+
+      - name: Generate favicons
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick xmlstarlet librsvg2-bin
+          ./scripts/init/get-favicons.sh
 
       - name: Build Hugo site
         working-directory: exampleSite

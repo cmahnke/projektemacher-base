@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 
-import os, io, re, yaml, toml, sys, base64
+import os, io, re, yaml, toml, sys, base64, math
 from termcolor import cprint
 from PIL import Image, ImageFont, ImageDraw, UnidentifiedImageError
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import tempfile
 
+sys.path.append(os.path.dirname(__file__))
+from PyHugo import Config, Post, Content
+
 try:
     import pyvips
-except ImportError:
+except (ImportError, OSError):
     pyvips = None
 
-configFile = "./config/_default/config.toml"
 contentPath = "./content"
-filePattern = "(_?)index(\\.([a-zA-Z-]){2,5})?\\.md"
 maxImageDimension = 17500
 
 namespaces = {
@@ -23,38 +24,6 @@ namespaces = {
 }
 
 Image.MAX_IMAGE_PIXELS = maxImageDimension * maxImageDimension
-
-
-# TODO: Move to PyHugo
-def loadConfig(configFile):
-    config = toml.load(configFile)
-    if "preview" in config["params"]:
-        return config["params"]["preview"]
-    else:
-        return
-
-
-# TODO: Move to PyHugo
-def readMetadata(file):
-    post = io.open(file, mode="r", encoding="utf-8").read()
-    header = re.sub(r"^---$.(.*?)^---$.*", "\\1", post, count=0, flags=re.MULTILINE | re.DOTALL)
-    try:
-        post = yaml.load(header, Loader=yaml.FullLoader)
-    except yaml.YAMLError as exc:
-        if hasattr(exc, "problem_mark"):
-            mark = exc.problem_mark
-            cprint(
-                "Error in {} position: ({}:{})".format(file, mark.line + 1, mark.column + 1),
-                "red",
-            )
-    except Exception as inst:
-        cprint("Error in %s".format(file), "red")
-
-    if "params" in post:
-        for key in post["params"]:
-            post[key] = post["params"][key]
-
-    return post
 
 
 def loadImageAsPNGBytes(path):
@@ -93,14 +62,85 @@ def drawTitle(title, file, config):
     img.save(file)
 
 
-def drawSVG(title, contentFile, outFile, config):
+def getTemplateFont(svgTree, template):
+    """
+    Try to find a font file referenced by the template's @font-face rules that
+    PIL (FreeType) can read, for measuring text. Prefers TTF, then WOFF.
+    """
+    templateBase = os.path.dirname(template)
+    for styleElem in svgTree.findall(".//svg:style", namespaces):
+        style = styleElem.text
+        if style == "" or style is None:
+            continue
+        for extension in ("ttf", "woff"):
+            for urlMatch, url in re.findall(r"(url\s*\(\s*[\'\"]?(.*?)[\'\"]?\s*\))", style, re.S | re.M):
+                if not url.lower().endswith("." + extension):
+                    continue
+                fontPath = os.path.normpath(os.path.join(templateBase, url))
+                if os.path.isfile(fontPath):
+                    return fontPath
+    return None
+
+
+def measureTitle(title, fontPath, fontSize):
+    if fontPath is None:
+        return None
+    try:
+        font = ImageFont.truetype(fontPath, int(fontSize))
+        draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+        return draw.textlength(title, font=font)
+    except Exception as e:
+        cprint(f"Can't measure title with font '{fontPath}': {e}", "yellow")
+        return None
+
+
+def fitTitleToBox(textElem, svgTree, template, config, title):
+    """
+    Shrink the font size of the template's text element until the title fits
+    into the width of the 'textbox' shape (used via shape-inside), so long
+    titles don't overflow. Scaling fonts is linear, so a single measurement
+    at the template's font size is enough.
+    """
+    style = textElem.get("style")
+    sizeMatch = re.search(r"font-size:\s*([\d.]+)px", style or "")
+    if not style or not sizeMatch or not title:
+        return
+    fontSize = float(sizeMatch.group(1))
+
+    textboxes = svgTree.findall(".//*[@id = 'textbox']", namespaces)
+    if len(textboxes) == 0 or textboxes[0].get("width") is None:
+        cprint(f"No textbox with a width found in template '{template}', can't fit title", "yellow")
+        return
+    maxWidth = float(textboxes[0].get("width"))
+
+    textWidth = measureTitle(title, getTemplateFont(svgTree, template), fontSize)
+    if textWidth is None:
+        textWidth = len(title) * fontSize * 0.55
+        cprint("Using estimated title width", "yellow")
+
+    if textWidth <= maxWidth:
+        return
+
+    minSize = float(config["svg"].get("minFontSize", 24))
+    newSize = max(minSize, math.floor(fontSize * maxWidth / textWidth))
+    if newSize >= fontSize:
+        return
+    textElem.set("style", re.sub(r"font-size:\s*[\d.]+px", "font-size:{:d}px".format(int(newSize)), style, count=1))
+    # Renderers may fall back to a different (wider) font than measured, so
+    # force the text to fit the textbox with textLength
+    textElem.set("textLength", str(int(maxWidth * 0.99)))
+    textElem.set("lengthAdjust", "spacingAndGlyphs")
+    cprint(f"Title '{title}' doesn't fit, shrinking font size to {int(newSize)}px", "yellow")
+
+
+def drawSVG(title, post, lang, outFile, config):
     global namespaces
-    path = os.path.dirname(contentFile)
+    path = str(post.path)
     template = config["svg"]["template"]
     templateBase = os.path.dirname(template)
     # Python has an incomplete XML implementation :( https://stackoverflow.com/questions/44282975/how-to-access-attribute-value-in-xml-containing-namespace-using-elementtree-in-p
     xlinkAttr = "{" + namespaces["xlink"] + "}" + "href"
-    previewImg = getPreviewImg(config, contentFile)
+    previewImg = getPreviewImg(config, post, lang)
     cprint(f"Rendering '{outFile}' from '{template}', preview '{previewImg}'", "yellow")
 
     svgTree = ET.parse(template)
@@ -111,7 +151,7 @@ def drawSVG(title, contentFile, outFile, config):
         if style == "" or style is None:
             cprint(f"No style in {template}", 'red')
             continue
-        for urlMatch, url in re.findall(r"(url\s*?$[\'\"]?(.*?)[\'\"]?$)", style, re.S | re.M):
+        for urlMatch, url in re.findall(r"(url\s*\([\'\"]?(.*?)[\'\"]?\))", style, re.S | re.M):
             relLocation = os.path.normpath(os.path.join(templateBase, os.path.dirname(url)))
             targetPath = os.path.relpath(relLocation, os.path.dirname(outFile))
             newLocation = os.path.join(targetPath, os.path.basename(url))
@@ -204,41 +244,49 @@ def drawSVG(title, contentFile, outFile, config):
             raise NotImplementedError
 
     # Update text
-    svgTree.findall(".//*[@id = 'text-container']", namespaces)[0].text = title
+    textElem = svgTree.findall(".//*[@id = 'text-container']", namespaces)[0]
+    fitTitleToBox(textElem, svgTree, template, config, title)
+    textElem.text = title
 
     cprint("Writing {}".format(outFile), "green")
     svgTree.write(outFile)
 
 
 def drawPNG(title, file, config):
-    drawTitle(title, output, config)
+    drawTitle(title, file, config)
 
 
-def getPreviewImg(config, contentFile):
-    path = os.path.dirname(contentFile)
+def getMetadataParam(metadata, name):
+    """Look up a metadata key, preferring the `params` section (matching the old flattening behavior)."""
+    if isinstance(metadata.get("params"), dict) and name in metadata["params"]:
+        return metadata["params"][name]
+    return metadata.get(name)
+
+
+def getPreviewImg(config, post, lang):
+    path = str(post.path)
     if config["source"] == "file" or config["source"] == "image":
         return os.path.join(path, config["image"])
     elif config["source"] == "overlay":
         return ""
     elif config["source"] == "post":
-        metadata = readMetadata(contentFile)
-        if "preview" in metadata:
-            #preview = os.path.join(path, metadata["preview"])
-            preview = metadata["preview"]
+        metadata = post.getMetadata(lang)
+        preview = getMetadataParam(metadata, "preview")
+        if preview is not None:
             if isinstance(preview, dict) and "image" in preview:
                 preview = preview["image"]
             cprint(f"Using {preview} as preview", 'yellow')
             if "." in preview:
                 return preview
-        if "cover" in metadata:
-            #preview = os.path.join(path, metadata["preview"])
-            preview = metadata["cover"]
+        preview = getMetadataParam(metadata, "cover")
+        if preview is not None:
             if isinstance(preview, list) and preview[0]:
                 preview = preview[0]
             cprint(f"Using {preview} as preview", 'yellow')
             return preview
-        if "resources" in metadata:
-            preview = metadata["resources"]
+        resources = metadata.get("resources")
+        if resources is not None:
+            preview = resources
             if isinstance(preview, list) and "src" in preview[0]:
                 preview = preview[0]["src"]
             cprint(f"Using {preview} as preview", 'yellow')
@@ -254,37 +302,37 @@ def getPreviewImg(config, contentFile):
 if sys.version_info[0] < 3 or sys.version_info[1] < 13:
     raise Exception("Must be using Python 3.13")
 
-config = loadConfig(open(configFile, "r"))
+try:
+    siteConfig = Config(".")
+except Exception as e:
+    cprint(f"Can't load the site config: {e}", "red")
+    exit(1)
+config = siteConfig.config.get("params", {}).get("preview")
 if config is None:
     cprint("Preview is not configured!", "red")
     exit(0)
 
-cFilePAttern = re.compile(filePattern)
-for subdir, dirs, files in os.walk(contentPath):
-    for file in files:
-        fileMatch = cFilePAttern.match(file)
-        if fileMatch:
-            cprint("Processing " + os.path.join(subdir, file), "green")
-            lang = fileMatch.group(2)
-            contentFile = os.path.join(subdir, file)
-            metadata = readMetadata(contentFile)
-            if not "title" in metadata:
-                cprint(
-                    "No title in " + subdir + "/" + file + ", setting empty string.",
-                    "red",
-                )
-                metadata["title"] = ""
-            outputFileSuffix = config["outputPrefix"]
-            if lang:
-                outputFileSuffix += lang
-            if config["format"] == "svg":
-                output = os.path.join(subdir, outputFileSuffix + ".svg")
-                drawSVG(metadata["title"], contentFile, output, config)
-            elif config["format"] == "png":
-                output = os.path.join(subdir, outputFileSuffix + ".png")
-                drawPNG(metadata["title"], output, config)
-            else:
-                cprint(
-                    "Can' process " + os.path.join(subdir, file) + ", no format set",
-                    "red",
-                )
+content = Content(siteConfig.contentDir(), config=siteConfig)
+for post in content.posts:
+    # Skip language variants sharing the same (unsuffixed) file
+    processedFiles = set()
+    for lang, contentFile in post.files.items():
+        if contentFile in processedFiles:
+            continue
+        processedFiles.add(contentFile)
+        cprint("Processing " + contentFile, "green")
+        metadata = post.getMetadata(lang)
+        if not "title" in metadata:
+            cprint("No title in " + contentFile + ", setting empty string.", "red")
+            metadata["title"] = ""
+        outputFileSuffix = config["outputPrefix"]
+        if lang:
+            outputFileSuffix += "." + lang
+        if config["format"] == "svg":
+            output = os.path.join(str(post.path), outputFileSuffix + ".svg")
+            drawSVG(metadata["title"], post, lang, output, config)
+        elif config["format"] == "png":
+            output = os.path.join(str(post.path), outputFileSuffix + ".png")
+            drawPNG(metadata["title"], output, config)
+        else:
+            cprint("Can' process " + contentFile + ", no format set", "red")

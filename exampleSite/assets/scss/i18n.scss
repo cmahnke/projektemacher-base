@@ -1,0 +1,64 @@
+/* Styles for the 'i18n strings' page (see content/i18n/index.md) */
+
+/* Compiled separately from base.scss — keep self contained */
+$code-font-family: monospace !default;
+
+.i18n-tablewrap {
+    overflow-x: auto;
+}
+
+table.i18n-table {
+    width: 100%;
+    text-align: left;
+    font-size: 1.5rem;
+
+    th {
+        vertical-align: top;
+
+        &.i18n-col-key {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+        .i18n-lang-label {
+            display: block;
+            font-weight: 700;
+            text-transform: uppercase;
+
+            .i18n-count {
+                font-weight: 400;
+                color: #666;
+                margin-left: 0.5rem;
+                font-size: smaller;
+            }
+        }
+
+        input.i18n-search {
+            width: 100%;
+            padding: 0.3rem 0.6rem;
+            font-family: inherit;
+            font-size: 1.4rem;
+            border: 1px solid #9e9e9e;
+            border-radius: 0.3rem;
+        }
+    }
+
+    .i18n-key {
+        font-family: $code-font-family;
+        white-space: nowrap;
+    }
+
+    .i18n-value {
+        word-break: break-word;
+
+        a img {
+            height: 1.2em;
+            vertical-align: middle;
+        }
+
+        &.i18n-missing {
+            color: #9e9e9e;
+            background-color: #eee;
+        }
+    }
+}

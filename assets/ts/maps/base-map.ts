@@ -60,9 +60,12 @@ export const defaultPadding: [number, number, number, number] = [50, 50, 50, 50]
 
 export function getLang(): string {
   let lang = 'en';
-  if (document.documentElement.lang !== undefined) {
-    /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-    lang = document.documentElement.lang;
+  if (document.documentElement.lang !== undefined && document.documentElement.lang !== '') {
+    try {
+      lang = new Intl.Locale(document.documentElement.lang).language;
+    } catch {
+      lang = document.documentElement.lang;
+    }
   }
   return lang;
 }
@@ -328,11 +331,7 @@ function setupMap(
   }
 
   // Languages
-  let lang: string = 'en';
-  if (document.documentElement.lang !== undefined) {
-    /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-    lang = document.documentElement.lang;
-  }
+  const lang = getLang();
   const langKey = (lang in toolTips ? lang : 'en') as Lang;
 
   const padding: [number, number, number, number] = [30, 30, 30, 30];

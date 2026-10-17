@@ -8,8 +8,15 @@ canonifyurls = true
 disablePathToLower = true
 
 [params]
-  favicon_32 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
-  favicon_16 = 'https://cmahnke.github.io/projektemacher-base/images/cm-solid.svg'
+  description = 'Demo and documentation site for the Projektemacher Base theme'
+  keywords = 'hugo, theme, IIIF, documentation'
+  copyrightYears = '2022 - 2026'
+  # Favicons, generated from the theme's 'static/images/cm.svg' via
+  # '../scripts/favicon.sh' (the same source the live projektemacher.org
+  # site uses)
+  favicon_32 = 'images/favicon-32.png'
+  favicon_16 = 'images/favicon-16.png'
+  favicon_svg = 'images/cm.svg'
 
 [params.author]
   email = 'mail@christianmahnke.de'
@@ -51,7 +58,16 @@ disablePathToLower = true
 [outputs]
   home = ["html", "iiif-collection"]
 
+[module]
+  # Expose the theme's i18n files as data for the 'i18n strings' page
+  # (see content/i18n and layouts/shortcodes/i18n-strings.html)
+  [[module.mounts]]
+    source = '../i18n'
+    target = 'data/i18n'
+
 [security]
+  # Allow HTML files in content bundles, needed by the html-body template
+  allowContent = ['^text/html$', '^text/markdown$']
   [security.http]
     mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
   # The theme's asset pipeline imports packages (howler, mermaid, ol, pdfobject,
@@ -101,10 +117,10 @@ disablePathToLower = true
   url = 'https://cmahnke.github.io/projektemacher-base/config/'
   weight = 6
 [[languages.en.menu.main]]
-  name = 'Todo'
-  url = 'https://cmahnke.github.io/projektemacher-base/todo/'
-  weight = 7
-[[languages.en.menu.main]]
   name = 'Templates'
   url = 'https://cmahnke.github.io/projektemacher-base/templates/'
   weight = 8
+[[languages.en.menu.main]]
+  name = 'i18n'
+  url = 'https://cmahnke.github.io/projektemacher-base/i18n/'
+  weight = 9

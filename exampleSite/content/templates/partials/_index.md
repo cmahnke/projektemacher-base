@@ -2,6 +2,7 @@
 title: Partials
 displayinlist: false
 metaPage: true
+toc: true
 ---
 
 # Partials
@@ -16,16 +17,7 @@ The theme ships around 90 partials in `layouts/partials/`. They fall into three 
 
 Partials are referenced by their path below `partials/`, e.g. `{{ partial "header.html" . }}`. Some partials are **dispatched dynamically** by name — those double as a plug-in mechanism, see [plug-in dispatch](plugin-dispatch/).
 
-## Pages in this section
-
-- [Extension points](extension-points/) — partials a site provides itself
-- [Structural partials](structural/) — head, header, footer, menu, pagination, list and page rendering
-- [IIIF partials](iiif-partials/) — image and presentation viewers, manifest building blocks
-- [Print partials](print-partials/) — building blocks for print editions
-- [Media type partials](media-types/) — description blocks for books, postcards and works
-- [Metadata partials](metadata-partials/) — schema.org, CodeMeta and Linked Art
-- [Plug-in dispatch](plugin-dispatch/) — name based variants (tag cloud, GeoJSON popups)
-- [Helper partials](helpers.md) — functions, data lookups and services
+The pages of this section are listed in the table of contents.
 
 ## Site parameters used by partials
 

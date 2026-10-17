@@ -1,0 +1,12 @@
+<article class="content-container">
+    <div class="date" style="display: none;">
+        <time class="post-date" datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+            {{- .Date | time.Format ":date_full" -}}
+        </time>
+    </div>
+    <header>
+        <h1 class="header">{{ .Title }}</h1>
+    </header>
+    {{ .Content }}
+    {{- partial "meta/tags.html" . -}}
+</article>

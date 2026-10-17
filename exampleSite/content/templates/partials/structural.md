@@ -70,6 +70,22 @@ Renders previous/next pagination links with i18n labels.
 
 Renders a single page: title, content and — unless `metaPage: true` — the date and [tags](#tags) footer. The `type` front matter parameter becomes an additional CSS class.
 
+## `toc.html` {#toc}
+
+Renders a table of contents for a section page — a list of the section's child pages. The example site places it as a sticky sidebar next to the section content (via its `list.html` override), but it can be called from any layout:
+
+```go-html-template
+{{ partial "toc.html" (dict "entries" . "maxLevels" 2) }}
+```
+
+| Parameter | Purpose |
+|---|---|
+| `entries` | A section page — its children are rendered; a page slice is rendered as a flat list without grouping |
+| `maxLevels` | Number of levels to render, counting the top level (default `2`; `3` also renders the children of nested sections, child sections are always rendered without their children once the level is exhausted) |
+| `title` | Heading above the list (defaults to the `inThisSection` i18n string) |
+
+Pages with the front matter parameter `tocExclude: true` are skipped. Pages stored directly in the section root and child sections are top level entries; pages in subdirectories without their own `_index.md` are grouped under the directory name — e.g. the `shortcodes/html/` pages become an `html` group on the `/shortcodes/` section. A subdirectory holding only one page is promoted to a top level entry. The partial emits an `<aside class="section-toc">` with a `<nav class="toc">` inside; it renders nothing when no entries remain after filtering. A site can ship its own version through `layouts/partials/toc.html`.
+
 ## `html/html-body.html` {#html-body}
 
 Renders the body of a standalone HTML page, used by the [`html-body` template](../single-list/#html-body) and the [`html/include` shortcode](/shortcodes/html/include/).

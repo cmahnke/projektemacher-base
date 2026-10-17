@@ -1,0 +1,13 @@
+<div class="content home">
+  <section class="container page">
+    <article class="content-container">
+      <header>
+        <h1 class="header">{{ .Title | default .Site.Title }}</h1>
+      </header>
+      {{ .Content }}
+    </article>
+  </section>
+  <section class="container list">
+    {{- partial "list.html" . -}}
+  </section>
+</div>

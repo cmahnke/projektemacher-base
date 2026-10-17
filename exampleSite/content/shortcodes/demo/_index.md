@@ -2,6 +2,7 @@
 title: Demos
 displayinlist: false
 metaPage: true
+toc: true
 ---
 
 # Shortcode demos

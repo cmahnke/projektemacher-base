@@ -1,0 +1,6 @@
+{{- if not .IsHome -}}
+  <footer class="footer">
+      {{- .Scratch.Set "footer" (printf `%s <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div>` (i18n "powered_by")) -}}
+      {{- partialCached "footer-content.html" . -}}
+  </footer>
+{{- end -}}

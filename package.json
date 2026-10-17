@@ -45,6 +45,7 @@
     "@gltf-transform/functions": "^4.5.1",
     "@types/howler": "^2.2.13",
     "@types/js-cookie": "^3.0.6",
+    "@types/pdfobject": "^2.2.5",
     "cesium": "1.144.0",
     "cors": "^2.8.6",
     "doiuse": "^6.0.6",

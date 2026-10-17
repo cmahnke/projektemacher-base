@@ -125,6 +125,12 @@ other = "Hauptnavigation"
 [footerNavigation]
 other = "Fußzeilen-Navigation"
 
+[openNavigation]
+other = "Hauptnavigation öffnen"
+
+[closeNavigation]
+other = "Hauptnavigation schließen"
+
 [copyToClipboard]
 other = "Code in die Zwischenablage kopieren"
 
