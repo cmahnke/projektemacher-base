@@ -596,3 +596,136 @@ for post in content.posts:                  # includes section pages
 2. `preview.py` produces the same `ogPreview*.svg` output as before (titles,
    font size auto shrink, `textLength` attributes).
 3. `post-calendar.py` emits a valid ICS calendar (`BEGIN:VCALENDAR`).
+
+# Housekeeping
+
+The changes in this section are **optional**: no consuming site has to apply
+them to keep building against the current theme release. They bundle work that
+keeps a site aligned with the theme's direction — finishing half-done
+migrations, dropping dead compatibility code and adopting the theme's tooling.
+Pick items as time allows; each one stands on its own.
+
+## Finish the JS → TypeScript migration
+
+The migration guide above covers the shortcodes that moved to `assets/ts/`.
+A few plain-JavaScript sources remain without a TypeScript counterpart:
+
+| Remaining JS source | Notes |
+| --- | --- |
+| `assets/js/fullscreen.js` | Small helper, no dependencies |
+| `assets/js/search.js` | Pagefind UI glue |
+| `assets/js/timeline.js` | Thin vis-timeline wrapper |
+| `assets/js/iiif/mirador.js` | Mirador viewer bootstrap |
+| `assets/js/maps/projektemacher-map.js` | Vector tile map bootstrap |
+
+Port them to `assets/ts/` and update every reference (page front matter
+`js:` entries, `[params.iiif]` viewer settings). The rules from the existing
+guide apply unchanged: bundles keep their `.js` targetPath via the
+`replaceRE` remap in `script.html`/`iiif-js.html`, and the deprecated
+`assets/js` shims can be deleted once nothing references them anymore.
+
+Verify with `npm run typecheck` (strict) and `npm run lint`.
+
+## Add accessibility checks
+
+The theme ships no automated accessibility testing yet. A lightweight setup
+for consuming sites: run [axe-core](https://github.com/dequelabs/axe-core)
+through the already-present `puppeteer` devDependency against the built
+pages. Sketch (not part of the theme — copy and adapt):
+
+```js
+import puppeteer from 'puppeteer';
+import axe from 'axe-core'; // npm i -D axe-core
+
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('http://localhost:1313/some-page/', {waitUntil: 'networkidle0'});
+await page.addScriptTag({content: axe.source});
+const violations = await page.evaluate(() =>
+  axe.run().then((r) => r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)));
+console.log(violations.join('\n'));
+```
+
+Iterate over the built HTML files (or a representative subset) and wire the
+script as an optional CI job — non-blocking at first, turning it into a
+build breaker once the findings are triaged.
+
+## Remove downward compatibility (Hugo < 0.165.0)
+
+The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
+hard floor. Consuming sites should:
+
+1. Pin Hugo ≥ 0.165.0 in CI and deployment scripts (the theme's own
+   workflows use `hugo-setup.yml` for this).
+2. Remove fallbacks and version guards kept for older Hugo releases.
+
+Known remaining compatibility code: three partials keep a single top-level
+`return` statement, because Hugo < 0.166 supports only one value-return per
+partial — `layouts/partials/iiif/3/structures.html`,
+`layouts/partials/functions/iiif/coerce-language-map.html` and
+`layouts/partials/functions/iiif/structure-span.html`. Once a site
+guarantees Hugo ≥ 0.166, the natural multi-`return` code can be restored.
+
+## Deduplicate shortcodes and templates against the theme
+
+Sites that started as forks or copied theme files into their own `layouts/`
+often carry stale overrides: identical copies that shadow the theme's
+version and silently miss every upstream fix. Find them from the site root:
+
+```bash
+# Site-local layout files that also exist in the theme
+find layouts -type f | while read -r f; do
+  theme="themes/projektemacher-base/$f"
+  if [ -f "$theme" ]; then
+    if diff -q "$f" "$theme" > /dev/null; then
+      echo "IDENTICAL (delete): $f"
+    else
+      echo "DRIFTED (review):   $f"
+    fi
+  fi
+done
+```
+
+Delete the identical copies. For drifted ones, check whether the local
+change is still needed — if not, delete the override so the theme's version
+applies again; if yes, re-sync everything else from the theme version to
+minimize the diff.
+
+## Adopt the init scripts for generated assets
+
+The theme generates more and more assets at build time instead of tracking
+them in the repository — fonts were the first (see the fonts migration
+guide above), meanwhile the pattern covers:
+
+| Script | Generates |
+| --- | --- |
+| `scripts/init/get-fonts.sh` | Fonts in `static/`, CSS/SCSS in `assets/` |
+| `scripts/init/get-map-styles.sh` | `static/map-styles/` VersaTiles sprites |
+| `scripts/init/get-flags.sh` | Flag images for language switches |
+| `scripts/init/i18n.sh` | Merged `i18n/<lang>.toml` files |
+| `scripts/init/package.json.sh` | Merged `package.json` |
+
+Consuming sites should run the full init set (or at least the scripts for
+assets they use) before `hugo` in CI, and delete vendored copies of
+generated assets instead of pinning them — pinned copies go stale and mask
+upstream updates, exactly like the duplicate templates above.
+
+## Extend lint coverage
+
+The lint setup has known blind spots worth closing (all optional, done one
+at a time):
+
+- **SCSS is linted non-recursively** — `lint-scss` runs
+  `stylelint 'assets/scss/*'`, so the subdirectories (`scss/shortcodes/`,
+  `scss/iiif/`, …) are never linted. Change the glob to
+  `'assets/scss/**/*.scss'` — expect new findings in files that were never
+  linted, the same effect the `lint-js` coverage change documented in the
+  TypeScript guide.
+- **Markdown is not linted at all** — `markdownlint-cli` is already a
+  devDependency, but no script uses it. Add `lint-md` over the content
+  directory (with a `.markdownlint.json` config) to catch broken heading
+  hierarchies and inconsistent lists in docs and posts.
+- **Generated CSS is not checked** — the theme lints its built CSS
+  (`npm run postbuild-lint`, stylelint against `docs/css/*.css`).
+  Consuming sites can adopt the same post-build check to catch regressions
+  that only appear in the compiled output.
