@@ -37,6 +37,9 @@ $nav-color: #293133 !default;
 @import "coder/pagination";
 @import "coder/footer";
 
+/* Section table of contents sidebar (theme's partials/toc.html) */
+@import "section-toc";
+
 /* Burger menu icon for the theme's menu.html markup */
 $bars: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='#{encodecolor($bg-color)}' d='M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z'/%3E%3C/svg%3E";
 

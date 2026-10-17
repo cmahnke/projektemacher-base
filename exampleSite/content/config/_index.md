@@ -1,6 +1,7 @@
 ---
 title: Config
 description: "Configuration of sites built on this theme: site parameters and menus"
+toc: true
 ---
 
 This section documents how to configure a site built on the Projektemacher Base theme:

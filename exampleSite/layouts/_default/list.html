@@ -10,8 +10,15 @@
   {{- if .IsHome -}}
     {{ partial "home.html" . }}
   {{- else -}}
+    {{- $toc := "" -}}
+    {{- if and .IsSection .Params.toc -}}
+      {{- $toc = partial "toc.html" (dict "entries" . "maxLevels" 2) -}}
+    {{- end -}}
     <div class="content list">
-      <section class="container list">
+      <section class="container list{{ if $toc }} with-toc{{ end }}">
+        {{- with $toc -}}
+        {{ . }}
+        {{- end -}}
         <article>
           <header>
             <h1 class="title header">

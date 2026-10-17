@@ -793,6 +793,44 @@ at a time):
   Consuming sites can adopt the same post-build check to catch regressions
   that only appear in the compiled output.
 
+## Remove legacy browser support (pre-2024 browsers)
+
+Browsers released before 2024 are history — sites can drop the accumulated
+hacks for them from their own assets. The theme's own SCSS ships no such
+code (no vendor prefixes, no `@supports` fallbacks), so this applies to site
+assets and to copied theme overrides — the deduplication guide above covers
+the latter.
+
+Find the candidates from the site root:
+
+```bash
+# 1. CSS hacks and prefixes in site SCSS/CSS
+grep -rnE '\-(ms|webkit|moz|o)-|@supports|progid:|expression\(|@-moz-document|fill-available' assets/ layouts/
+
+# 2. Browser detection in scripts, shortcodes and layouts
+grep -rnE 'userAgent|documentMode|Trident|detect-browser' assets/ layouts/
+grep -rn 'browser-banner\|browser-hide-selector' content/ layouts/
+```
+
+Remove:
+
+* vendor prefixes and fallback rules for engines that no longer need them —
+  every removal must be justified by the new browser floor, not done blindly
+* `@supports` guards that only paper over pre-2024 browsers (guards
+  enabling *new* features stay)
+* UA sniffing blocks and IE guards (`documentMode`, conditional comments)
+* `browser-banner` / `browser-hide-selector` calls configured for browsers
+  that are gone — both shortcodes match browsers by name via
+  `detect-browser` (see `assets/ts/browser-banner.ts`)
+
+Tighten the browser floor itself while at it: the theme ships a
+`browserslist` file (`> 0.5%`, `last 2 versions`, `Firefox ESR`, `not dead`)
+that already prunes dead browsers — sites can narrow it further (e.g. add
+`since 2024`), which also shrinks the output of any prefixing tool.
+
+Verify: `hugo` builds green, the affected pages render unchanged in current
+Chrome, Firefox and Safari, and `npm run lint` passes.
+
 # Upgrading pages that load styles through `partials/head.html`
 
 `layouts/partials/head.html` no longer compiles and links `scss/base.scss`
