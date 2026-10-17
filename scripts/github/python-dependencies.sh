@@ -19,13 +19,13 @@ echo "Installing '$PACKAGE_DEPENDENCIES' from distro repository"
 sudo apt-get update
 sudo apt-get install --fix-missing $PACKAGE_DEPENDENCIES
 
-CTX_PATH="$(dirname $(realpath $0))"
-THEME_PATH=$(realpath --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $CTX_PATH/../..)
+CTX_PATH="$(dirname "$(realpath "$0")")"
+THEME_PATH=$(realpath --relative-to="$(cd "$CTX_PATH/../../../.."; echo $PWD)" "$CTX_PATH/../..")
 
-if [ -d $THEME_PATH ] ; then
-    SEARCH_PATH=$THEME_PATH
+if [ -d "$THEME_PATH" ] ; then
+    SEARCH_PATH="$THEME_PATH"
 else
-    SEARCH_PATH=$CTX_PATH
+    SEARCH_PATH="$CTX_PATH"
 fi
 
 if [ "$( . /etc/lsb-release; echo $DISTRIB_RELEASE)" = "24.04" ] ; then
@@ -34,11 +34,9 @@ fi
 
 python -m pip install --upgrade pip
 set -e
-# TODO: this fails if path contains a space (' ') character
 echo "Searching for requirements.txt in '$SEARCH_PATH'"
-for REQUIREMENTS in `find $SEARCH_PATH/../../ -iname "requirements.txt" -not -path "*/Source Files/*"`
-do
-    PYTHON_DEPENDENCIES=`cat "$REQUIREMENTS" | tr '\n' ' '`
+while IFS= read -r -d '' REQUIREMENTS; do
+    PYTHON_DEPENDENCIES=$(tr '\n' ' ' < "$REQUIREMENTS")
     echo "Installing Python modules '$PYTHON_DEPENDENCIES' from '$REQUIREMENTS'"
     pip install --resume-retries 5 -r "$REQUIREMENTS"
-done
+done < <(find "$SEARCH_PATH/../../" -iname "requirements.txt" -not -path "*/Source Files/*" -print0)
