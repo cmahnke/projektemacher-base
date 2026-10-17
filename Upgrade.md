@@ -683,6 +683,15 @@ Iterate over the built HTML files (or a representative subset) and wire the
 script as an optional CI job — non-blocking at first, turning it into a
 build breaker once the findings are triaged.
 
+### Known false positive: "Zoom blocked"
+
+The theme deliberately blocks pinch zoom on mobile: the viewport partial
+(`layouts/partials/html/head/viewport.html`) emits `user-scalable=no` when
+`[params] disableScale = true` is set. Accessibility tools report this as
+the `meta-viewport` violation ("Zoom blocked"). This is **intended
+behaviour** — never "fix" it. Exclude the `meta-viewport` rule from the
+scan instead.
+
 ## Remove downward compatibility (Hugo < 0.165.0)
 
 The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
