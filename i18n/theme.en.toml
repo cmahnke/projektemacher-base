@@ -125,6 +125,12 @@ other = "Main navigation"
 [footerNavigation]
 other = "Footer navigation"
 
+[openNavigation]
+other = "Open main navigation"
+
+[closeNavigation]
+other = "Close main navigation"
+
 [copyToClipboard]
 other = "Copy code to clipboard"
 

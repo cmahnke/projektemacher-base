@@ -864,3 +864,69 @@ bandwidth and hiding style regressions.
 Build the site and confirm every page has exactly one stylesheet `<link>`
 per merged CSS bundle, and that shortcode styles still load (check pages
 using shortcodes with dedicated SCSS/CSS includes).
+
+# Accessible navigation menu (progressively enhanced checkbox hack)
+
+The theme's menu previously used a pure CSS checkbox hack
+(`input#menu-toggle` + `label.menu-button`). The `<label>` toggle was not
+keyboard operable (WCAG 2.1.1), exposed no `aria-expanded`/`aria-controls`
+(WCAG 4.1.2), and the `:checked + label + ul` sibling selector broke
+silently when consumers restructured the markup. The menu is now
+progressively enhanced and self-installing:
+
+- `layouts/partials/menu.html` keeps the checkbox hack as the no-JS
+  fallback and additionally loads a small script (`assets/ts/menu.ts`,
+  built and emitted by the partial itself — no `main.js` wiring needed).
+- Once the script runs, the `<label>` is replaced by a real `<button>`
+  with `aria-expanded`/`aria-controls`, the list gets `inert` while
+  closed, Escape closes the menu and returns focus to the toggle, and
+  the menu closes on outside clicks or when focus leaves it.
+- `assets/scss/menu.scss` keys the open state on `data-menu-open` /
+  `data-menu-js` attributes instead of the sibling chain and adds
+  `:focus-visible` styles plus `prefers-reduced-motion` handling.
+- New i18n keys `openNavigation` and `closeNavigation` label the toggle;
+  sites with custom i18n files can add their own translations.
+
+## 1. Consumer migration
+
+- Sites using the theme's `menu.html` unchanged need no action — the
+  enhancement ships with the partial. With JavaScript disabled or the
+  script failing, the untouched checkbox hack remains fully functional
+  (the JS-mode marker is only set after successful enhancement).
+- Sites that copied `menu.html` into their own layouts keep the old
+  checkbox-hack behaviour until they adopt the theme's partial.
+- Sites overriding `assets/scss/menu.scss` or the `.menu-button` styles:
+  when the enhancement is active the toggle is a `<button class=
+  "menu-button">` instead of a `<label>` (same classes and icon). Update
+  selectors targeting `label.menu-button` specifically, and note that
+  `#menu-toggle:checked + label + ul` no longer matches once the script
+  has run — key custom open states off `.top-menu[data-menu-open="true"]`
+  instead.
+- Sites with their own toggle bound to `#menu-toggle`: the hidden
+  checkbox stays in the DOM and the script syncs its `change` events
+  with the button state.
+- The script tag is emitted per page by `menu.html`; sites that inline
+  their whole `<head>`/header without the theme partial get no
+  enhancement and keep the (accessible enough) no-JS fallback.
+
+## 2. Behaviour changes
+
+- With JavaScript enabled the toggle is announced as a button
+  ("Open main navigation"/"Close main navigation", `aria-expanded`).
+- Links in the closed mobile menu are no longer tabbable (`inert`),
+  including when consumer CSS overrides the hiding rules.
+- Escape, outside clicks and focus leaving the open mobile menu close it
+  and return focus to the toggle.
+
+## 3. Verification
+
+- Keyboard only: tab to the burger button, toggle with Enter/Space,
+  close with Escape (focus returns to the button), tab through the
+  links while open.
+- Screen reader: the toggle announces name, role and
+  expanded/collapsed state; list links are unreachable while collapsed.
+- Disable JavaScript and confirm the menu still opens/closes via the
+  checkbox hack (also test with "Emulate focused page"/scripting off in
+  devtools).
+- Confirm `prefers-reduced-motion: reduce` disables the open/close
+  animation.
