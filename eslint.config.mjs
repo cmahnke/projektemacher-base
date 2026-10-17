@@ -34,7 +34,7 @@ export default tseslint.config(
   // fire on intentionally preserved legacy patterns.
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.js"],
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     rules: {
         "@typescript-eslint/no-unused-vars": 1,
         "@typescript-eslint/no-explicit-any": 1,

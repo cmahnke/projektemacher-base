@@ -8,3 +8,7 @@
   {{- $marker = .Get "marker" -}}
 {{- end -}}
 {{- partial "maps/osm.html" (dict "context" . "geojson" $geojson "cluster" $cluster "marker" $marker) -}}
+
+{{- define "_partials/shortcodes/maps/osm-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/maps/osm-map.ts") "scss" (slice "scss/map.scss" "scss/openlayers.scss")) | jsonify -}}
+{{- end -}}

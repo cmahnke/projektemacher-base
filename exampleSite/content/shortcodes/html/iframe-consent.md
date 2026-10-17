@@ -34,4 +34,4 @@ Wraps the embed of a [public Mastodon post](https://openbiblio.social/@cmahnke/1
 
 ## Notes
 
-The consent JavaScript and styles are loaded globally (`assets/ts/iframe-consent.ts`), not via shortcode metadata.
+The consent JavaScript (`ts/iframe-consent.ts`) and styles (`scss/iframe-consent.scss`) are loaded via the shortcode metadata.

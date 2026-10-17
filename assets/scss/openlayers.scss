@@ -1,0 +1,6 @@
+/* OpenLayers base styles, resolved via the 'node_modules/ol' SASS include path.
+   The file must not be named 'ol.scss' and the import must not end in '.css':
+   'ol.scss' would make the import resolve to itself, and a '.css' suffix makes
+   Dart Sass keep the statement as a plain CSS @import instead of inlining. */
+
+@import "ol";
