@@ -74,10 +74,6 @@ nav.navigation {
             display: contents;
         }
 
-        .navigation-title img {
-            display: none;
-        }
-
         .navigation-title,
         .navigation-link {
             text-decoration: none;
@@ -138,122 +134,10 @@ main.main {
     }
 }
 
-.home main.main {
-    min-height: 100vh;
-}
-
-/* Home: split background behind the two-tone avatar */
-.content {
-    &.home,
-    &.error404 {
-        background: linear-gradient(90deg, #fff 50%, #293133 50%);
-    }
-
-    &.home {
-        flex-direction: column;
-        margin-top: 0;
-
-        .centered {
-            flex: 1;
-        }
-
-        .home-intro {
-            width: 100%;
-            text-align: center;
-            padding-bottom: 2em;
-
-            h1 {
-                font-size: 2.4rem;
-            }
-
-            p {
-                text-align: center;
-                margin: 1em auto;
-                max-width: 60rem;
-            }
-        }
-    }
-}
-
-.about-container,
-.error404-container {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    width: 50em;
-    position: relative;
-
-    .about {
-        width: 100%;
-
-        .avatar img {
-            width: 24rem;
-        }
-
-        @media only screen and (max-width: 768px) {
-            .avatar img {
-                width: 18rem;
-            }
-        }
-    }
-
-    .about-foreground {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
-
-        h1,
-        h2,
-        p {
-            color: white;
-        }
-
-        h1 {
-            margin-top: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        h2 {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 2.4rem;
-        }
-
-        .avatar {
-            filter: invert(100%);
-
-            @media only screen and (max-width: 768px) {
-                img {
-                    width: 18rem;
-                }
-            }
-        }
-
-        @media only screen and (max-width: 768px) {
-            h2 {
-                font-size: 2rem;
-            }
-        }
-    }
-
-    .avatar img {
-        width: 24rem;
-    }
-
-    .avatar a {
-        cursor: default;
-    }
-}
-
-@media only screen and (max-width: 640px) {
-    .about-container {
-        width: 40em;
-    }
+/* Home: intro content plus the theme's list, same chrome as every page */
+.content.home {
+    flex-direction: column;
+    margin-top: 0;
 }
 
 /* Lists: the theme's list.html wraps all entries rendered by the site's
@@ -280,10 +164,11 @@ main.main {
 
             .date {
                 width: 27rem;
+                flex-shrink: 0;
             }
 
             .link {
-                width: calc(100% - 27rem);
+                flex: 1;
             }
         }
 
@@ -295,6 +180,10 @@ main.main {
 
             .post-spacer {
                 color: transparent;
+            }
+
+            &.no-date .description {
+                margin-left: 0;
             }
         }
 

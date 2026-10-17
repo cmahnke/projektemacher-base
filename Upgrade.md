@@ -105,8 +105,8 @@ Mapping table for all legacy keys:
 
 The default presentation viewer (`ts/iiif/tify.ts`, TIFY via
 `[params.iiif] presentationViewer`) supports API 3. No action required unless
-the site pins an API 2-only viewer — then switch to TIFY or the bundled
-Mirador (`js/iiif/mirador.js`, see `exampleSite/content/posts/mirador/`).
+the site pins an API 2-only viewer — then switch to TIFY. The bundled Mirador
+integration is deprecated (see the deprecation guide below).
 
 ## 4. Verification
 
@@ -597,6 +597,39 @@ for post in content.posts:                  # includes section pages
    font size auto shrink, `textLength` attributes).
 3. `post-calendar.py` emits a valid ICS calendar (`BEGIN:VCALENDAR`).
 
+# Deprecation of the Mirador viewer
+
+The Mirador integration is deprecated — the `iiif/presentation` shortcode no
+longer uses it and renders the TIFY based viewer (`ts/iiif/tify.ts`) instead.
+Deprecated parts:
+
+| File | Role |
+| --- | --- |
+| `layouts/partials/iiif/presentation/mirador.html` | Viewer partial — emits a `DEPRECATED` build warning when called |
+| `assets/js/iiif/mirador.js` | `window.addMirador` bootstrap for the partial |
+| `assets/scss/mirador.scss` | Viewer styles |
+
+The files stay in place for now (with the warning) and will be removed in a
+future release.
+
+## 1. Consumer migration
+
+- Replace direct `partial "iiif/presentation/mirador.html"` calls with the
+  [`iiif/presentation` shortcode](exampleSite/content/shortcodes/iiif/presentation.md)
+  (TIFY based), or adopt Mirador site locally: copy the partial and
+  `assets/js/iiif/mirador.js` / `assets/scss/mirador.scss` into the site's
+  own `layouts/` / `assets/` and maintain them there (Mirador is bundled by
+  the site itself, see `exampleSite/content/posts/mirador/`).
+- Update `[params.iiif] presentationViewer` if it points to
+  `js/iiif/mirador.js` — switch to `ts/iiif/tify.ts` (or a site local
+  viewer).
+
+## 2. Verification
+
+1. `hugo` — the build finishes and no longer reports
+   `[partials/iiif/presentation/mirador.html] DEPRECATED`.
+2. Presentation pages render with the TIFY viewer.
+
 # Housekeeping
 
 The changes in this section are **optional**: no consuming site has to apply
@@ -615,7 +648,7 @@ A few plain-JavaScript sources remain without a TypeScript counterpart:
 | `assets/js/fullscreen.js` | Small helper, no dependencies |
 | `assets/js/search.js` | Pagefind UI glue |
 | `assets/js/timeline.js` | Thin vis-timeline wrapper |
-| `assets/js/iiif/mirador.js` | Mirador viewer bootstrap |
+| `assets/js/iiif/mirador.js` | Mirador viewer bootstrap (deprecated, see the Mirador guide above) |
 | `assets/js/maps/projektemacher-map.js` | Vector tile map bootstrap |
 
 Port them to `assets/ts/` and update every reference (page front matter

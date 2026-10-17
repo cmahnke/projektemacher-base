@@ -55,6 +55,12 @@ ERROR error building site: "art-x-3d.de": language: tag is not well-formed
 
 That's Hugo's i18n loader parsing the fragment filename `3d.de.toml` as a BCP47 language tag (Go maps the unknown base `3d` to the private-use tag `art-x-3d`). Fix: make sure the fragments are deleted before building — if `i18n/de.toml`/`i18n/en.toml` already exist the merge script skips and leaves them, so either delete the `*.<lang>.toml` fragments manually or remove the merged files and re-run `./scripts/init/i18n.sh i18n`.
 
+**Translation completeness:** CI runs `python ./scripts/check_i18n.py i18n` (the `test_i18n` job) which fails when any language is missing keys that another language defines. The check works on merged files and unmerged fragments alike, so it can also be run locally:
+
+```
+python ./scripts/check_i18n.py i18n
+```
+
 To enable the merging of node dependencies including the `script` section you may want to add the following snippet to your setup
 
 ```

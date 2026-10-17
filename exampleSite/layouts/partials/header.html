@@ -1,13 +1,6 @@
 <nav class="navigation">
   <section class="container">
-    <a class="navigation-title" href="{{ .Site.BaseURL | relLangURL }}">
-      {{- if .IsHome -}}
-        {{ .Site.Title }}
-      {{- else -}}
-        <img alt="Logo" class="header-logo" src="{{ "images/laborant.svg" | absURL }}" />
-        {{ .Site.Title }}
-      {{- end -}}
-    </a>
+    <a class="navigation-title" href="{{ .Site.BaseURL | relLangURL }}">{{ .Site.Title }}</a>
     {{- partial "menu.html" . -}}
   </section>
 </nav>

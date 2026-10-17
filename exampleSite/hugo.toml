@@ -9,17 +9,14 @@ disablePathToLower = true
 
 [params]
   description = 'Demo and documentation site for the Projektemacher Base theme'
-  # Header (nav) and home page (avatar) images, see
-  # layouts/partials/header.html, home.html and about.html
-  headerimage = 'images/laborant.svg'
-  homeTitle = 'Projektemacher Base'
-  info = 'Blogfabrik'
-  logoUrl1 = 'images/laborant.svg'
-  logoUrl2 = 'images/laborant.svg'
-  colorscheme = 'light'
+  keywords = 'hugo, theme, IIIF, documentation'
   copyrightYears = '2022 - 2026'
-  favicon_32 = 'images/cm-solid.svg'
-  favicon_16 = 'images/cm-solid.svg'
+  # Favicons, generated from the theme's 'static/images/cm.svg' via
+  # '../scripts/favicon.sh' (the same source the live projektemacher.org
+  # site uses)
+  favicon_32 = 'images/favicon-32.png'
+  favicon_16 = 'images/favicon-16.png'
+  favicon_svg = 'images/cm.svg'
 
 [params.author]
   email = 'mail@christianmahnke.de'
@@ -119,10 +116,6 @@ disablePathToLower = true
   name = 'Config'
   url = 'https://cmahnke.github.io/projektemacher-base/config/'
   weight = 6
-[[languages.en.menu.main]]
-  name = 'Todo'
-  url = 'https://cmahnke.github.io/projektemacher-base/todo/'
-  weight = 7
 [[languages.en.menu.main]]
   name = 'Templates'
   url = 'https://cmahnke.github.io/projektemacher-base/templates/'
