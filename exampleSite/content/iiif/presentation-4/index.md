@@ -48,5 +48,5 @@ Any value other than `3` or `4` aborts the build.
 
 - The context `http://iiif.io/api/presentation/4/context.json` is served from the draft — expect changes until 4.0.0 is stable
 - Collections are still generated as API 3, the version switch only affects manifests
-- Viewers (TIFY, Mirador) may not render API 4 manifests yet — verify with each release
+- Viewers (TIFY) may not render API 4 manifests yet — verify with each release
 - Since the `iiif-manifest` output format is shared, P3 and P4 manifests can't be emitted for the same page simultaneously

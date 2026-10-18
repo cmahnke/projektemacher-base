@@ -35,7 +35,7 @@ The pages of this section are listed in the table of contents.
 | `iiif` | IIIF partials | IIIF configuration, e.g. `presentationVersion` |
 | `productionIIIFURLPrefix` | [IIIF viewers](iiif-partials/) | URL prefix for manifests in production |
 | `pdfDownload` | [IIIF presentation](iiif-partials/) | PDF download link |
-| `minimalUI`, `disableScale` | [IIIF viewers](iiif-partials/) | Viewer behavior |
+| `minimalUI` | [IIIF viewers](iiif-partials/) | Viewer behavior |
 | `disableOpenGraph` | html/head/og-meta.html | Disable OpenGraph tags |
 | `schemaPerson`, `publisher`, `orcid`, `author`, `authors` | [metadata partials](metadata-partials/) | Author and publisher data |
 | `linkedart` | [Linked Art](metadata-partials/) | Linked Art configuration |

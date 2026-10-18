@@ -38,7 +38,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('i', {
     alias: 'include-meta-viewport',
-    description: 'Do not exclude the meta-viewport rule (documented false positive for the disableScale feature)',
+    description: 'Do not exclude the meta-viewport rule (needed for older builds that emitted user-scalable=no)',
     type: 'boolean',
     default: false
   })

@@ -51,9 +51,13 @@ All IIIF viewer settings live in `[params.iiif]` — see the [IIIF configuration
 | `iiif.presentationViewer` | `ts/iiif/tify.ts` | Presentation API viewer script (TIFY) |
 | `iiif.imageViewer` | — | Image API viewer script (OpenLayers based) |
 | `minimalUI` | `false` | Minimal viewer UI |
-| `disableScale` | `false` | Disable viewer scaling |
 | `pdfDownload` | `false` | Add a PDF download link to the presentation viewer |
 | `productionIIIFURLPrefix` | — | URL prefix for IIIF images in production builds |
+
+The former `disableScale` parameter is deprecated and ignored: pinch
+zoom-in must stay allowed for accessibility (WCAG 2.5.5), only zoom-out
+is blocked via the viewport's `minimum-scale=1.0`. Setting it prints a
+build warning.
 
 ## Previews
 

@@ -16,7 +16,7 @@ in the [Upgrade.md](Upgrade.md) guide.
 | Legacy `iiifManifest` front matter key | silent fallback in `existing-manifest.html` | 🔴 urgent |
 | Legacy font formats (`.eot`, `.svg`, `.ttf` fallbacks) | still declared in the font SCSS | 🔴 urgent |
 | Legacy font file name copies | recreated by `scripts/fonts.sh` for old `@font-face` rules | 🔴 urgent |
-| Stale Mirador references | dangling links and outdated docs | 🔴 urgent |
+| Stale Mirador references | fixed — dangling links and docs removed | done |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` | medium |
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
@@ -87,15 +87,12 @@ will be removed.
 
 The Mirador based presentation viewer has been removed; TIFY is the
 only presentation viewer (see "Deprecation of the Mirador viewer" in
-[Upgrade.md](Upgrade.md)). Remaining cleanup (🔴 urgent):
-
-- `exampleSite/content/shortcodes/iiif/presentation.md` and
-  `exampleSite/content/iiif/_index.md` still link to `/posts/mirador/`,
-  a post that no longer exists (dangling links)
-- `exampleSite/content/templates/partials/iiif-partials.md` still
-  documents the removed `iiif/presentation/mirador.html` partial
-- `layouts/shortcodes/iiif/presentation.html` still carries a comment
-  about the deprecated Mirador based viewer partial
+[Upgrade.md](Upgrade.md)). The former cleanup items (the dangling
+`/posts/mirador/` links in `exampleSite/content/shortcodes/iiif/presentation.md`
+and `exampleSite/content/iiif/_index.md`, the removed partial's row in
+`exampleSite/content/templates/partials/iiif-partials.md` and the
+shortcode comment in `layouts/shortcodes/iiif/presentation.html`) have
+been fixed.
 
 ## Fonts in `static/fonts/`
 

@@ -937,14 +937,18 @@ iterate over the pages from the site's `test-urls.json` (see "Run the JS
 runtime check against the example site" above) — keeping that list current
 for the runtime check also keeps the accessibility scan's page set current.
 
-### Known false positive: "Zoom blocked"
+### Viewport zoom behaviour (`disableScale` deprecated)
 
-The theme deliberately blocks pinch zoom on mobile: the viewport partial
-(`layouts/partials/html/head/viewport.html`) emits `user-scalable=no` when
-`[params] disableScale = true` is set. Accessibility tools report this as
-the `meta-viewport` violation ("Zoom blocked"). This is **intended
-behaviour** — never "fix" it. Exclude the `meta-viewport` rule from the
-scan instead.
+The viewport partial (`layouts/partials/html/head/viewport.html`) no
+longer emits `user-scalable=no`: the `[params] disableScale` option is
+deprecated and ignored (the build prints a warning when it is set) —
+pinch zoom-in must stay allowed for accessibility (WCAG 2.5.5 / Lighthouse
+`meta-viewport`). Only zoom-out is blocked via `minimum-scale=1.0`. Pages
+using the theme's partial therefore no longer trigger the `meta-viewport`
+violation ("Zoom blocked"); sites with a copied viewport tag should adopt
+the theme's version and can drop their exclusions of the rule. The a11y
+script still excludes `meta-viewport` by default (opt back in with
+`--include-meta-viewport`), so scans of older builds remain usable.
 
 ## Remove downward compatibility (Hugo < 0.165.0)
 
@@ -1546,13 +1550,14 @@ imports and `package.json`) is:
 | Pagefind | Search |
 | A-Frame | 3D models (loaded from CDN) |
 | @projektemacher/lucienne | Generative art (`lucienne` shortcode) |
-| Bootstrap (JS) | Tabs in the horizontal timeline only |
+| three.js | 3D models (`model` / `hdr-model` shortcodes) |
 
-Known stale entries to watch for: the theme does not use **OpenSeadragon**
-or **three.js** directly anymore — OpenSeadragon ships only as tify's
-internal dependency (and the theme's `package.json` pins a different major
-version than tify requires), three.js is an unused devDependency. Remove
-them if they are listed standalone. Fonts come from the Fontsource npm
+Known stale entries to watch for: the theme does not use
+**OpenSeadragon** directly anymore — it ships only as tify's internal
+dependency (and the theme's `package.json` pins a different major version
+than tify requires). Remove it if it is listed standalone. Three.js, by
+contrast, is used directly by the `model` / `hdr-model` shortcodes
+(`assets/ts/shortcodes/model.ts`). Fonts come from the Fontsource npm
 packages via `scripts/init/get-fonts.sh` (see the fonts migration guide
 above) — the About page should list the families actually imported by the
 site's SCSS.
