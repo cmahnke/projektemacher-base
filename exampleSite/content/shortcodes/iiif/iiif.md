@@ -25,9 +25,9 @@ Embeds a single image via the [IIIF Image API](https://iiif.io/api/image/3.0/) u
 
 ## Live demo
 
-Loads an [Image API 2 info.json](https://iiif.bodleian.ox.ac.uk/iiif/image/9cca8f78-5cba-4a7f-9871-1e5c7a475b5a/info.json) from the Bodleian Library with the share bar enabled:
+Loads an [Image API 2 info.json](https://static.projektemacher.org/blaufusstoelpel/post/praline-18-1961/front/info.json) from the Blaufußtölpel blog with the share bar enabled:
 
-{{< iiif/iiif src="https://iiif.bodleian.ox.ac.uk/iiif/image/9cca8f78-5cba-4a7f-9871-1e5c7a475b5a/info.json" share="true" >}}
+{{< iiif/iiif src="https://static.projektemacher.org/blaufusstoelpel/post/praline-18-1961/front/info.json" share="true" >}}
 
 ## Assets
 
