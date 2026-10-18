@@ -11,6 +11,7 @@ in the [Upgrade.md](Upgrade.md) guide.
 
 | Item | State | Priority |
 |---|---|---|
+| `partials/head.html` | **removed** — baseof.html composes `html/head/meta.html` + `html/head/links.html` instead | done |
 | JS shims in `assets/js/` | deprecated re-exports of `assets/ts/` | 🔴 urgent |
 | Legacy `iiifManifest` front matter key | silent fallback in `existing-manifest.html` | 🔴 urgent |
 | Legacy font formats (`.eot`, `.svg`, `.ttf` fallbacks) | still declared in the font SCSS | 🔴 urgent |

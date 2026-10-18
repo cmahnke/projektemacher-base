@@ -8,18 +8,15 @@ metaPage: true
 
 These partials render the common page chrome. They are used by the theme's templates and can be called (or overridden) by sites — the consuming sites `projektemacher.org` and `labs.projektemacher.org` call most of them from their own layouts.
 
-## `head.html` {#head}
+## ~~`head.html`~~ {#head}
 
-Renders parts of the `<head>` content: title, meta description, external `stylesheets`, favicons and `<link>` alternates for the RSS and `iiif-collection` output formats. It no longer renders stylesheets or the JavaScript bundle — those come from the `html/head/style.html` and `html/head/script.html` partials (see below), which `baseof.html` calls directly.
+The legacy `head.html` partial has been removed. It rendered only meta tags, favicons and `<link>` alternates — everything it did is now covered by the `html/head/meta.html` and `html/head/links.html` partials (see below), which `baseof.html` calls directly. Sites that still keep a copy of `head.html` are unaffected (their copy shadows the theme), but should migrate to the `html/head/*` partials — see the [upgrade guide](/templates/partials/).
 
-> **Warning:** this partial emits a build warning — it is incomplete compared to the `html/head/*` partials. Use those individually instead.
+## `html/head/links.html` {#html-head-links}
 
-| Site parameter | Purpose |
-|---|---|
-| `slogan` | Appended to the title on the home page |
-| `description` | Fallback meta description |
-| `stylesheets` | List of external stylesheet URLs |
-| `favicon_16`, `favicon_32`, `favicon_svg` | Favicons |
+Emits the `<head>` link tags that are not meta data: external `stylesheets`, the font CSS (see [fonts](/posts/)), and the `<link>` alternates for the RSS and `iiif-collection` output formats. Called by `baseof.html` after `html/head/meta.html`.
+
+The `<title>` (with the `slogan` site parameter appended on the home page) is emitted by `baseof.html` itself.
 
 ## `html/head/script.html` {#html-head-script}
 

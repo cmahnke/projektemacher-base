@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.Lang }}">
 <head>
-    {{ partial "head.html" . }}
+    <meta charset="utf-8">
+    {{- with .Title -}}
+      <title>{{ . }} {{if $.IsHome}}- {{ site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
+    {{- end -}}
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    {{- partial "html/head/meta.html" . -}}
+    {{- partial "html/head/links.html" . -}}
     {{- partial "html/head/style.html" (dict "context" . "css" "css/style.css") -}}
     {{- partial "html/head/script.html" (dict "context" . "js" (partial "html/head/iiif-js.html" .)) -}}
 </head>

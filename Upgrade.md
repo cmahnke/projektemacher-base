@@ -1088,49 +1088,57 @@ affected pages shows no styling changes.
 
 # Upgrading pages that load styles or scripts through `partials/head.html`
 
-`layouts/partials/head.html` no longer compiles and links `scss/base.scss`
-itself. `layouts/_default/baseof.html` already emits the stylesheet via
-`partials/html/head/style.html`, which covers a superset of the old rules
-(plus shortcode and page specific SCSS/CSS). With both in place the compiled
-CSS was linked twice per page (same content, different file names), costing
-bandwidth and hiding style regressions.
-
-The same applies to the JavaScript now: `head.html` no longer builds or links
-the `js/main.js` bundle (nor the IIIF image/presentation viewer
-concatenations — the presentation branch referenced the long-deleted
-`assets/js/iiif-presentation-viewer.js` resource and would have failed the
-build). `baseof.html` emits the scripts via
-`partials/html/head/script.html`, which covers a superset of the old
-bundles (main bundle plus per page and shortcode scripts).
+`layouts/partials/head.html` has been **removed**. In several steps it was
+reduced to a warned-about shim — first it stopped compiling `scss/base.scss`
+(the stylesheet now comes from `partials/html/head/style.html`, covering a
+superset of the old rules plus shortcode and page specific SCSS/CSS), then
+it stopped building and linking the `js/main.js` bundle and the IIIF viewer
+concatenations (scripts now come from `partials/html/head/script.html`,
+which also covers per page and shortcode scripts) — and finally the
+remaining meta tags, favicons and `<link>` alternates were folded into
+`html/head/meta.html` and the new `html/head/links.html` partial, which
+`layouts/_default/baseof.html` calls directly.
 
 ## 1. Consumer migration
 
+- Sites calling `partial "head.html"` **without** a local copy get a build
+  error now. Replace the call with the theme's composition:
+  ```go-html-template
+  <meta charset="utf-8">
+  {{- with .Title -}}
+    <title>{{ . }} {{if $.IsHome}}- {{ site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
+  {{- end -}}
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  {{- partial "html/head/meta.html" . -}}
+  {{- partial "html/head/links.html" . -}}
+  ```
 - Sites using the theme's `baseof.html` unchanged need no action.
 - Sites with a custom `baseof.html` that calls `partials/head.html` but not
-  `partials/html/head/style.html` get no stylesheet at all any more — add
+  `partials/html/head/style.html` got no stylesheet at all after the first
+  step — add
   `{{ partial "html/head/style.html" (dict "context" . "css" "css/style.css") }}`
-  to their `<head>`.
-- Sites with a custom `baseof.html` that calls `partials/head.html` but not
-  `partials/html/head/script.html` get no scripts at all any more — add
-  `{{ partial "html/head/script.html" (dict "context" . "js" (partial "html/head/iiif-js.html" .)) }}`
-  to their `<head>`.
-- Sites with a copy of `partials/head.html` carry unused duplicates —
-  delete the `scss/base.scss` resource block and the `js/main.js`
-  build/`<script>` block there to match the theme.
+  to their `<head>` (same for the scripts:
+  `{{ partial "html/head/script.html" (dict "context" . "js" (partial "html/head/iiif-js.html" .)) }}`).
+- Sites with a **copy** of `partials/head.html` are unaffected — their copy
+  shadows the theme and keeps working. Migrate the copy to the
+  `html/head/*` partials (as `blaufusstoelpel`, `kraehenbeisser` and
+  `vorsatzpapier` already do) and drop it, or keep it as the site's own
+  partial under a different name.
 - The script entry point is site owned: `script.html` errors with "create
   the file in your assets directory, an empty file will do" when the site
   ships neither `ts/main.ts` (auto-detected, preferred) nor the legacy
-  `js/main.js`. The example site's empty stub moved from
-  `exampleSite/assets/js/main.js` to `exampleSite/assets/ts/main.ts`
-  accordingly.
+  `js/main.js`. The example site's empty stub lives at
+  `exampleSite/assets/ts/main.ts`.
 
 ## 2. Verification
 
 Build the site and confirm every page has exactly one stylesheet `<link>`
 per merged CSS bundle and one `<script>` per JS bundle (the duplicate
-`js/main.js` tag from `head.html` is gone), and that shortcode styles and
-scripts still load (check pages using shortcodes with dedicated
-SCSS/CSS/JS includes).
+`js/main.js` tag from `head.html` is gone), that title, meta description,
+favicons and the RSS/`iiif-collection` alternates are present, and that
+shortcode styles and scripts still load (check pages using shortcodes with
+dedicated SCSS/CSS/JS includes).
 
 # Accessible navigation menu (progressively enhanced checkbox hack)
 
