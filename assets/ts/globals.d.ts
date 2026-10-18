@@ -11,6 +11,7 @@ declare global {
     addCopyToClipboard(button: HTMLButtonElement, content: HTMLTextAreaElement): void;
     addFSToggle(button: HTMLButtonElement, elem: HTMLElement): void;
     addTimeline(id: string, data: object, options?: object): unknown;
+    showTab(id: string): void;
     addPDFViewer(elemId: string, url: string, options?: object): unknown;
     addConsent(
       toggle: HTMLInputElement,
