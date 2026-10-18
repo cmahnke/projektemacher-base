@@ -16,19 +16,8 @@
 
 @import "normalize";
 
-/* Variables (see hugo.toml [params.style] for the site colors) */
-$text-font-family: Lora, Georgia, serif;
-$heading-font-family: Lato, Helvetica, sans-serif;
-$code-font-family: monospace;
-$bg-color: #FAFAFA !default;
-$fg-color: #212121 !default;
-$alt-bg-color: #E0E0E0 !default;
-$alt-fg-color: #000 !default;
-$link-color: #1565c0 !default;
-$nav-color: #293133 !default;
-
-@import "fonts/lato";
-@import "fonts/lora";
+/* Shared skin foundation: variables, base fonts, burger icon */
+@import "coder/site-shared";
 
 /* Vendored coder chrome */
 @import "coder/base";
@@ -39,9 +28,6 @@ $nav-color: #293133 !default;
 
 /* Section table of contents sidebar (theme's partials/toc.html) */
 @import "section-toc";
-
-/* Burger menu icon for the theme's menu.html markup */
-$bars: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='#{encodecolor($bg-color)}' d='M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z'/%3E%3C/svg%3E";
 
 /*
  * Adapter: the theme's baseof.html wraps the site header in
