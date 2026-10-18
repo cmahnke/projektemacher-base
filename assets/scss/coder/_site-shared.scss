@@ -1,0 +1,38 @@
+/*
+ * Shared skin foundation for sites built on the coder look
+ * (https://projektemacher.org/ and sites derived from it).
+ *
+ * Provides the variable block, the base fonts and the burger menu
+ * icon used by the coder navigation markup. Import it after
+ * "normalize" (and any CSS resets) and before the coder chrome
+ * styles ("coder/base" … "coder/footer").
+ *
+ * The importing file must load the theme's color functions first:
+ *
+ *   @use "functions/color" as *;
+ *
+ * Note: this file is processed with resources.ExecuteAsTemplate — no
+ * Go template syntax may appear here.
+ */
+
+/* Variables (see hugo.toml [params.style] for the site colors) */
+$text-font-family: Lora, Georgia, serif !default;
+$heading-font-family: Lato, Helvetica, sans-serif !default;
+$code-font-family: monospace !default;
+/* Colors */
+$bg-color: #FAFAFA !default;
+$fg-color: #212121 !default;
+$alt-bg-color: #E0E0E0 !default;
+$alt-fg-color: #000 !default;
+$link-color: #1565c0 !default;
+$nav-color: #293133 !default;
+
+@import "fonts/lato";
+@import "fonts/lora";
+
+/*
+ * Fontawesome SVGs - taken fom https://github.com/FortAwesome/Font-Awesome
+ * URL encoder for SVG: https://yoksel.github.io/url-encoder/
+ * CSS filter generator: https://codepen.io/sosuke/pen/Pjoqqp
+ */
+$bars: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='#{encodecolor($bg-color)}' d='M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z'/%3E%3C/svg%3E" !default;

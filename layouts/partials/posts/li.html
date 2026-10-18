@@ -1,0 +1,38 @@
+{{-/*
+	Shared markup for list entries ("post-preview" style): a heading
+	with date and title link, followed by a snippet.
+
+	Expects a dict:
+		.page            Page context (required)
+		.summary         Prefer the page's .Summary over .Description (optional)
+		.readmore        Append a "read more" link to the description (optional)
+		.linkDescription Render the description inside a link to the page (optional)
+		.slot            Additional markup rendered at the end of the snippet (optional)
+*/ -}}
+{{- $page := .page -}}
+{{- $summary := .summary -}}
+{{- $readmore := .readmore -}}
+{{- $linkDescription := .linkDescription -}}
+{{- $slot := .slot -}}
+<div class="post-heading">
+	{{- if not $page.Date.IsZero -}}
+	<span class="date">
+		{{- $page.Date | time.Format ":date_full" -}}
+	</span>
+	{{- end -}}
+	<span class="link">
+		<a class="title" href="{{ $page.RelPermalink }}">{{- $page.Title -}}</a>
+	</span>
+</div>
+<div class="post-snippet{{ if $page.Date.IsZero }} no-date{{ end }}">
+	{{- if $linkDescription -}}
+		<span class="description"><a class="preview-link" href="{{ $page.RelPermalink }}">{{- if and $summary (ne $page.Summary "") }}{{- $page.Summary -}}{{ else }}{{- $page.Description | markdownify -}}..{{ end }}</a>{{- if $readmore }}<br /><a href="{{ $page.RelPermalink }}">{{ i18n "readmore" }}</a>{{ end }}</span>
+	{{- else if $page.Description -}}
+		<span class="description">{{- $page.Description | markdownify -}}</span>
+	{{- else -}}
+		<span class="post-spacer">&nbsp;</span>
+	{{- end -}}
+	{{- with $slot }}
+		{{ . }}
+	{{- end -}}
+</div>
