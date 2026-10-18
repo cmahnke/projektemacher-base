@@ -21,12 +21,12 @@
 
 {{- $id := printf "_chart-%s" (md5 (printf "%s-%s" $csv now.UnixNano)) -}}
 
-<div id="{{ $id }}" class="chart">
+<div id="{{ $id }}" class="chart" role="img" aria-label="{{ i18n "chart" }}">
 </div>
 <script type="text/javascript">
   window.chart("{{ $csv }}", "#{{ $id | safeJS }}", {{ $opts | safeJS }})
 </script>
 
 {{- define "_partials/shortcodes/csv-chart-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/shortcodes/chart.js") "scss" (slice "scss/shortcodes/csv-chart.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/chart.ts") "scss" (slice "scss/shortcodes/csv-chart.scss")) | jsonify -}}
 {{- end -}}

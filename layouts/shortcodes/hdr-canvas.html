@@ -7,21 +7,22 @@
 
 <div class="hdr-canvas-container script">
   <div class="canvas-container">
-    <canvas id="{{ $id }}"></canvas>
+    <canvas id="{{ $id }}" role="img" aria-label="{{ i18n "hdrCanvas" }}"></canvas>
+    <p class="visually-hidden hdr-canvas-fallback" hidden>{{ i18n "hdrCanvasNotSupported" }}</p>
   </div>
 
   <div class="slider-container">
     <div class="channel-container">
-      <input type="range" min="1" max="100" value="50" class="slider" id="redSlider">
-      <label for="redSlider">Red <span class="value"></span></label>
+      <input type="range" min="1" max="100" value="50" class="slider" id="{{ $id }}-redSlider" data-channel="red">
+      <label for="{{ $id }}-redSlider">Red <span class="value"></span></label>
     </div>
     <div class="channel-container">
-      <input type="range" min="1" max="100" value="50" class="slider" id="greenSlider">
-      <label for="greenSlider">Green <span class="value"></span></label>
+      <input type="range" min="1" max="100" value="50" class="slider" id="{{ $id }}-greenSlider" data-channel="green">
+      <label for="{{ $id }}-greenSlider">Green <span class="value"></span></label>
     </div>
     <div class="channel-container">
-      <input type="range" min="1" max="100" value="50" class="slider" id="blueSlider">
-      <label for="blueSlider">Blue <span class="value"></span></label>
+      <input type="range" min="1" max="100" value="50" class="slider" id="{{ $id }}-blueSlider" data-channel="blue">
+      <label for="{{ $id }}-blueSlider">Blue <span class="value"></span></label>
     </div>
   </div>
 

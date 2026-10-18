@@ -1,6 +1,5 @@
 {{- $src := .Page.File -}}
 {{- $id := printf "_hdr-check-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
-<div ></div>
 <details id="{{ $id }}" class="hdr-check-result">
   <summary>{{ i18n "hdrCheck" }}</summary>
   <p></p>
@@ -20,5 +19,5 @@
 </script>
 
 {{- define "_partials/shortcodes/hdr-check-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/shortcodes/hdr-check.js") "scss" (slice "scss/shortcodes/hdr-check.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/hdr-check.ts") "scss" (slice "scss/shortcodes/hdr-check.scss")) | jsonify -}}
 {{- end -}}

@@ -109,7 +109,8 @@ Some shortcodes shipped with the theme require additional NPM packages and modul
 | Shortcode | NPM package | Required mount |
 |-----------|-------------|----------------|
 | `gallery` | `photoswipe` | `source = "node_modules/photoswipe/dist"`, `target = "assets/css/photoswipe"` |
-| `model` | `three` | – |
+| `model` / `hdr-model` | `three` | – |
+| `hdr-model`, `hdr-canvas`, `hdr-check`, `hdr-canvas-check` | `@projektemacher/hdr-canvas` | – |
 | `chart` / `csv-chart` | `echarts` | – |
 
 The shortcode asset pipeline (`partials/shortcodes/shortcode-helper.html`) only includes these on pages actually using the shortcode. Missing mounts produce a `warnf` message, the shortcode markup itself still renders.

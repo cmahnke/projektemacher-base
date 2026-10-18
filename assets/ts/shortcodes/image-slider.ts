@@ -30,14 +30,11 @@ function setupCanvas(canvas: HTMLCanvasElement, width?: number, height?: number)
 
 export function initCanvas(canvas: HTMLCanvasElement, imageUrl: URL) {
   if (!checkHDRCanvas()) {
+    canvas.closest('.hdr-canvas-container')?.querySelector<HTMLElement>('.hdr-canvas-fallback')?.removeAttribute('hidden');
     Float16Image.loadSDRImageData(imageUrl).then((imageData) => {
       if (imageData !== undefined) {
         const ctx = setupCanvas(canvas, imageData.width, imageData.height) as CanvasRenderingContext2D;
         ctx.putImageData(imageData, 0, 0);
-        ctx.font = "bold 36px sans-serif";
-        ctx.fillStyle = "#ff0000";
-        ctx.fillText("HDR not supported!", 90, 100);
-        ctx.fillText("Image manipulation disabled", 10, 150);
       }
     });
     return;
@@ -59,9 +56,10 @@ export function initCanvas(canvas: HTMLCanvasElement, imageUrl: URL) {
     }
   });
 
+  const container = canvas.closest('.hdr-canvas-container');
   const sliders: Record<string, HTMLInputElement> = {};
   ["red", "green", "blue"].forEach((channel) => {
-    const slider = document.getElementById(`${channel}Slider`) as HTMLInputElement;
+    const slider = container?.querySelector<HTMLInputElement>(`input.slider[data-channel="${channel}"]`) ?? null;
     if (slider) {
       sliders[channel] = slider;
       const labelSpan = document.querySelector<HTMLElement>(`label[for=${slider.id}] span`);

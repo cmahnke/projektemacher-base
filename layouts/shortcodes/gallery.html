@@ -19,7 +19,7 @@
         {{- $full = .Process "webp" -}}
       {{- end -}}
 
-      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $imgRes.Width }}" data-pswp-height="{{ $imgRes.Height }}" target="_blank"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
+      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $imgRes.Width }}" data-pswp-height="{{ $imgRes.Height }}" target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
         {{- $preview := $imgRes.Resize (printf "%sx webp picture" $previewWidth) -}}
         {{- if (not $scalePreview) -}}
           {{- $preview = $imgRes -}}
@@ -58,5 +58,5 @@
 
 {{- define "_partials/shortcodes/gallery-metadata.html" -}}
   {{/* The PhotoSwipe CSS needs to be provided via mount from node_modules, see README */}}
-  {{- (dict "scss" (slice "scss/shortcodes/gallery.scss") "js" (slice "js/shortcodes/gallery.js") "css" (slice "css/photoswipe/photoswipe.css")) | jsonify -}}
+  {{- (dict "scss" (slice "scss/shortcodes/gallery.scss") "js" (slice "ts/shortcodes/gallery.ts") "css" (slice "css/photoswipe/photoswipe.css")) | jsonify -}}
 {{- end -}}

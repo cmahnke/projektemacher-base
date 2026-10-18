@@ -15,7 +15,7 @@
 {{- end -}}
 
 <div class="renderer-canvas script">
-  <canvas id="{{ $id }}"></canvas>
+  <canvas id="{{ $id }}" role="img" aria-label="{{ i18n "3d-model" }}"></canvas>
 </div>
 
 <script type="text/javascript">
@@ -27,5 +27,5 @@
 </script>
 
 {{- define "_partials/shortcodes/hdr-model-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "js/shortcodes/hdr-model.js") "scss" (slice "scss/shortcodes/hdr-model.scss")) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/hdr-model.ts") "scss" (slice "scss/shortcodes/hdr-model.scss")) | jsonify -}}
 {{- end -}}

@@ -20,3 +20,9 @@ other = "Bild vergrößern:"
 
 [3d-model]
 other = "3D-Modell"
+
+[chart]
+other = "Diagramm"
+
+[hdrCanvas]
+other = "HDR Canvas"
