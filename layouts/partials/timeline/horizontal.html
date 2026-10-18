@@ -2,11 +2,6 @@
 <div id="timeline" class="timeline timeline-horizontal">
 </div>
 <script type="text/javascript">
-    var triggerTabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
-    triggerTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl);
-    });
-
     var issues = [
         {{- range $entries -}}
                 {{- /* Front matter param holding the year, sites can override (kinderbuecher: issueYear) */ -}}
@@ -25,8 +20,8 @@
     var timeline = addTimeline('timeline', issues, options);
 
     document.addEventListener("DOMContentLoaded", function() {
-        if (window.innerWidth < 1024) {
-            bootstrap.Tab.getInstance(document.getElementById('vertical-tab')).show()
+        if (window.innerWidth < 1024 && window.showTab) {
+            window.showTab('vertical-tab')
         }
     });
 </script>
