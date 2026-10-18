@@ -156,7 +156,12 @@ The [example site](https://cmahnke.github.io/projektemacher-base/) is currently 
 
 # Python Modules
 
-# JXLPy
-```
-LDFLAGS="-L/opt/homebrew/opt/jpeg-xl/lib" CPPFLAGS="-I/opt/homebrew/opt/jpeg-xl/include" pip install  --force-reinstall --no-binary :all: jxlpy
-```
+# JXL support
+
+JXL images are handled by [pyvips](https://libvips.github.io/pyvips/) — the
+Python bindings for libvips, which decodes JXL natively (via libjxl). This
+needs a libvips installation with JXL support on the system, no Python
+compile step is involved:
+
+* macOS: `brew install vips`
+* Debian/Ubuntu: `apt install libvips-tools` (libjxl support is included)

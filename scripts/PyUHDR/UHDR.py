@@ -1,17 +1,35 @@
 import os
-import sys
+import io
 import logging
 import tempfile
 import atexit
 import json
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from PIL.Image import Exif
 from PIL.ExifTags import TAGS
 import pyexiv2
 from .UHDRApp import UHDRApp
 from .Gainmap import save_yuv, pil_to_numpy, debug_save
 from .UHDRError import UHDRResizeError
+
+try:
+    import pyvips
+except (ImportError, OSError):
+    pyvips = None
+
+
+def loadPILImage(path):
+    """Load an image with PIL, falling back to pyvips for formats PIL can't decode (e.g. JXL)."""
+    try:
+        img = Image.open(path)
+        img.load()
+        return img
+    except (UnidentifiedImageError, OSError):
+        if pyvips is None:
+            raise UnidentifiedImageError(f"Can't decode '{path}' with PIL and pyvips isn't installed")
+        pngBytes = pyvips.Image.new_from_file(str(path), access="sequential").write_to_buffer(".png")
+        return Image.open(io.BytesIO(pngBytes))
 
 
 class UHDR:
@@ -68,13 +86,7 @@ class UHDR:
     def _open(self, file, scale=True):
         exif = None
         if isinstance(file, str):
-            if str(file).endswith(".jxl"):
-                if "jxlpy" not in sys.modules:
-                    import jxlpy
-                    from jxlpy import JXLImagePlugin
-
-                    # pyexiv2.enableBMFF()
-            img = Image.open(file)
+            img = loadPILImage(file)
             pyexiv2.set_log_level(0)
             if not str(file).endswith(".jxl"):
                 exif = pyexiv2.Image(file).read_exif()

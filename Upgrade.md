@@ -793,6 +793,57 @@ directory (mirador patch files) have been removed as well.
    fails the build, so a clean build proves no call remains.
 2. Presentation pages render with the TIFY viewer.
 
+# Removal of the JXLPy Python module
+
+The `jxlpy` Python module (a Pillow plugin for JPEG XL) has been removed from
+`requirements.txt` and from the scripts. It never shipped wheels for current
+Python versions and requires the libjxl headers to compile, which broke
+`pip install -r requirements.txt` on CI. JXL images are now decoded
+exclusively via [pyvips](https://libvips.github.io/pyvips/) (libvips + libjxl
+on the system), the same mechanism `scripts/preview.py` already used.
+
+## What changed
+
+* `requirements.txt` no longer pins `jxlpy`.
+* `scripts/pdf.py` and the `PyUHDR` package load images through a small
+  `loadPILImage()` helper: PIL first, and if PIL can't decode the file
+  (e.g. JXL), an in-memory pyvips → PNG conversion — no temporary files,
+  no Pillow plugin registration.
+* The CI no longer installs libjxl to test the Python plugin build: the
+  `test_jxl_versions` job and the lint job's JXL step were dropped. The
+  `scripts/github/jxl-0.12.0.sh` setup stays — the libjxl runtime is still
+  needed by libvips/ImageMagick when processing JXL files.
+
+## 1. Consumer migration
+
+* Remove `jxlpy` from your `requirements.txt` and add `pyvips` if it isn't
+  there yet.
+* Ensure the system libvips has JXL support (macOS: `brew install vips`,
+  Debian/Ubuntu: `libvips-tools` + `libjxl`; the theme's
+  `scripts/github/jxl-0.12.0.sh` provides this on GitHub runners).
+* Scripts that imported `jxlpy` directly to register the Pillow plugin can
+  delete those blocks and load images via the pyvips fallback pattern shown
+  in `scripts/pdf.py` / `scripts/preview.py`.
+
+## 2. Consumers in this organisation
+
+Follow-up work in the consuming repositories (their checkouts of this theme
+need the updated submodule pin first):
+
+| Repository | Required change |
+| --- | --- |
+| `christianmahnke` | Delete the jxlpy block in `scripts/hdr_iiif_static.py`, add `pyvips` to `requirements.txt` |
+| `labs.projektemacher.org` | Replace the jxlpy usage in `scripts/image-splitter.py` with the pyvips fallback, add `pyvips` to `requirements.txt` |
+| `schatten` | `scripts/hdr-docker.sh`: install `pyvips` (and the `vips` apk package) into the HDR container instead of `jxlpy` |
+| `vintagereality` | Already migrated (pyvips based `image-splitter.py`) |
+| `vintagereality-tools` | Standalone tools: replace jxlpy with pyvips in `requirements.txt`, `scripts/spatial.py`, `scripts/prepare_dataset.py` and `docker/Dockerfile` |
+
+## 3. Verification
+
+1. `pip install -r requirements.txt` succeeds without libjxl headers.
+2. Processing a `.jxl` image through `pdf.py` / `PyUHDR` / `preview.py`
+   decodes it via pyvips (in memory) instead of the jxlpy plugin.
+
 # Housekeeping
 
 The changes in this section are **optional**: no consuming site has to apply

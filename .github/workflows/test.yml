@@ -45,12 +45,6 @@ jobs:
         run: |
           ./scripts/github/setup-dependencies.sh
 
-# Needed to check if the JXL Python plugin builds
-      - name: Install JXL dependencies
-        run: |
-          ./scripts/github/jxl-0.12.0.sh
-
-# Needed to check if the JXL Python plugin builds
       - name: Install required Python dependencies
         run: |
           ./scripts/github/python-dependencies.sh
@@ -68,30 +62,6 @@ jobs:
           #npx stylelint -c .stylelintrc.json 'assets/scss/*'
           #npx eslint assets/js
           #npx eslint scripts
-
-  test_jxl_versions:
-    runs-on: ubuntu-26.04
-    strategy:
-      fail-fast: false
-      matrix:
-        version: ['0.12.0'] #'0.11.2',
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-      - name: Install JXL dependencies
-        run: |
-          ./scripts/github/jxl-${{ matrix.version }}.sh
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: 3.13
-
-      - name: Install python dependencies
-        run: |
-          ./scripts/github/python-dependencies.sh
 
   test_install:
     runs-on: ubuntu-26.04

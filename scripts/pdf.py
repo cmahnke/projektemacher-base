@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, pathlib, re, argparse
+import sys, os, io, pathlib, re, argparse
 from pprint import pprint
 from math import floor
 from datetime import datetime
@@ -9,9 +9,14 @@ from datetime import datetime
 # from datetime import UTC
 from fpdf import FPDF
 from fpdf import FPDF_VERSION
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from termcolor import cprint
 import pikepdf
+
+try:
+    import pyvips
+except (ImportError, OSError):
+    pyvips = None
 
 sys.path.append(os.path.dirname(__file__))
 from PyHugo import Post, Content
@@ -153,6 +158,19 @@ def add_metadata(file, metadata, labels=None, toc=None):
         pdf.save()
 
 
+def loadPILImage(path):
+    """Load an image with PIL, falling back to pyvips for formats PIL can't decode (e.g. JXL)."""
+    try:
+        img = Image.open(path)
+        img.load()
+        return img
+    except (UnidentifiedImageError, OSError):
+        if pyvips is None:
+            raise UnidentifiedImageError(f"Can't decode '{path}' with PIL and pyvips isn't installed")
+        pngBytes = pyvips.Image.new_from_file(str(path), access="sequential").write_to_buffer(".png")
+        return Image.open(io.BytesIO(pngBytes))
+
+
 def image_to_pdf(pdf: FPDF, image: pathlib.Path) -> None:
     def px_to_mm(px: float, px_in_inch=72) -> float:
         mm_in_inch = 25.4
@@ -160,7 +178,7 @@ def image_to_pdf(pdf: FPDF, image: pathlib.Path) -> None:
         mm = inch * mm_in_inch
         return mm
 
-    cover = Image.open(image)
+    cover = loadPILImage(image)
     width: float
     height: float
     width, height = cover.size
@@ -216,11 +234,6 @@ def processSingle(post: Post, out: pathlib.Path):
         for r in metadata["resources"]:
             file = os.path.join(path, r["src"])
 
-            if str(file).endswith(".jxl"):
-                if "jxlpy" not in sys.modules:
-                    import jxlpy
-                    from jxlpy import JXLImagePlugin
-
             try:
                 label = int(re.findall(r"\d+", r["src"])[0])
             except:
@@ -236,6 +249,8 @@ def processSingle(post: Post, out: pathlib.Path):
                 image_to_pdf(pdf, file)
             except FileNotFoundError as e:
                 cprint(f"File not found: {e.filename}!", "red")
+            except UnidentifiedImageError as e:
+                cprint(f"Can't load image '{file}': {e}", "red")
 
         cprint(f"Saving to {out}", "green")
         pdf.output(str(out))
