@@ -1,3 +1,60 @@
+# Run the JS runtime check against the example site
+
+The theme's CI now runs the puppeteer based runtime checker
+(`scripts/check-js-browser-errors.mjs`) against the built example site:
+the `test_js_errors` job in `.github/workflows/test.yml` builds
+`exampleSite/` and serves the output (`exampleSite/docs/`) through the
+checker's internal webserver — the same mechanism the consumer-side
+`scripts/github/check-js-errors.sh` uses. Locally the check runs via
+`./scripts/github/check-js-errors-example.sh`.
+
+The URL list lives in `exampleSite/test-urls.json` and covers:
+
+- every page demonstrating a shortcode that ships JS — `audioplayer`,
+  `browser-banner`, `browser-hide-selector`, `code`, `gist`,
+  `html/iframe-consent`, `iiif/iiif`, `iiif/presentation`, `lucienne`,
+  `maps/osm`, `maps/osm-vector-tiles`, `mastodon`, `mermaid`, `pdf`,
+  `pdf-preview` — plus the tagcloud demo pages
+- other pages with JS functionality: the IIIF presentation examples, the
+  page specific assets post and the html-body test page
+
+The checker also maps requests to the base URL's **origin root** to its
+internal webserver, so root-relative resources like CSS
+`url(/fonts/…)` load during the check even when the site is deployed
+under a path (GitHub Pages project sites). Sites deployed at the origin
+root are unaffected.
+
+## Excluded: WebGL and WebGPU
+
+Pages whose JS requires WebGL or WebGPU are deliberately not listed —
+the checker runs with 3D APIs disabled (`--disable-gpu --disable-3d-apis`,
+see the `-g` flag for GPU emulation via SwiftShader), so
+`shortcodes/aframe-3d-model/` and `posts/3d-model/` would either fail or
+test nothing meaningful. Keep WebGL/WebGPU based JS out of the URL list
+unless you run the check with `-g`.
+
+## What sites need to do
+
+Consuming sites run the same checker against their own build
+(`scripts/github/check-js-errors.sh`) — make sure **pages containing
+maps, PDF viewers and other JS functionality are added to the site's
+`test-urls.json`, if not already in there**. The checker only visits the
+URLs it is given, so anything missing from the list is never
+runtime-checked. To find candidates:
+
+```bash
+# Pages using shortcodes that ship JS
+grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code)' content
+
+# Pages loading page specific scripts
+grep -rEl '^js:' content
+```
+
+Keep the list in sync whenever a new page uses one of these shortcodes.
+The same page set is the input for the accessibility checks (see
+"Add accessibility checks" below) — run those against the production
+site as well.
+
 # CSS pipeline: PostCSS deduplication added
 
 Production builds now run the concatenated stylesheet through PostCSS
@@ -776,6 +833,14 @@ Iterate over the built HTML files (or a representative subset) and run the
 script locally. These are suggested static checks of the generated pages
 only — the theme ships no additional scripts and sets up no CI job; copy
 and adapt the sketch to the site's own tooling.
+
+Run these checks against the **production site** as well, not only against
+local builds: deployment pipelines (minification, fingerprinting, CDN and
+external services, content changes) can introduce violations the local
+build doesn't show. Point the same script at the deployed base URL and
+iterate over the pages from the site's `test-urls.json` (see "Run the JS
+runtime check against the example site" above) — keeping that list current
+for the runtime check also keeps the accessibility scan's page set current.
 
 ### Known false positive: "Zoom blocked"
 

@@ -51,7 +51,7 @@
 {{- end -}}
 {{/* {{- warnf "[partials/iiif/iiif-image.html] Set orientation to %s" $orientation -}} */}}
 
-{{- $mapName := replace (replace (replace .context.params.iiif "/" "_") "." "") "-" "_" -}}
+{{- $mapName := replaceRE "[^a-zA-Z0-9_]" "_" .context.params.iiif -}}
 {{/*
 {{- $infoJson := printf "/%s" (path.Join $contextPath .context.params.iiif) -}}
 {{- $baseURL := printf "/%s/%s/" $contextPath (path.Dir .context.params.iiif) -}}
