@@ -1,3 +1,11 @@
+{{- if resources.Get "scss/coder-dark.scss" -}}
+	{{- if not .IsHome -}}
+		<footer class="footer">
+			{{- .Scratch.Set "footer" (printf `%s <div class="footer-powered-by"><a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.</div>` (i18n "powered_by")) -}}
+			{{- partialCached "footer-content.html" . -}}
+		</footer>
+	{{- end -}}
+{{- else -}}
 <footer class="footer" role="contentinfo">
 	<div class="menu-container menu-footer" role="navigation" aria-label="{{ i18n "footerNavigation" }}">
 		<div class="menu">
@@ -15,3 +23,4 @@
 
    {{- partialCached "footer-content.html" . -}}
 </footer>
+{{- end -}}
