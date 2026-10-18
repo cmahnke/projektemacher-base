@@ -50,6 +50,23 @@ To generate IIIF JSON manifests you need to add the `JSON` output format to the 
     page = ["HTML", "JSON"]
 ```
 
+## Search (Pagefind)
+
+The theme's `search` layout (see `exampleSite/content/search/`) is based
+on [Pagefind](https://pagefind.com/) — `@pagefind/modular-ui` and the
+`pagefind` CLI ship with the theme's `package.json` and are merged into
+the site's dependencies by `scripts/init/package.json.sh`. Pagefind
+indexes the **rendered** site, so the index must be (re)built after every
+`hugo` run, using the theme's `pagefind-index.yaml` as configuration:
+
+```
+npx pagefind --config pagefind-index.yaml
+```
+
+Without an index the search page renders, but the search bundle finds
+nothing — see "Run the JS runtime check against the example site" in
+`Upgrade.md`.
+
 # Scripts
 
 ## Fonts
@@ -126,6 +143,18 @@ To use Dart SASS on the command line also install it from brew
 ```
 brew install sass/sass/sass
 ```
+
+# Docker images
+
+The `docker/` directory holds images used by the project's CI — see
+`docker/graphics/README.md`. The images are built and pushed to
+`ghcr.io` by the `Publish Docker images` workflow
+(`.github/workflows/docker.yml`):
+
+* `ghcr.io/cmahnke/projektemacher-base/graphics` — graphics processing
+  (ImageMagick with JXL/UHDR support, libvips, Inkscape, Ghostscript,
+  XSLT processor), so CI jobs don't have to install the system packages
+  on the runner itself.
 
 # Installation
 

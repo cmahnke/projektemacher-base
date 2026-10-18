@@ -43,3 +43,8 @@ assets/scss/npm-fonts/*.scss
 # 'test_hugo_versions' and 'deploy_exampleSite' CI jobs)
 exampleSite/static/images/favicon*
 exampleSite/static/images/apple-touch-icon.png
+
+# Pagefind search index output (generated from the rendered site,
+# see pagefind-index.yaml and the CI's index steps)
+pagefind/
+exampleSite/pagefind/
