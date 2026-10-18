@@ -18,6 +18,9 @@ try:
 except (ImportError, OSError):
     pyvips = None
 
+if pyvips is not None:
+    pyvips.cache_set_max(0)
+
 sys.path.append(os.path.dirname(__file__))
 from PyHugo import Post, Content
 
@@ -167,8 +170,13 @@ def loadPILImage(path):
     except (UnidentifiedImageError, OSError):
         if pyvips is None:
             raise UnidentifiedImageError(f"Can't decode '{path}' with PIL and pyvips isn't installed")
-        pngBytes = pyvips.Image.new_from_file(str(path), access="sequential").write_to_buffer(".png")
-        return Image.open(io.BytesIO(pngBytes))
+        jpgBytes = pyvips.Image.new_from_file(str(path), access="sequential").write_to_buffer(".jpg", Q=92)
+        img = Image.open(io.BytesIO(jpgBytes))
+        # libvips reports resolution as pixels per mm and defaults to 1.0 when the
+        # source (e.g. JXL) carries no resolution metadata, which surfaces as a
+        # bogus 25.4 dpi here. Drop it so callers fall back to their default DPI.
+        img.info.pop("dpi", None)
+        return img
 
 
 def image_to_pdf(pdf: FPDF, image: pathlib.Path) -> None:
