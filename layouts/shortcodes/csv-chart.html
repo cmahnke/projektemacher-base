@@ -1,0 +1,32 @@
+{{- $ctx := .Page -}}
+
+{{- $csv := "" -}}
+{{- $opts := "null" -}}
+{{- with .Get "csv" -}}
+  {{- $csv = . -}}
+  {{/*
+    {{- if eq (.Resources.Get $csv) nil -}}
+      {{- errorf "[shortcodes/chart.html] CSV file %s given for %s not found" $csv $ctx.RelPermalink -}}
+    {{- end -}}
+  */}}
+{{- end -}}
+
+{{- with .Get "opts" -}}
+  {{- $opts = . -}}
+{{- end -}}
+
+{{- if eq $csv "" -}}
+   {{- errorf "[shortcodes/chart.html] No CSV file given for %s" $ctx.RelPermalink -}}
+{{- end -}}
+
+{{- $id := printf "_chart-%s" (md5 (printf "%s-%s" $csv now.UnixNano)) -}}
+
+<div id="{{ $id }}" class="chart">
+</div>
+<script type="text/javascript">
+  window.chart("{{ $csv }}", "#{{ $id | safeJS }}", {{ $opts | safeJS }})
+</script>
+
+{{- define "_partials/shortcodes/csv-chart-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/shortcodes/chart.js") "scss" (slice "scss/shortcodes/csv-chart.scss")) | jsonify -}}
+{{- end -}}

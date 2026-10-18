@@ -1,0 +1,62 @@
+{{- $src := .Page.File -}}
+{{- $id := printf "_gallery-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $json := .Inner -}}
+{{- $image := unmarshal $json -}}
+{{- $previewWidth := "320" -}}
+
+<div id="{{ $id }}" class="gallery {{ with .Get "class" }}{{ . }}{{ end }}">
+  {{- range $image := $image -}}
+    {{- $imgRes := $.Page.Resources.Get $image.src -}}
+    {{- $alt := "" -}}
+    {{- $alt = $image.alt | default "" -}}
+    {{- $scalePreview := true -}}
+    {{- if isset $image "scalePreview" -}}
+      {{- $scalePreview = $image.scalePreview -}}
+    {{- end -}}
+    {{- with $imgRes -}}
+      {{- $full := . -}}
+      {{- if lt .Width 6144 -}}
+        {{- $full = .Process "webp" -}}
+      {{- end -}}
+
+      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $imgRes.Width }}" data-pswp-height="{{ $imgRes.Height }}" target="_blank"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
+        {{- $preview := $imgRes.Resize (printf "%sx webp picture" $previewWidth) -}}
+        {{- if (not $scalePreview) -}}
+          {{- $preview = $imgRes -}}
+        {{- end -}}
+          {{- $imageLink := $preview.RelPermalink -}}
+          {{- if strings.Contains $image.src ".hdr." -}}
+            {{- $imageLink = $image.src -}}
+            {{- if $.Page.IsTranslated -}}
+              {{- range $.Page.Translations -}}
+                {{- if .Language.IsDefault -}}
+                  {{- $permalink_pretty := .Page.Permalink | replaceRE "\\.html$" "/" -}}
+                  {{- $imageLink = printf "%s%s" $permalink_pretty  $image.src -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+          <img src="{{ $imageLink }}" alt="{{ $alt }}" class="gallery-preview" />
+        {{- if ne $alt "" -}}
+          <div class="hidden-caption-content">{{ $alt }}</div>
+        {{- end -}}
+      </a>
+    {{- else -}}
+      {{/*
+      {{ warnf "[shortcodes/gallery.html] Not found %s for %s" $image.src $.Page.File.Path }}
+      */}}
+      {{- errorf "[shortcodes/gallery.html] Couldn't find resource %s in %s" $image .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+</div>
+
+<script type="text/javascript">
+  window.addEventListener('DOMContentLoaded', (event) => {
+    window.photoswipe("#{{ $id | safeJS }}", "a.gallery-image")
+  });
+</script>
+
+{{- define "_partials/shortcodes/gallery-metadata.html" -}}
+  {{/* The PhotoSwipe CSS needs to be provided via mount from node_modules, see README */}}
+  {{- (dict "scss" (slice "scss/shortcodes/gallery.scss") "js" (slice "js/shortcodes/gallery.js") "css" (slice "css/photoswipe/photoswipe.css")) | jsonify -}}
+{{- end -}}

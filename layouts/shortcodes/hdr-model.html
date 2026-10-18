@@ -1,0 +1,31 @@
+{{- $src := .Page.File -}}
+{{- $id := printf "_hdr-model-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $model := "" -}}
+{{- with .Get "model" -}}
+  {{- $model = . -}}
+{{- end -}}
+
+{{- if .Page.IsTranslated -}}
+  {{- range .Page.Translations -}}
+    {{- if .Language.IsDefault -}}
+      {{- $baseURL := .Page.RelPermalink | replaceRE "\\.html$" "/" -}}
+      {{- $model = printf "%s%s" $baseURL $model -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+<div class="renderer-canvas script">
+  <canvas id="{{ $id }}"></canvas>
+</div>
+
+<script type="text/javascript">
+  const modelUrl = '{{ $model | safeJS }}';
+  const canvas = document.querySelector('#{{ $id | safeJS }}');
+  window.addEventListener('DOMContentLoaded', (event) => {
+    window.initModel(canvas, modelUrl);
+  });
+</script>
+
+{{- define "_partials/shortcodes/hdr-model-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "js/shortcodes/hdr-model.js") "scss" (slice "scss/shortcodes/hdr-model.scss")) | jsonify -}}
+{{- end -}}

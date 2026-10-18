@@ -1,0 +1,33 @@
+.post-body {
+  .hdr-check-result {
+    font-variant: small-caps;
+
+    &.success {
+      font-weight: 200;
+      font-size: smaller;
+      font-style: italic;
+      text-align: end;
+      color: green;
+
+      summary:before {
+        content: '✔';
+        margin-right: .4rem;
+      }
+    }
+
+    &.fail {
+      font-weight: bolder;
+      font-size: xxx-large;
+      text-align: center;
+      margin: 1.4rem;
+      color: red;
+
+
+      summary:before {
+        content: '✘';
+        margin-right: .8rem;
+      }
+
+    }
+  }
+}

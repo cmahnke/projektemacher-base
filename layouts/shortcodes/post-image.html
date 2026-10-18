@@ -1,0 +1,39 @@
+{{/* Parameters */}}
+{{- $section := .Get "section" -}}
+{{- $post := .Get "post" -}}
+{{- $width := .Get "width"  -}}
+{{- $class := .Get "class" -}}
+{{- $link := .Get "link" -}}
+{{- $caption := .Get "caption" -}}
+
+{{- $page := "" -}}
+{{- if and $section $post -}}
+    {{- $page = .Site.GetPage $section $post -}}
+{{- else -}}
+    {{- $page = .GetPage $post -}}
+{{- end -}}
+
+{{- if and $page $page.Params.resources -}}
+    {{- $resources := $page.Params.resources -}}
+    {{- $imageSrc := index (index $resources 0) "src" -}}
+    {{- $image := $page.Resources.GetMatch $imageSrc -}}
+    {{- if $image -}}
+        <figure class="{{ $class }}">
+            {{- if $width -}}
+             {{- $image = $image.Resize (printf "%sx %s" $width "jpg") -}}
+            {{- end -}}
+            {{- if $link -}}<a href="{{ $link }}">{{- end -}}
+            <img src="{{ $image.RelPermalink }}" alt="{{ $caption }}">
+            {{- if $link -}}</a>{{- end -}}
+            <figcaption>
+                {{ $caption }}
+            </figcaption>
+        </figure>
+    {{- else -}}
+        <div class="image-viewer-error">Couldn't load image {{ $imageSrc }}</div>
+    {{- end -}}
+{{/*
+    */}}
+{{- else -}}
+    <div class="image-viewer-error">Couldn't find post "{{ $post }}"</div>
+{{- end -}}

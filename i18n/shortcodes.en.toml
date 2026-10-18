@@ -1,0 +1,22 @@
+# Shortcodes
+
+[hdrCheck]
+other = "HDR check"
+
+[hdrNotSupported]
+other = "Your browser doesn't support HDR, please retry with a recent Cromium-based browser like Chrome, Edge or Brave!"
+
+[hdrSupported]
+other = "Your browser supports HDR!"
+
+[hdrCanvasNotSupported]
+other = "The canvas element of your browser doesn't support HDR, please retry with a recent Cromium-based browser like Chrome, Edge or Brave!"
+
+[hdrCanvasSupported]
+other = "The canvas element of your browser supports HDR!"
+
+[enlargeImage]
+other = "Enlarge image:"
+
+[3d-model]
+other = "3D model"

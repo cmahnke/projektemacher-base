@@ -102,6 +102,18 @@ for SCRIPT in $PWD/themes/projektemacher-base/scripts/init/*.sh ; do
 done
 ```
 
+# Shortcode dependencies
+
+Some shortcodes shipped with the theme require additional NPM packages and module mounts in the **site**:
+
+| Shortcode | NPM package | Required mount |
+|-----------|-------------|----------------|
+| `gallery` | `photoswipe` | `source = "node_modules/photoswipe/dist"`, `target = "assets/css/photoswipe"` |
+| `model` | `three` | – |
+| `chart` / `csv-chart` | `echarts` | – |
+
+The shortcode asset pipeline (`partials/shortcodes/shortcode-helper.html`) only includes these on pages actually using the shortcode. Missing mounts produce a `warnf` message, the shortcode markup itself still renders.
+
 # Development dependencies
 
 ## Dart SASS on Mac OS

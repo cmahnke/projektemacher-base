@@ -1,0 +1,10 @@
+{{- $model := "" -}}
+{{- with .Get "model" -}}
+  {{- $model = . -}}
+{{- end -}}
+
+{{- partial "3d/model.html" (dict "context" . "model" $model ) -}}
+
+{{- define "_partials/shortcodes/model-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/model.ts") "scss" (slice "scss/shortcodes/model.scss")) | jsonify -}}
+{{- end -}}
