@@ -1045,8 +1045,9 @@ progressively enhanced and self-installing:
   built and emitted by the partial itself — no `main.js` wiring needed).
 - Once the script runs, the `<label>` is replaced by a real `<button>`
   with `aria-expanded`/`aria-controls`, the list gets `inert` while
-  closed, Escape closes the menu and returns focus to the toggle, and
-  the menu closes on outside clicks or when focus leaves it.
+  closed (only while the CSS actually hides it, see below), Escape
+  closes the menu and returns focus to the toggle, and the menu closes
+  on outside clicks or when focus leaves it.
 - `assets/scss/menu.scss` keys the open state on `data-menu-open` /
   `data-menu-js` attributes instead of the sibling chain and adds
   `:focus-visible` styles plus `prefers-reduced-motion` handling.
@@ -1080,7 +1081,17 @@ progressively enhanced and self-installing:
 - With JavaScript enabled the toggle is announced as a button
   ("Open main navigation"/"Close main navigation", `aria-expanded`).
 - Links in the closed mobile menu are no longer tabbable (`inert`),
-  including when consumer CSS overrides the hiding rules.
+  including when consumer CSS overrides the hiding rules. The script
+  applies `inert` only while the closed list is actually hidden by CSS
+  (detected via `getComputedStyle`) — an always-visible desktop
+  navigation (`nav.top-menu` shown inline above the mobile breakpoint)
+  is never inerted, and viewport resizes re-sync the state. Consumers
+  with custom breakpoints (e.g. `35em` instead of the theme's `45em`)
+  need no JavaScript-side changes.
+- When the viewport crosses into the desktop regime (toggle button
+  rendered `display: none`) while the menu is open, the script
+  normalizes the state to closed, since the open state is meaningless
+  without a rendered toggle.
 - Escape, outside clicks and focus leaving the open mobile menu close it
   and return focus to the toggle.
 
@@ -1089,6 +1100,9 @@ progressively enhanced and self-installing:
 - Keyboard only: tab to the burger button, toggle with Enter/Space,
   close with Escape (focus returns to the button), tab through the
   links while open.
+- Desktop (viewport wider than the menu breakpoint): confirm the inline
+  navigation links are clickable and tabbable and that no `inert`
+  attribute is set on the list.
 - Screen reader: the toggle announces name, role and
   expanded/collapsed state; list links are unreachable while collapsed.
 - Disable JavaScript and confirm the menu still opens/closes via the

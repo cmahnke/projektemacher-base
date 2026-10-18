@@ -9,8 +9,9 @@
  *
  *   - aria-expanded / aria-controls on the toggle
  *   - state exposed via data-menu-open on the <nav> (CSS keys off this)
- *   - inert on the closed list so links stay unreachable even if
- *     consumer CSS un-hides them
+ *   - inert on the closed list - but only while the CSS actually hides
+ *     it (mobile regime). An always-visible desktop navigation is never
+ *     inerted, and viewport changes re-sync the state.
  *   - Escape closes and returns focus to the toggle
  *   - closes on outside pointerdown and when focus leaves the menu
  *   - stays in sync with the (hidden) checkbox so consumer toggle
@@ -45,6 +46,14 @@ function setInert(element: HTMLElement, inert: boolean): void {
       element.removeAttribute('inert');
     }
   }
+}
+
+function isHiddenByCss(element: HTMLElement): boolean {
+  // Detect the mobile regime from the rendered styles instead of a
+  // hardcoded media query: the breakpoint is a SCSS value that
+  // consumers may override, so a matchMedia width could desync.
+  const style = getComputedStyle(element);
+  return style.visibility === 'hidden' || style.display === 'none';
 }
 
 function resolveCheckbox(nav: HTMLElement, label: HTMLLabelElement | null): HTMLInputElement | null {
@@ -124,7 +133,10 @@ function enhanceMenu(nav: HTMLElement): void {
     button.setAttribute('aria-expanded', open ? 'true' : 'false');
     button.setAttribute('aria-label', open ? labels.close : labels.open);
     if (list) {
-      setInert(list, !open);
+      // Only inert the closed list while the CSS actually hides it
+      // (mobile regime). An always-visible desktop menu must stay
+      // interactive - inert there would block pointer events and focus.
+      setInert(list, !open && isHiddenByCss(list));
     }
   };
 
@@ -163,6 +175,30 @@ function enhanceMenu(nav: HTMLElement): void {
       setOpen(true);
     }
   }
+
+  // Keep inert (and the open state) in sync across viewport changes:
+  // the mobile regime hides the closed list, the desktop regime shows
+  // it. The breakpoint lives in consumer SCSS, so the regime is
+  // detected from the rendered styles instead of a matchMedia width.
+  let resizeFrame = 0;
+  window.addEventListener(
+    'resize',
+    () => {
+      if (resizeFrame) {
+        return;
+      }
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        if (isOpen(nav) && getComputedStyle(button).display === 'none') {
+          // Desktop regime: the toggle is not rendered, so a stale
+          // open state would be meaningless - normalize to closed.
+          setOpen(false);
+        }
+        setOpen(isOpen(nav));
+      });
+    },
+    { passive: true },
+  );
 
   // All wiring succeeded - switch the CSS from the checkbox hack to the
   // JS-controlled regime.
