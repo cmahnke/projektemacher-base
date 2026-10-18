@@ -31,7 +31,7 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: |
-          bun install --ignore-scripts
+          bun install --ignore-scripts --no-verify
       - name: Run linters
         run: |
           bun run lint

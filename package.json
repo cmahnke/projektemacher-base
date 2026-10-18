@@ -49,6 +49,7 @@
     "@types/howler": "^2.2.13",
     "@types/js-cookie": "^3.0.6",
     "@types/pdfobject": "^2.2.5",
+    "@types/three": "^0.186.0",
     "axe-core": "^4.14.0",
     "cesium": "1.144.0",
     "cors": "^2.8.6",

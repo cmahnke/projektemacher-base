@@ -1,5 +1,10 @@
 import {checkHDRCanvas, initHDRCanvas, Float16Image} from '@projektemacher/hdr-canvas';
-import type { HDRHTMLCanvasElement } from "@projektemacher/hdr-canvas";
+
+declare global {
+  interface Window {
+    initCanvas: typeof initCanvas;
+  }
+}
 
 const colors: Record<string, number> = { red: 0, green: 0, blue: 0 };
 let rec210hglImage: Float16Image;

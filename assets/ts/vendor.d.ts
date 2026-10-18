@@ -5,6 +5,35 @@
  * require the augmented module to be typed already.
  */
 
+/*
+ * `@projektemacher/hdr-canvas` declares `HDRHTMLCanvasElement` but doesn't
+ * export it — mirror its shape globally so the type stays usable.
+ */
+interface HDRHTMLCanvasElement extends HTMLCanvasElement {
+  configureHighDynamicRange(options: { mode?: string }): void;
+  _getContext(contextId: string, options?: object): RenderingContext | null;
+}
+
+declare module '@projektemacher/hdr-canvas/three/WebGPU.js' {
+  const WebGPU: {
+    isAvailable(): boolean;
+  };
+  export default WebGPU;
+}
+
+declare module '@projektemacher/hdr-canvas/three/HDRWebGPURenderer.js' {
+  export class HDRWebGPURenderer {
+    domElement: HTMLCanvasElement;
+    constructor(options?: { canvas?: HTMLCanvasElement; antialias?: boolean });
+    setPixelRatio(value: number): void;
+    setSize(width: number, height: number): void;
+    setAnimationLoop(callback: () => void): void;
+    setClearColor(color: number, alpha?: number): void;
+    render(scene: unknown, camera: unknown): void;
+  }
+  export default HDRWebGPURenderer;
+}
+
 declare module 'tify' {
   interface TifyOptions {
     container?: string | HTMLElement;
