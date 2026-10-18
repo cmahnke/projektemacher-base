@@ -1,3 +1,6 @@
+$box-background: #f1ffb7;
+$box-border: #ff5477;
+
 .gallery {
   display: flex;
   flex-direction: row;
@@ -15,7 +18,7 @@
 
   @media (max-width: 35em) {
     flex-direction: column;
-    gap: 2vwh;
+    gap: 2vw;
     padding: .6em;
   }
 

@@ -123,6 +123,10 @@ disablePathToLower = true
   url = 'https://cmahnke.github.io/projektemacher-base/config/'
   weight = 6
 [[languages.en.menu.main]]
+  name = 'Search'
+  url = 'https://cmahnke.github.io/projektemacher-base/search/'
+  weight = 7
+[[languages.en.menu.main]]
   name = 'Templates'
   url = 'https://cmahnke.github.io/projektemacher-base/templates/'
   weight = 8
