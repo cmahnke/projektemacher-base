@@ -49,7 +49,7 @@
   {{- end -}}
   {{- $out = $entries -}}
 {{- else -}}
-  {{- if eq $urlBase "" -}}
+  {{- if eq (len $canvasNames) 0 -}}
     {{- /* Deployment prefix, identical to layouts/partials/iiif/3/manifest.json */ -}}
     {{- $defaultContentPage := $page -}}
     {{- if hugo.IsMultilingual -}}
