@@ -1023,6 +1023,64 @@ that already prunes dead browsers — sites can narrow it further (e.g. add
 Verify: `hugo` builds green, the affected pages render unchanged in current
 Chrome, Firefox and Safari, and `npm run lint` passes.
 
+## Migrate SCSS from `@import` to `@use`
+
+Dart Sass has deprecated `@import` (removal is planned for Dart Sass 3.0),
+and the Hugo `dartsass` transpiler surfaces the deprecation warnings during
+the build. The theme still uses `@import` throughout
+(`assets/scss/fonts/*.scss`, `assets/scss/lint_dummy.scss`, the component
+styles) — existing builds keep working, so the migration is optional, but
+new SCSS should use the module system (`@use`/`@forward`) from the start.
+
+`@use` changes evaluation semantics (modules are evaluated once, members are
+namespaced, configuration happens via `@use … with (…)`), so a plain "build
+still succeeds" is not enough. Verify the migration by direct comparison:
+
+1. Build with the current (old) implementation and keep the compiled CSS:
+
+   ```bash
+   hugo --destination /tmp/css-old
+   ```
+
+2. Apply the migration: `@import` → `@use`, shared partials → `@forward`,
+   entry-point variable overrides → `@use … with (…)`.
+3. Rebuild and compare:
+
+   ```bash
+   hugo --destination /tmp/css-new
+   diff -r /tmp/css-old/css /tmp/css-new/css
+   ```
+
+   The compiled stylesheets land in the `css/` directory of the publish
+   directory (see `layouts/partials/html/head/style.html` and
+   `layouts/partials/fonts/css.html`). Diff only the CSS — the HTML embeds
+   build timestamps.
+4. Acceptable differences: rule order changes caused by import
+   reorganization, comments and sourcemap paths. Anything else — missing
+   rules, changed selectors or values — means the migration changed
+   behaviour; fix it before committing.
+
+Typical pitfalls:
+
+* `@use`/`@forward` statements must come before any other rules in a file.
+* Variables overridden *before* an `@import` become module configuration —
+  e.g. `@use "theme" with ($font-body-font: …)`. A module can be configured
+  only once per compilation, so configure it in the entry point.
+* Members no longer leak between modules: every file must `@use` its own
+  dependencies (`menu.scss` and `audioplayer.scss` each import
+  `functions/color` themselves).
+* Plain-CSS imports stay plain CSS statements — `@import "lucienne.css"`
+  and the `ol` include (see the comment in `assets/scss/openlayers.scss`)
+  are deliberately kept as plain CSS imports by dart-sass. `@use` with the
+  same load paths (configured via `includePaths` in `style.html`) resolves
+  modules instead — decide per case and let the comparison confirm the
+  effect.
+* Keep `assets/scss/lint_dummy.scss` importing every component, so
+  `npm run lint-scss` still covers the whole tree.
+
+Verify afterwards: `npm run lint` passes and a visual smoke check of the
+affected pages shows no styling changes.
+
 # Upgrading pages that load styles through `partials/head.html`
 
 `layouts/partials/head.html` no longer compiles and links `scss/base.scss`
@@ -1273,3 +1331,129 @@ unnamed buttons. Changes:
   etc.) need to target `h2` instead.
 - No other markup changes - the controls keep their classes and
   visuals.
+
+# Mandatory post-upgrade checks
+
+The checks in this section are **mandatory**: every consuming site should
+apply them with each theme upgrade. They are not tied to a single release —
+they keep site-owned templates aligned with the theme's Hugo baseline and
+the site's documentation in sync with what it actually ships.
+
+## 1. Required steps for all consuming sites
+
+### Fix outdated Hugo constructs
+
+Sites that copied theme templates in earlier days (or started as forks)
+often carry older Hugo template style. Nothing below has been removed, but
+it should be modernized — the theme's development uses the right-hand
+column, and newer Hugo features expect it:
+
+| Outdated | Replacement |
+|---|---|
+| `.Site.Params.…`, `$.Site.Title`, … | Global `site.` function: `site.Params.…`, `site.Title`, … |
+| `$.Paginator` / `.Paginate …` | Global `pagination.` function (Hugo ≥ 0.128.0) with the `[pagination]` site configuration |
+| `$.Scratch.Set` / `.Get` / `.Delete` | Plain variables with reassignment (`$x = …` inside `with` blocks, partial return values) |
+| bare `substr` | `strings.Substr` — same function, namespaced form (`substr` is just its alias) |
+
+Minor cleanups for the same pass:
+
+* Copies that call *and* redefine the internal alias template
+  (`_internal/alias.html`, see `layouts/redirect/single.html` for the
+  pattern) — drop the local redefinition, Hugo's built-in alias template
+  covers redirects.
+* Canonical camelCase for configuration keys: `canonifyURLs`, not
+  `canonifyurls` — Hugo matches keys case-insensitively, but the
+  documentation and tooling use the camelCase form.
+* Element IDs built from `now.UnixNano` inside `md5` make builds
+  nondeterministic — replace them with deterministic IDs (a page-scoped
+  counter, or a hash over stable content) so rebuilds produce identical
+  HTML.
+
+Find the candidates from the site root — site-owned layouts first; for
+copied theme files run the deduplication scan under "Housekeeping" first:
+
+```bash
+# 1. .Site. / $.Site. → site.
+grep -rnE '\$?\.Site\.' layouts/
+
+# 2. .Paginator / .Paginate → pagination function
+grep -rnE 'Paginat(e|or)' layouts/
+
+# 3. Scratch → plain variables
+grep -rn 'Scratch' layouts/
+
+# 4. bare substr → strings.Substr (exclude JS substring() calls; strings.Substr doesn't match)
+grep -rn 'substr' layouts/ | grep -v 'substring'
+
+# 5. nondeterministic IDs
+grep -rn 'UnixNano' layouts/
+
+# 6. internal alias template shadowing
+grep -rn '_internal/alias' layouts/
+```
+
+### Review the About page dependency list
+
+If the site documents the software it uses (typically on the About page),
+review that list after every upgrade against what the site actually loads:
+remove entries for libraries that are no longer in use and add newly
+introduced ones.
+
+Only **user-facing** libraries and fonts belong on such a list — everything
+a visitor can see or hear: viewer frameworks (three.js, OpenSeadragon,
+tify, A-Frame), map libraries (OpenLayers), players (howler, PDFObject),
+search (Pagefind), diagram/timeline rendering (mermaid, vis-timeline) and
+the font families in use. Build tooling and internal helpers (linters,
+bundlers, consent plumbing) don't belong there.
+
+Reference: the theme's current user-facing stack (see the `assets/ts/`
+imports and `package.json`) is:
+
+| Library | Used for |
+|---|---|
+| tify | IIIF presentation viewer |
+| OpenLayers, ol-mapbox-style | Maps and the IIIF image viewer |
+| @projektemacher/hdr-canvas | HDR rendering in the IIIF image viewer |
+| mermaid | Diagrams (`mermaid` shortcode) |
+| howler | Audio player |
+| pdfobject | PDF viewer and preview |
+| vis-timeline | Timeline |
+| Pagefind | Search |
+| A-Frame | 3D models (loaded from CDN) |
+| @projektemacher/lucienne | Generative art (`lucienne` shortcode) |
+| Bootstrap (JS) | Tabs in the horizontal timeline only |
+
+Known stale entries to watch for: the theme does not use **OpenSeadragon**
+or **three.js** directly anymore — OpenSeadragon ships only as tify's
+internal dependency (and the theme's `package.json` pins a different major
+version than tify requires), three.js is an unused devDependency. Remove
+them if they are listed standalone. Fonts come from the Fontsource npm
+packages via `scripts/init/get-fonts.sh` (see the fonts migration guide
+above) — the About page should list the families actually imported by the
+site's SCSS.
+
+Check what a site really bundles against its About page:
+
+```bash
+# 1. TypeScript/JS module imports in the site's (and theme's) assets
+grep -rhoE "from '[^']+'" assets/ts | sort -u
+
+# 2. External scripts loaded from layouts (CDN includes)
+grep -rhoE 'src="https?://[^"]+"' layouts/ | sort -u
+```
+
+## 2. Verification
+
+1. `hugo` builds without errors, `npm run typecheck` and `npm run lint`
+   pass.
+2. Optional, but recommended: run a Lighthouse scan —
+   `npm run check:lighthouse` (`scripts/check-lighthouse.mjs`). The script
+   defaults to the site's `baseURL` (read from the Hugo configuration,
+   `http://localhost:1313/` as fallback) and accepts `--url` for another
+   URL, `--urls-file` for a JSON page list (e.g. `test-urls.json`),
+   `--output` to write the markdown report to a file and `--categories`
+   to restrict the scan (`performance`, `accessibility`,
+   `best-practices`, `seo`). The companion accessibility scan is
+   `npm run check:a11y` — both are documented in "Add accessibility
+   checks" (Housekeeping above). Run them against the production site as
+   well, not only the local build.
