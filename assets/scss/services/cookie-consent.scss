@@ -1,8 +1,15 @@
 /* Inspired by https://defency.eu/posts/2023/10/hugo.io-how-to-integrate-cookie-consent-for-google-analytics/ */
 
-$accept-color: #0fff50;
-$decline-color: #fd1c03;
-$button-background: gray;
+/*
+ * Button colors are chosen for WCAG 1.4.3 contrast (≥ 4.5:1) against
+ * their own background: white on #595959 ≈ 6.3:1, white on the dark
+ * green/red accents ≈ 5:1 and more. The previous combination (gray
+ * buttons at opacity 0.8 with #0fff50/#fd1c03 text) failed badly -
+ * the red deny label was unreadable.
+ */
+$accept-background: #1e7d32;
+$decline-background: #b3261e;
+$button-background: #595959;
 
 #cookie-notice {
   font-size: medium;
@@ -53,8 +60,6 @@ $button-background: gray;
     line-height: 1;
     vertical-align: middle;
     margin: .6em;
-    opacity: 0.8;
-    transition: 0.3s;
     display: inline-block;
     text-decoration: none;
     cursor: pointer;
@@ -63,11 +68,13 @@ $button-background: gray;
       vertical-align: sub;
     }
 
+    @media (prefers-reduced-motion: no-preference) {
+      transition: 0.3s;
+    }
+
     &:hover {
-      opacity: 1;
       box-shadow:
                   -4px -4px lighten($button-background, 30%);
-      transition: 0.3s;
     }
 
     &:active {
@@ -76,21 +83,37 @@ $button-background: gray;
     }
 
     &.cookie-notice-accept {
-      color: $accept-color;
+      background-color: $accept-background;
     }
 
     &.cookie-notice-deny {
-      color: $decline-color;
+      background-color: $decline-background;
     }
 
     &.cookie-notice-more {
       color: white;
     }
 
+    &:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+
+  }
+
+  .close:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
   }
 
   &.hidden {
-    animation: hide 500ms forwards;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: hide 500ms forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      display: none;
+    }
   }
 
   @keyframes hide {

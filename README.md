@@ -11,6 +11,36 @@ git submodule add https://github.com/cmahnke/projektemacher-base.git themes/proj
 
 # Site configuration
 
+## CSS deduplication (PostCSS)
+
+On production builds the theme runs the concatenated stylesheet through
+PostCSS (`postcss-discard-duplicates`) to remove rules duplicated across
+the individually compiled SCSS resources and the plain CSS resources. The
+PostCSS configuration ships with the theme
+(`assets/_jsconfig/postcss.config.js`) and is picked up automatically by
+Hugo — no PostCSS setup is needed in the site. The required npm packages
+(`postcss`, `postcss-cli`, `postcss-discard-duplicates`) are part of the
+theme's `package.json` and installed with the site's dependencies by
+`scripts/init/package.json.sh`.
+
+Notes:
+
+* The step is skipped for `hugo server` (development) builds.
+* It can be turned off with:
+
+```toml
+[params.css]
+  dedupe = false
+```
+
+* Without a working Node.js/npm setup the production build fails with
+  Hugo's "You need to install PostCSS" error — run the npm install (see
+  above) or disable the feature. A missing `postcss-discard-duplicates`
+  package alone is not fatal; the CSS then passes through unprocessed.
+* Sites providing their own PostCSS configuration should place it in
+  `assets/_jsconfig/postcss.config.js` of the site — it takes precedence
+  over the theme's file.
+
 ## IIIF manifests
 
 To generate IIIF JSON manifests you need to add the `JSON` output format to the site `config.toml`.
@@ -54,6 +84,12 @@ ERROR error building site: "art-x-3d.de": language: tag is not well-formed
 ```
 
 That's Hugo's i18n loader parsing the fragment filename `3d.de.toml` as a BCP47 language tag (Go maps the unknown base `3d` to the private-use tag `art-x-3d`). Fix: make sure the fragments are deleted before building — if `i18n/de.toml`/`i18n/en.toml` already exist the merge script skips and leaves them, so either delete the `*.<lang>.toml` fragments manually or remove the merged files and re-run `./scripts/init/i18n.sh i18n`.
+
+**Translation completeness:** CI runs `python ./scripts/check_i18n.py i18n` (the `test_i18n` job) which fails when any language is missing keys that another language defines. The check works on merged files and unmerged fragments alike, so it can also be run locally:
+
+```
+python ./scripts/check_i18n.py i18n
+```
 
 To enable the merging of node dependencies including the `script` section you may want to add the following snippet to your setup
 

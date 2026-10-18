@@ -40,14 +40,32 @@ $collapse-icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' vi
       }
     }
 
+    /*
+     * The copy control is an <i role="button"> and the collapse control
+     * a label for a visually hidden checkbox - both need a visible
+     * focus indicator (WCAG 2.4.7).
+     */
+    .copy:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    &:has(input:focus-visible) .collapse {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
     .copy:after {
       content: url($copy-icon);
     }
 
     .collapse {
       &:after {
-        transition: transform .6s;
         content: url($collapse-icon);
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition: transform .6s;
+        }
       }
     }
   }
@@ -64,7 +82,10 @@ $collapse-icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' vi
   }
 
   .highlight {
-    transition: all .6s;
+    @media (prefers-reduced-motion: no-preference) {
+      transition: all .6s;
+    }
+
     transform: scaleY(1);
     height: auto;
 

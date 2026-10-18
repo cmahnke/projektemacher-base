@@ -4,15 +4,28 @@ import frontmatter
 #sys.path.append(str(Path(__file__).parent))
 from PyHugo.Util import Wikidata
 
+
+def _deepMerge(base, overlay):
+    """Merge `overlay` into `base`, recursing into dicts instead of replacing them."""
+    for key, value in overlay.items():
+        if key in base and isinstance(base[key], dict) and isinstance(value, dict):
+            _deepMerge(base[key], value)
+        else:
+            base[key] = value
+
 class Site:
     CONTENT_PATH = "./content/"
-    config_files = ["config.toml", "hugo.toml"]
+    config_files = ["config.toml", "hugo.toml", "config/_default/config.toml", "config/_default/hugo.toml"]
 
     def __init__(self, base_dir):
         config_file = self.guess_base(base_dir)
         if config_file is None:
             raise ValueError(f"Could't find config file in {base_dir}")
-        self.base_dir = os.path.dirname(config_file)
+        # Configurations in the config directory are relative to the site root
+        if os.path.basename(os.path.dirname(config_file)) == "_default":
+            self.base_dir = os.path.dirname(os.path.dirname(os.path.dirname(config_file)))
+        else:
+            self.base_dir = os.path.dirname(config_file)
         self.config = toml.load(config_file)
         self.translations = self.load_i18n()
 
@@ -41,16 +54,19 @@ class Site:
             if not os.path.exists(path) or not os.path.isdir(path):
                 return
             for file in os.listdir(path):
-                if file.endswith(".toml"):
-                    lang = file[:-5][-2:]
-                    if lang not in translations:
-                        translations[lang] = {}
-                    with open(os.path.join(path, file), "r") as f:
-                        data = toml.load(f)
-                        for key, value in data.items():
-                            if key not in translations:
-                                translations[key] = {}
-                            translations[key][lang] = value
+                if not file.endswith(".toml"):
+                    continue
+                # Language is the last dotted segment of the file name (theme.en.toml -> en, en.toml -> en)
+                lang = os.path.splitext(os.path.splitext(file)[0])[1].lstrip(".")
+                if not lang:
+                    logging.debug(f"Skipping i18n file '{file}' without language suffix")
+                    continue
+                with open(os.path.join(path, file), "r") as f:
+                    data = toml.load(f)
+                    for key, value in data.items():
+                        if key not in translations:
+                            translations[key] = {}
+                        translations[key][lang] = value
 
         themes = self.config.get("theme", [])
         if isinstance(themes, str):
@@ -97,9 +113,12 @@ class Config(Site):
                         data = toml.load(f)
                         key = filename.replace(".toml", "")
                         if key == "hugo" or key == "config":
-                            config.update(data)
+                            _deepMerge(config, data)
                         else:
-                            config[key] = data
+                            if key in config and isinstance(config[key], dict) and isinstance(data, dict):
+                                _deepMerge(config[key], data)
+                            else:
+                                config[key] = data
         return config
 
     def baseURL(self):
@@ -145,42 +164,64 @@ class Post:
         self.section = False
         self.resources = {}
         self.config = config
+        self._unsuffixed = False
         if isinstance(path, dict):
             self._fromDict(path)
         elif isinstance(path, str):
-            self._load(path, lang)
-        elif isinstance(path, pathlib.Path) and lang is None:
+            self.post[lang] = self._load(path, lang)
+            self.files[lang] = path
+            self._unsuffixed = lang is None
+        elif isinstance(path, pathlib.Path):
             files = self._findContentFiles(path)
-            self._fromDict(files)
-        elif isinstance(path, pathlib.Path) and lang is not None:
-            files = self._findContentFiles(path)
-            if config and config.defaultLanguage and lang == config.defaultLanguage:
-                lang = None
-                self._fromDict(files[lang])
-            else:
+            if not files:
+                raise ValueError(f"No content files found in {path}")
+            if lang is not None and lang in files:
+                self._fromDict({lang: files[lang]})
+            elif lang is not None and lang not in files and not (config and config.defaultLanguage and lang == config.defaultLanguage):
                 raise NotImplementedError(f"Handling pathlib.Path with lang is not implemented yet! (path: {path}, lang: {lang}, config: {config}), files found: {files}")
+            else:
+                # Without a language (or for the default language) the unsuffixed file is used
+                self._fromDict({None: files[None]})
         else:
             raise NotImplementedError(f"Handling {type(path)} is not implemented!")
-        self._findResources(lang)
+        self._findResources()
         self.path = pathlib.Path(self.files[list(self.files.keys())[0]]).parents[0]
-        if not None in self.post:
+        if None not in self.post:
             self.post[None] = self.post[list(self.post.keys())[0]]
             self.files[None] = self.files[list(self.files.keys())[0]]
-        if self.files[None].startswith("_") or os.path.basename(self.files[None]).startswith("_"):
+        if os.path.basename(self.files[None]).startswith("_"):
             self.section = True
         self.outputDir = self._outputDir(lang)
         self.draft = self.getDraft(lang)
-        if config and config.defaultLanguage:
+        # The unsuffixed file represents the default language
+        if config and config.defaultLanguage and self._unsuffixed and config.defaultLanguage not in self.post:
             self.post[config.defaultLanguage] = self.post[None]
+            if config.defaultLanguage not in self.files:
+                self.files[config.defaultLanguage] = self.files[None]
         if config and not self.draft:
             self.url = self.config.baseURL().rstrip("/") + "/" + os.path.relpath(self.files[None], self.config.contentDir()).replace(".md", ".html").replace("\\", "/")
         else:
             self.url = None
 
+    def _resolveLang(self, lang=None):
+        """Resolve `lang` to a loaded language, falling back to the post's default."""
+        if lang in self.post:
+            return lang
+        if None in self.post:
+            return None
+        if self.post:
+            return next(iter(self.post))
+        return None
+
     def _fromDict(self, dict):
+        loaded = {}
         for lang, file in dict.items():
             self.files[lang] = file
-            self._load(file, lang)
+            # The same file can be referenced by multiple languages (unsuffixed default language)
+            if file not in loaded:
+                loaded[file] = self._load(file, lang)
+            self.post[lang] = loaded[file]
+        self._unsuffixed = None in dict
 
     def _findContentFiles(self, path: pathlib.Path):
         postFiles = {}
@@ -195,18 +236,20 @@ class Post:
                     postFiles[self.config.defaultLanguage] = os.path.join(path, file)
         return postFiles
 
-    def _findResources(self, lang):
-        if not lang in self.resources:
-            self.resources[lang] = []
-        if "resources" in self.post[lang].metadata:
-            for resource in self.post[lang].metadata["resources"]:
-                self.resources[lang].append(resource)
+    def _findResources(self, lang=None):
+        langs = [lang] if lang is not None else list(self.post.keys())
+        for l in langs:
+            if l not in self.resources:
+                self.resources[l] = []
+            if "resources" in self.post[l].metadata:
+                for resource in self.post[l].metadata["resources"]:
+                    self.resources[l].append(resource)
 
     def _load(self, path, lang):
         if os.path.isdir(path):
             raise Exception(f"{path} is a directory")
         with open(path) as f:
-            self.post[lang] = frontmatter.load(f)
+            return frontmatter.load(f)
 
     def _findSection(self, lang):
         if self.section:
@@ -215,7 +258,7 @@ class Post:
         if parent == self.path:
             return None
         try:
-            parentPost = Post(parent, lang, self.config)
+            parentPost = Post(pathlib.Path(parent), lang, self.config)
             if parentPost.section:
                 return parentPost
             else:
@@ -225,6 +268,7 @@ class Post:
             return None
 
     def getOutputs(self, lang=None):
+        lang = self._resolveLang(lang)
         outputs = []
         if "outputs" in self.post[lang].metadata:
             outputs.append(self.post[lang].metadata["outputs"])
@@ -253,7 +297,7 @@ class Post:
         publish_dir = self.config.publishDir()
         rel_path = Path(os.path.relpath(self.files[lang], self.config.contentDir())).parent
         outputDirs = {}
-        if lang and self.config and lang is not self.config.defaultLanguage:
+        if lang and self.config and lang != self.config.defaultLanguage:
             for l in self.config.langs:
                 if l == lang:
                     outputDirs[l] = os.path.join(publish_dir, lang, rel_path)
@@ -261,38 +305,21 @@ class Post:
             outputDirs[None] = os.path.join(publish_dir, rel_path)
         return outputDirs
 
-    def _findOutputs(self, lang):
-        buildins = ["index.html"]
-        outputs = self.getOutputs(lang)
-        outputfiles = []
-        outputs.remove("html")
-        if self.config is not None and "outputFormats" in self.config.config:
-            for output in outputs:
-                if output in self.config.config["outputFormats"]:
-                    outputfiles.append(self.config.config["outputFormats"][output]["baseName"] + "." + output)
-        if self.config is None:
-            return None
-        publish_dir = self.config.publishDir()
-        rel_path = os.path.relpath(self.files[lang], self.config.content_dir()).replace(".md", ".html")
-        if rel_path.endswith("index.html"):
-            rel_path = rel_path[:-10]
-        raise NotImplementedError(f"Output formats {outputs} are not implemented yet! (config: {self.config.config})")
-
     def getFile(self, lang=None):
-        return self.files[lang]
+        return self.files[self._resolveLang(lang)]
 
     def getURL(self):
         return self.url
 
     def getContent(self, lang=None):
-        if hasattr(self, "post"):
-            return self.post[lang].content
+        if hasattr(self, "post") and self.post:
+            return self.post[self._resolveLang(lang)].content
         return None
 
     def getMetadata(self, lang=None):
-        if hasattr(self, "post"):
-            return self.post[lang].metadata
-        return None
+        if hasattr(self, "post") and self.post:
+            return self.post[self._resolveLang(lang)].metadata
+        return {}
 
     def getWikidata(self, lang=None):
         metadata = self.getMetadata(lang)
@@ -310,36 +337,46 @@ class Post:
             lang = None
         if hasattr(self, "post") and lang in self.post:
             self.post[lang].metadata[key] = value
-            with open(self.files[lang], "wb") as f:
+            with open(self.files[lang], "w", encoding="utf-8") as f:
                 frontmatter.dump(self.post[lang], f)
 
     def getResources(self, lang=None):
-        if len(self.resources[lang]) == 0:
+        lang = self._resolveLang(lang)
+        if lang not in self.resources and None in self.resources:
+            lang = None
+        if len(self.resources.get(lang, [])) == 0:
             return None
         return self.resources[lang]
 
     def getResourcesByType(self, type, lang=None):
+        lang = self._resolveLang(lang)
+        if lang not in self.resources and None in self.resources:
+            lang = None
         retRes = []
-        if len(self.resources[lang]) == 0:
+        if len(self.resources.get(lang, [])) == 0:
             return None
         for r in self.resources[lang]:
             if "src" in r:
                 t = mimetypes.guess_type(r["src"])
-                if t[0].startswith(type):
+                if t[0] is not None and t[0].startswith(type):
                     retRes.append(r)
         if len(retRes) == 0:
             return None
         return retRes
 
     def getDraft(self, lang=None):
-        if "draft" in self.post[lang].metadata:
-            return self.post[lang].metadata["draft"]
+        metadata = self.getMetadata(lang)
+        if "draft" in metadata:
+            return metadata["draft"]
         return False
 
     def getTags(self, lang=None):
         tags = {}
-        if "tags" in self.post[lang].metadata:
-            tag_names = self.post[lang].metadata["tags"]
+        metadata = self.getMetadata(lang)
+        if "tags" in metadata:
+            tag_names = metadata["tags"]
+            if isinstance(tag_names, str):
+                tag_names = [tag_names]
             for tag in tag_names:
                 if tag == "":
                     continue
@@ -457,32 +494,40 @@ class Content:
         return postFiles
 
 class Tags(Content):
-    def __init__(self, path="tags"):
-        super(path)
+    def __init__(self, path="tags", config=None):
+        super().__init__(path=path, config=config)
 
-class Tag (Post):
+class Tag(Post):
     _tag_path = "./tags/"
 
     def __init__(self, tag, lang=None, ctx = None):
         self.tag = tag
         self.lang = lang
         self.files = {}
+        self.post = {}
+        self.resources = {}
+        self.section = False
+        self.config = None
         if ctx is not None:
             self.site = Site(ctx)
             self.tag_dir = Path(self.site.contentDir()).joinpath(self._tag_path, tag.replace(" ", "-"))
             if os.path.exists(self.tag_dir):
-                super().__init__(self.tag_dir, self.lang)
+                # Load all language variants of the tag page
+                super().__init__(self.tag_dir)
 
 class Published:
     def __init__(self, config, pattern="*.html"):
         self.config = config
-        self.publishDir = config.publishDir()
+        # Hugo resolves a relative publishDir against the site's base directory
+        self.publishDir = Path(config.base_dir) / config.publishDir()
         self.baseUrl = config.baseURL().rstrip("/")
         self.pattern = pattern
 
     def postList(self, subDir=""):
         urls = []
-        search_path = self.publishDir / subDir
+        search_path = self.publishDir
+        if subDir:
+            search_path = search_path / subDir
         for file_path in search_path.rglob(self.pattern):
             relative_path = file_path.relative_to(self.publishDir)
             url_path = relative_path.as_posix()

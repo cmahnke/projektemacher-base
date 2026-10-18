@@ -109,10 +109,13 @@ $burger-menu-secondary: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org
             width: auto;
             border-top: solid 2px $font-color-body;
             border-bottom: solid 2px $font-color-body;
-            transition:
-                opacity 0.25s,
-                max-height 0.15s linear;
             height: auto;
+
+            @media (prefers-reduced-motion: no-preference) {
+                transition:
+                    opacity 0.25s,
+                    max-height 0.15s linear;
+            }
         }
 
         @media (max-width: 45em) {
@@ -181,10 +184,61 @@ $burger-menu-secondary: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org
     }
 }
 
+/*
+ * Regime 2: force the no-JS checkbox hack when scripting is explicitly
+ * unavailable, regardless of any state attributes.
+ */
+@media (scripting: none) and (max-width: 45em) {
+    #menu-toggle:checked + label + ul {
+        visibility: visible;
+        opacity: 1;
+        max-height: 100rem;
+    }
+}
+
+/*
+ * Regime 3: JS-controlled state. assets/ts/menu.ts sets data-menu-js
+ * only after the toggle was successfully replaced by a real button, so
+ * a script failure keeps the checkbox hack above fully functional.
+ * Keying the open state on a data attribute instead of the
+ * `:checked + label + ul` sibling chain keeps the menu working even
+ * when consumers restructure the markup.
+ */
+@media (max-width: 45em) {
+    .top-menu[data-menu-js] .navigation-list {
+        visibility: hidden;
+        opacity: 0;
+        max-height: 0;
+    }
+
+    .top-menu[data-menu-js][data-menu-open="true"] .navigation-list {
+        visibility: visible;
+        opacity: 1;
+        max-height: 100rem;
+    }
+}
+
+/*
+ * The TS enhancement swaps the <label> for a real <button> with the
+ * same classes - strip the UA button chrome so it renders identically.
+ */
+button.menu-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}
+
 .menu-button {
     margin-right: 1.5em;
     cursor: pointer;
     margin-top: -1rem;
+
+    &:focus-visible {
+        outline: 2px solid $font-color-body;
+        outline-offset: 2px;
+    }
 
     @media (max-width: 45em) {
         margin-right: 1rem;

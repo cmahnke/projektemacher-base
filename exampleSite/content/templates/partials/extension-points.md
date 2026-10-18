@@ -8,16 +8,21 @@ metaPage: true
 
 These partials are **not shipped with the theme** — the theme's templates call them, but each site is expected to provide them in its own `layouts/partials/`. The theme checks their existence and warns (or errors) if they are missing where required.
 
+This example site implements all of them — see the [`_partials`](https://github.com/cmahnke/projektemacher-base/tree/main/exampleSite/layouts/_partials) and [`partials`](https://github.com/cmahnke/projektemacher-base/tree/main/exampleSite/layouts/partials) directories for a working reference.
+
 ## `li.html` (required for list pages)
 
 Called for every page in [list templates](../single-list/) — it renders a single list entry. Place it in `layouts/_partials/li.html`.
 
 - Input: the page
 - If missing, the build emits `Missing li.html template` warnings and falls back to a plain `<a>` link
+- See the example site's [`_partials/li.html`](https://github.com/cmahnke/projektemacher-base/blob/main/exampleSite/layouts/_partials/li.html)
 
 ## `article.html` (for the `html-body` template)
 
 Called by the [`html-body` template](../single-list/#html-body) if a page has markdown content. A site provides it to render the content area of included HTML documents. Missing templates produce a warning.
+
+Note: the theme checks the template with `templates.Exists "article.html"`, so the site needs both a marker template at `layouts/article.html` and the actual partial at `layouts/_partials/article.html` — see the example site.
 
 ## `print/toc-level.html` (required for print TOCs)
 

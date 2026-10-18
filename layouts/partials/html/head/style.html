@@ -181,11 +181,28 @@
   {{- warnf "[partials/html/head/style.html] Collected styles for %s are of wrong type (%T) instead of resource.Resources - this will fail!" $context.File.Path $scssResources -}}
 {{- end -}}
 
+{{- $concat := $scssResources | resources.Concat (printf "css/%s.css" $fileName) -}}
+
+{{/* Remove duplicated CSS rules (e.g. from rules shared by multiple concatenated resources). Configured via 'assets/_jsconfig/postcss.config.js', can be turned of with 'params.css.dedupe = false'. Runs PostCSS via Node.js, so it's skipped for the dev server. */}}
+{{- $dedupe := true -}}
+{{- with site.Params.css -}}
+  {{- if isset . "dedupe" -}}
+    {{- $dedupe = index . "dedupe" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and $dedupe (not $isServer) -}}
+  {{- if $debug -}}
+    {{- warnf "[partials/html/head/style.html] Deduplicating CSS via PostCSS for %s" $context.RelPermalink -}}
+  {{- end -}}
+  {{- $concat = $concat | css.PostCSS (dict "noMap" true) -}}
+{{- end -}}
+
 {{- $style := "" -}}
 {{- if not $isServer -}}
-  {{- $style = $scssResources | resources.Concat (printf "css/%s.css" $fileName) | minify | fingerprint -}}
+  {{- $style = $concat | minify | fingerprint -}}
 {{- else -}}
-  {{- $style = $scssResources | resources.Concat (printf "css/%s.css" $fileName) | fingerprint -}}
+  {{- $style = $concat | fingerprint -}}
 {{- end -}}
 
 <link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">

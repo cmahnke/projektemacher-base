@@ -1,30 +1,42 @@
 import { Howl } from 'howler';
 
+/*
+ * Sync the visual icon and the announced state (WCAG 4.1.2): the
+ * button exposes its pressed state via `aria-pressed` and swaps the
+ * label between the play and pause strings the shortcode puts into
+ * data attributes.
+ */
+function setPlaying(btn: HTMLButtonElement, playing: boolean): void {
+  btn.classList.toggle('play', !playing);
+  btn.classList.toggle('pause', playing);
+  btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+  const label = playing ? btn.dataset.pauseLabel : btn.dataset.playLabel;
+  if (label) {
+    btn.setAttribute('aria-label', label);
+  }
+}
+
 function audioplayer(elem: HTMLElement, src: string, btn: HTMLButtonElement): void {
   const sound = new Howl({
     html5: true,
     src: [src],
     onend(): void {
-      btn.classList.add('play');
-      btn.classList.remove('pause');
-      elem.removeEventListener('click', play);
+      setPlaying(btn, false);
+      elem.removeEventListener('click', pause);
       elem.addEventListener('click', play);
     },
     onpause(): void {
-      btn.classList.add('play');
-      btn.classList.remove('pause');
+      setPlaying(btn, false);
       elem.removeEventListener('click', pause);
       elem.addEventListener('click', play);
     },
     onstop(): void {
-      btn.classList.remove('pause');
-      btn.classList.add('play');
+      setPlaying(btn, false);
       elem.removeEventListener('click', pause);
       elem.addEventListener('click', play);
     },
     onplay(): void {
-      btn.classList.remove('play');
-      btn.classList.add('pause');
+      setPlaying(btn, true);
       elem.removeEventListener('click', play);
       elem.addEventListener('click', pause);
     },
@@ -38,6 +50,7 @@ function audioplayer(elem: HTMLElement, src: string, btn: HTMLButtonElement): vo
     sound.pause();
   }
 
+  setPlaying(btn, false);
   elem.addEventListener('click', play);
 }
 

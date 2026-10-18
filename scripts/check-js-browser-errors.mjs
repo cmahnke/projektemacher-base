@@ -147,6 +147,10 @@ const remotePrefix = 'http://localhost:' + localPort + '/';
 if (baseURL === '' || !baseURL) {
     baseURL = remotePrefix;
 }
+// Resources referenced root relative to the base URL's origin (e.g. CSS
+// 'url(/fonts/...)' with the fonts convention) don't start with baseURL if
+// it contains a path, map them to the local webserver as well
+const baseOrigin = new URL(baseURL).origin;
 console.log('Base URL is %s', baseURL);
 
 // Use native Node.js temp directory instead of mktemp
@@ -290,6 +294,14 @@ console.log('Wrote preference file to %s', prefFile);
         if (url.startsWith(baseURL)) {
             const newUrl = url.replace(baseURL, remotePrefix);
             console.log("Mapping resource request '%s' to '%s'", url, newUrl);
+            request.continue({ url: newUrl, headers });
+            return;
+        }
+
+        // Handle requests to the base URL's origin root (e.g. CSS url('/fonts/...'))
+        if (!request.isNavigationRequest() && url.startsWith(baseOrigin)) {
+            const newUrl = url.replace(baseOrigin, remotePrefix.replace(/\/$/, ''));
+            console.log("Mapping origin resource request '%s' to '%s'", url, newUrl);
             request.continue({ url: newUrl, headers });
             return;
         }

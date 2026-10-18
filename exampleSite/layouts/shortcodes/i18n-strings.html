@@ -1,0 +1,89 @@
+{{/*
+  Renders the theme's i18n strings in a single table with one column per
+  language, each with a client side search in its table header. The data
+  source is the theme's i18n directory mounted as data (see hugo.toml:
+  module.mounts '../i18n' -> 'data/i18n'), so the page updates automatically
+  when translations are added or changed.
+
+  Recognized file names (Hugo data keys, extension stripped):
+  - '<lang>.toml'            — merged language file
+  - '<id>.<lang>.toml'       — i18n fragment (merged into '<lang>.toml' by
+                               scripts/init/i18n.sh at build time)
+*/}}
+{{- $data := .Site.Data.i18n -}}
+{{- if not $data -}}
+  {{- errorf "[shortcodes/i18n-strings.html] No i18n data found — is the module mount 'i18n' -> 'data/i18n' configured?" -}}
+{{- end -}}
+
+{{- /* Collect the languages and their merged strings from the file name
+       suffixes. Range over maps yields sorted keys, so merged files
+       ('<lang>.toml') take precedence over fragments ('<id>.<lang>.toml'). */ -}}
+{{- $langs := slice -}}
+{{- $langMap := dict -}}
+{{- range $fileKey, $value := $data -}}
+  {{- $parts := split $fileKey "." -}}
+  {{- $lang := index $parts (sub (len $parts) 1) -}}
+  {{- if not (in $langs $lang) -}}
+    {{- $langs = $langs | append $lang -}}
+  {{- end -}}
+  {{- if reflect.IsMap $value -}}
+    {{- $cur := default (dict) (index $langMap $lang) -}}
+    {{- $langMap = merge $langMap (dict $lang (merge $cur $value)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $langs = sort $langs -}}
+
+{{- /* Union of all keys across languages — one table row per key */ -}}
+{{- $allKeys := slice -}}
+{{- range $lang := $langs -}}
+  {{- $strings := default (dict) (index $langMap $lang) -}}
+  {{- range $key, $entry := $strings -}}
+    {{- if not (in $allKeys $key) -}}
+      {{- $allKeys = $allKeys | append $key -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $allKeys = sort $allKeys -}}
+
+<div class="i18n-tablewrap">
+  <table class="i18n-table" id="i18n-table">
+    <thead>
+      <tr>
+        <th scope="col" class="i18n-col-key">Key</th>
+        {{- range $lang := $langs -}}
+        {{- $strings := default (dict) (index $langMap $lang) -}}
+        <th scope="col" class="i18n-col-lang">
+          <label class="i18n-lang-label">
+            {{ $lang }} <span class="i18n-count" data-i18n-count="{{ $lang }}">{{ len $strings }} / {{ len $strings }}</span>
+          </label>
+          <input type="search" class="i18n-search" data-i18n-table="i18n-table" data-i18n-lang="{{ $lang }}" placeholder="Filter…" aria-label="Filter {{ $lang }} strings">
+        </th>
+        {{- end -}}
+      </tr>
+    </thead>
+    <tbody>
+      {{- range $key := $allKeys -}}
+      <tr>
+        <td class="i18n-key">{{ $key }}</td>
+        {{- range $lang := $langs -}}
+        {{- $strings := default (dict) (index $langMap $lang) -}}
+        {{- $entry := default (dict) (index $strings $key) -}}
+        <td class="i18n-value{{ if not $entry }} i18n-missing{{ end }}" data-i18n-lang="{{ $lang }}">
+          {{- if $entry -}}
+            {{- if reflect.IsMap $entry -}}
+              {{- $value := $entry.other | default $entry.one | default "" -}}
+              {{- if eq $value "" -}}{{- $value = jsonify $entry -}}{{- end -}}
+              {{- $value | safeHTML -}}
+            {{- else -}}
+              {{- $entry | safeHTML -}}
+            {{- end -}}
+          {{- else -}}
+            —
+          {{- end -}}
+        </td>
+        {{- end -}}
+      </tr>
+      {{- end -}}
+    </tbody>
+  </table>
+</div>

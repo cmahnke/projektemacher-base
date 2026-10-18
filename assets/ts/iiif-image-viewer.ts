@@ -150,8 +150,9 @@ class RotateLeftControl extends Control {
     const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° left';
 
     const button = document.createElement('button');
-    button.innerHTML = '<i class="icon-left"></i>';
+    button.innerHTML = '<i class="icon-left" aria-hidden="true"></i>';
     button.title = tipLabel;
+    button.setAttribute('aria-label', tipLabel);
 
     const element = document.createElement('div');
     element.className = 'rotate-left ol-unselectable ol-control';
@@ -181,8 +182,9 @@ class RotateRightControl extends Control {
     const tipLabel = options.tipLabel ? options.tipLabel : 'Rotate 90° right';
 
     const button = document.createElement('button');
-    button.innerHTML = '<i class="icon-right"></i>';
+    button.innerHTML = '<i class="icon-right" aria-hidden="true"></i>';
     button.title = tipLabel;
+    button.setAttribute('aria-label', tipLabel);
 
     const element = document.createElement('div');
     element.className = 'rotate-right ol-unselectable ol-control';
@@ -211,6 +213,22 @@ class RotateRightControl extends Control {
         * projektemacher-base/layouts/partials/iiif/iiif-image.html
         * projektemacher-base/layouts/partials/iiif/kenburns.html
  */
+
+/*
+ * The OpenLayers built-in controls name their buttons via `title`
+ * only (or CSS content glyphs with no text at all) - expose the same
+ * label as aria-label, so assistive technology can announce them
+ * (WCAG 4.1.2).
+ */
+function setControlAriaLabels(map: Map, labels: [string, string][]): void {
+  const root = map.getTargetElement();
+  if (!root) {
+    return;
+  }
+  labels.forEach(([selector, label]) => {
+    root.querySelectorAll<HTMLElement>(selector).forEach((el) => el.setAttribute('aria-label', label));
+  });
+}
 
 window.addMap = function (
   element: string | HTMLElement,
@@ -274,6 +292,12 @@ window.addMap = function (
     layers: [layer],
     target: element,
   });
+  setControlAriaLabels(map, [
+    ['.ol-zoom-in', toolTips[lang]['zoomIn']],
+    ['.ol-zoom-out', toolTips[lang]['zoomOut']],
+    ['.ol-full-screen button', toolTips[lang]['fullscreen']],
+    ['.ol-rotate button', toolTips[lang]['rotate']],
+  ]);
 
   fetch(url)
     .then((response) => {
@@ -405,10 +429,21 @@ window.animatedMap = function (
       view.setPauseableAnimation(...animation);
     }
     map.once('rendercomplete', () => {
-      moElement.addEventListener('mouseenter', () => {
-        view.resumeAnimation();
-      });
+      // Decorative pan/zoom: honour prefers-reduced-motion (never
+      // resume under it) and support keyboard users via focus events
+      // alongside the pointer ones (WCAG 2.3.3/2.2.2).
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const resume = (): void => {
+        if (!reduceMotion.matches) {
+          view.resumeAnimation();
+        }
+      };
+      moElement.addEventListener('mouseenter', resume);
+      moElement.addEventListener('focusin', resume);
       moElement.addEventListener('mouseleave', () => {
+        view.pauseAnimation();
+      });
+      moElement.addEventListener('focusout', () => {
         view.pauseAnimation();
       });
     });

@@ -3,3 +3,15 @@ other = "Druckansicht"
 
 [PDFPreview]
 other = "PDF Dateien werden in der Druckvorschau nicht angezeigt"
+
+[generated]
+other = "Erzeugt"
+
+[revision]
+other = "Revision"
+
+[notes]
+other = "Anmerkungen"
+
+[pageAbbr]
+other = "S."

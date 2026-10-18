@@ -1,0 +1,161 @@
+{{/*
+  Renders a table of contents for a section page: entries link to the
+  section's child pages. Leaf pages are grouped by their subdirectory
+  name when they live below the section root (e.g. the 'html' group on
+  a shortcodes section), child sections are rendered as a link with
+  their own children indented below them.
+
+  Expects a dict as context:
+
+    entries:   a section page (renders its children) or a page slice
+               (rendered as a flat list)
+    maxLevels: number of levels to render, counting the top level
+               (optional, default 2). 1 renders a flat list, the next
+               level renders the children of child sections
+    title:     heading above the list (optional, defaults to the i18n
+               string 'inThisSection')
+
+  Pages with the front matter parameter `tocExclude: true` are skipped.
+
+  Emits nothing (an empty string) if no entries remain after filtering.
+*/}}
+{{- $entries := slice -}}
+{{- $maxLevels := 2 -}}
+{{- $title := i18n "inThisSection" -}}
+{{- $deep := true -}}
+{{- $root := "" -}}
+{{- if reflect.IsMap . -}}
+  {{- if isset . "title" -}}
+    {{- $title = .title -}}
+  {{- end -}}
+  {{- with .maxLevels -}}
+    {{- $maxLevels = . -}}
+  {{- end -}}
+  {{- with .entries -}}
+    {{- $entries = . -}}
+    {{- if eq (printf "%T" .) "*hugolib.pageState" -}}
+      {{- if eq .Kind "section" -}}
+        {{- $entries = .Pages -}}
+        {{- $root = .File.Dir -}}
+      {{- else -}}
+        {{- $entries = slice . -}}
+        {{- $deep = false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- errorf "[toc.html] Needs entries (a section page or a page slice) as dict parameter" (or .RelPermalink .Path "invalid context") -}}
+  {{- end -}}
+{{- else -}}
+  {{- errorf "[toc.html] Needs params as dict, not just context" -}}
+{{- end -}}
+
+{{/*
+  Level 1 entries: pages of the section. Leaf pages directly in the
+  section root and child sections go in first, pages in subdirectories
+  are grouped under the directory name — unless the subdirectory holds
+  only one page, which is promoted to a top level entry.
+*/}}
+{{- $top := slice -}}
+{{- $promoted := slice -}}
+{{- $groupPages := dict -}}
+{{- $groupNames := slice -}}
+{{- range $entries -}}
+  {{- $page := . -}}
+  {{- if .Params.tocExclude -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- if .IsSection -}}
+    {{- $top = $top | append (partial "toc-entry.html" (dict "page" $page "level" 1 "maxLevels" $maxLevels "deep" $deep)) -}}
+  {{- else if $root -}}
+    {{- with .File -}}
+      {{- $group := strings.TrimPrefix $root .Dir -}}
+      {{- if ne $group .Dir -}}
+        {{- $group = strings.TrimSuffix "/" $group -}}
+      {{- else -}}
+        {{- $group = "" -}}
+      {{- end -}}
+      {{- if and (ne $group "") (ne $group $root) -}}
+        {{- $entry := dict "title" $page.Title "href" $page.RelPermalink -}}
+        {{- if not (in $groupNames $group) -}}
+          {{- $groupNames = $groupNames | append $group -}}
+          {{- $groupPages = merge $groupPages (dict $group (slice $entry)) -}}
+        {{- else -}}
+          {{- $groupPages = merge $groupPages (dict $group (index $groupPages $group | append $entry)) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $top = $top | append (dict "title" $page.Title "href" $page.RelPermalink) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $top = $top | append (dict "title" $page.Title "href" $page.RelPermalink) -}}
+  {{- end -}}
+{{- end -}}
+{{- /* Subdirectories with a single page become top level entries,
+       the remaining ones render as groups with their pages indented */ -}}
+{{- range sort $groupNames -}}
+  {{- $name := . -}}
+  {{- $groupEntries := index $groupPages $name -}}
+  {{- if eq (len $groupEntries) 1 -}}
+    {{- $promoted = $promoted | append (index $groupEntries 0) -}}
+  {{- else -}}
+    {{- $grouped := dict "group" true "title" $name "children" $groupEntries -}}
+    {{- $promoted = $promoted | append $grouped -}}
+  {{- end -}}
+{{- end -}}
+{{- $top = $top | append $promoted -}}
+{{- $top = sort $top "title" "asc" -}}
+
+{{- if gt (len $top) 0 -}}
+<aside class="section-toc">
+  <h2 class="toc-title">{{ $title }}</h2>
+  <nav class="toc" aria-label="{{ $title }}">
+    {{- partial "toc-level.html" (dict "entries" $top) -}}
+  </nav>
+</aside>
+{{- end -}}
+
+{{/*
+  Renders one level of the table of contents. Children were already cut
+  at build time to fit maxLevels, so each entry either is a link, a
+  group heading (no href, has children) or a link with children.
+*/}}
+{{- define "_partials/toc-level.html" -}}
+  {{- $entries := .entries -}}
+  <ul>
+    {{- range $entries -}}
+      {{- if isset . "href" -}}
+        <li><a href="{{ .href }}">{{ .title }}</a>{{- with .children -}}{{- partial "toc-level.html" (dict "entries" .) -}}{{- end -}}
+      {{- else -}}
+        <li class="toc-group">{{ .title }}{{- with .children -}}{{- partial "toc-level.html" (dict "entries" .) -}}{{- end -}}
+      {{- end -}}
+      </li>
+    {{- end -}}
+  </ul>
+{{- end -}}
+
+{{/*
+  Converts a page into a TOC entry dict, recursing into child sections
+  while the level permits and 'deep' children rendering is enabled.
+*/}}
+{{- define "_partials/toc-entry.html" -}}
+  {{- $page := .page -}}
+  {{- $level := .level -}}
+  {{- $maxLevels := .maxLevels -}}
+  {{- $deep := .deep -}}
+  {{- $entry := dict "title" $page.Title "href" $page.RelPermalink -}}
+  {{- if and $deep $page.IsSection (lt $level $maxLevels) -}}
+    {{- with $page.Pages -}}
+      {{- $children := slice -}}
+      {{- range . -}}
+        {{- if .Params.tocExclude -}}
+          {{- continue -}}
+        {{- end -}}
+        {{- $children = $children | append (partial "toc-entry.html" (dict "page" . "level" (add $level 1) "maxLevels" $maxLevels "deep" $deep)) -}}
+      {{- end -}}
+      {{- if gt (len $children) 0 -}}
+        {{- $entry = merge $entry (dict "children" $children) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- return $entry -}}
+{{- end -}}

@@ -1,0 +1,17 @@
+<div class="post-heading">
+    {{- if not .Date.IsZero -}}
+    <span class="date">
+        {{- .Date | time.Format ":date_full" -}}
+    </span>
+    {{- end -}}
+    <span class="link">
+        <a class="title" href="{{ .RelPermalink }}">{{- .Title -}}</a>
+    </span>
+</div>
+<div class="post-snippet{{ if .Date.IsZero }} no-date{{ end }}">
+    {{- if .Description -}}
+        <span class="description">{{- .Description | markdownify -}}</span>
+    {{- else -}}
+        <span class="post-spacer">&nbsp;</span>
+    {{- end -}}
+</div>

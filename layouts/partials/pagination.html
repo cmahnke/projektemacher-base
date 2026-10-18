@@ -16,7 +16,7 @@
 */}}
 {{- $currentPage := $pag.PageNumber -}}
 {{ if gt $pag.TotalPages 1 }}
-<nav class="navigation pagination" role="navigation">
+<nav class="navigation pagination" aria-label="{{ i18n "paginationNavigation" }}">
 	<div class="nav-links">
 		{{ if $pag.HasPrev }}
 			<a class="back-next" href="{{ $pag.Prev.URL }}">{{ i18n "previous_page" }}</a>
@@ -38,7 +38,7 @@
                     {{- $class = "current" -}}
                 {{- end -}}
 
-                <a class="page-numbers {{ $class }}" href="{{ .URL }}">{{ .PageNumber }}</a>
+                <a class="page-numbers {{ $class }}" href="{{ .URL }}"{{ if eq $currentPage .PageNumber }} aria-current="page"{{ end }}><span class="visually-hidden">{{ i18n "page" }} </span>{{ .PageNumber }}</a>
                 {{/*
 				{{ if $showNumber }}
 					<a class="page-numbers" href="{{ .URL }}">{{ .PageNumber }}</a>

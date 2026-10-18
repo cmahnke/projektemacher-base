@@ -1,0 +1,26 @@
+{
+  "urls": [
+    "/",
+    "/shortcodes/audioplayer/",
+    "/shortcodes/browser-banner/",
+    "/shortcodes/browser-hide-selector/",
+    "/shortcodes/code/",
+    "/shortcodes/demo/tagcloud/tags1/",
+    "/shortcodes/gist/",
+    "/shortcodes/html/iframe-consent/",
+    "/shortcodes/iiif/iiif/",
+    "/shortcodes/iiif/presentation/",
+    "/shortcodes/lucienne/",
+    "/shortcodes/maps/osm/",
+    "/shortcodes/maps/osm-vector-tiles/",
+    "/shortcodes/mastodon/",
+    "/shortcodes/mermaid/",
+    "/shortcodes/pdf/",
+    "/shortcodes/pdf-preview/",
+    "/iiif/presentation-3/",
+    "/iiif/presentation-3-nesting/",
+    "/iiif/presentation-4/",
+    "/posts/post-specific-assets/",
+    "/tests/html-body-test/"
+  ]
+}

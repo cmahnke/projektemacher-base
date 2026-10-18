@@ -26,6 +26,8 @@ Renders section, taxonomy and term pages, as well as the home page. It delegates
 
 The home page uses the same template, it just feeds `.Site.RegularPages` into the same partial (see `partials/home.html`).
 
+This documentation site overrides the template: on section pages with `toc: true` it renders the theme's [`toc.html` partial](/templates/partials/structural/#toc) as a sticky table of contents sidebar next to the section content. The theme itself renders no markup for the `toc` parameter — sites control the sidebar in their own layouts.
+
 ## `_default/html-body.html` {#html-body}
 
 A standalone body template used to render raw HTML content, e.g. for the [`html/include` shortcode](/shortcodes/html/include/). It renders the site header and footer around:

@@ -1,0 +1,363 @@
+/*
+ * Example site skin for the projektemacher-base theme.
+ *
+ * The theme is a library: this file is the site specific part of the
+ * stylesheet pipeline (loaded via partials/head.html and
+ * partials/html/head/style.html). It recreates the look of
+ * https://projektemacher.org/ by combining the vendored coder SCSS
+ * (assets/scss/coder/) with adapters for the markup the theme's
+ * templates emit.
+ *
+ * Note: this file is processed with resources.ExecuteAsTemplate — no
+ * Go template syntax may appear here.
+ */
+
+@use "functions/color" as *;
+
+@import "normalize";
+
+/* Variables (see hugo.toml [params.style] for the site colors) */
+$text-font-family: Lora, Georgia, serif;
+$heading-font-family: Lato, Helvetica, sans-serif;
+$code-font-family: monospace;
+$bg-color: #FAFAFA !default;
+$fg-color: #212121 !default;
+$alt-bg-color: #E0E0E0 !default;
+$alt-fg-color: #000 !default;
+$link-color: #1565c0 !default;
+$nav-color: #293133 !default;
+
+@import "fonts/lato";
+@import "fonts/lora";
+
+/* Vendored coder chrome */
+@import "coder/base";
+@import "coder/content";
+@import "coder/navigation";
+@import "coder/pagination";
+@import "coder/footer";
+
+/* Section table of contents sidebar (theme's partials/toc.html) */
+@import "section-toc";
+
+/* Burger menu icon for the theme's menu.html markup */
+$bars: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='#{encodecolor($bg-color)}' d='M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z'/%3E%3C/svg%3E";
+
+/*
+ * Adapter: the theme's baseof.html wraps the site header in
+ * header#site-header and the site's header.html renders the coder
+ * navigation inside it.
+ */
+nav.navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: $nav-color;
+    z-index: 1001;
+
+    /* The example site's menu has more entries than the nav's default
+       width can hold — widen the nav container */
+    .container {
+        max-width: 110rem;
+
+        a,
+        span {
+            color: #FAFAFA;
+        }
+
+        a:active,
+        a:hover {
+            text-decoration: none;
+            color: #FAFAFA;
+        }
+
+        /* The theme's menu.html emits a nested nav — dissolve it so the
+           coder sibling selectors work unchanged */
+        .top-menu {
+            display: contents;
+        }
+
+        .navigation-title,
+        .navigation-link {
+            text-decoration: none;
+
+            &:hover,
+            &:focus {
+                text-decoration: none;
+            }
+        }
+
+        .navigation-link i.link-icon {
+            display: none;
+        }
+
+        .menu-button .menu-icon {
+            content: url("data:image/svg+xml, #{$bars}");
+            display: inline-block;
+            width: 1em;
+        }
+
+        .navigation-item.current a {
+            text-decoration: underline;
+        }
+
+        @media only screen and (max-width: 840px) {
+            padding-left: 1rem;
+            padding-right: 1rem;
+
+            .navigation-list {
+                padding-left: 1rem;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            .navigation-item {
+                .navigation-link {
+                    color: black;
+                }
+            }
+
+            .menu-button i {
+                color: $bg-color;
+            }
+        }
+    }
+}
+
+/* The theme's baseof renders the content into main.main */
+main.main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 3em);
+
+    & > .content {
+        flex: 1;
+        display: flex;
+        margin-bottom: 0;
+    }
+}
+
+/* Home: intro content plus the theme's list, same chrome as every page */
+.content.home {
+    flex-direction: column;
+    margin-top: 0;
+}
+
+/* Lists: the theme's list.html wraps all entries rendered by the site's
+   _partials/li.html in a single div.post */
+.list {
+    .post {
+        padding-top: 1em;
+
+        .post-heading {
+            display: flex;
+
+            .collapsed,
+            .title:focus,
+            a:visited {
+                text-decoration: none;
+                color: $fg-color;
+            }
+
+            a:active,
+            a:hover {
+                text-decoration: none;
+                color: #0b1e47;
+            }
+
+            .date {
+                width: 27rem;
+                flex-shrink: 0;
+            }
+
+            .link {
+                flex: 1;
+            }
+        }
+
+        .post-snippet {
+            .description {
+                margin-left: 23.5rem;
+                display: block;
+            }
+
+            .post-spacer {
+                color: transparent;
+            }
+
+            &.no-date .description {
+                margin-left: 0;
+            }
+        }
+
+        .post-heading + .post-snippet {
+            margin-bottom: 0.8em;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .post-heading {
+                display: unset;
+
+                .date {
+                    width: 13rem;
+                    margin-right: 2rem;
+                    display: block;
+                }
+            }
+
+            .post-snippet {
+                margin-top: 2rem;
+                margin-left: 5rem;
+                margin-bottom: 3.5rem;
+
+                .post-spacer {
+                    display: none;
+                }
+
+                .description {
+                    margin-left: unset;
+                }
+            }
+        }
+    }
+}
+
+/* Pagination (theme's partials/pagination.html markup) */
+.pagination {
+    margin-top: 6rem;
+    text-align: center;
+    font-family: $heading-font-family;
+
+    .nav-links a {
+        margin: 0 1rem;
+        font-weight: 700;
+
+        &.current {
+            color: $fg-color;
+            text-decoration: none;
+        }
+    }
+}
+
+/* Single pages (site's page.html partial, coder structure) */
+.content {
+    &.page {
+        article.content-container {
+            header {
+                margin-top: 6.4rem;
+                margin-bottom: 3.2rem;
+
+                h1 {
+                    font-size: 4.2rem;
+                    line-height: 4.6rem;
+                    margin: 0;
+
+                    @media only screen and (max-width: 768px) {
+                        font-size: 4rem;
+                        line-height: 4.4rem;
+                    }
+                }
+            }
+
+            p {
+                text-align: justify;
+                text-justify: auto;
+                hyphens: auto;
+            }
+
+            .tags a {
+                text-decoration: none;
+            }
+        }
+    }
+}
+
+/* 404 (theme's partials/404.html markup) */
+.error {
+    text-align: center;
+    margin: auto;
+    padding-top: 10rem;
+
+    h1 {
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
+        font-size: 4.6rem;
+
+        @media only screen and (max-width: 768px) {
+            font-size: 3.2rem;
+        }
+    }
+
+    h2 {
+        margin-top: 2rem;
+        margin-bottom: 3.2rem;
+        font-size: 3.2rem;
+
+        @media only screen and (max-width: 768px) {
+            font-size: 2.8rem;
+        }
+    }
+}
+
+/* Footer (site's footer.html + theme's footer-content.html markup) */
+footer.footer {
+    background: #293133;
+    font-family: $heading-font-family;
+    margin-top: 3em;
+
+    .footer-container {
+        max-width: 60%;
+        margin: auto;
+        text-align: center;
+        color: #fafafa;
+
+        p {
+            margin: unset;
+        }
+
+        a {
+            color: #fafafa;
+            text-decoration: none;
+        }
+
+        .footer-link-cm img {
+            vertical-align: bottom;
+        }
+
+        .footer-powered-by {
+            font-size: small;
+        }
+    }
+}
+
+/*
+ * Skip link and visually-hidden utility for the theme's baseof.html
+ * markup (WCAG 2.4.1). The theme's own SCSS library ships the same
+ * rules in assets/scss/theme.scss for consumers using it - this site
+ * uses the coder skin instead, so the adapter lives here.
+ */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    z-index: 10000;
+    padding: 0.5em 1em;
+    background: #212121;
+    color: #fafafa;
+
+    &:focus {
+        left: 0;
+    }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    border: 0;
+    white-space: nowrap;
+}

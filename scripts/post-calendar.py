@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 
-import os, sys
+import os, sys, glob
 from icalendar import Calendar, Event, vText
 from datetime import datetime, date, time, timedelta
-from PyHugo import *
+sys.path.append(os.path.dirname(__file__))
+from PyHugo import Content
 from termcolor import cprint
 
 defaultName = "Projektmacher"
 paths = ["blogs/*/content", "content"]
-posts = Posts.Posts(paths).postList()
+cal = Calendar()
+cal.add("prodid", "-//Projektemacher Calendar//projektemacher.org//")
+cal.add("version", "2.0")
 
 
 def blogName(post):
     global defaultName
-    path, file = os.path.split(post["__source"])
+    path, file = os.path.split(post.getFile())
     path = path.split(os.sep)
     if path[0] == "content":
         return defaultName
@@ -21,33 +24,52 @@ def blogName(post):
         return path[1].title()
 
 
-# See https://icalendar.readthedocs.io/en/latest/usage.html
-cal = Calendar()
-cal.add("prodid", "-//Projektemacher Calendar//projektemacher.org//")
-cal.add("version", "2.0")
+for path in paths:
+    for expandedPath in glob.glob(path):
+        try:
+            content = Content(expandedPath)
+        except ValueError as e:
+            cprint(f"Skipping {expandedPath}: no site config found ({e})", "red")
+            continue
+        for post in content.posts:
+            # Skip language variants sharing the same (unsuffixed) file
+            processedFiles = set()
+            for lang, file in post.files.items():
+                if file in processedFiles:
+                    continue
+                processedFiles.add(file)
+                metadata = post.getMetadata(lang)
 
-for post in posts:
-    if "displayInList" in posts and post["displayInList"] == False:
-        continue
-    if "draft" in posts and post["draft"] == True:
-        continue
-    if "date" in post and post["date"] != None:
-        event = Event()
-        blog = blogName(post)
-        title = "Untitled"
-        if "title" in post:
-            title = post["title"]
-        event.add("summary", title)
-        event.add("categories", [blog])
+                def metadataParam(name):
+                    """Look up a front matter key case insensitively (Hugo parameters are)."""
+                    for key in metadata:
+                        if key.lower() == name.lower():
+                            return metadata[key]
+                    return None
 
-        if isinstance(post["date"], str):
-            cprint("Ignoring {}: {}".format(post["__source"], post["date"]), "red")
-        else:
-            postDate = post["date"].date()
-            event.add("dtstart", datetime.combine(postDate, time()))
-            postDate += timedelta(days=1)
-            event.add("dtend", datetime.combine(postDate, time()))
+                if metadataParam("displayInList") == False:
+                    continue
+                if metadataParam("draft") == True or post.draft == True:
+                    continue
+                postDate = metadata.get("date")
+                if postDate is None:
+                    continue
+                event = Event()
+                blog = blogName(post)
+                title = "Untitled"
+                if "title" in metadata:
+                    title = metadata["title"]
+                event.add("summary", title)
+                event.add("categories", [blog])
 
-            cal.add_component(event)
+                if isinstance(postDate, str):
+                    cprint("Ignoring {}: {}".format(file, postDate), "red")
+                    continue
+
+                event.add("dtstart", datetime.combine(postDate.date() if isinstance(postDate, datetime) else postDate, time()))
+                endDate = postDate.date() if isinstance(postDate, datetime) else postDate
+                endDate += timedelta(days=1)
+                event.add("dtend", datetime.combine(endDate, time()))
+                cal.add_component(event)
 
 sys.stdout.buffer.write(cal.to_ical())

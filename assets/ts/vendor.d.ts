@@ -5,17 +5,6 @@
  * require the augmented module to be typed already.
  */
 
-declare module 'pdfobject' {
-  interface PDFObjectOptions {
-    [key: string]: unknown;
-  }
-  interface PDFObjectAPI {
-    embed(url: string, target: string | HTMLElement, options?: PDFObjectOptions): unknown;
-  }
-  const PDFObject: PDFObjectAPI;
-  export default PDFObject;
-}
-
 declare module 'tify' {
   interface TifyOptions {
     container?: string | HTMLElement;

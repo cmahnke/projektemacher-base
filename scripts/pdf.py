@@ -13,8 +13,8 @@ from PIL import Image
 from termcolor import cprint
 import pikepdf
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "PyHugo"))
-from content import Post, Content
+sys.path.append(os.path.dirname(__file__))
+from PyHugo import Post, Content
 
 PDF_DPI = 300
 TRANSCODE = True
@@ -222,7 +222,7 @@ def processSingle(post: Post, out: pathlib.Path):
                     from jxlpy import JXLImagePlugin
 
             try:
-                label = int(re.findall("\d+", r["src"])[0])
+                label = int(re.findall(r"\d+", r["src"])[0])
             except:
                 label = None
             if label == 0:

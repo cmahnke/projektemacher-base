@@ -58,11 +58,28 @@ export const defaultVectorSource =
 
 export const defaultPadding: [number, number, number, number] = [50, 50, 50, 50];
 
+/*
+ * The OpenLayers built-in controls name their buttons via `title`
+ * only - expose the same label as aria-label (WCAG 4.1.2).
+ */
+export function setControlAriaLabels(map: Map, labels: [string, string][]): void {
+  const root = map.getTargetElement();
+  if (!root) {
+    return;
+  }
+  labels.forEach(([selector, label]) => {
+    root.querySelectorAll<HTMLElement>(selector).forEach((el) => el.setAttribute('aria-label', label));
+  });
+}
+
 export function getLang(): string {
   let lang = 'en';
-  if (document.documentElement.lang !== undefined) {
-    /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-    lang = document.documentElement.lang;
+  if (document.documentElement.lang !== undefined && document.documentElement.lang !== '') {
+    try {
+      lang = new Intl.Locale(document.documentElement.lang).language;
+    } catch {
+      lang = document.documentElement.lang;
+    }
   }
   return lang;
 }
@@ -150,7 +167,7 @@ export function loadGeoJSON(url: string): void {
     });
 }
 
-function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
+export function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   let title = '';
   let popupContent = '';
 
@@ -169,20 +186,11 @@ function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   return featureArray[0];
 }
 
-export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
+export function createOverlay(map: Map): { overlay: Overlay; content: HTMLElement } {
   const target = map.getTargetElement();
   const container = target?.parentElement?.querySelector('.ol-popup') as HTMLElement;
   const content = container.querySelector('.ol-popup-content') as HTMLElement;
   const closer = container.querySelector('.ol-popup-closer') as HTMLElement;
-
-  function featurePopUpLocal(feature: Feature<Geometry>, overlay: Overlay) {
-    const geometry = feature.getGeometry();
-    const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
-    let popup = '<h1>' + feature.get('name') + '</h1>';
-    popup += feature.get('popupContent');
-    content.innerHTML = popup;
-    overlay.setPosition(coord);
-  }
 
   const overlay = new Overlay({
     element: container,
@@ -190,6 +198,26 @@ export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): O
   });
 
   map.addOverlay(overlay);
+
+  closer.onclick = function () {
+    overlay.setPosition(undefined);
+    closer.blur();
+    return false;
+  };
+  return { overlay, content };
+}
+
+export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
+  const { overlay, content } = createOverlay(map);
+
+  function featurePopUpLocal(feature: Feature<Geometry>, overlay: Overlay) {
+    const geometry = feature.getGeometry();
+    const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
+    let popup = '<h2>' + feature.get('name') + '</h2>';
+    popup += feature.get('popupContent');
+    content.innerHTML = popup;
+    overlay.setPosition(coord);
+  }
 
   map.on('singleclick', function (event) {
     const features = map.getFeaturesAtPixel(event.pixel) as Feature<Geometry>[];
@@ -203,12 +231,6 @@ export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): O
       featurePopUpLocal(feature, overlay);
     }
   });
-
-  closer.onclick = function () {
-    overlay.setPosition(undefined);
-    closer.blur();
-    return false;
-  };
   return overlay;
 }
 
@@ -219,7 +241,7 @@ export function featurePopUp(
 ): void {
   const geometry = feature.getGeometry();
   const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
-  let popup = '<h1>' + feature.get('name') + '</h1>';
+  let popup = '<h2>' + feature.get('name') + '</h2>';
   popup += feature.get('popupContent');
   content.innerHTML = popup;
   overlay.setPosition(coord);
@@ -323,11 +345,7 @@ function setupMap(
   }
 
   // Languages
-  let lang: string = 'en';
-  if (document.documentElement.lang !== undefined) {
-    /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-    lang = document.documentElement.lang;
-  }
+  const lang = getLang();
   const langKey = (lang in toolTips ? lang : 'en') as Lang;
 
   const padding: [number, number, number, number] = [30, 30, 30, 30];
@@ -373,6 +391,11 @@ function setupMap(
     layers: [baseLayer],
     target: element,
   });
+  setControlAriaLabels(map, [
+    ['.ol-zoom-in', toolTips[langKey].zoomIn],
+    ['.ol-zoom-out', toolTips[langKey].zoomOut],
+    ['.ol-full-screen button', toolTips[langKey].fullscreen],
+  ]);
 
   const overlay = new Overlay({
     element: container,
