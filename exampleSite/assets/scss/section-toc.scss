@@ -1,41 +1,40 @@
 /*
  * Section table of contents sidebar: the theme's partials/toc.html
  * renders an <aside class="section-toc"> which the site's
- * _default/list.html places next to the article on section pages with
- * the front matter parameter `toc: true`.
+ * _default/list.html places inside the section container on section
+ * pages with the front matter parameter `toc: true`.
  *
- * The section container (coder's .container) becomes a two column grid;
- * on narrow screens the aside falls back to a block above the article.
+ * On wide screens the aside is taken out of the content flow with
+ * `position: fixed` and placed in the page margin left of the centered
+ * coder container (90rem), so it never reserves any width from the
+ * content. On narrower screens it falls back to a plain block above
+ * the article.
  */
 
-.container.with-toc {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 18rem;
-    column-gap: 4rem;
-    align-items: start;
-
-    @media only screen and (max-width: 999px) {
-        display: block;
-    }
-}
-
 .section-toc {
-    position: sticky;
-    top: 7rem;
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    /* Fallback for viewports too narrow for the margin sidebar:
+       plain block above the article */
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 
-    /* Align with the article's coder header margin (6.4rem) */
-    margin-top: 6.4rem;
-    font-family: $heading-font-family;
-
-    @media only screen and (max-width: 999px) {
-        position: static;
-        max-height: none;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+    /* The fixed sidebar (18rem width + 4rem gutter) fits next to the
+       90rem container only from 1340px viewport width on. NOTE: rem in
+       media queries refers to the browser's initial 16px font size, not
+       this theme's 62.5% root, so the breakpoint is given in px. */
+    @media only screen and (min-width: 1340px) {
+        position: fixed;
+        top: 7rem;
+        /* Container's left edge is at calc(50% - 45rem); pull the
+           sidebar 22rem (18rem width + 4rem gutter) further left */
+        left: max(2rem, calc(50% - 67rem));
+        width: 18rem;
+        max-height: calc(100vh - 9rem);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        margin: 0;
     }
+
+    font-family: $heading-font-family;
 
     .toc-title {
         font-size: 1.6rem;
