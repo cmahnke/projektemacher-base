@@ -78,7 +78,11 @@ Example usage:
                       "sourceMap" (cond hugo.IsDevelopment "linked" "none")
 -}}
 {{- $mainOpts = merge $mainOpts $additionalOpts -}}
-{{- $main := resources.Get $defaultScriptEntrypoint | js.Build $mainOpts -}}
+{{- $main := resources.Get $defaultScriptEntrypoint -}}
+{{- if eq $main nil -}}
+    {{- errorf "[partials/html/head/script.html] Can't read default script entrypoint %s - create the file in your assets directory, an empty file will do" $defaultScriptEntrypoint -}}
+{{- end -}}
+{{- $main = $main | js.Build $mainOpts -}}
 {{- $jsResources = union (slice $main) $jsResources -}}
 
 {{- $includes := dict -}}

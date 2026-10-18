@@ -29,7 +29,7 @@
 {{- if .Page.Params.iiifcontext -}}
     {{- $prefix = .Page.Params.iiifcontext -}}
 {{- else if .Page.Params.iiif.context -}}
-    $prefix = .Page.Params.iiif.context -}}
+    {{- $prefix = .Page.Params.iiif.context -}}
 {{- else if ne (.Scratch.Get "iiifPrefix") nil -}}
     {{- $prefix = .Scratch.Get "iiifPrefix" -}}
 {{- else if ne $context "" -}}
