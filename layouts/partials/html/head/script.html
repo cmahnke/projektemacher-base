@@ -163,7 +163,7 @@ Example usage:
   {{- if eq $scriptType "module" -}}
     <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
   {{- else -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
   {{- end -}}
 
   {{- if gt (len $pageJsResources) 0 -}}
@@ -175,7 +175,7 @@ Example usage:
     {{- if eq $scriptType "module" -}}
       <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" type="module"></script>
     {{- else -}}
-      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}"></script>
+      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" defer></script>
     {{- end -}}
   {{- end -}}
 
@@ -195,7 +195,7 @@ Example usage:
   {{- if eq $scriptType "module" -}}
     <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
   {{- else -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}"></script>
+    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
   {{- end -}}
 
 {{- end -}}
