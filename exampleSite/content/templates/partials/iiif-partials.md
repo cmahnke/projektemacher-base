@@ -18,7 +18,6 @@ These partials render viewer markup for a page's `resources`. They are called by
 | `iiif/_iiif-image.html` | Internal markup used by the image viewer |
 | `iiif/iiif-presentation.html` | [Presentation API](https://iiif.io/api/presentation/3.0/) viewer (TIFY) for a page's manifest (`iiifManifest` front matter parameter) |
 | `iiif/iiif-presentation-pdf.html` | Presentation viewer with PDF download link (site parameter `pdfDownload`) |
-| `iiif/presentation/mirador.html` | [Mirador](https://projectmirador.org/) viewer for a page's manifest. **Deprecated** — emits a build warning when used, use the [`iiif/presentation` shortcode](/shortcodes/iiif/presentation/) (TIFY based) instead |
 | `iiif/iiif-content.html` | Renders a page's IIIF image resources directly (Image API `iiifcontext`), CSS class from the `subtype` and `iiifclass` page parameters |
 | `iiif/kenburns.html` | Ken Burns style slideshow over the page's `resources` (the `featured` parameter selects images) |
 | `iiif/preview.html` | Renders a preview image of a page's IIIF resource, called with the page or a dict of `context`, `name` and `src` |
@@ -27,10 +26,10 @@ These partials render viewer markup for a page's `resources`. They are called by
 
 | Parameter | Used by | Purpose |
 |---|---|---|
-| `productionIIIFURLPrefix` | `iiif-presentation.html`, `mirador.html` | URL prefix for manifests in production builds (parts are commented out, currently unused) |
+| `productionIIIFURLPrefix` | `iiif-presentation.html` | URL prefix for manifests in production builds (parts are commented out, currently unused) |
 | `pdfDownload` | `iiif-presentation-pdf.html` | PDF download link |
 | `minimalUI` | viewer partials | Minimal viewer UI |
-| `disableScale` | viewer partials | Disable scaling |
+| `disableScale` | viewer partials | **Deprecated, ignored** (zoom must stay allowed, see viewport) |
 | `iiif.presentationVersion` | manifest generation, see [version resolution](../iiif-templates/#presentation-api-version) | Presentation API version 3 or 4 |
 
 ## Manifest and collection building blocks
