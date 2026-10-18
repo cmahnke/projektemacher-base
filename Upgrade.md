@@ -1086,7 +1086,7 @@ Typical pitfalls:
 Verify afterwards: `npm run lint` passes and a visual smoke check of the
 affected pages shows no styling changes.
 
-# Upgrading pages that load styles through `partials/head.html`
+# Upgrading pages that load styles or scripts through `partials/head.html`
 
 `layouts/partials/head.html` no longer compiles and links `scss/base.scss`
 itself. `layouts/_default/baseof.html` already emits the stylesheet via
@@ -1095,6 +1095,14 @@ itself. `layouts/_default/baseof.html` already emits the stylesheet via
 CSS was linked twice per page (same content, different file names), costing
 bandwidth and hiding style regressions.
 
+The same applies to the JavaScript now: `head.html` no longer builds or links
+the `js/main.js` bundle (nor the IIIF image/presentation viewer
+concatenations — the presentation branch referenced the long-deleted
+`assets/js/iiif-presentation-viewer.js` resource and would have failed the
+build). `baseof.html` emits the scripts via
+`partials/html/head/script.html`, which covers a superset of the old
+bundles (main bundle plus per page and shortcode scripts).
+
 ## 1. Consumer migration
 
 - Sites using the theme's `baseof.html` unchanged need no action.
@@ -1102,14 +1110,27 @@ bandwidth and hiding style regressions.
   `partials/html/head/style.html` get no stylesheet at all any more — add
   `{{ partial "html/head/style.html" (dict "context" . "css" "css/style.css") }}`
   to their `<head>`.
-- Sites with a copy of `partials/head.html` carry an unused duplicate —
-  delete the `scss/base.scss` resource block there to match the theme.
+- Sites with a custom `baseof.html` that calls `partials/head.html` but not
+  `partials/html/head/script.html` get no scripts at all any more — add
+  `{{ partial "html/head/script.html" (dict "context" . "js" (partial "html/head/iiif-js.html" .)) }}`
+  to their `<head>`.
+- Sites with a copy of `partials/head.html` carry unused duplicates —
+  delete the `scss/base.scss` resource block and the `js/main.js`
+  build/`<script>` block there to match the theme.
+- The script entry point is site owned: `script.html` errors with "create
+  the file in your assets directory, an empty file will do" when the site
+  ships neither `ts/main.ts` (auto-detected, preferred) nor the legacy
+  `js/main.js`. The example site's empty stub moved from
+  `exampleSite/assets/js/main.js` to `exampleSite/assets/ts/main.ts`
+  accordingly.
 
 ## 2. Verification
 
 Build the site and confirm every page has exactly one stylesheet `<link>`
-per merged CSS bundle, and that shortcode styles still load (check pages
-using shortcodes with dedicated SCSS/CSS includes).
+per merged CSS bundle and one `<script>` per JS bundle (the duplicate
+`js/main.js` tag from `head.html` is gone), and that shortcode styles and
+scripts still load (check pages using shortcodes with dedicated
+SCSS/CSS/JS includes).
 
 # Accessible navigation menu (progressively enhanced checkbox hack)
 

@@ -1,4 +1,5 @@
 {{- warnf "[partials/head.html] Warning: using this template make it impossible to use page specific scripts and styles!" -}}
+{{- warnf "[partials/head.html] Changed: this partial no longer builds or links the JavaScript bundle ('js/main.js' and the IIIF viewers) — use 'html/head/script.html' (as 'baseof.html' does) instead" -}}
 
 <meta charset="utf-8">
 
@@ -21,24 +22,7 @@
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
 
-{{/* JavaScript */}}
-{{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
-{{- $mainOpts := dict "targetPath" "js/main.js" "defines" $defines "minify" true -}}
-{{- $main := resources.Get "js/main.js" | js.Build $mainOpts -}}
-
-{{- $mainJs := "" -}}
-{{- if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/image/") -}}
-    {{- $iiifOpts := dict "targetPath" "js/iiif-image-viewer.js" "defines" $defines "minify" true -}}
-    {{- $iiif := resources.Get "ts/iiif-image-viewer.ts" | js.Build $iiifOpts -}}
-    {{- $mainJs = slice $main $iiif | resources.Concat "js/main-iiif-i.js" | minify | fingerprint -}}
-{{- else if (hasPrefix .Page.Params.iiifcontext "http://iiif.io/api/presentation/") -}}
-    {{- $iiifOpts := dict "targetPath" "js/iiif-presentation-viewer.js" "defines" $defines "minify" true -}}
-    {{- $iiif := resources.Get "js/iiif-presentation-viewer.js" | js.Build $iiifOpts -}}
-    {{- $mainJs = slice $main $iiif | resources.Concat "js/main-iiif-p.js" | minify | fingerprint -}}
-{{- else -}}
-    {{- $mainJs = slice $main | resources.Concat "js/main.js" | minify | fingerprint -}}
-{{- end -}}
- <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity }}"></script>
+{{/* Scripts are emitted by 'html/head/script.html' via baseof.html */}}
 
 {{/* External Styles - Fonts etc */}}
 {{- range site.Params.stylesheets -}}

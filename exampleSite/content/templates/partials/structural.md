@@ -10,9 +10,9 @@ These partials render the common page chrome. They are used by the theme's templ
 
 ## `head.html` {#head}
 
-Renders the complete `<head>` content: title, meta description, the main JavaScript bundle (with the IIIF viewer concatenated if the page has an `iiifcontext`), external `stylesheets`, the compiled SCSS, favicons and `<link>` alternates for the RSS and `iiif-collection` output formats.
+Renders parts of the `<head>` content: title, meta description, external `stylesheets`, favicons and `<link>` alternates for the RSS and `iiif-collection` output formats. It no longer renders stylesheets or the JavaScript bundle — those come from the `html/head/style.html` and `html/head/script.html` partials (see below), which `baseof.html` calls directly.
 
-> **Warning:** this partial emits a build warning — it makes page specific scripts and styles impossible. Use the `html/head/*` partials individually instead.
+> **Warning:** this partial emits a build warning — it is incomplete compared to the `html/head/*` partials. Use those individually instead.
 
 | Site parameter | Purpose |
 |---|---|
@@ -21,7 +21,9 @@ Renders the complete `<head>` content: title, meta description, the main JavaScr
 | `stylesheets` | List of external stylesheet URLs |
 | `favicon_16`, `favicon_32`, `favicon_svg` | Favicons |
 
-It also inspects the page parameter `iiifcontext` to decide which viewer script to bundle.
+## `html/head/script.html` {#html-head-script}
+
+Builds and links the site's JavaScript. The entry point is the page parameter `defaultScriptEntrypoint` if set; otherwise a `ts/main.ts` resource is used when present, falling back to the legacy `js/main.js` name. If neither exists the build fails with an `errorf` — create the file in the site's assets directory, an empty file will do (the example site ships an empty `assets/ts/main.ts`). Additional per page scripts come from the page's `js:` front matter and from the shortcode helper metadata; they are bundled separately from the main bundle.
 
 ## `header.html` {#header}
 
