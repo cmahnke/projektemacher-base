@@ -4,6 +4,16 @@
     */}}
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
+{{- $format := "jpeg" -}}
+
+{{- with site.Params.preview.og.format -}}
+  {{- $format = . -}}
+{{- end -}}
+
+{{- if eq $format "webp" -}}
+  {{- $format = "webp picture" -}}
+{{- end -}}
+
 {{- $filePath := "" -}}
 {{- if and (ne .File nil) (ne .File.Path nil) -}}
   {{- $filePath = .File.Path -}}
@@ -54,7 +64,7 @@
       {{- if $debug -}}
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as preview for post %s" $previewFile $filePath -}}
       {{- end -}}
-      {{ $filter := images.Process "jpeg" }}
+      {{ $filter := images.Process $format }}
       {{- $previewImg = . | images.Filter $filter -}}
     {{- end -}}
   {{- else if and (ne site.Params.preview.source "") (eq site.Params.preview.source "overlay") -}}
@@ -66,7 +76,7 @@
       {{- $filter := images.Overlay . 0 0 -}}
       {{- if eq (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
         {{/*
-        {{- $previewImg = $previewImg.Resize (printf "%dx" $ogWidth) -}}
+        {{- $previewImg = $previewImg.Resize (printf "%dx %s" $ogWidth $format) -}}
         {{- $previewImg = $previewImg.Crop (printf  "%dx%d top q85 lanczos" $ogWidth $ogHeight) -}}
         */}}
         {{- if not (templates.Exists "html/head/og-image-background.html") -}}
@@ -75,7 +85,7 @@
             {{- $bgColor = site.Params.preview.background -}}
           {{- end -}}
 
-          {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $ogWidth $ogHeight) -}}
+          {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $ogWidth $ogHeight $format) -}}
           {{- $paddingW := 0 -}}
           {{- $paddingH := 0 -}}
           {{- if lt $previewImg.Width $ogWidth -}}

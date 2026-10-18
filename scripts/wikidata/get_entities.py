@@ -12,7 +12,8 @@ from rdflib import Graph, URIRef, Namespace, Literal, XSD
 from rdflib.namespace import RDF, RDFS, OWL, SKOS, XSD as XSD_NS
 
 # TODO:
-# * check 'facet of' for broader instanceof resolution 
+# * check 'facet of' for broader instanceof resolution
+# * If no label is given in a specific language, use the label provided by Schema.org
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
@@ -241,8 +242,10 @@ ENTITY_BASE_CLASSES = {
     'Q386724',    # work
     'Q15642541',  # human-geographic territorial entity
     'Q16334295',  # group of humans
-    'Q838948',   # form of art
+    'Q838948',    # form of art
     'Q7397',      # software
+    'Q235557',    # File format
+    'Q1924747'    # metadata standard
 }
 CLASSIFY_BATCH_SIZE = 50
 
