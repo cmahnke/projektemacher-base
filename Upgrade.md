@@ -20,8 +20,10 @@ The URL list lives in `exampleSite/test-urls.json` and covers:
   `html/iframe-consent`, `iiif/iiif`, `iiif/presentation`, `lucienne`,
   `maps/osm`, `maps/osm-vector-tiles`, `mastodon`, `mermaid`, `pdf`,
   `pdf-preview`, `tagcloud`
-- other pages with JS functionality: the IIIF presentation examples, the
-  page specific assets post and the html-body test page
+- other pages with JS functionality: the search page (Pagefind, see
+  below), the IIIF presentation examples, the i18n strings page with
+  its client side table filter, the page specific assets post and the
+  html-body test page
 
 The checker also maps requests to the base URL's **origin root** to its
 internal webserver, so root-relative resources like CSS
@@ -43,7 +45,7 @@ unless you run the check with `-g`.
 Consuming sites run the same checker against their own build
 (`scripts/github/check-js-errors.sh`) — make sure **one page per
 shortcode that includes JS — whether defined by the theme or by the site
-itself — and pages containing maps, PDF viewers and other JS
+itself — and pages containing maps, PDF viewers, search and other JS
 functionality are added to the site's `test-urls.json`, if not already
 in there**, excluding WebGL/WebGPU (see above). The checker only visits
 the URLs it is given, so anything missing from the list is never
@@ -57,12 +59,25 @@ grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-
 # (check the referenced metadata partial for a 'js' entry)
 grep -rEl 'define ".*-metadata' layouts/shortcodes/
 
+# Search pages (the theme's 'search' layout)
+grep -rEl '^layout: search' content
+
 # Pages loading page specific scripts
 grep -rEl '^js:' content
 ```
 
 Keep the list in sync whenever a new shortcode with JS is added or a
 page starts using JS functionality.
+
+> [!NOTE]
+> Search pages need the Pagefind index built for the served output
+> (`pagefind-indexer`, see the deploy workflow) — without it the page
+> renders, but the search bundle fails to load and returns no results.
+> Since the failure is caught inside pagefind (console errors only),
+> the checker doesn't fail on it, so index the build before running the
+> check to test real search behaviour. The example site's runtime check
+> builds the index before the check runs.
+
 The same page set is the input for the accessibility checks (see
 "Add accessibility checks" below) — run those against the production
 site as well.

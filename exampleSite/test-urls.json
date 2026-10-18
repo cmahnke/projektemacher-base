@@ -20,6 +20,8 @@
     "/iiif/presentation-3/",
     "/iiif/presentation-3-nesting/",
     "/iiif/presentation-4/",
+    "/search/",
+    "/i18n/",
     "/posts/post-specific-assets/",
     "/tests/html-body-test/"
   ]

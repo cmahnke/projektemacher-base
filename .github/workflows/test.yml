@@ -471,6 +471,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+
       - name: Install required dependencies
         run: |
           ./scripts/setup.sh
@@ -506,6 +510,11 @@ jobs:
       - name: Build Hugo site
         working-directory: exampleSite
         run: hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
+
+      - name: Build Pagefind index
+        working-directory: exampleSite
+        run: |
+          pagefind-indexer -c ../pagefind-index.yaml
 
       - name: Run JS runtime check
         run: |

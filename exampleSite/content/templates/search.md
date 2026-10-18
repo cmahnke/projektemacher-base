@@ -19,6 +19,15 @@ layout: search
 ---
 ```
 
+The page also needs the search script, either via its front matter (as
+the [example page](/search/) does) or imported by the site's own
+`main.ts`:
+
+```markdown
+js:
+  - ts/search.ts
+```
+
 If the page has no title, the `<title>` falls back to the site title.
 
 The page is typically excluded from listings the same way as other meta pages (`metaPage: true`, `displayinlist: false`).
