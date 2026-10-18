@@ -10,11 +10,11 @@ checker's internal webserver — the same mechanism the consumer-side
 
 The URL list lives in `exampleSite/test-urls.json` and covers:
 
-- every page demonstrating a shortcode that ships JS — `audioplayer`,
+- one page per shortcode that ships JS — `audioplayer`,
   `browser-banner`, `browser-hide-selector`, `code`, `gist`,
   `html/iframe-consent`, `iiif/iiif`, `iiif/presentation`, `lucienne`,
   `maps/osm`, `maps/osm-vector-tiles`, `mastodon`, `mermaid`, `pdf`,
-  `pdf-preview` — plus the tagcloud demo pages
+  `pdf-preview`, `tagcloud`
 - other pages with JS functionality: the IIIF presentation examples, the
   page specific assets post and the html-body test page
 
@@ -36,21 +36,28 @@ unless you run the check with `-g`.
 ## What sites need to do
 
 Consuming sites run the same checker against their own build
-(`scripts/github/check-js-errors.sh`) — make sure **pages containing
-maps, PDF viewers and other JS functionality are added to the site's
-`test-urls.json`, if not already in there**. The checker only visits the
-URLs it is given, so anything missing from the list is never
+(`scripts/github/check-js-errors.sh`) — make sure **one page per
+shortcode that includes JS — whether defined by the theme or by the site
+itself — and pages containing maps, PDF viewers and other JS
+functionality are added to the site's `test-urls.json`, if not already
+in there**, excluding WebGL/WebGPU (see above). The checker only visits
+the URLs it is given, so anything missing from the list is never
 runtime-checked. To find candidates:
 
 ```bash
-# Pages using shortcodes that ship JS
+# Pages using shortcodes that ship JS (one page per shortcode is enough)
 grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code)' content
+
+# Site defined shortcodes with required includes
+# (check the referenced metadata partial for a 'js' entry)
+grep -rEl 'define ".*-metadata' layouts/shortcodes/
 
 # Pages loading page specific scripts
 grep -rEl '^js:' content
 ```
 
-Keep the list in sync whenever a new page uses one of these shortcodes.
+Keep the list in sync whenever a new shortcode with JS is added or a
+page starts using JS functionality.
 The same page set is the input for the accessibility checks (see
 "Add accessibility checks" below) — run those against the production
 site as well.
