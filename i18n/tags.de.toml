@@ -363,3 +363,9 @@ other = "Kamera"
 
 [Film]
 other = "Film"
+
+[WikidataEntries]
+other = "Wikidata-Einträge"
+
+[WikidataEntry]
+other = "Wikidata-Eintrag"

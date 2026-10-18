@@ -3,3 +3,15 @@ other = "Print preview"
 
 [PDFPreview]
 other = "PDF files are not displayed in the print preview"
+
+[generated]
+other = "Generated"
+
+[revision]
+other = "Revision"
+
+[notes]
+other = "Notes"
+
+[pageAbbr]
+other = "p."

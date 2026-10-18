@@ -45,8 +45,11 @@
                 bottom: 0;
                 /* inset: 0; */
                 background-color: #ccc;
-                transition: 0.4s;
                 border-radius: 34px;
+
+                @media (prefers-reduced-motion: no-preference) {
+                    transition: 0.4s;
+                }
 
                 &::before {
                     position: absolute;
@@ -56,23 +59,66 @@
                     left: 4px;
                     bottom: 4px;
                     background-color: white;
-                    transition: 0.4s;
                     border-radius: 50%;
+
+                    @media (prefers-reduced-motion: no-preference) {
+                        transition: 0.4s;
+                    }
                 }
             }
 
+            /*
+             * No-JS fallback: visually hidden but focusable (the old
+             * display: none removed the checkbox from the tab order,
+             * locking keyboard users out entirely). The state styles
+             * only apply until assets/ts/iframe-consent.ts replaced
+             * the label with a real switch button.
+             */
             input {
-                display: none;
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                margin: -1px;
+                padding: 0;
+                overflow: hidden;
+                clip-path: inset(50%);
+                border: 0;
 
                 &:checked + .opt-in-slider {
                     background-color: #2196f3;
                 }
 
-                &:focus + .opt-in-slider {
-                    box-shadow: 0 0 1px #2196f3;
+                &:focus-visible + .opt-in-slider {
+                    box-shadow: 0 0 0 3px #2196f3;
                 }
 
                 &:checked + .opt-in-slider::before {
+                    transform: translateX(26px);
+                }
+            }
+        }
+
+        /*
+         * JS regime: assets/ts/iframe-consent.ts replaces the
+         * <label> hack with a real <button role="switch"> carrying
+         * the same class - strip the UA button chrome so it renders
+         * like the fallback slider.
+         */
+        button.opt-in-switch {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+
+            &:focus-visible {
+                outline: 2px solid #2196f3;
+                outline-offset: 2px;
+            }
+
+            &[aria-checked="true"] .opt-in-slider {
+                background-color: #2196f3;
+
+                &::before {
                     transform: translateX(26px);
                 }
             }

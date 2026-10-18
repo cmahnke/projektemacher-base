@@ -14,6 +14,20 @@ import type { FeatureLike } from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
 import { Coordinate } from 'ol/coordinate';
 
+/*
+ * The OpenLayers built-in controls name their buttons via `title`
+ * only - expose the same label as aria-label (WCAG 4.1.2).
+ */
+function setControlAriaLabels(map: Map, labels: [string, string][]): void {
+  const root = map.getTargetElement();
+  if (!root) {
+    return;
+  }
+  labels.forEach(([selector, label]) => {
+    root.querySelectorAll<HTMLElement>(selector).forEach((el) => el.setAttribute('aria-label', label));
+  });
+}
+
 const layers: Record<string, TileLayer> = {};
 
 layers['wiki'] = new TileLayer({
@@ -202,6 +216,11 @@ export function initMap(
     layers: [baseLayer],
     target: element,
   });
+  setControlAriaLabels(map, [
+    ['.ol-zoom-in', toolTips[lang]['zoomIn']],
+    ['.ol-zoom-out', toolTips[lang]['zoomOut']],
+    ['.ol-full-screen button', toolTips[lang]['fullscreen']],
+  ]);
   const overlay = new Overlay({
     element: container,
     // OL 10 dropped the legacy 'autoPanAnimation' option, autoPan uses its default animation
@@ -219,7 +238,7 @@ export function initMap(
   const featurePopUp = (feature: Feature<Geometry>) => {
     const geometry = feature.getGeometry();
     const coord = (geometry as unknown as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
-    let popup = '<h1>' + feature.get('name') + '</h1>';
+    let popup = '<h2>' + feature.get('name') + '</h2>';
     popup += feature.get('popupContent');
     content.innerHTML = popup;
     overlay.setPosition(coord);

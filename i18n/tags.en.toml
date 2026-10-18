@@ -233,13 +233,13 @@ other = "Digitisation"
 other = "Architecture"
 
 [Collecting]
-other = "Sammeln"
+other = "Collecting"
 
 [Talk]
 other = "Talk"
 
 [Recording]
-other = "Aufzeichnung"
+other = "Recording"
 
 [Audio]
 other = "Audio"
@@ -363,3 +363,9 @@ other = "Camera"
 
 [Film]
 other = "Film"
+
+[WikidataEntries]
+other = "Wikidata entries"
+
+[WikidataEntry]
+other = "Wikidata entry"

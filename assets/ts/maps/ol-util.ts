@@ -85,6 +85,20 @@ function mergeFeatures(featureArray: Feature<Geometry>[]): Feature<Geometry> {
   return featureArray[0];
 }
 
+/*
+ * The OpenLayers built-in controls name their buttons via `title`
+ * only - expose the same label as aria-label (WCAG 4.1.2).
+ */
+function setControlAriaLabels(map: Map, labels: [string, string][]): void {
+  const root = map.getTargetElement();
+  if (!root) {
+    return;
+  }
+  labels.forEach(([selector, label]) => {
+    root.querySelectorAll<HTMLElement>(selector).forEach((el) => el.setAttribute('aria-label', label));
+  });
+}
+
 export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): Overlay {
   const target = map.getTargetElement();
   const container = target?.parentElement?.querySelector('.ol-popup') as HTMLElement;
@@ -94,7 +108,7 @@ export function addOverlay(map: Map, markerOptions?: Record<string, unknown>): O
   function featurePopUpLocal(feature: Feature<Geometry>, overlay: Overlay) {
     const geometry = feature.getGeometry();
     const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
-    let popup = '<h1>' + feature.get('name') + '</h1>';
+    let popup = '<h2>' + feature.get('name') + '</h2>';
     popup += feature.get('popupContent');
     content.innerHTML = popup;
     overlay.setPosition(coord);
@@ -135,7 +149,7 @@ export function featurePopUp(
 ): void {
   const geometry = feature.getGeometry();
   const coord = (geometry as { getCoordinates?: () => Coordinate } | null)?.getCoordinates?.();
-  let popup = '<h1>' + feature.get('name') + '</h1>';
+  let popup = '<h2>' + feature.get('name') + '</h2>';
   popup += feature.get('popupContent');
   content.innerHTML = popup;
   overlay.setPosition(coord);
@@ -289,6 +303,11 @@ function setupMap(
     layers: [baseLayer],
     target: element,
   });
+  setControlAriaLabels(map, [
+    ['.ol-zoom-in', toolTips[langKey].zoomIn],
+    ['.ol-zoom-out', toolTips[langKey].zoomOut],
+    ['.ol-full-screen button', toolTips[langKey].fullscreen],
+  ]);
 
   const overlay = new Overlay({
     element: container,

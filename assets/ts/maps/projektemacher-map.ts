@@ -27,6 +27,7 @@ import {
   loadOrParse,
   setupMarker,
   featurePopUp,
+  setControlAriaLabels,
   type Lang,
 } from './base-map';
 import { center as turf_center } from '@turf/turf';
@@ -384,6 +385,11 @@ export async function projektemacherMap(
     view: view,
     ...controls,
   });
+  setControlAriaLabels(map, [
+    ['.ol-zoom-in', toolTips[langKey]['zoomIn']],
+    ['.ol-zoom-out', toolTips[langKey]['zoomOut']],
+    ['.ol-full-screen button', toolTips[langKey]['fullscreen']],
+  ]);
 
   const mapMetadata = await getMapMetadata(source);
 

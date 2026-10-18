@@ -9,6 +9,7 @@ declare global {
     browserBanner(banner: HTMLElement, browsers: string[], parent: HTMLElement): void;
     browserDisableSelector(selector: string, browsers: string[]): void;
     addCopyToClipboard(button: HTMLButtonElement, content: HTMLTextAreaElement): void;
+    addFSToggle(button: HTMLButtonElement, elem: HTMLElement): void;
     addPDFViewer(elemId: string, url: string, options?: object): unknown;
     addConsent(
       toggle: HTMLInputElement,

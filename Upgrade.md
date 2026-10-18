@@ -721,7 +721,6 @@ A few plain-JavaScript sources remain without a TypeScript counterpart:
 
 | Remaining JS source | Notes |
 | --- | --- |
-| `assets/js/fullscreen.js` | Small helper, no dependencies |
 | `assets/js/search.js` | Pagefind UI glue |
 | `assets/js/timeline.js` | Thin vis-timeline wrapper |
 | `assets/js/iiif/mirador.js` | Mirador viewer bootstrap (deprecated, see the Mirador guide above) |
@@ -734,6 +733,24 @@ guide apply unchanged: bundles keep their `.js` targetPath via the
 `assets/js` shims can be deleted once nothing references them anymore.
 
 Verify with `npm run typecheck` (strict) and `npm run lint`.
+
+### Fullscreen helper ported to TypeScript
+
+`assets/js/fullscreen.js` was ported to `assets/ts/fullscreen.ts`
+(`window.addFSToggle`), the old shim is deleted:
+
+1. Update page front matter `js:` entries from `js/fullscreen.js` to
+   `ts/fullscreen.ts` — the bundle is emitted as `ts/fullscreen.js`.
+2. The API is unchanged (`addFSToggle(button, elem)`), but the helper
+   now syncs `aria-pressed` on the button and listens for
+   `fullscreenchange`, so leaving fullscreen via Escape or the browser
+   UI resets the button state instead of leaving it stale (WCAG 4.1.2).
+   Sites depending on the old stale-state behaviour need no action.
+3. The theme still does not wire `#fullscreen-button` automatically:
+   consuming sites keep calling `window.addFSToggle(document.
+   getElementById('fullscreen-button'), document.
+   getElementById('fullscreen-context'))` themselves. The button in
+   `layouts/_default/html-body.html` stays inert otherwise.
 
 ## Add accessibility checks
 
@@ -1007,3 +1024,149 @@ progressively enhanced and self-installing:
   devtools).
 - Confirm `prefers-reduced-motion: reduce` disables the open/close
   animation.
+
+# Skip link and list pagination fixes
+
+Two smaller accessibility fixes that change shipped markup - sites with
+drifted copies should adopt the theme's versions (see the deduplication
+guide above):
+
+- The skip link in `layouts/_default/baseof.html` no longer hides
+  itself with an inline style. It now relies on the `.skip-link` class
+  (added to `assets/scss/theme.scss`), which reveals the link on
+  `:focus` - previously it was unreachable for keyboard users because
+  the inline `left: -9999px` could never be overridden. Sites with a
+  copy of `baseof.html` keep the broken inline style until they adopt
+  the theme version; sites styling `.skip-link` themselves can drop
+  their overrides.
+- `layouts/partials/list.html` had the pagination labels swapped: the
+  "previous page" link was labelled `next_page` and vice versa. The
+  labels are fixed, and the `◀`/`▶` arrows are wrapped in
+  `<span aria-hidden="true">` so screen readers announce the label
+  only. The visible text of list pagination changes accordingly.
+
+## Verification
+
+- Keyboard only: the skip link becomes the first focusable element,
+  pressing Enter jumps to `#main`.
+- Check a paginated list: both links point in the direction their
+  labels announce.
+
+# Accessible iframe consent switch (progressively enhanced checkbox hack)
+
+The consent toggle in the `html/iframe-consent` shortcode (and the
+`html/iframe-consent.html` partial) previously hid its checkbox with
+`display: none`. That removed the control from the tab order entirely:
+keyboard users could not consent to embedded content (WCAG 2.1.1), the
+`*:focus + .opt-in-slider` style was dead code, and the state was never
+exposed to assistive technology. Like the navigation menu, the switch is
+now progressively enhanced:
+
+- `layouts/partials/html/iframe-consent.html` keeps the checkbox hack
+  as the no-JS fallback - the checkbox is now visually hidden with the
+  clip pattern instead of `display: none`, so it is focusable and Space
+  toggles it; the slider shows a focus ring via
+  `:focus-visible + .opt-in-slider`.
+- `assets/ts/iframe-consent.ts` (loaded via the shortcode metadata, no
+  wiring needed) replaces the `<label>` hack with a real
+  `<button role="switch" aria-checked>` (same class, same slider span).
+  The button keeps the hidden checkbox as the state source and
+  dispatches `change` on it - consumer code binding to the checkbox
+  keeps working. Escape-free single instance per iframe, idempotent.
+- `assets/scss/iframe-consent.scss` styles the button switch off
+  `[aria-checked]` instead of the `:checked +` sibling chain and adds
+  `:focus-visible` styles plus `prefers-reduced-motion` handling for
+  the slider transitions.
+- The consent detection was fixed on the way: `getConsent()` compared
+  the cookie *name* against `"1"` instead of its value, so a stored
+  consent was never restored. Returning visitors with a stored consent
+  now see the embedded content immediately and the switch reflects the
+  state.
+- The stale commented-out copy of the markup in
+  `layouts/shortcodes/html/iframe-consent.html` was removed.
+
+## 1. Consumer migration
+
+- Sites using the shortcode or partial unchanged need no action - the
+  enhancement ships with the assets the shortcode helper loads. With
+  JavaScript disabled the (now keyboard operable) checkbox hack remains
+  fully functional.
+- Sites with `skipShortcodeAssets: true` must keep loading
+  `ts/iframe-consent.ts` and `scss/iframe-consent.scss` manually (as
+  before) to get the enhancement.
+- Sites overriding `assets/scss/iframe-consent.scss`: once the
+  enhancement is active the toggle is a `<button class="opt-in-switch"
+  role="switch">` instead of a `<label>`. Update selectors targeting
+  `label.opt-in-switch` specifically, and note that
+  `input:checked + .opt-in-slider` no longer matches - key custom open
+  states off `button[aria-checked="true"]` instead.
+- Sites with their own toggle bound to the checkbox: the hidden
+  checkbox stays in the DOM and the button syncs its state with it.
+
+## 2. Behaviour changes
+
+- The toggle is announced as a switch with its label ("Accept") and the
+  checked/unchecked state; toggling works with Enter and Space.
+- Returning visitors with a stored consent cookie get the embedded
+  iframe loaded without interaction (previously the consent was saved
+  but never acted upon).
+- The slider animates only when `prefers-reduced-motion` is not set to
+  `reduce`.
+
+## 3. Verification
+
+- Keyboard only: tab to the switch, toggle with Enter/Space, confirm
+  the focus ring on both the fallback checkbox and the button.
+- Screen reader: the control announces role "switch"/"toggle", the
+  label and the state.
+- Disable JavaScript and confirm the checkbox still toggles the
+  consent via Space (also test with scripting off in devtools).
+- Set the consent cookie manually and reload - the iframe content
+  should appear and the switch should render as "on".
+- Confirm `prefers-reduced-motion: reduce` disables the slider
+  animation.
+
+# Accessible pagination
+
+`layouts/partials/pagination.html` changes:
+
+- The `<nav>` is labelled (`aria-label`, new i18n key
+  `paginationNavigation`) and the redundant `role="navigation"` was
+  dropped.
+- The current page link carries `aria-current="page"`.
+- Every page number link gets a visually hidden "page N" prefix (new
+  `.visually-hidden` utility in `assets/scss/theme.scss`), so screen
+  readers announce context, not just a bare number.
+
+## Consumer migration
+
+Sites overriding the pagination styles: the links now contain an
+additional `.visually-hidden` span before the number - selector based
+styling like `a { text-transform: uppercase }` is unaffected, but
+selectors such as `.nav-links a:first-child` or CSS that applies to all
+inline content of a link may now also hit the hidden span. Sites with a
+copied `pagination.html` keep the unlabeled version until they adopt
+the theme's.
+
+# Accessible map and IIIF viewer controls
+
+The OpenLayers based viewers labelled their controls via `title`
+attributes only (or not at all - the built-in zoom/full-screen/rotate
+buttons render their glyphs via CSS content), so screen readers found
+unnamed buttons. Changes:
+
+- The custom rotate controls and the OpenLayers built-in controls now
+  expose `aria-label` (same strings as the tooltips, localized de/en).
+- Map popups inject `<h2>` for the feature name instead of `<h1>`
+  (heading order).
+- The Ken Burns style auto pan/zoom animation of the IIIF viewer now
+  honours `prefers-reduced-motion: reduce` (it never starts) and can
+  be started with the keyboard too (`focusin`/`focusout` alongside
+  `mouseenter`/`mouseleave`).
+
+## Consumer migration
+
+- Sites styling map popups via `.ol-popup-content h1` (font sizes
+  etc.) need to target `h2` instead.
+- No other markup changes - the controls keep their classes and
+  visuals.
