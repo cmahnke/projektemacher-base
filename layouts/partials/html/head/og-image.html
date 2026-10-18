@@ -11,12 +11,12 @@
 
 {{- $ogHeight := 630 -}}
 {{- $ogWidth := 1200 -}}
-{{- if isset $.Site.Params "preview" -}}
-  {{- if $.Site.Params.preview.size.height -}}
-    {{- $ogHeight = $.Site.Params.preview.size.height -}}
+{{- if isset site.Params "preview" -}}
+  {{- if site.Params.preview.size.height -}}
+    {{- $ogHeight = site.Params.preview.size.height -}}
   {{- end -}}
-  {{- if $.Site.Params.preview.size.width -}}
-    {{- $ogWidth = $.Site.Params.preview.size.width -}}
+  {{- if site.Params.preview.size.width -}}
+    {{- $ogWidth = site.Params.preview.size.width -}}
   {{- end -}}
 {{- end -}}
 
@@ -47,9 +47,9 @@
   {{- end -}}
 {{- end -}}
 
-{{- if isset .Site.Params.preview "source" -}}
-  {{- if and (ne .Site.Params.preview.source "") (or (eq .Site.Params.preview.source "post") (eq .Site.Params.preview.source "file")) -}}
-    {{- $previewFile := printf "%s%s" .Site.Params.preview.outputPrefix .Site.Params.preview.outputSuffix -}}
+{{- if isset site.Params.preview "source" -}}
+  {{- if and (ne site.Params.preview.source "") (or (eq site.Params.preview.source "post") (eq site.Params.preview.source "file")) -}}
+    {{- $previewFile := printf "%s%s" site.Params.preview.outputPrefix site.Params.preview.outputSuffix -}}
     {{- with .Resources.Get $previewFile -}}
       {{- if $debug -}}
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as preview for post %s" $previewFile $filePath -}}
@@ -57,8 +57,8 @@
       {{ $filter := images.Process "jpeg" }}
       {{- $previewImg = . | images.Filter $filter -}}
     {{- end -}}
-  {{- else if and (ne .Site.Params.preview.source "") (eq .Site.Params.preview.source "overlay") -}}
-    {{- $overlayFile := printf "%s%s" .Site.Params.preview.outputPrefix .Site.Params.preview.outputSuffix -}}
+  {{- else if and (ne site.Params.preview.source "") (eq site.Params.preview.source "overlay") -}}
+    {{- $overlayFile := printf "%s%s" site.Params.preview.outputPrefix site.Params.preview.outputSuffix -}}
     {{- with .Resources.Get $overlayFile -}}
       {{- if $debug -}}
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as overlay for %s (post %s)" $overlayFile $previewImg $filePath -}}
@@ -71,8 +71,8 @@
         */}}
         {{- if not (templates.Exists "html/head/og-image-background.html") -}}
           {{- $bgColor := "#ffffff" -}}
-          {{- if isset $.Site.Params.preview "background" -}}
-            {{- $bgColor = $.Site.Params.preview.background -}}
+          {{- if isset site.Params.preview "background" -}}
+            {{- $bgColor = site.Params.preview.background -}}
           {{- end -}}
 
           {{- $previewImg = $previewImg.Fit (printf "%dx%d %s lanczos" $ogWidth $ogHeight) -}}

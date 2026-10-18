@@ -1,10 +1,10 @@
 {{- $relative := 0 -}}
-{{- with .Site.Params.print.relative -}}
+{{- with site.Params.print.relative -}}
   {{- $relative = . -}}
 {{- end -}}
 {{- with .Get "link" }}<a href="{{ . }}" >{{ end }}
   {{- $src := path.Join .Page.Path (.Get "src") -}}
-  {{- $src = substr $src $relative -}}
+  {{- $src = strings.Substr $src $relative -}}
   <figure {{ with .Get "class" }}class="{{ . }}"{{ end }}>
     <img {{ with .Get "alt" }}alt="{{ . }}"{{ end }} src="{{ $src }}">
   </figure>

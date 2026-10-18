@@ -1,6 +1,6 @@
 {{/* Inspired by https://github.com/gohugoio/hugoThemesSite/blob/ff2c51f118fe932525715002895eda1f036877d7/layouts/partials/tag-cloud.html */}}
 
-{{- $tags := $.Site.Taxonomies.tags.ByCount -}}
+{{- $tags := site.Taxonomies.tags.ByCount -}}
 {{- $filtered := where $tags "Count" ">=" 3 -}}
 {{- $filtered = where $filtered "Term" "not in" (slice "hugo" "tags" "rss") -}}
 {{- $highest := (index $filtered 0).Count -}}

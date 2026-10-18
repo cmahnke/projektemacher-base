@@ -1,6 +1,6 @@
 {{- $AllPages := partial "hugo/site/AllPages" . -}}
 {{- $pages := where $AllPages "Params.displayinlist" "!=" false -}}
-{{- $pages = where $pages "Language.Lang" "==" .Site.Language.Lang -}}
+{{- $pages = where $pages "Language.Lang" "==" site.Language.Lang -}}
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 
 {{ $taxonomy := "tags" }}
@@ -14,15 +14,15 @@
   {{- end -}}
   {{- $tags := dict -}}
   {{- range $tag := .Params.tags -}}
-  {{/* {{- range $tag := .Site.Taxonomies.tags -}} */}}
+  {{/* {{- range $tag := site.Taxonomies.tags -}} */}}
     {{- $termTitle := "" -}}
     {{- $definitionMissing := false -}}
     {{- if ne $tag "" -}}
       {{- $tagUrl := printf "%s%s" ((printf "%s/" $taxonomy) | relLangURL) ($tag | urlize) -}}
-      {{/* TODO: Check if this still works if .Site.BaseURL contains a path at the end - probably not */}}
+      {{/* TODO: Check if this still works if site.BaseURL contains a path at the end - probably not */}}
       {{- $tagPath := (urls.Parse $tagUrl).Path -}}
       {{- $sameAs := "" -}}
-      {{- with $.Site.GetPage $tagPath -}}
+      {{- with site.GetPage $tagPath -}}
         {{- $termTitle = .Title -}}
         {{- if .Params.wikidata -}}
           {{- if not (reflect.IsSlice .Params.wikidata) -}}

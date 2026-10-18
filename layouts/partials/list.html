@@ -2,7 +2,7 @@
     <div class="post">
     {{- $pages := .Pages -}}
     {{- if .IsHome -}}
-      {{- $pages = .Site.RegularPages -}}
+      {{- $pages = site.RegularPages -}}
     {{- end -}}
     {{- $pages = where $pages "Params.metaPage" "!=" true -}}
     {{- $paginator := .Paginate (where $pages "Params.displayinlist" "!=" false) -}}

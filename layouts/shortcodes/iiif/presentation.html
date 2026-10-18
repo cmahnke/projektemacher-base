@@ -28,7 +28,7 @@ Parameters:
     {{- end -}}
 */}}
 
-{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s-%s" $manifestUrl now.UnixNano)) -}}
+{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s-%d" $manifestUrl .Ordinal)) -}}
 
 <div class="iiif">
   <div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>

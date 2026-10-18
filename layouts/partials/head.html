@@ -3,17 +3,17 @@
 <meta charset="utf-8">
 
 {{- with .Title -}}
-  <title>{{ . }} {{if $.IsHome}}- {{ $.Site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
+  <title>{{ . }} {{if $.IsHome}}- {{ site.Params.slogan | default "" | safeHTML }}{{ end }}</title>
 {{- end -}}
 
 {{- if .Description -}}
   <meta name="description" content="{{ .Description }}" />
 {{- else -}}
-  <meta name="description" content="{{ .Site.Params.description }}" />
+  <meta name="description" content="{{ site.Params.description }}" />
 {{- end -}}
 
 {{ if hasPrefix .Page.Name "404" }}
-  <meta http-equiv="refresh" content="15; URL={{ .Site.BaseURL }}">
+  <meta http-equiv="refresh" content="15; URL={{ site.BaseURL }}">
 {{- end }}
 
 {{ hugo.Generator }}
@@ -41,7 +41,7 @@
  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity }}"></script>
 
 {{/* External Styles - Fonts etc */}}
-{{- range .Site.Params.stylesheets -}}
+{{- range site.Params.stylesheets -}}
     <link href="{{ . }}" rel="stylesheet">
 {{- end }}
 
@@ -49,10 +49,10 @@
 {{- partialCached "fonts/css.html" . "fonts" -}}
 
 {{/* TODO: Move to 'html/head/favicon.html' */}}
-<link rel="icon" type="image/png" href="{{ .Site.Params.favicon_32 | default "/images/favicon-32.png" | absURL }}" sizes="32x32">
-<link rel="icon" type="image/png" href="{{ .Site.Params.favicon_16 | default "/images/favicon-16.png" | absURL }}" sizes="16x16">
-{{ if .Site.Params.favicon_svg }}
-    <link rel="icon" type="image/svg+xml" href="{{ .Site.Params.favicon_svg }}">
+<link rel="icon" type="image/png" href="{{ site.Params.favicon_32 | default "/images/favicon-32.png" | absURL }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ site.Params.favicon_16 | default "/images/favicon-16.png" | absURL }}" sizes="16x16">
+{{ if site.Params.favicon_svg }}
+    <link rel="icon" type="image/svg+xml" href="{{ site.Params.favicon_svg }}">
 {{ end }}
 {{/* TODO: remove this
 <link rel="shortcut icon" href="{{ "img/favicon.ico" | absURL }}" type="image/x-icon">
@@ -60,10 +60,10 @@
 */}}
 
 {{ with .OutputFormats.Get "RSS" }}
-    <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
-    <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ $.Site.Title | default "" }}" />
+    <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ site.Title | default "" }}" />
+    <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ site.Title | default "" }}" />
 {{ end }}
 
 {{ with .OutputFormats.Get "iiif-collection" }}
-    <link href="{{ .RelPermalink }}" rel="alternate" type="application/ld+json;profile=http://iiif.io/api/presentation/3/context.json" title="{{ $.Site.Title | default "" }}" />
+    <link href="{{ .RelPermalink }}" rel="alternate" type="application/ld+json;profile=http://iiif.io/api/presentation/3/context.json" title="{{ site.Title | default "" }}" />
 {{ end }}

@@ -15,7 +15,7 @@ Params (dict): "url" (string), "cut" (declared generator prefix, may be ""),
 {{- $out := $url -}}
 {{- if ne $url "" -}}
   {{- if and (ne $cut "") (hasPrefix $url $cut) -}}
-    {{- $out = printf "%s%s" $base (substr $url (len $cut)) -}}
+    {{- $out = printf "%s%s" $base (strings.Substr $url (len $cut)) -}}
   {{- else if not (hasPrefix $url "http") -}}
     {{- if not (hasPrefix $url "#") -}}
       {{- $out = printf "%s%s" $base $url -}}

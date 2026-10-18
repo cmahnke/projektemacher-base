@@ -11,7 +11,7 @@
     {{- $class = . -}}
 {{- end -}}
 {{- $external := false -}}
-{{- if and (or (hasPrefix $href "http") (hasPrefix $href "//")) (not (hasPrefix $href .Site.BaseURL)) -}}
+{{- if and (or (hasPrefix $href "http") (hasPrefix $href "//")) (not (hasPrefix $href site.BaseURL)) -}}
   {{- $class = printf "%s %s" $class "external" -}}
   {{- $external = true -}}
 {{- end -}}

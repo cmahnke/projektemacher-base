@@ -11,7 +11,7 @@
   {{- if and (ne $tag "") (not (in $ignoreTags $tag)) -}}
     {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
     {{- $links := slice -}}
-    {{- with $.Site.GetPage $tagUrl -}}
+    {{- with site.GetPage $tagUrl -}}
       {{- if .Params.wikidata -}}
         {{- if not (reflect.IsSlice .Params.wikidata) -}}
           {{- $tagsWikidata = $tagsWikidata | append (slice .Params.wikidata) -}}

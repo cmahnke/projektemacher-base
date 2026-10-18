@@ -1,12 +1,12 @@
 {{- $pctx := . -}}
-{{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
+{{- if .IsHome -}}{{ $pctx = site }}{{- end -}}
 {{- $pages := slice -}}
 {{- if or $.IsHome $.IsSection -}}
 {{- $pages = $pctx.RegularPages -}}
 {{- else -}}
 {{- $pages = $pctx.Pages -}}
 {{- end -}}
-{{- $limit := .Site.Config.Services.RSS.Limit -}}
+{{- $limit := site.Config.Services.RSS.Limit -}}
 {{- if ge $limit 1 -}}
 
 {{/* Filter non post pages */}}
@@ -20,13 +20,13 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ if eq  .Title  .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{.}} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <title>{{ if eq  .Title  site.Title }}{{ site.Title }}{{ else }}{{ with .Title }}{{.}} on {{ end }}{{ site.Title }}{{ end }}</title>
     <link>{{ .Permalink }}</link>
-    <description>Recent content {{ if ne  .Title  .Site.Title }}{{ with .Title }}in {{.}} {{ end }}{{ end }}on {{ .Site.Title }}</description>
+    <description>Recent content {{ if ne  .Title  site.Title }}{{ with .Title }}in {{.}} {{ end }}{{ end }}on {{ site.Title }}</description>
     <generator>Hugo -- gohugo.io</generator>{{ with site.Language.Locale }}
-    <language>{{.}}</language>{{end}}{{ with .Site.Params.author.email }}
-    <managingEditor>{{.}}{{ with $.Site.Params.author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with .Site.Params.author.email }}
-    <webMaster>{{.}}{{ with $.Site.Params.author.name }} ({{.}}){{end}}</webMaster>{{end}}{{ with .Site.Copyright }}
+    <language>{{.}}</language>{{end}}{{ with site.Params.author.email }}
+    <managingEditor>{{.}}{{ with site.Params.author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with site.Params.author.email }}
+    <webMaster>{{.}}{{ with site.Params.author.name }} ({{.}}){{end}}</webMaster>{{end}}{{ with site.Copyright }}
     <copyright>{{.}}</copyright>{{end}}{{ if not .Date.IsZero }}
     <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
     {{- with .OutputFormats.Get "RSS" -}}
@@ -37,11 +37,11 @@
       <title>{{ .Title }}</title>
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
-      {{ with .Site.Params.author.email }}<author>{{.}}{{ with $.Site.Params.author.name }} ({{.}}){{end}}</author>{{end}}
+      {{ with site.Params.author.email }}<author>{{.}}{{ with site.Params.author.name }} ({{.}}){{end}}</author>{{end}}
       <guid>{{ .Permalink }}</guid>
       <description>{{ .Summary | html }}</description>
       {{ range .Resources.ByType "audio" }}
-        <enclosure url="{{ $.Site.BaseURL }}{{ .RelPermalink }}" length="{{ (os.Stat (path.Join "content" .RelPermalink)).Size }}" type="{{ .MediaType.Type }}" />
+        <enclosure url="{{ site.BaseURL }}{{ .RelPermalink }}" length="{{ (os.Stat (path.Join "content" .RelPermalink)).Size }}" type="{{ .MediaType.Type }}" />
       {{- end -}}
     </item>
     {{ end }}

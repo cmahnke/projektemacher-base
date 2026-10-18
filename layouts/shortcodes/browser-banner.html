@@ -12,7 +12,7 @@
 {{ if isset .Params "class" }}
   {{- $class = printf "%s %s" $class (.Get "class") -}}
 {{- end -}}
-{{- $id := printf "_browser-banner-%s" (md5 (printf "%s-%s" $browser now.UnixNano)) -}}
+{{- $id := printf "_browser-banner-%s" (md5 (printf "%s-%d" $browser .Ordinal)) -}}
 {{- $parent := "body" -}}
 {{ if isset .Params "parent" }}
   {{- $parent = .Get "parent" -}}

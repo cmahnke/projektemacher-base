@@ -37,11 +37,11 @@
   {{- $defaultContentPage = . -}}
 {{- end -}}
 {{- $urlBase := "" -}}
-{{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
-{{- if or hugo.IsServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+{{- $localPath := printf "%s/" (strings.Substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
+{{- if or hugo.IsServer (not (isset site.Params "productioniiifurlprefix")) -}}
   {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
 {{- else -}}
-  {{- $urlBase = printf "%s%s" .Site.Params.productionIIIFURLPrefix $localPath -}}
+  {{- $urlBase = printf "%s%s" site.Params.productionIIIFURLPrefix $localPath -}}
 {{- end -}}
 
 {{- with .Params.iiif.structure -}}
@@ -66,7 +66,7 @@
   {{- $parentPath := path.Dir .RelPermalink -}}
   {{- range .CurrentSection.Pages -}}
     {{- $childPath := path.Dir .RelPermalink -}}
-    {{- $relPath := substr $childPath (add (len $parentPath) 1) -}}
+    {{- $relPath := strings.Substr $childPath (add (len $parentPath) 1) -}}
     {{- $childPage := . -}}
     {{- range (where .Params.resources "params.iiif" "ne" nil) -}}
       {{- $res := $childPage.Resources.Get .src -}}

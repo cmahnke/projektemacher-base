@@ -57,7 +57,7 @@
         {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $item.Path 1) $manifest) "type" "Manifest" -}}
+    {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (strings.Substr $item.Path 1) $manifest) "type" "Manifest" -}}
     {{- $thumbnails := partial "iiif/3/thumbnail.json" . -}}
     {{- if gt ($thumbnails | len) 0 -}}
       {{- $item = $item | merge (dict "thumbnail" $thumbnails) -}}
@@ -101,7 +101,7 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label "thumbnail" $thumnails -}}
+      {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (strings.Substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label "thumbnail" $thumnails -}}
 
       {{- $items = $items | append $item -}}
     {{- end -}}

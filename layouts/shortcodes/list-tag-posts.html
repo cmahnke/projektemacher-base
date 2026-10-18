@@ -16,7 +16,7 @@
 
 {{- if gt (len $tags) 0 -}}
   {{- $pages := slice -}}
-  {{- $sectionPages := where .Site.Pages "Section" $section -}}
+  {{- $sectionPages := where site.Pages "Section" $section -}}
   {{- $tagPages := where $sectionPages "Params.tags" "intersect" $tags -}}
   {{- if gt (len $tags) 1 -}}
     {{- range $tagPages -}}

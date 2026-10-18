@@ -13,7 +13,7 @@
   <div class="{{ $class }}">
     {{- range .Params.resources -}}
       {{- if or (eq .name "front") (eq .name "back") (eq .name "title") (eq .name "cover") (eq .name "page") -}}
-        {{ partial "iiif/iiif-image.html" (dict "context" . "contextPath" $context "pageURL" .Permalink "heading" (i18n .name) "pageContext" $page "site" $.Site) }}
+        {{ partial "iiif/iiif-image.html" (dict "context" . "contextPath" $context "pageURL" .Permalink "heading" (i18n .name) "pageContext" $page "site" site) }}
       {{- end -}}
     {{- end -}}
   </div>

@@ -1,4 +1,4 @@
-{{- $pages := where .Site.RegularPages "Params.displayinlist" "!=" false -}}
+{{- $pages := where site.RegularPages "Params.displayinlist" "!=" false -}}
 {{- $pageList := slice -}}
 {{- $sameAs := dict -}}
 {{- $unmapped := slice -}}
@@ -14,7 +14,7 @@
     {{- if ne $tag "" -}}
       {{- $tagUrl := printf "%s%s" ("tags/" | relLangURL) ($tag | urlize) -}}
       {{- $links := slice -}}
-      {{- with $.Site.GetPage $tagUrl -}}
+      {{- with site.GetPage $tagUrl -}}
         {{- if .Params.wikidata -}}
           {{- $links = .Params.wikidata -}}
           {{- if not (reflect.IsSlice .Params.wikidata) -}}

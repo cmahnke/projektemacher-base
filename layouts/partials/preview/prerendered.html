@@ -1,11 +1,11 @@
 {{- $previewFile := "" -}}
-{{- if isset .context.Site.Params "preview" -}}
-    {{- $previewImgPrefix := .context.Site.Params.preview.outputPrefix -}}
+{{- if isset site.Params "preview" -}}
+    {{- $previewImgPrefix := site.Params.preview.outputPrefix -}}
 
     {{- if ne hugo.Sites.Default .context.Site -}}
-        {{- $previewImgPrefix = printf "%s.%s%s" $previewImgPrefix .context.Site.Language.Lang .context.Site.Params.preview.outputSuffix -}}
+        {{- $previewImgPrefix = printf "%s.%s%s" $previewImgPrefix site.Language.Lang site.Params.preview.outputSuffix -}}
     {{- else -}}
-        {{- $previewImgPrefix = printf "%s%s" $previewImgPrefix .context.Site.Params.preview.outputSuffix -}}
+        {{- $previewImgPrefix = printf "%s%s" $previewImgPrefix site.Params.preview.outputSuffix -}}
     {{- end -}}
 
     {{- $previewFile = (.context.Resources.ByType "image").GetMatch $previewImgPrefix -}}

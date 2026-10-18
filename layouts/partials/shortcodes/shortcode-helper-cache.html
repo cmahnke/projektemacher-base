@@ -4,7 +4,7 @@
 {{- $debug := partialCached "functions/debug/enabled.html" . -}}
 {{- $shortcodeTags := slice -}}
 {{/* Get all pages and extract used shortcodes with a regular expression */}}
-{{- range $page := $.Site.Pages -}}
+{{- range $page := site.Pages -}}
   {{- with $page.File -}}
     {{- $matches := findRESubmatch `{{[<%]\s*([^\s]*)\b.*\s*[%>]}}` $page.RawContent -}}
     {{- $matches = (partial "shortcodes/shortcode-helper-extract-matches.html" (dict "matches" $matches) ) -}}

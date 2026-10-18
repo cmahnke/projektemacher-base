@@ -5,7 +5,7 @@
 {{- $title := or (.Get "title") "" }}
 
 {{- $relative := 0 -}}
-{{- with .Site.Params.print.relative -}}
+{{- with site.Params.print.relative -}}
   {{- $relative = . -}}
 {{- end -}}
 {{- $errors := false}}
@@ -17,7 +17,7 @@
 {{- if not $errors }}
   {{- $opts := dict "scale" $scale "targetDir" "" }}
   {{- with images.QR $text $opts -}}
-    <img src="{{ substr .RelPermalink $relative }}" width="{{ .Width }}" height="{{ .Height }}"
+    <img src="{{ strings.Substr .RelPermalink $relative }}" width="{{ .Width }}" height="{{ .Height }}"
       {{- with $alt }} alt="{{ $alt }}" {{- end }}
       {{- with $class }} class="{{ $class }}" {{- end }}
       {{- with $title }} title="{{ $title }}" {{- end -}}

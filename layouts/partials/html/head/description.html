@@ -1,6 +1,6 @@
 {{- $description := "" -}}
-{{- if $.Site.Params.description -}}
-  {{- $description = $.Site.Params.description -}}
+{{- if site.Params.description -}}
+  {{- $description = site.Params.description -}}
 {{- end -}}
 {{- if .Params.description -}}
   {{- $description = .Params.description -}}

@@ -7,17 +7,17 @@
     {{- $keywords = delimit $keywords " " -}}
   {{- end -}}
 {{- else -}}
-  {{- if $.Site.Params.keywords -}}
-    {{- if reflect.IsSlice $.Site.Params.keywords -}}
-      {{- $keywords = delimit $.Site.Params.keywords "," -}}
+  {{- if site.Params.keywords -}}
+    {{- if reflect.IsSlice site.Params.keywords -}}
+      {{- $keywords = delimit site.Params.keywords "," -}}
     {{- else -}}
-      {{- $keywords = $.Site.Params.keywords -}}
+      {{- $keywords = site.Params.keywords -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
 {{- if .Keywords -}}
-  {{- if reflect.IsSlice $.Site.Params.keywords -}}
+  {{- if reflect.IsSlice site.Params.keywords -}}
     {{- $keywords = printf "%s%s" $keywords (delimit .Keywords ",") -}}
   {{- else -}}
     {{- $keywords = printf "%s%s" $keywords .Keywords -}}

@@ -1,4 +1,4 @@
-{{- with .Site.Params.author -}}
+{{- with site.Params.author -}}
   {{- $author := . -}}
   {{- if reflect.IsMap . -}}
     {{/*
@@ -12,11 +12,11 @@
   <meta name="author" content="{{ $author }}">
   <meta name="dc.creator" content="{{ $author }}">
 {{- end -}}
-{{ with .Site.Params.orcid }}
+{{ with site.Params.orcid }}
   <link rel="me" href="https://orcid.org/{{ . }}">
 {{ end }}
 {{/*
-<meta name="description" content="{{ .Description | default (.Summary | default .Site.Params.description ) }}">
+<meta name="description" content="{{ .Description | default (.Summary | default site.Params.description ) }}">
 */}}
-<meta http-equiv="Content-Language" content="{{ .Site.Language.Lang }}">
+<meta http-equiv="Content-Language" content="{{ site.Language.Lang }}">
 <meta name="dc.type" content="Text">

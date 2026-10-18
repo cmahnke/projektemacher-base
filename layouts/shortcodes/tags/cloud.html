@@ -6,7 +6,7 @@
     {{- $tag = printf "tag-%s" (.Get "tag") -}}
 {{- end -}}
 
-{{- $tags := $.Site.Taxonomies.tags.ByCount -}}
+{{- $tags := site.Taxonomies.tags.ByCount -}}
 {{- $filtered := slice -}}
 {{- if ne $tags nil -}}
   {{- $filtered = where $tags "Count" ">=" 3 -}}

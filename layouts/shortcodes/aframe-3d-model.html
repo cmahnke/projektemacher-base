@@ -7,7 +7,7 @@
 {{ if isset .Params "style" }}
   {{- $style = .Get "style" -}}
 {{- end -}}
-{{- $id := printf "_gtlf-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $id := printf "_gtlf-%s" (md5 (printf "%s-%d" $src .Ordinal)) -}}
 
 {{- if eq $class "" -}}
   {{- $class = "aframe-3d-model" -}}

@@ -4,7 +4,7 @@
 {{- end -}}
 
 {{- $now := time.Now -}}
-{{- $latestPost := index .Site.Pages.ByDate.Reverse 0 -}}
+{{- $latestPost := index site.Pages.ByDate.Reverse 0 -}}
 
 {{- if or (ge ($latestPost.Date) $now) -}}
   {{ warnf "[shortcodes/embargo.html] Future detected!" }}

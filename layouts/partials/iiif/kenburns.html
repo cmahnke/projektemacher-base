@@ -38,10 +38,10 @@
 {{- end -}}
 
 {{- $infoJson := "" -}}
-{{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+{{- if or $isServer (not (isset site.Params "productioniiifurlprefix")) -}}
     {{- $infoJson = printf "/%s" (path.Join $contextPath ($iiif.Get "manifest")) -}}
 {{- else -}}
-    {{- $infoJson = printf "%s%s" .Site.Params.productionIIIFURLPrefix (path.Join $contextPath ($iiif.Get "manifest")) -}}
+    {{- $infoJson = printf "%s%s" site.Params.productionIIIFURLPrefix (path.Join $contextPath ($iiif.Get "manifest")) -}}
     {{- $iiif.Set "baseURL" "" -}}
 {{- end -}}
 

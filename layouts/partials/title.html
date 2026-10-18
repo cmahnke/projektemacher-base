@@ -1,4 +1,4 @@
-{{-/*
+{{- /*
 	Shared page title: optional term prefix ("Tag: …") followed by
 	"Title · Site.Title". Returns a string.
 */ -}}
@@ -6,4 +6,4 @@
 {{- if eq .Kind "term" -}}
 	{{- $title = printf "%s: %s" (i18n .Data.Singular | title) $title -}}
 {{- end -}}
-{{- return (printf "%s · %s" $title .Site.Title) -}}
+{{- return (printf "%s · %s" $title site.Title) -}}

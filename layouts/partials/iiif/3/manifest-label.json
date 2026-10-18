@@ -1,6 +1,6 @@
-{{- $label := dict $.Site.Language.Lang (slice .Title) -}}
+{{- $label := dict site.Language.Lang (slice .Title) -}}
 {{- if hugo.IsMultilingual -}}
-  {{- $translations := where .Translations ".Lang" "!=" $.Site.Language.Lang -}}
+  {{- $translations := where .Translations ".Lang" "!=" site.Language.Lang -}}
   {{- range $translations -}}
     {{- $label = $label | merge (dict .Lang (slice .Title)) -}}
   {{- end -}}

@@ -48,7 +48,7 @@
   }
 
   if(readCookie('cookie-notice-option')=='true') {
-      {{ if hugo.IsProduction | or (eq .Site.Params.env "production") }}
+      {{ if hugo.IsProduction | or (eq site.Params.env "production") }}
               localStorage.setItem("doNotTrack", "0");
       {{ end }}
   } else if (readCookie('cookie-notice-option')!='false'){

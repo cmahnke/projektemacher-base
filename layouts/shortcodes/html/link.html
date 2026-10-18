@@ -13,7 +13,7 @@
   {{- $class = (.Get "class") -}}
 {{- end -}}
 
-{{- $base := substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
+{{- $base := strings.Substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
 {{- $filename = printf "%s%s" $base $filename -}}
 
 <div class="download-link">

@@ -39,7 +39,7 @@
   {{- $shifts = .Get "shifts" -}}
 {{- end -}}
 
-{{- $id := printf "_lucienne-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $id := printf "_lucienne-%s" (md5 (printf "%s-%d" $src .Ordinal)) -}}
 
 {{- if and (ne $src "") (ne $src nil) }}
   <div class="lucienne-container script">

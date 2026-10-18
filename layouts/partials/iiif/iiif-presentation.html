@@ -1,5 +1,5 @@
 {{- $contextPath := path.Dir .File.Path -}}
-{{- $urlBase := printf "%s%s" .Site.BaseURL $contextPath -}}
+{{- $urlBase := printf "%s%s" site.BaseURL $contextPath -}}
 {{- $manifestUrl := "" -}}
 {{- $name := "front" -}}
 {{- $page := . -}}
@@ -14,12 +14,12 @@
 {{- end -}}
 
 {{/*
-{{- if or $isServer (not (isset .Site.Params "productioniiifurlprefix")) -}}
+{{- if or $isServer (not (isset site.Params "productioniiifurlprefix")) -}}
 */}}
-    {{- $manifestUrl = printf "%s/%s/%s" .Site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
+    {{- $manifestUrl = printf "%s/%s/%s" site.BaseURL $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
 {{/*
 {{- else -}}
-    {{- $manifestUrl = printf "%s%s/%s" .Site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
+    {{- $manifestUrl = printf "%s%s/%s" site.Params.productionIIIFURLPrefix $contextPath (replaceRE "^\\./(.*)$" "$1" $manifestParam) -}}
 {{- end -}}
 */}}
 
@@ -53,7 +53,7 @@
 {{- else -}}
     {{- $orientation = "landscape" -}}
 {{- end -}}
-{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s-%s" $manifestUrl now.UnixNano)) -}}
+{{- $id := printf "_iiif-presentation-%s" (md5 (printf "%s" $manifestUrl)) -}}
 
 <div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>
 

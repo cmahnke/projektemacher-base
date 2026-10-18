@@ -56,12 +56,12 @@ replacing). Pre-made manifests without front-matter structures keep their own.
     {{- $manifest := $raw | transform.Unmarshal -}}
     {{- if and (reflect.IsMap $manifest) (isset $manifest "@context") (hasPrefix (index $manifest "@context") "http://iiif.io/api/presentation/3/") -}}
       {{/* Deployment prefix, like layouts/partials/iiif/3/manifest.json does */}}
-      {{- $localPath := printf "%s/" (substr (path.Dir $.RelPermalink) 1) -}}
+      {{- $localPath := printf "%s/" (strings.Substr (path.Dir $.RelPermalink) 1) -}}
       {{- $urlBase := "" -}}
-      {{- if or hugo.IsServer (not (isset $.Site.Params "productioniiifurlprefix")) -}}
+      {{- if or hugo.IsServer (not (isset site.Params "productioniiifurlprefix")) -}}
         {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
       {{- else -}}
-        {{- $urlBase = printf "%s%s" $.Site.Params.productionIIIFURLPrefix $localPath -}}
+        {{- $urlBase = printf "%s%s" site.Params.productionIIIFURLPrefix $localPath -}}
       {{- end -}}
       {{/* Absolute URLs need a declared cut prefix, otherwise the build fails */}}
       {{- $probe := slice -}}

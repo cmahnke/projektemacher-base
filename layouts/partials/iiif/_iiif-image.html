@@ -20,7 +20,7 @@
   {{- $heading = .heading -}}
 {{- end -}}
 {{- $idSuffix := replaceRE "[^a-zA-Z0-9_]" "_" $infoJson -}}
-{{- $mapName := printf "iiif_image_%s_%s" (delimit (shuffle (seq 1 9)) "") $idSuffix -}}
+{{- $mapName := printf "iiif_image_%s" $idSuffix -}}
 {{- if isset . "mapName" -}}
   {{- $mapName = .mapName -}}
 {{- end -}}

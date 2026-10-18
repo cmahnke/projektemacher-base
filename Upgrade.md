@@ -1,3 +1,8 @@
+> **⚠️ Urgent:** the theme still carries deprecations and compatibility
+> shims that are scheduled for removal — see
+> [Deprecations.md](Deprecations.md) for the full list. Work through the
+> items marked urgent there before the next release.
+
 # Run the JS runtime check against the example site
 
 The theme's CI now runs the puppeteer based runtime checker
@@ -1345,29 +1350,53 @@ the site's documentation in sync with what it actually ships.
 
 Sites that copied theme templates in earlier days (or started as forks)
 often carry older Hugo template style. Nothing below has been removed, but
-it should be modernized — the theme's development uses the right-hand
-column, and newer Hugo features expect it:
+it should be modernized — the theme's own templates follow the right-hand
+column (the exceptions are listed below), and newer Hugo features expect it:
 
 | Outdated | Replacement |
 |---|---|
 | `.Site.Params.…`, `$.Site.Title`, … | Global `site.` function: `site.Params.…`, `site.Title`, … |
-| `$.Paginator` / `.Paginate …` | Global `pagination.` function (Hugo ≥ 0.128.0) with the `[pagination]` site configuration |
+| `paginate = …` site config key | `pagination.pagerSize = …` (the `paginate` key was deprecated in Hugo 0.128.0) |
+| `Pager.PageSize` method | `Pager.PagerSize` (renamed in Hugo 0.128.0) |
 | `$.Scratch.Set` / `.Get` / `.Delete` | Plain variables with reassignment (`$x = …` inside `with` blocks, partial return values) |
 | bare `substr` | `strings.Substr` — same function, namespaced form (`substr` is just its alias) |
 
+> [!NOTE]
+> There is no global `pagination.` function — `.Paginate` remains the
+> documented `Page` method for creating pagers. Only the `paginate`
+> *configuration key* and the `PageSize` *method* were deprecated in
+> Hugo 0.128.0.
+
+Deliberate exceptions in the theme's own templates — not outdated code:
+
+* `layouts/partials/preview/prerendered.html` compares
+  `hugo.Sites.Default` against `.context.Site` — a site *identity* check
+  (multilingual awareness) that the `site.` global cannot express.
+* `layouts/partials/footer-content.html` and
+  `layouts/partials/html/head/iiif-js.html` read the page Scratch keys
+  `footer` / `iiifPrefix`. Nothing in the theme sets them — they are
+  consumer-facing extension points, so they cannot become plain
+  variables. Local `newScratch` objects (e.g. in `kenburns.html`) are
+  fine as-is; the rule targets page/`$`-Scratch state.
+* `layouts/partials/pagination.html` still reads `$.Paginator` — as the
+  *fallback* branch when the partial is called with a page context; the
+  preferred input is the pager object returned by `.Paginate`.
+* `layouts/redirect/single.html` calls *and* redefines
+  `_internal/alias.html` on purpose: the local alias page carries
+  additional meta tags (`noindex`, canonical, charset).
+
 Minor cleanups for the same pass:
 
-* Copies that call *and* redefine the internal alias template
-  (`_internal/alias.html`, see `layouts/redirect/single.html` for the
-  pattern) — drop the local redefinition, Hugo's built-in alias template
-  covers redirects.
 * Canonical camelCase for configuration keys: `canonifyURLs`, not
   `canonifyurls` — Hugo matches keys case-insensitively, but the
   documentation and tooling use the camelCase form.
-* Element IDs built from `now.UnixNano` inside `md5` make builds
-  nondeterministic — replace them with deterministic IDs (a page-scoped
-  counter, or a hash over stable content) so rebuilds produce identical
-  HTML.
+* Nondeterministic element IDs make rebuilds produce different HTML —
+  replace random inputs (like `md5 (printf "%s-%s" $src now.UnixNano)`
+  or `shuffle (seq 1 9)` name components) with deterministic
+  discriminators: in shortcodes, `.Ordinal` (the zero-based shortcode
+  index on the page) hashed over stable content; elsewhere a hash over
+  stable content. The theme's shortcodes and the IIIF image partial do
+  this now, so rebuilds produce identical HTML.
 
 Find the candidates from the site root — site-owned layouts first; for
 copied theme files run the deduplication scan under "Housekeeping" first:
@@ -1376,17 +1405,18 @@ copied theme files run the deduplication scan under "Housekeeping" first:
 # 1. .Site. / $.Site. → site.
 grep -rnE '\$?\.Site\.' layouts/
 
-# 2. .Paginator / .Paginate → pagination function
-grep -rnE 'Paginat(e|or)' layouts/
+# 2. paginate config key / Pager.PageSize (deprecated in 0.128.0)
+grep -rnE '^\s*paginate\s*=' config*/ hugo.toml config.toml 2>/dev/null
+grep -rn '\.PageSize' layouts/
 
-# 3. Scratch → plain variables
+# 3. Scratch → plain variables (extension-point reads are fine, see above)
 grep -rn 'Scratch' layouts/
 
 # 4. bare substr → strings.Substr (exclude JS substring() calls; strings.Substr doesn't match)
 grep -rn 'substr' layouts/ | grep -v 'substring'
 
 # 5. nondeterministic IDs
-grep -rn 'UnixNano' layouts/
+grep -rnE 'UnixNano|shuffle' layouts/
 
 # 6. internal alias template shadowing
 grep -rn '_internal/alias' layouts/

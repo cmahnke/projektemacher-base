@@ -4,7 +4,7 @@
 {{- $isServer := hugo.IsServer -}}
 
 {{- $iiifImageViewerJS := "ts/iiif-image-viewer.ts" -}}
-{{- with $.Site.Params.iiif.imageViewer -}}
+{{- with site.Params.iiif.imageViewer -}}
   {{- if ne . "" -}}
     {{- $iiifImageViewerJS = . -}}
   {{- end -}}
@@ -14,7 +14,7 @@
 {{- $iiifPresentationViewerJS := "js/iiif-presentation-viewer.js" -}}
 */}}
 {{- $iiifPresentationViewerJS := "ts/iiif/tify.ts" -}}
-{{- with $.Site.Params.iiif.presentationViewer -}}
+{{- with site.Params.iiif.presentationViewer -}}
   {{- if ne . "" -}}
     {{- $iiifPresentationViewerJS = . -}}
   {{- end -}}

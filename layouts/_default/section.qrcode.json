@@ -1,11 +1,11 @@
 {
   {{- if .Aliases -}}
     "url": [ "{{- .Permalink -}}"
-      {{- $base := .Site.BaseURL -}}
+      {{- $base := site.BaseURL -}}
       {{- range .Aliases -}}
         {{- $suffix := . -}}
         {{- if hasPrefix $suffix "/" -}}
-          {{- $suffix = substr $suffix 1 -}}
+          {{- $suffix = strings.Substr $suffix 1 -}}
         {{- end -}}
         ,"{{- printf "%s%s" $base $suffix -}}"
       {{- end -}}

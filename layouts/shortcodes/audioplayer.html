@@ -1,7 +1,7 @@
 {{- warnf "[shortcodes/audioplayer.html] is currently untested"  -}}
 {{- $src := .Get "src" -}}
 {{- $autoplay := .Get "autoplay" -}}
-{{- $id := printf "_audioplayer-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $id := printf "_audioplayer-%s" (md5 (printf "%s-%d" $src .Ordinal)) -}}
 
 <div class="audioplayer" id="{{ $id }}">
     <div class="button-container">

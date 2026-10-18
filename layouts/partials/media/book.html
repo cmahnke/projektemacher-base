@@ -16,7 +16,7 @@
     <div class="description-images">
       {{- range .Params.resources -}}
         {{- if or (or (eq .name "front") (eq .name "title")) (eq .name "cover") -}}
-          {{ partial "iiif/iiif-image.html" (dict "context" . "contextPath" $context "pageURL" .Permalink "pageContext" $page  "site" $.Site) }}
+          {{ partial "iiif/iiif-image.html" (dict "context" . "contextPath" $context "pageURL" .Permalink "pageContext" $page  "site" site) }}
         {{- end -}}
       {{- end -}}
     </div>

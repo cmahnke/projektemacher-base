@@ -55,11 +55,11 @@
     {{- if hugo.IsMultilingual -}}
       {{- $defaultContentPage = index (where $page.AllTranslations ".Lang" "eq" hugo.Sites.Default.Language.Lang) 0 -}}
     {{- end -}}
-    {{- $localPath := printf "%s/" (substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
-    {{- if or hugo.IsServer (not (isset $page.Site.Params "productioniiifurlprefix")) -}}
+    {{- $localPath := printf "%s/" (strings.Substr (path.Dir $defaultContentPage.RelPermalink) 1) -}}
+    {{- if or hugo.IsServer (not (isset site.Params "productioniiifurlprefix")) -}}
       {{- $urlBase = printf "%s%s" hugo.Sites.Default.BaseURL $localPath -}}
     {{- else -}}
-      {{- $urlBase = printf "%s%s" $page.Site.Params.productionIIIFURLPrefix $localPath -}}
+      {{- $urlBase = printf "%s%s" site.Params.productionIIIFURLPrefix $localPath -}}
     {{- end -}}
 
     {{- /* Reference lookup: ordered canvas names + ref -> resource index */ -}}

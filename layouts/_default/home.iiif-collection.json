@@ -1,6 +1,6 @@
-{{- $pages := .Site.Pages -}}
-{{- range .Site.Home.Translations -}}
-  {{- $pages = $pages | lang.Merge .Site.Pages -}}
+{{- $pages := site.Pages -}}
+{{- range site.Home.Translations -}}
+  {{- $pages = $pages | lang.Merge site.Pages -}}
 {{- end -}}
 {{- $pages = where $pages "Params.displayinlist" "!=" false -}}
 

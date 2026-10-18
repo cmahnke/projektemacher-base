@@ -1,4 +1,4 @@
-{{- $pages := where .Site.RegularPages "Params.displayinlist" "!=" false -}}
+{{- $pages := where site.RegularPages "Params.displayinlist" "!=" false -}}
 
 {{- $section := "post" -}}
 {{- $blogType := "Blog" -}}

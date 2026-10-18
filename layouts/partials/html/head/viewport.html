@@ -1,12 +1,12 @@
 {{- $viewport := "width=device-width, initial-scale=1.0, minimum-scale=1.0" -}}
-{{- if .Site.Params.disableScale -}}
-    {{- if ne .Site.Params.disableScale true -}}
-        {{- $viewport = printf "%s, %s" $viewport .Site.Params.disableScale -}}
+{{- if site.Params.disableScale -}}
+    {{- if ne site.Params.disableScale true -}}
+        {{- $viewport = printf "%s, %s" $viewport site.Params.disableScale -}}
     {{- else -}}
         {{- $viewport = printf "%s, %s" $viewport "user-scalable=no" -}}
     {{- end -}}
 {{- end -}}
-{{- if .Site.Params.minimalUI -}}
+{{- if site.Params.minimalUI -}}
   {{- $viewport = printf "%s, %s" $viewport "minimal-ui" -}}
 {{- end -}}
 <meta name="viewport" content="{{ $viewport }}">

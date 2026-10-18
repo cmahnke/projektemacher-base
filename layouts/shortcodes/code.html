@@ -26,10 +26,10 @@
 
 {{- $input := "" -}}
 {{- if len .Inner -}}
-  {{- $input = substr .Inner 1 -}}
+  {{- $input = strings.Substr .Inner 1 -}}
 {{- end -}}
 
-{{- $id := md5 (printf "%s-%s" $input now.UnixNano) -}}
+{{- $id := md5 (printf "%s-%d" $input .Ordinal) -}}
 
 {{- $opts := dict "guessSyntax" $guessSyntax -}}
 
