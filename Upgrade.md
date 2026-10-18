@@ -745,29 +745,32 @@ Deprecated parts:
 
 | File | Role |
 | --- | --- |
-| `layouts/partials/iiif/presentation/mirador.html` | Viewer partial — emits a `DEPRECATED` build warning when called |
+| `layouts/partials/iiif/presentation/mirador.html` | Viewer partial |
 | `assets/js/iiif/mirador.js` | `window.addMirador` bootstrap for the partial |
 | `assets/scss/mirador.scss` | Viewer styles |
 
-The files stay in place for now (with the warning) and will be removed in a
-future release.
+These files have been removed from the theme. Sites still calling the partial
+get a build error until they migrate. The local Mirador build documentation
+(`exampleSite/content/posts/mirador/`) and the accompanying `patches/`
+directory (mirador patch files) have been removed as well.
 
 ## 1. Consumer migration
 
 - Replace direct `partial "iiif/presentation/mirador.html"` calls with the
   [`iiif/presentation` shortcode](exampleSite/content/shortcodes/iiif/presentation.md)
-  (TIFY based), or adopt Mirador site locally: copy the partial and
-  `assets/js/iiif/mirador.js` / `assets/scss/mirador.scss` into the site's
-  own `layouts/` / `assets/` and maintain them there (Mirador is bundled by
-  the site itself, see `exampleSite/content/posts/mirador/`).
+  (TIFY based), or adopt Mirador locally: maintain your own copies of the
+  former viewer partial, `assets/js/iiif/mirador.js` and
+  `assets/scss/mirador.scss` in the site's own `layouts/` / `assets/` —
+  they are no longer shipped by the theme (Mirador is bundled by the site
+  itself).
 - Update `[params.iiif] presentationViewer` if it points to
   `js/iiif/mirador.js` — switch to `ts/iiif/tify.ts` (or a site local
   viewer).
 
 ## 2. Verification
 
-1. `hugo` — the build finishes and no longer reports
-   `[partials/iiif/presentation/mirador.html] DEPRECATED`.
+1. `hugo` — calling the removed `iiif/presentation/mirador.html` partial now
+   fails the build, so a clean build proves no call remains.
 2. Presentation pages render with the TIFY viewer.
 
 # Housekeeping
@@ -781,20 +784,24 @@ Pick items as time allows; each one stands on its own.
 ## Finish the JS → TypeScript migration
 
 The migration guide above covers the shortcodes that moved to `assets/ts/`.
-A few plain-JavaScript sources remain without a TypeScript counterpart:
+The remaining plain-JavaScript sources have been ported or dropped:
 
-| Remaining JS source | Notes |
+| Former JS source | Outcome |
 | --- | --- |
-| `assets/js/search.js` | Pagefind UI glue |
-| `assets/js/timeline.js` | Thin vis-timeline wrapper |
-| `assets/js/iiif/mirador.js` | Mirador viewer bootstrap (deprecated, see the Mirador guide above) |
-| `assets/js/maps/projektemacher-map.js` | Vector tile map bootstrap |
+| `assets/js/search.js` | Ported to `assets/ts/search.ts` — ambient declarations for `@pagefind/modular-ui` added to `assets/ts/vendor.d.ts` |
+| `assets/js/timeline.js` | Ported to `assets/ts/timeline.ts` — `window.addTimeline` declared in `assets/ts/globals.d.ts` |
+| `assets/js/iiif/mirador.js` | Removed together with the Mirador integration (see above) |
+| `assets/js/maps/projektemacher-map.js` | Removed — superseded by `assets/ts/maps/projektemacher-map.ts` (which `mapWrapper.ts` imports) |
 
-Port them to `assets/ts/` and update every reference (page front matter
-`js:` entries, `[params.iiif]` viewer settings). The rules from the existing
-guide apply unchanged: bundles keep their `.js` targetPath via the
-`replaceRE` remap in `script.html`/`iiif-js.html`, and the deprecated
-`assets/js` shims can be deleted once nothing references them anymore.
+The `replaceRE` remap in `script.html`/`iiif-js.html` keeps `.ts` sources
+building to `.js` target paths, so page front matter references stay
+compatible.
+
+Unreferenced legacy shims in `assets/js/` that already have an `assets/ts/`
+counterpart (e.g. `maps/osm-map.js`, `iiif/tify.js`,
+`lucienne/lucienne.js`, `iiif-image-viewer.js`, …) are left in place for now;
+their deletion can happen in a later cleanup round once consumers are
+re-verified.
 
 Verify with `npm run typecheck` (strict) and `npm run lint`.
 

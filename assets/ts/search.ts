@@ -2,7 +2,7 @@ import { Instance, Input, ResultList, FilterPills } from "@pagefind/modular-ui";
 import i18next from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-const translations = {
+const translations: Record<string, Record<string, Record<string, string>>> = {
   "en": {
     "search-filter": {
       "section": "Section",
@@ -38,7 +38,7 @@ const translations = {
 }
 
 class CMFilterPills extends FilterPills {
-  pillInner(val, count) {
+  pillInner(val: string, count: number): string {
     let label = val
     if (i18next.exists(`search-sections:${val}`)) {
       label = i18next.t(`search-sections:${val}`)
@@ -48,7 +48,7 @@ class CMFilterPills extends FilterPills {
     } else {
         return `<span aria-label="${label}">${label}</span>`;
     }
-}
+  }
 }
 
 i18next.use(LanguageDetector).init({
@@ -58,28 +58,29 @@ i18next.use(LanguageDetector).init({
   supportedLngs: ['de', 'en'],
 });
 
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener('DOMContentLoaded', () => {
   const bundlePath = "/index/"
   const urlParams = new URLSearchParams(window.location.search);
   const query = urlParams.get('q');
   const searchInputSelector = "#search-box";
-  const filterContainer = document.querySelector("#search-filter");
+  const searchInput = document.querySelector<HTMLInputElement>(searchInputSelector)!;
+  const filterContainer = document.querySelector("#search-filter")!;
   let filterInitialized = false
 
-  document.querySelector(searchInputSelector).addEventListener("input", (event) => {
-    const newQuery = event.target.value
+  searchInput.addEventListener("input", (event: Event) => {
+    const newQuery = (event.target as HTMLInputElement).value
     urlParams.set("q", newQuery);
-    history.replaceState(null, null, "?"+urlParams.toString());
+    history.replaceState(null, "", "?"+urlParams.toString());
   })
 
-  document.querySelector('.search-button').addEventListener("click", (event) => {
+  document.querySelector('.search-button')!.addEventListener("click", () => {
     const enterEvent = new KeyboardEvent('keydown', {
       key: 'Enter',
       code: 'Enter',
       which: 13,
       keyCode: 13,
     });
-    document.querySelector(searchInputSelector).dispatchEvent(enterEvent);
+    searchInput.dispatchEvent(enterEvent);
   })
 
   const instance = new Instance({
@@ -90,7 +91,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }));
   instance.on("filters", (filters) => {
     if (!filterInitialized) {
-      for (const [filter, values] of Object.entries(filters.available)) {
+      for (const [filter, _values] of Object.entries(filters.available ?? {})) {
         /*
         const filterContainer = document.createElement("ul");
         for (const [value, count] of Object.entries(values)) {
@@ -130,9 +131,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }));
 
 
-  document.querySelector(searchInputSelector).focus();
+  searchInput.focus();
   if (query !== null && query !== "") {
-    document.querySelector(searchInputSelector).value = query;
+    searchInput.value = query;
     instance.triggerSearch(query)
   } else {
       instance.triggerLoad();

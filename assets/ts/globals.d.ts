@@ -10,6 +10,7 @@ declare global {
     browserDisableSelector(selector: string, browsers: string[]): void;
     addCopyToClipboard(button: HTMLButtonElement, content: HTMLTextAreaElement): void;
     addFSToggle(button: HTMLButtonElement, elem: HTMLElement): void;
+    addTimeline(id: string, data: object, options?: object): unknown;
     addPDFViewer(elemId: string, url: string, options?: object): unknown;
     addConsent(
       toggle: HTMLInputElement,

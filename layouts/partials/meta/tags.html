@@ -5,8 +5,16 @@
 {{- if isset .Params "tags" -}}
   <div class="tags">
       {{- range $tag := .Params.tags -}}
+          {{- if or (hasPrefix $tag "hidden_") (hasPrefix $tag "_") -}}
+              {{- continue -}}
+          {{- end -}}
           {{- if ne $tag "" -}}
-              <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ partial (printf "tagcloud/%s.html" $render) $tag }}</a><br />
+              {{- $i18nTag := i18n $tag -}}
+              {{- if eq $i18nTag "" -}}
+                  <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $tag }}">#{{ partial (printf "tagcloud/%s.html" $render) $tag }}</a><br />
+              {{- else -}}
+                  <a href="{{ "tags/" | relLangURL }}{{ $tag | urlize }}" title="{{ $i18nTag }}">#{{ $i18nTag }}</a><br />
+              {{- end -}}
           {{- end -}}
       {{- end -}}
   </div>

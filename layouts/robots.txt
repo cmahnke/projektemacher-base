@@ -2,8 +2,13 @@ User-agent: *
 {{/* See https://discourse.gohugo.io/t/custom-robots-txt-and-sitemap-xml-templates/11869 */}}
 {{- $disallowed := union (where .Data.Pages "Params.robotsdisallow" true) (where .Pages "Params.sitemap_exclude" "eq" true) -}}
 
+{{- $disallowedExtensions := slice "/*.bib$" "/*.json$" "/*.xml$" -}}
+
 {{ range $disallowed }}
 Disallow: {{ .RelPermalink }}
+{{ end }}
+{{ range $disallowedExtensions }}
+Disallow: {{ . }}
 {{ end }}
 Sitemap: {{ "sitemap.xml" | absLangURL }}
 {{/* See https://discourse.gohugo.io/t/support-for-llms-txt-standard-for-ai-crawlers/53782/3 */}}

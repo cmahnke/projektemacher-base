@@ -15,7 +15,6 @@ All IIIF related settings live in `[params.iiif]`:
   presentationVersion = 3
 
   # JS asset for the Presentation API viewer, default: 'ts/iiif/tify.ts' (TIFY)
-  # Alternative: 'js/iiif/mirador.js' (Mirador), see /posts/mirador/
   presentationViewer = "ts/iiif/tify.ts"
 
   # JS asset for the Image API viewer, default: 'ts/iiif-image-viewer.ts' (OpenLayers)
