@@ -828,7 +828,7 @@ Verify with `npm run typecheck` (strict) and `npm run lint`.
 The theme ships no automated accessibility testing yet. A lightweight setup
 for consuming sites: run [axe-core](https://github.com/dequelabs/axe-core)
 through the already-present `puppeteer` devDependency against the built
-pages. Sketch (not part of the theme — copy and adapt):
+pages. Sketch:
 
 ```js
 import puppeteer from 'puppeteer';
@@ -845,8 +845,18 @@ console.log(violations.join('\n'));
 
 Iterate over the built HTML files (or a representative subset) and run the
 script locally. These are suggested static checks of the generated pages
-only — the theme ships no additional scripts and sets up no CI job; copy
-and adapt the sketch to the site's own tooling.
+only — the theme sets up no CI job; copy and adapt the sketch to the
+site's own tooling. A ready-to-run reference implementation of the sketch
+ships in this repository: `scripts/check-a11y.mjs` (axe-core via
+puppeteer, markdown report) plus a Lighthouse counterpart,
+`scripts/check-lighthouse.mjs`. Both default to the site's `baseURL`
+(read from `config.toml`/`hugo.toml`, falling back to
+`http://localhost:1313/`) and accept `--url` to check a different URL,
+`--urls-file` for a JSON page list (e.g. `test-urls.json`) and `--output`
+to write the markdown report to a file; run them via `npm run
+check:a11y` / `npm run check:lighthouse`. Both print agent-actionable
+markdown tables to stdout, and the a11y script excludes the
+`meta-viewport` rule by default (see below).
 
 Run these checks against the **production site** as well, not only against
 local builds: deployment pipelines (minification, fingerprinting, CDN and
