@@ -43,4 +43,3 @@ Generation of Presentation API 2 manifests (the former `iiif` output format with
 ## See also
 
 - Site params overview: [Site params](/posts/site-params/)
-- Mirador viewer build requirements: [Mirador](/posts/mirador/)
