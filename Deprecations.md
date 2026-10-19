@@ -122,17 +122,26 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
 - **Outdated Hugo constructs** (medium):
   - *theme*: only `.Scratch` remains (7 partials; the `footer` /
     `iiifPrefix` Scratch keys are consumer-coupled — see below)
-  - *consumers*: `.Site.` (6+ sites, e.g. `kleiderbuegel` in 26 files),
-    `.Scratch` (8 sites), bare `substr` → `strings.Substr`
-    (`kleiderbuegel` 8×, `labs.projektemacher.org`, `never-built`,
-    `ric-unknownartist`)
-  - *fixed in the 2026-10 cleanup*: `.RSSLink` (vorsatzpapier),
+  - *fixed in the 2026-10 cleanup*: `.Site.` → `site.` (383× in 15
+    consumer repos; context receivers only — the multilingual
+    translation-loop receivers were reviewed and kept where needed),
+    bare `substr` → `strings.Substr` (12×, 4 repos), `canonifyurls` →
+    `canonifyURLs` (4 repos), `.RSSLink` (vorsatzpapier),
     `.LastChange` (schatten), removed `preserveTaxonomyNames`
     (christianmahnke, never-built, plastikwarenfabrik), `paginate`
     params (all known consumers), `readFile` → `os.ReadFile`
     (theme, labs.projektemacher.org, ric-unknownartist), `.Hugo.*` →
     `hugo.*` (labs.projektemacher.org, wilmabraeuner) — all modern
     `hugo.IsServer` / `hugo.IsMultilingual` now, no legacy config keys
+  - *deliberately not pursued*: nondeterministic element IDs —
+    deterministic discriminators break more than they fix (decision
+    recorded in Upgrade.md)
+  - *still broken from an old sweep*: `labs.projektemacher.org`'s
+    `section.html` uses `site.LanguagePrefix` — the method was removed
+    in Hugo 0.124; the multilingual branch errors at build time and
+    needs a `strings.TrimPrefix`-based rework
+- **Nondeterministic element IDs** — removed from the mandatory
+  checklist; see Upgrade.md. (won't fix)
 - **Hugo < 0.165 compatibility code**: single-`return` partial
   workarounds in `layouts/partials/iiif/3/structures.html`,
   `functions/iiif/coerce-language-map.html` and
@@ -168,9 +177,11 @@ consumers:
   consumers `christianmahnke`, `kleiderbuegel` (2×) and `wilmabraeuner`
   — needs a semantic rework (draft pages don't render in production
   builds anyway). (open)
-- **`hugo.Data.Pages` in `blaufusstoelpel`** (`list.html:20`): the site
-  has no `data/` directory, so this paginates `nil` — intent unclear
-  (probably `site.RegularPages`). (open, investigate)
+- ~~**`hugo.Data.Pages` in `blaufusstoelpel`**~~ (`list.html:20`): the
+  site has no `data/` directory, so this paginated `nil` — the line now
+  paginates `site.RegularPages`. (done)
+- ~~**Language blocks with direct keys**~~: `xn--h-zfa.xyz`'s `label`
+  keys moved into the `[languages.xx.params]` sub-tables. (done)
 - **Dead `[privacy.instagram]` blocks** removed from `christianmahnke`,
   `never-built` and `plastikwarenfabrik` — the Instagram shortcode was
   removed from Hugo, the keys were no-ops. (done)
