@@ -52,7 +52,6 @@ jobs:
       - name: Install Node dependencies
         run: |
           npm install --ignore-scripts
-          #yarn install --ignore-scripts
 
       - name: Run linters
         run: |
@@ -111,7 +110,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Install Yarn and Node modules
+      - name: Install Node modules
         run: |
           npm install --ignore-scripts
 
@@ -179,31 +178,6 @@ jobs:
         run: |
           ./scripts/github/setup-system-fonts.sh
 
-  test_external_yarn:
-    runs-on: ubuntu-26.04
-    env:
-      DEPENDENCY_MANAGER: yarn
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7.1.0
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Install flags
-        run: |
-          ./scripts/flags.sh
-
-      - name: Install fonts
-        run: |
-          ./scripts/fonts.sh
-
-      - name: Install system fonts
-        run: |
-          ./scripts/github/setup-system-fonts.sh
 
   lint_fonts:
     runs-on: ubuntu-26.04

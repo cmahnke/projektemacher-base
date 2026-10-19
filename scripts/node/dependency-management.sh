@@ -21,11 +21,8 @@ if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
-  if ! command -v yarn 2>&1 >/dev/null
-  then
-      echo "yarn could not be found"
-      exit 1
-  fi
+  echo "yarn is retired - set DEPENDENCY_MANAGER to 'npm' or 'pnpm' (see Upgrade.md)"
+  exit 1
 fi
 
 INSTALL_OPTS=""

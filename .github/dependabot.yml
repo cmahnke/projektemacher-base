@@ -23,8 +23,6 @@ updates:
         versions: '>5'
       - dependency-name: "mktemp"
         versions: '>1'
-      - dependency-name: "svgo"
-        versions: '>3'
       - dependency-name: "ol-mapbox-style"
         versions: '>12'
       - dependency-name: "cesium"

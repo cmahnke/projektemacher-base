@@ -200,6 +200,18 @@ keeps a site aligned with the theme's direction — finishing half-done
 migrations, dropping dead compatibility code and adopting the theme's tooling.
 Pick items as time allows; each one stands on its own.
 
+## Yarn retired
+
+Yarn is no longer a supported package manager. The dependency scripts
+(`scripts/node/dependency-management.sh`, `scripts/init/package.json.sh`)
+**exit with an error** when `DEPENDENCY_MANAGER=yarn` is still set — switch
+to `DEPENDENCY_MANAGER=npm` (or `pnpm`, the default). Consumers should:
+
+- delete `yarn.lock` and let `npm install` regenerate `package-lock.json`
+- replace `yarn install` / `yarn run X` in CI and package.json scripts with
+  the `DEPENDENCY_MANAGER` variable mechanism (`npm install`, `npm run X`)
+- drop yarn instructions from their READMEs
+
 ## Finish the JS → TypeScript migration
 
 Done — the remaining plain-JS sources are ported (`ts/search.ts`,
