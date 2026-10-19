@@ -7,9 +7,7 @@
 {{- $isServer := hugo.IsServer -}}
 
 {{- $manifestParam := "" -}}
-{{- if isset .Params "iiifmanifest" -}}
-  {{- $manifestParam = .Params.iiifManifest -}}
-{{- else if isset .Params "iiif" -}}
+{{- if isset .Params "iiif" -}}
   {{- $manifestParam = index .Params.iiif "manifest" -}}
 {{- end -}}
 

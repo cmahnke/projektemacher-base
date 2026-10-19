@@ -3,10 +3,9 @@ Checks if the page has a pre-made IIIF manifest in its page bundle.
 Returns a dict: "exists" (bool) and "content" (manifest as JSON string).
 
 Front matter contract:
-- the manifest file: `iiif.manifest`, falling back to the legacy
-  `iiifManifest` key, e.g. `./manifest.json`. Only the file name is used;
-  the file has to live in the page bundle itself (looked up as a page
-  resource, so this works with any content directory name).
+- the manifest file: `iiif.manifest`, e.g. `./manifest.json`. Only the file
+  name is used; the file has to live in the page bundle itself (looked up as
+  a page resource, so this works with any content directory name).
 - the generator base prefix: `iiif.baseURL` (front matter spells it with a
   capital URL; Hugo exposes it as `.baseurl`), e.g. the `--base-url` the
   manifest was generated with. MANDATORY when the manifest contains absolute
@@ -43,9 +42,6 @@ replacing). Pre-made manifests without front-matter structures keep their own.
     {{- with .manifest -}}{{- $manifestRef = . -}}{{- end -}}
     {{- with .baseurl -}}{{- $cutPrefix = . -}}{{- end -}}
   {{- end -}}
-{{- end -}}
-{{- if eq $manifestRef "" -}}
-  {{- with .Params.iiifManifest -}}{{- $manifestRef = . -}}{{- end -}}
 {{- end -}}
 {{- if and (ne $cutPrefix "") (not (hasSuffix $cutPrefix "/")) -}}
   {{- $cutPrefix = printf "%s/" $cutPrefix -}}

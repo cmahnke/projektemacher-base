@@ -54,10 +54,10 @@ All IIIF viewer settings live in `[params.iiif]` — see the [IIIF configuration
 | `pdfDownload` | `false` | Add a PDF download link to the presentation viewer |
 | `productionIIIFURLPrefix` | — | URL prefix for IIIF images in production builds |
 
-The former `disableScale` parameter is deprecated and ignored: pinch
-zoom-in must stay allowed for accessibility (WCAG 2.5.5), only zoom-out
-is blocked via the viewport's `minimum-scale=1.0`. Setting it prints a
-build warning.
+The former `disableScale` parameter has been removed and has no effect:
+pinch zoom-in must stay allowed for accessibility (WCAG 2.5.5), only
+zoom-out is blocked via the viewport's `minimum-scale=1.0`. Setting it
+is a silent no-op (Hugo ignores unknown params).
 
 ## Previews
 

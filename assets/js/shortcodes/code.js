@@ -1,5 +1,0 @@
-/*
- * DEPRECATED shim — the implementation moved to `assets/ts/shortcodes/code.ts`.
- * Kept for sites referencing the old path; will be removed in a future release.
- */
-import '../../ts/shortcodes/code.ts';

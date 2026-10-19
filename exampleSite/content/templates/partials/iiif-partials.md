@@ -29,7 +29,6 @@ These partials render viewer markup for a page's `resources`. They are called by
 | `productionIIIFURLPrefix` | `iiif-presentation.html` | URL prefix for manifests in production builds (parts are commented out, currently unused) |
 | `pdfDownload` | `iiif-presentation-pdf.html` | PDF download link |
 | `minimalUI` | viewer partials | Minimal viewer UI |
-| `disableScale` | viewer partials | **Deprecated, ignored** (zoom must stay allowed, see viewport) |
 | `iiif.presentationVersion` | manifest generation, see [version resolution](../iiif-templates/#presentation-api-version) | Presentation API version 3 or 4 |
 
 ## Manifest and collection building blocks

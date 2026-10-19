@@ -6,13 +6,10 @@
     width="400"
     title="{{ i18n "externalContent" }}: Mastodon">
   </iframe>
-  <!--
-    <script src="https://fosstodon.org/embed.js" async="async"></script>
-  -->
 {{- else }}
   {{- errorf "The %q shortcode requires a positional parameter: the url of the post. See %s" .Name .Position }}
 {{- end }}
 
 {{- define "_partials/shortcodes/mastodon-metadata.html" -}}
-  {{- (dict "css" slice "js" (slice "https://fosstodon.org/embed.js") "scss" slice) | jsonify -}}
+  {{- (dict "css" slice "js" (slice "js/vendor/mastodon-embed.js") "scss" slice) | jsonify -}}
 {{- end -}}

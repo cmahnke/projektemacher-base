@@ -1,3 +1,3 @@
-{{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/" -}}
+{{- if hasPrefix .Params.iiifContext "http://iiif.io/api/presentation/2/" -}}
   {{- errorf "[_default/single.iiif.json] Generation of IIIF Presentation API 2 manifests isn't supported anymore (%s). Migrate to Presentation API 3: set 'outputs' to include 'iiif-manifest' and move the manifest related front matter to the 'iiif.' namespace, see the partials in 'iiif/3/'" .File.Path -}}
 {{- end -}}

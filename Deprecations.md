@@ -12,16 +12,19 @@ in the [Upgrade.md](Upgrade.md) guide.
 | Item | State | Priority |
 |---|---|---|
 | `partials/head.html` | **removed** — baseof.html composes `html/head/meta.html` + `html/head/links.html` instead | done |
-| JS shims in `assets/js/` | deprecated re-exports of `assets/ts/` | 🔴 urgent |
-| Legacy `iiifManifest` front matter key | silent fallback in `existing-manifest.html` | 🔴 urgent |
-| Legacy font formats (`.eot`, `.svg`, `.ttf` fallbacks) | still declared in the font SCSS | 🔴 urgent |
-| Legacy font file name copies | recreated by `scripts/fonts.sh` for old `@font-face` rules | 🔴 urgent |
+| JS shims in `assets/js/` | **removed** — all shims deleted, `assets/ts/` is the only source location | done |
+| Legacy `iiifManifest` front matter key | **removed** — fallbacks dropped from `existing-manifest.html`, `iiif/3/collection.json` and `iiif-presentation.html` | done |
+| Legacy font formats (`.eot`, `.svg`, `.ttf` fallbacks) | **removed** from the font SCSS | done |
+| Legacy font file name copies | **removed** — `copy_legacy_font()` dropped from `scripts/fonts.sh`, `alata-regular.scss` migrated to Fontsource names, tracked `alata-regular-webfont.*` deleted | done |
 | Stale Mirador references | fixed — dangling links and docs removed | done |
+| Presentation API 2 guards | narrowed — `single.json`/`single.iiif.json` only abort on a `presentation/2/` context, flat `iiifcontext` with an API 3 context no longer trips them | done |
+| Consumer overrides of deprecated theme parts | cleaned — hptz's forked `collection.json` replaced by the new `place-label.json` label hook, vorsatzpapier's stale `iiif-presentation.html` fork deleted, dead `iiifmanifest` conditions simplified in never-built, labs and wilmabraeuner | done |
+| `disableScale` / `paginate` params in site configs | removed from all top-level consumer sites (`params.paginate` was never read; the theme's `disableScale` handling is deleted — unknown params are ignored by Hugo) | done |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` | medium |
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
 | Hugo < 0.165 compatibility code | removable since Hugo 0.166 | low |
-| Third-party scripts loaded from CDNs | A-Frame, Mastodon embed | low |
+| Third-party scripts loaded from CDNs | A-Frame via npm (`ts/aframe.ts`), Mastodon embed vendored (`assets/js/vendor/mastodon-embed.js`) | done |
 
 ## JavaScript assets
 
@@ -31,32 +34,21 @@ There are no JavaScript files in `static/` or `exampleSite/static/`:
 all scripts ship from `assets/` and go through the asset pipeline.
 Nothing to do here.
 
-### `assets/js/` — shims only
+### `assets/js/` — removed
 
-Every file in `assets/js/` is a deprecated shim: the implementation has
-moved to `assets/ts/` (see the "Upgrading shortcode scripts from
-`assets/js` to TypeScript" section in [Upgrade.md](Upgrade.md)). Each
-shim contains only a deprecation header and an `import` of the new
-implementation; it exists solely so sites referencing the old asset
-paths keep working. The shims will be removed in a future release —
-update any references to the `assets/ts/` paths:
+The `assets/js/` directory has been deleted: every script lives in
+`assets/ts/` now (see the "Upgrading shortcode scripts from
+`assets/js` to TypeScript" section in [Upgrade.md](Upgrade.md)). Sites
+referencing the old `js/` paths get a build error from
+`html/head/script.html` and must switch to the `ts/` paths.
 
-| Deprecated shim | Implementation |
-|---|---|
-| `assets/js/audioplayer.js` | `assets/ts/audioplayer.ts` |
-| `assets/js/browser-banner.js` | `assets/ts/browser-banner.ts` |
-| `assets/js/iframe-consent.js` | `assets/ts/iframe-consent.ts` |
-| `assets/js/iiif-image-viewer.js` | `assets/ts/iiif-image-viewer.ts` |
-| `assets/js/iiif/tify.js` | `assets/ts/iiif/tify.ts` |
-| `assets/js/lucienne/lucienne.js` | `assets/ts/lucienne/lucienne.ts` |
-| `assets/js/maps/osm-map.js` | `assets/ts/maps/osm-map.ts` |
-| `assets/js/mermaid.js` | `assets/ts/mermaid.ts` |
-| `assets/js/pdf-preview.js` | `assets/ts/pdf-preview.ts` |
-| `assets/js/pdf-viewer.js` | `assets/ts/pdf-viewer.ts` |
-| `assets/js/shortcodes/code.js` | `assets/ts/shortcodes/code.ts` |
+Known outstanding reference: `backsteinexpressionismus` still requests the
+long-removed `js/search.js` from `content/search/_index*.md` (migration
+handled separately in that repo).
 
-Already removed (sites must have migrated): `search.js`, `timeline.js`,
-`iiif/mirador.js`, `maps/projektemacher-map.js`, `fullscreen.js`.
+Already removed earlier (sites must have migrated): `search.js`,
+`timeline.js`, `iiif/mirador.js`, `maps/projektemacher-map.js`,
+`fullscreen.js`.
 
 ## IIIF Presentation API 2 support (removed)
 
@@ -76,12 +68,13 @@ errors:
 The migration path is documented in "Upgrading IIIF Presentation API
 2 → 3" in [Upgrade.md](Upgrade.md).
 
-### Remaining shim (🔴 urgent)
+### Legacy fallbacks (removed)
 
-`layouts/partials/iiif/existing-manifest.html` still falls back from
-`iiif.manifest` to the legacy flat `iiifManifest` front matter key when
-looking up a pre-made manifest. Move to `iiif.manifest`; the fallback
-will be removed.
+The `iiifManifest` fallback in `layouts/partials/iiif/existing-manifest.html`
+has been removed — only the `iiif.manifest` front matter key is read now.
+The same legacy-key reads in `partials/iiif/3/collection.json` and
+`partials/iiif/iiif-presentation.html` are gone as well. No consumer
+content ever used the flat key, so this is a no-op for all known sites.
 
 ## Mirador viewer (removed)
 
@@ -98,21 +91,16 @@ been fixed.
 
 Everything in `static/fonts/` is generated by `scripts/fonts.sh` from
 the Fontsource npm packages listed in `fonts/package.json` and is
-gitignored — do not commit or edit those files. The deprecated parts
-are the backwards-compatibility leftovers:
+gitignored — do not commit or edit those files. The backwards-
+compatibility leftovers have been removed:
 
-- **Legacy file name copies** (🔴 urgent): `copy_legacy_font()` in
-  `scripts/fonts.sh` recreates pre-Fontsource file names (e.g.
-  `cormorant-v10-latin-regular.woff2`, `JosefinSans-Bold.woff2`) so old
-  handwritten `@font-face` rules keep working. Update font SCSS to the
-  Fontsource names, then drop the copies.
-- **Legacy formats** (🔴 urgent): the font SCSS in
-  `assets/scss/fonts/` still declares `.ttf`, `.eot` (legacy IE) and
-  `.svg` (legacy iOS) fallbacks. The npm pipeline only produces
-  `.woff2`/`.woff`; remove the fallback formats.
-- **Legacy-named tracked files**: `static/fonts/alata-regular-webfont.woff/.woff2`
-  are git-tracked duplicates of content available as `@fontsource/alata`
-  — candidates for removal.
+- ~~**Legacy file name copies**~~: `copy_legacy_font()` is gone from
+  `scripts/fonts.sh`; font SCSS uses the Fontsource file names.
+- ~~**Legacy formats**~~: the font SCSS no longer declares `.ttf`, `.eot`
+  or `.svg` fallbacks — only `.woff2`/`.woff`.
+- ~~**Legacy-named tracked files**~~: `static/fonts/alata-regular-webfont.*`
+  deleted; `assets/scss/fonts/alata-regular.scss` references the
+  Fontsource names now.
 
 ### Exceptions — fonts not available on npm (keep)
 
@@ -138,9 +126,11 @@ file with `format('woff')` — a bug to fix while touching these files.
   `functions/iiif/coerce-language-map.html` and
   `functions/iiif/structure-span.html` can be dropped with Hugo 0.166
   as the minimum. (low)
-- **Third-party scripts from CDNs**: the `aframe-3d-model` shortcode
-  loads A-Frame from `aframe.io`/`unpkg.com`, the `mastodon` shortcode
-  loads `fosstodon.org/embed.js`. Move to npm/pipeline-managed assets
-  where feasible. (low)
-- **File name typo**: `assets/scss/fonts/noto-serif-dispaly.scss`
-  ("dispaly") should be renamed when the font SCSS is touched anyway.
+- **Third-party scripts from CDNs**: fixed — the `aframe-3d-model`
+  shortcode bundles the `aframe`/`aframe-orbit-controls` npm packages via
+  `ts/aframe.ts` (the former `aframe.io`/`unpkg.com` URLs are gone), and
+  the `mastodon` shortcode serves a pinned copy of the embed script from
+  `assets/js/vendor/mastodon-embed.js` instead of `fosstodon.org`. (done)
+- ~~**File name typo**~~: `assets/scss/fonts/noto-serif-dispaly.scss` was
+  renamed to `noto-serif-display.scss` (no importer of the misspelled
+  name existed; imports of the correct name now resolve). (done)

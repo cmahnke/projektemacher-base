@@ -46,6 +46,19 @@ declare module 'tify' {
   export default Tify;
 }
 
+/*
+ * `aframe` ships no TypeScript types; the namespace (with a `default`
+ * export) is exposed as a global by the module build itself.
+ * `aframe-orbit-controls` is a plain script without exports that
+ * registers on the global `AFRAME` object.
+ */
+declare module 'aframe' {
+  const AFRAME: Record<string, unknown> & { default?: unknown };
+  export default AFRAME;
+}
+
+declare module 'aframe-orbit-controls';
+
 declare module '@pagefind/modular-ui' {
   export interface PagefindFilterValues {
     [key: string]: number;

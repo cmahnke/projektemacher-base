@@ -528,11 +528,11 @@ TypeScript sources in `assets/ts/`. Hugo's `js.Build` compiles them with esbuild
 | `assets/js/pdf-viewer.js` | `assets/ts/pdf-viewer.ts` |
 | `assets/js/iframe-consent.js` | `assets/ts/iframe-consent.ts` |
 
-The old `.js` files are kept as thin, deprecated shims importing the TypeScript
-sources, so sites referencing the old paths (page front matter `js:` entries or
-the `[params.iiif]` `imageViewer` / `presentationViewer` settings) keep working.
-They will be removed in a future release — update the references to the
-`ts/` paths instead.
+The old `.js` files have been removed. Sites referencing the old paths
+(page front matter `js:` entries or the `[params.iiif]` `imageViewer` /
+`presentationViewer` settings) must use the `ts/` paths instead; references
+to the deleted `js/` paths fail the build with an error from
+`html/head/script.html`.
 
 ## How to find direct inclusions fast (agent scan)
 
@@ -555,10 +555,11 @@ grep -rnE 'resources\.Get "(js|ts)/' layouts/
 
 ## Risks / breakage
 
-* **Shim removal (future release)** — the deprecated `assets/js/*.js` shims will
-  be deleted. Sites that don't migrate keep building until then, but bundle
-  output for shim entries keeps the *shim's* path as targetPath, so URLs
-  don't change; only an update of the reference does.
+* **Shim removal (done)** — the deprecated `assets/js/*.js` shims have been
+  deleted. Sites that don't migrate now fail the build with an error;
+  update the references to the `ts/` paths. Bundle output for migrated
+  entries keeps the entry's path as targetPath, so URLs only change by
+  the reference update itself.
 * **Overridden `script.html`/`iiif-js.html` partials** — sites that copied these
   theme partials must port the `targetPath` `.ts` → `.js` remap
   (`replaceRE "\\.ts$" ".js" $script`). Without it, esbuild output is published
@@ -937,13 +938,14 @@ iterate over the pages from the site's `test-urls.json` (see "Run the JS
 runtime check against the example site" above) — keeping that list current
 for the runtime check also keeps the accessibility scan's page set current.
 
-### Viewport zoom behaviour (`disableScale` deprecated)
+### Viewport zoom behaviour (`disableScale` removed)
 
 The viewport partial (`layouts/partials/html/head/viewport.html`) no
-longer emits `user-scalable=no`: the `[params] disableScale` option is
-deprecated and ignored (the build prints a warning when it is set) —
-pinch zoom-in must stay allowed for accessibility (WCAG 2.5.5 / Lighthouse
-`meta-viewport`). Only zoom-out is blocked via `minimum-scale=1.0`. Pages
+longer emits `user-scalable=no`: the `[params] disableScale` option has
+been removed — setting it has no effect (Hugo ignores unknown params),
+no warning is printed. Pinch zoom-in must stay allowed for accessibility
+(WCAG 2.5.5 / Lighthouse `meta-viewport`). Only zoom-out is blocked via
+`minimum-scale=1.0`. Pages
 using the theme's partial therefore no longer trigger the `meta-viewport`
 violation ("Zoom blocked"); sites with a copied viewport tag should adopt
 the theme's version and can drop their exclusions of the rule. The a11y

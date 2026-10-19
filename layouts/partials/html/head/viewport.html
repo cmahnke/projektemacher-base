@@ -1,7 +1,4 @@
 {{- $viewport := "width=device-width, initial-scale=1.0, minimum-scale=1.0" -}}
-{{- if site.Params.disableScale -}}
-    {{- warnf "[html/head/viewport.html] Param 'disableScale' is deprecated and will be ignored: zoom-in must stay allowed for accessibility (WCAG 2.5.5 / Lighthouse meta-viewport). Pinch-zoom in is always possible, zoom-out is blocked via 'minimum-scale'." -}}
-{{- end -}}
 {{- if site.Params.minimalUI -}}
   {{- $viewport = printf "%s, %s" $viewport "minimal-ui" -}}
 {{- end -}}
