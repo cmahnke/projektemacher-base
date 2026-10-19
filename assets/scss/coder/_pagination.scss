@@ -1,9 +1,9 @@
-@use "./variables" as *;
+@use "./variables";
 
 .pagination {
   margin-top: 6.0rem;
   text-align: center;
-  font-family: $heading-font-family;
+  font-family: variables.$heading-font-family;
   li {
     display: inline;
     text-align: center;

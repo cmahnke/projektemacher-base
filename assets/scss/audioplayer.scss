@@ -1,6 +1,6 @@
 @use "sass:color";
 
-@import "functions/color";
+@use "functions/color" as *;
 
 $color-dark: #333 !default;
 $color-light: #d3d3d3 !default;

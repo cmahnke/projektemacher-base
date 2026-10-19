@@ -1,4 +1,4 @@
-@use "./variables" as *;
+@use "./variables";
 
 .content {
   flex: 1;
@@ -105,14 +105,14 @@
         display: inline-block;
         position: relative;
         a {
-          color: $fg-color;
+          color: variables.$fg-color;
           text-transform: uppercase;
           margin-left: 1.0rem;
           margin-right: 1.0rem;
           font-size: 1.6rem;
           &:hover,
           &:focus {
-            color: $link-color;
+            color: variables.$link-color;
           }
           @media only screen and (max-width : 768px) {
             font-size: 1.4rem;

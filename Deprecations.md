@@ -25,7 +25,9 @@ Step-by-step instructions for past migrations live in the
 | `disableScale` / `paginate` params in site configs | removed from all top-level consumer sites (`params.paginate` was never read; the theme's `disableScale` handling is deleted — unknown params are ignored by Hugo) | done |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | Consumer fonts npm migration | done — npm-backed `fonts/` imports swapped to `npm-fonts/` in blaufusstoelpel, briefsteller (→ `alata`), kinderbuecher, kraehenbeisser, labs, never-built, schriftmuster, vorsatzpapier, wilmabraeuner, xn--h-zfa.xyz; `font-family:` usages already used the mapped names; exceptions (`futura-renner`, `ds-behrensschrift`) keep their `fonts/` partials; kinderbuecher/wilmabraeuner/xn--h-zfa.xyz need `scripts/init/get-fonts.sh` in their theme copy after the next raise | done |
+| Theme-provided font declarations | done — `fonts/` declaration shims (re)added for all consumer-used npm fonts: `stix-two-text`, `strichpunkt-sans` (christianmahnke's broken imports resolve again), `newsreader`, `roboto-mono`, `bodoni-moda`, `space-mono` (never-built), `spinnaker` (new `@fontsource/spinnaker` in `fonts/package.json`; ric-unknownartist's dangling `@font-face` swapped for the shim), `handjet` (schatten's hand-rolled `@font-face` swapped for `@use "npm-fonts/handjet"`). `@fontsource/spinnaker` + the new generated files need a `get-fonts.sh` run (never-built, ric-unknownartist, the spinnaker face). Site-specific fonts stay local: Neuland (backsteinexpressionismus), Calluna (ric-unknownartist, commercial — flagged for a local-file decision); projektemacher's unreferenced `static/fonts/Lato-Bold.ttf` deleted | done |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed | informational |
+| Housekeeping adoption (optional) | deduplicated 4 byte-identical site layouts (briefsteller `list.html`, kraehenbeisser `section.geojson`, ric-unknownartist `quote.html`, vorsatzpapier `topnavigation.html`); `browserslist` copied to briefsteller (the last site without it); the 4 sites with broken `check:a11y`/`check:lighthouse` package entries (scripts didn't exist) dropped them + the unused `axe-core`/`lighthouse`/`puppeteer` devDependencies — the theme's package.json is the source of truth; legacy browser hacks thinned where dead (`::-moz-selection`, paired `-webkit-transform/-webkit-animation/-webkit-sticky` in blaufusstoelpel; wilmabraeuner's single hit was commented-out code) — still-required WebKit syntax (`::-webkit-scrollbar`, `-webkit-touch-callout`, `-webkit-tap-highlight-color`, `-webkit-user-select`, `-webkit-font-smoothing`) and vendored bundles stay | done |
 | `jxlpy` module | removed — all scripts decode JXL via pyvips; the Upgrade.md section was dropped | done |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` | medium |
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
@@ -117,24 +119,27 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
 ## Other deprecated remainders
 
 - **SCSS `@import`**: mostly migrated to `@use` — `lint_dummy.scss`
-  (now also covering the previously missing coder partials, flags,
-  openlayers, pdf styles and 7 shortcode styles), `map.scss`,
-  `color-sample.scss`, `media-info.scss` and the `coder/` tree
-  (`_site-shared` imports + the partials' `./variables` dependency) are
-  converted; the compiled output was verified via sass before/after
-  comparison. Two silent font-matching bugs were fixed in the same
-  pass: `color-sample.scss`/`coder` used `'Source Code Pro'` and
-  `_site-shared` used `Lora` — the generated faces are named
+  (now also covering the previously missing coder partials, openlayers,
+  pdf styles and 7 shortcode styles; the generated `flags/flags.scss`
+  stays out — it's gitignored and absent on CI), `map.scss`,
+  `color-sample.scss`, `media-info.scss` and the `coder/` tree are
+  converted. The coder architecture: `_site-shared.scss` keeps global
+  variable declarations (sites composing the coder look via `@import`
+  rely on the leakage, e.g. `section-toc`), while the chrome partials
+  read `./variables` **namespaced** (`variables.$fg-color` — `as *`
+  would collide with those globals). Verified via sass before/after
+  comparison + a green exampleSite build. Two silent font-matching
+  bugs were fixed: `color-sample.scss`/`coder` used `'Source Code Pro'`
+  and `_site-shared` used `Lora` — the generated faces are named
   `'Source Code Pro Variable'` / `'Lora Variable'`, so those fonts
   never applied and silently fell back. Remaining: `audioplayer.scss`
   (`encodecolor()` from `functions/color`) and the three deliberate
-  plain-CSS imports (`lucienne.css`, `tify`, `ol`). Of the old
-  `assets/scss/fonts/` declarations only the two exception fonts
-  (`ds-behrensschrift`, `futura-renner`) remain — the 23 unused shims
-  were removed. Several consumers (`backsteinexpressionismus`,
-  `christianmahnke`, `xn--h-zfa.xyz`, `never-built`) import theme
-  partials by path and must be migrated in the same pass. See the
-  migration section in [Upgrade.md](Upgrade.md). (medium)
+  plain-CSS imports (`lucienne.css`, `tify`, `ol` — dart-sass warns on
+  them, but inlining would change output semantics). Several consumers
+  (`backsteinexpressionismus`, `christianmahnke`, `xn--h-zfa.xyz`,
+  `never-built`) import theme partials by path and must be migrated in
+  the same pass. See the migration section in
+  [Upgrade.md](Upgrade.md). (medium)
 - **Outdated Hugo constructs** (medium):
   - *theme*: only `.Scratch` remains (7 partials; the `footer` /
     `iiifPrefix` Scratch keys are consumer-coupled — see below)

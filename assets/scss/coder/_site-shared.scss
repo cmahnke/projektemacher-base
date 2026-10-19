@@ -18,6 +18,12 @@
 @use "npm-fonts/lato";
 @use "npm-fonts/lora";
 
+/*
+ * NOTE: these are deliberate global declarations (not a @use module):
+ * sites composing the coder look via @import rely on them leaking into
+ * their own SCSS (e.g. section-toc). The coder chrome partials read the
+ * same values from ./variables (namespaced, no leakage).
+ */
 /* Variables (see hugo.toml [params.style] for the site colors) */
 $text-font-family: Lora Variable, Georgia, serif !default;
 $heading-font-family: Lato, Helvetica, sans-serif !default;

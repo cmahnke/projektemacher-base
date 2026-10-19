@@ -1,5 +1,6 @@
 /* Inspired by https://defency.eu/posts/2023/10/hugo.io-how-to-integrate-cookie-consent-for-google-analytics/ */
 
+@use "sass:color";
 @use "icons" as *;
 
 /*
@@ -76,11 +77,11 @@ $button-background: #595959;
 
     &:hover {
       box-shadow:
-                  -4px -4px lighten($button-background, 30%);
+                  -4px -4px color.adjust($button-background, $lightness: 30%);
     }
 
     &:active {
-      box-shadow: -2px -2px lighten($button-background, 15%);
+      box-shadow: -2px -2px color.adjust($button-background, $lightness: 15%);
       transform: translate(-2px, -2px);
     }
 

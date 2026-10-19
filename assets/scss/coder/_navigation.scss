@@ -1,4 +1,4 @@
-@use "./variables" as *;
+@use "./variables";
 
 .navigation {
   height: 6.0rem;
@@ -6,15 +6,15 @@
   a, span {
     display: inline;
     font-size: 1.6rem;
-    font-family: $heading-font-family;
+    font-family: variables.$heading-font-family;
     font-weight: 700;
     line-height: 6.0rem;
-    color: $fg-color;
+    color: variables.$fg-color;
   }
   a {
     &:hover,
     &:focus {
-      color: $link-color
+      color: variables.$link-color
     }
   }
   .navigation-title {
@@ -36,9 +36,9 @@
       padding: 0;
       max-height: 0;
       width: 100%;
-      background-color: $bg-color;
-      border-top: solid 2px $alt-bg-color;
-      border-bottom: solid 2px $alt-bg-color;
+      background-color: variables.$bg-color;
+      border-top: solid 2px variables.$alt-bg-color;
+      border-bottom: solid 2px variables.$alt-bg-color;
       transition: opacity 0.25s, max-height 0.15s linear;
     }
     .navigation-item {
@@ -64,7 +64,7 @@
     }
     .menu-separator {
       @media only screen and (max-width : 768px) {
-        border-top: 2px solid $fg-color;
+        border-top: 2px solid variables.$fg-color;
         margin: 0 8.0rem;
         span {
           display: none;
@@ -85,7 +85,7 @@
     display: none;
     @media only screen and (max-width : 768px) {
       &:checked + label > i {
-        color: $alt-bg-color;
+        color: variables.$alt-bg-color;
       }
       &:checked + label + ul {
         visibility: visible;
@@ -105,16 +105,16 @@
 
     i {
       &:hover, &:focus {
-        color: $alt-fg-color;
+        color: variables.$alt-fg-color;
       }
     }
   }
   i {
-    color: $fg-color;
+    color: variables.$fg-color;
     cursor: pointer;
     &:hover,
     &:focus {
-      color: $link-color;
+      color: variables.$link-color;
     }
   }
 }

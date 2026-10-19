@@ -27,7 +27,12 @@ disablePathToLower = true
   unsafe = true
 
 [imaging]
-    quality = 95
+    [imaging.jpeg]
+        quality = 95
+    [imaging.webp]
+        quality = 95
+    [imaging.avif]
+        quality = 95
 
 [mediaTypes]
   [mediaTypes."application/x-qrcode-template"]
