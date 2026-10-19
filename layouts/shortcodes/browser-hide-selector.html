@@ -10,7 +10,9 @@
 <script type="text/javascript">
   var browsers = {{ $browser | jsonify | safeJS }};
   var selector = "{{ $selector | safeJS }}";
-  browserDisableSelector(selector, browsers);
+  window.addEventListener('DOMContentLoaded', (event) => {
+    browserDisableSelector(selector, browsers);
+  });
 </script>
 
 {{- define "_partials/shortcodes/browser-hide-selector-metadata.html" -}}

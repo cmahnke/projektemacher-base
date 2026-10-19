@@ -37,7 +37,7 @@ Pages without an explicit `outputs` entry are collected into collections only if
 | `preview` | string | Resource `name` used for manifest/collection thumbnails (falls back to resources named `preview`, `cover`, `front`, then the first resource) |
 | `linkedart` | any | If present, adds a `seeAlso` link to the page's `linkedart` output format |
 
-Legacy keys (`iiifMetadata`, `iiifStructure`) abort the build — use `iiif.metadata` / `iiif.structure`.
+Legacy keys (`iiifMetadata`, `iiifStructure`) are no longer read and no longer abort the build — migrate to `iiif.metadata` / `iiif.structure`.
 
 Pages with an `issueYear` front matter param get an automatic `Erscheinungsjahr` / `Year of publication` entry appended to the manifest `metadata`; `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
 

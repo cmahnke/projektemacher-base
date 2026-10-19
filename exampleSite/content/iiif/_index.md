@@ -24,7 +24,7 @@ The version is selected per page or globally, see [Presentation 4](presentation-
 
 ## Presentation API 2 is no longer supported
 
-Generation of Presentation API 2 manifests (the former `iiif` output format with `sc:Manifest`/`sc:Sequence` vocabulary, templates `_default/single.json` and `_default/single.iiif.json`) has been phased out. Building a page still using `iiifContext` with a `presentation/2` context aborts the build with an error.
+Generation of Presentation API 2 manifests (the former `iiif` output format with `sc:Manifest`/`sc:Sequence` vocabulary, templates `_default/single.json` and `_default/single.iiif.json`) has been phased out — the templates were removed. Pages still using `iiifContext` with a `presentation/2` context produce no manifest output at all.
 
 **Migration path:**
 

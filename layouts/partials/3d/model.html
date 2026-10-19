@@ -11,5 +11,7 @@
 <script type="text/javascript">
   const modelUrl = '{{ $model | safeJS }}';
   const canvas = document.querySelector('#{{ $id | safeJS }}');
-  initModel(canvas, modelUrl);
+  document.addEventListener('DOMContentLoaded', function() {
+    initModel(canvas, modelUrl);
+  });
 </script>

@@ -13,7 +13,9 @@
 <div class="pdf-viewer">
     <div id="{{- $divId | safeHTML -}}"></div>
     <script type="text/javascript">
-        addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf_permalink | safeJS }}')
+        document.addEventListener('DOMContentLoaded', function() {
+            addPDFViewer('#{{- $divId | safeJS -}}', '{{ $pdf_permalink | safeJS }}')
+        });
     </script>
 </div>
 

@@ -64,4 +64,4 @@ Collections are enabled globally for home and term pages:
   home = ["html", "rss", "iiif-collection"]
 ```
 
-The legacy `[outputFormats.iiif]` (Presentation API 2) must be removed — it aborts the build with an error, see the [section overview](/iiif/).
+The legacy `[outputFormats.iiif]` (Presentation API 2) must be removed — it is no longer generated, see the [section overview](/iiif/).

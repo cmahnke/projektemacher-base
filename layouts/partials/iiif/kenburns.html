@@ -70,13 +70,15 @@
         {{ ($iiif.Get "id") | safeJS }}_Div = document.getElementById("{{ $iiif.Get "id" }}");
         {{/* This line makes this not very portable, but passing this as a parameter would complicatze the whole patial... */}}
         {{ ($iiif.Get "id") | safeJS }}_mo = document.getElementById("{{ $iiif.Get "id" }}").parentElement.parentElement.parentElement;
-        var {{ ($iiif.Get "id") | safeJS }} = animatedMap({{ ($iiif.Get "id") | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $iiif.Get "baseURL" }}, {{ $initialZoom }}, animation, {{ ($iiif.Get "id") | safeJS }}_mo, {{ $initialCenter | safeJS }});
+        document.addEventListener('DOMContentLoaded', function() {
+          var {{ ($iiif.Get "id") | safeJS }} = animatedMap({{ ($iiif.Get "id") | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $iiif.Get "baseURL" }}, {{ $initialZoom }}, animation, {{ ($iiif.Get "id") | safeJS }}_mo, {{ $initialCenter | safeJS }});
 
-        if (window.iiifAnimations === undefined) {
-            window.iiifAnimations = [{{ ($iiif.Get "id") | safeJS }}];
-        } else {
-             window.iiifAnimations.push({{ ($iiif.Get "id") | safeJS }});
-        }
+          if (window.iiifAnimations === undefined) {
+              window.iiifAnimations = [{{ ($iiif.Get "id") | safeJS }}];
+          } else {
+               window.iiifAnimations.push({{ ($iiif.Get "id") | safeJS }});
+          }
+        });
 
 /*
         if (animation !== undefined && animation !== '') {
