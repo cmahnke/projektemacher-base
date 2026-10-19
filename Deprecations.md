@@ -119,15 +119,22 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
 - **SCSS `@import`**: mostly migrated to `@use` — `lint_dummy.scss`
   (now also covering the previously missing coder partials, flags,
   openlayers, pdf styles and 7 shortcode styles), `map.scss`,
-  `color-sample.scss` and `media-info.scss` are converted; the compiled
-  output was verified byte-identical (sass before/after comparison).
-  Remaining: `audioplayer.scss` (`encodecolor()` from
-  `functions/color`), `coder/_site-shared.scss` and the three
-  deliberate plain-CSS imports (`lucienne.css`, `tify`, `ol`).
-  Several consumers (`backsteinexpressionismus`, `christianmahnke`,
-  `xn--h-zfa.xyz`, `never-built`) import theme partials by path and
-  must be migrated in the same pass. See the migration section in
-  [Upgrade.md](Upgrade.md). (medium)
+  `color-sample.scss`, `media-info.scss` and the `coder/` tree
+  (`_site-shared` imports + the partials' `./variables` dependency) are
+  converted; the compiled output was verified via sass before/after
+  comparison. Two silent font-matching bugs were fixed in the same
+  pass: `color-sample.scss`/`coder` used `'Source Code Pro'` and
+  `_site-shared` used `Lora` — the generated faces are named
+  `'Source Code Pro Variable'` / `'Lora Variable'`, so those fonts
+  never applied and silently fell back. Remaining: `audioplayer.scss`
+  (`encodecolor()` from `functions/color`) and the three deliberate
+  plain-CSS imports (`lucienne.css`, `tify`, `ol`). Of the old
+  `assets/scss/fonts/` declarations only the two exception fonts
+  (`ds-behrensschrift`, `futura-renner`) remain — the 23 unused shims
+  were removed. Several consumers (`backsteinexpressionismus`,
+  `christianmahnke`, `xn--h-zfa.xyz`, `never-built`) import theme
+  partials by path and must be migrated in the same pass. See the
+  migration section in [Upgrade.md](Upgrade.md). (medium)
 - **Outdated Hugo constructs** (medium):
   - *theme*: only `.Scratch` remains (7 partials; the `footer` /
     `iiifPrefix` Scratch keys are consumer-coupled — see below)

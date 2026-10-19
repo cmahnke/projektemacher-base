@@ -1,11 +1,11 @@
-@use "fonts/source-code-pro";
+@use "npm-fonts/source-code-pro";
 
 .color-sample {
     padding: 0.6rem;
     display: inline-block;
 
     .color-sample-code {
-        font-family: "Source Code Pro", monospace;
+        font-family: "Source Code Pro Variable", monospace;
         padding-left: 1em;
     }
 }

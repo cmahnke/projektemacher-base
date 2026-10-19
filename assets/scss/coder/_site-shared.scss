@@ -15,8 +15,11 @@
  * Go template syntax may appear here.
  */
 
+@use "npm-fonts/lato";
+@use "npm-fonts/lora";
+
 /* Variables (see hugo.toml [params.style] for the site colors) */
-$text-font-family: Lora, Georgia, serif !default;
+$text-font-family: Lora Variable, Georgia, serif !default;
 $heading-font-family: Lato, Helvetica, sans-serif !default;
 $code-font-family: monospace !default;
 /* Colors */
@@ -26,9 +29,6 @@ $alt-bg-color: #E0E0E0 !default;
 $alt-fg-color: #000 !default;
 $link-color: #1565c0 !default;
 $nav-color: #293133 !default;
-
-@import "fonts/lato";
-@import "fonts/lora";
 
 /*
  * Fontawesome SVGs - taken fom https://github.com/FortAwesome/Font-Awesome
