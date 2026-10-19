@@ -4,7 +4,9 @@
     <div class="pdf-viewer">
         <div id="{{- $divId -}}"></div>
         <script type="text/javascript">
-            addPDFViewer('#{{- $divId -}}', '{{ .Permalink }}')
+            document.addEventListener('DOMContentLoaded', function() {
+                addPDFViewer('#{{- $divId -}}', '{{ .Permalink }}')
+            });
         </script>
     </div>
     <div class="share">

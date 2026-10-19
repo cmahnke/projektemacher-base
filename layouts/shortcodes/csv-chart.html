@@ -24,7 +24,9 @@
 <div id="{{ $id }}" class="chart" role="img" aria-label="{{ i18n "chart" }}">
 </div>
 <script type="text/javascript">
-  window.chart("{{ $csv }}", "#{{ $id | safeJS }}", {{ $opts | safeJS }})
+  document.addEventListener('DOMContentLoaded', function() {
+    window.chart("{{ $csv }}", "#{{ $id | safeJS }}", {{ $opts | safeJS }})
+  });
 </script>
 
 {{- define "_partials/shortcodes/csv-chart-metadata.html" -}}

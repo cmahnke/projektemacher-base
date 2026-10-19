@@ -56,5 +56,7 @@
 <div id="{{ $id }}" class="viewer presentation-api {{ $orientation }}"></div>
 
 <script type="text/javascript">
-  var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
+  document.addEventListener('DOMContentLoaded', function() {
+    var viewer = iiifPresentationViewer('#{{ $id | safeJS }}', '{{ $manifestUrl }}');
+  });
 </script>

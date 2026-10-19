@@ -3,13 +3,6 @@
 {{- $context := printf "http://iiif.io/api/presentation/%d/context.json" $version -}}
 {{- $common := dict "@context" $context "type" "Manifest" "id" (.OutputFormats.Get "iiif-manifest").Permalink "viewingDirection" "left-to-right" -}}
 
-{{- if isset .Params "iiifMetadata" -}}
-  {{- errorf "[single.iiii-metadata.json] .Params.iiifMetadata isn't supported anymore use .Params.iiif.metadata" -}}
-{{- end -}}
-{{- if isset .Params "iiifStructure" -}}
-  {{- errorf "[single.iiii-metadata.json] .Params.iiifStructure isn't supported anymore use .Params.iiif.structure" -}}
-{{- end -}}
-
 {{- with .Params.iiif.behavior -}}
   {{- if reflect.IsSlice . -}}
     {{- errorf "[iiif/3/common.json] .Params.iiif.behavior is a slice, but it should be a string" -}}

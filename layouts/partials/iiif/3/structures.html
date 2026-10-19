@@ -108,9 +108,6 @@
     {{- with index $entry "id" -}}
       {{- errorf "[iiif/3/structures.html] structure entry #%d has a hand-written id '%v', identifiers are generated - use the label/page/items shorthand (%s)" $i . $page.RelPermalink -}}
     {{- end -}}
-    {{- with index $entry "type" -}}
-      {{- errorf "[iiif/3/structures.html] structure entry #%d uses the legacy 'type: %v' format - use the label/page/items shorthand (%s)" $i . $page.RelPermalink -}}
-    {{- end -}}
     {{- $label := index $entry "label" -}}
     {{- if or (not $label) (not (reflect.IsMap $label)) -}}
       {{- errorf "[iiif/3/structures.html] structure entry #%d has no label object (%s)" $i $page.RelPermalink -}}

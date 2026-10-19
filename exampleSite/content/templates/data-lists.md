@@ -64,10 +64,6 @@ The output has the shape:
 
 Only pages with at least one entity are included.
 
-## `_default/single.json`
-
-Not a data source, but a guard: pages still configured for the retired IIIF Presentation API 2 output (via an `iiifContext` with a `presentation/2` context) abort the build with a migration hint. See the [IIIF section](/iiif/) for the migration path.
-
 ## Enabling
 
 The JSON templates are tied to output formats — add them to the page or site `outputs` configuration:

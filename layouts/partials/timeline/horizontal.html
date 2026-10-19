@@ -17,9 +17,9 @@
         {{- end -}}
     ];
     var options = {};
-    var timeline = addTimeline('timeline', issues, options);
 
     document.addEventListener("DOMContentLoaded", function() {
+        var timeline = addTimeline('timeline', issues, options);
         if (window.innerWidth < 1024 && window.showTab) {
             window.showTab('vertical-tab')
         }

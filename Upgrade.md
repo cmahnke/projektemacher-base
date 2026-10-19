@@ -157,11 +157,11 @@ npm install --save-dev postcss postcss-cli postcss-discard-duplicates
 
 # Upgrading IIIF Presentation API 2 → 3
 
-This theme no longer generates Presentation API 2 manifests. The templates
-`layouts/_default/single.json` and `layouts/_default/single.iiif.json` (the
-former `iiif` output format, `sc:Manifest` / `sc:Sequence` vocabulary) now
-abort the build with an `errorf` when a page still opts in via a
-`presentation/2` context.
+This theme no longer generates Presentation API 2 manifests. The former
+templates `layouts/_default/single.json` and `layouts/_default/single.iiif.json`
+(the `iiif` output format, `sc:Manifest` / `sc:Sequence` vocabulary) have been
+removed — pages still opting in via a `presentation/2` context produce no
+manifest output at all.
 
 Migrate affected sites to Presentation API 3 (`iiif-manifest` output format,
 `layouts/partials/iiif/3/`).

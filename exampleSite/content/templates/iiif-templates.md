@@ -27,10 +27,6 @@ The version (3 or 4) is resolved per page with this priority:
 
 Any other value aborts the build, see [Presentation 4](/iiif/presentation-4/).
 
-## Legacy `single.json`
-
-`_default/single.json` is only a guard: building a page still configured for the retired Presentation API 2 format aborts with a migration hint — see the [IIIF section](/iiif/).
-
 ## Enabling
 
 ```toml

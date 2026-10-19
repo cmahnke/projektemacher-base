@@ -17,7 +17,7 @@ in the [Upgrade.md](Upgrade.md) guide.
 | Legacy font formats (`.eot`, `.svg`, `.ttf` fallbacks) | **removed** from the font SCSS | done |
 | Legacy font file name copies | **removed** — `copy_legacy_font()` dropped from `scripts/fonts.sh`, `alata-regular.scss` migrated to Fontsource names, tracked `alata-regular-webfont.*` deleted | done |
 | Stale Mirador references | fixed — dangling links and docs removed | done |
-| Presentation API 2 guards | narrowed — `single.json`/`single.iiif.json` only abort on a `presentation/2/` context, flat `iiifcontext` with an API 3 context no longer trips them | done |
+| Presentation API 2 guards | removed — guard templates (`single.json`, `single.iiif.json`) and legacy-key tripwires (`common.json`, `structures.html`) deleted; no legacy usage remains | done |
 | Consumer overrides of deprecated theme parts | cleaned — hptz's forked `collection.json` replaced by the new `place-label.json` label hook, vorsatzpapier's stale `iiif-presentation.html` fork deleted, dead `iiifmanifest` conditions simplified in never-built, labs and wilmabraeuner | done |
 | `disableScale` / `paginate` params in site configs | removed from all top-level consumer sites (`params.paginate` was never read; the theme's `disableScale` handling is deleted — unknown params are ignored by Hugo) | done |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
@@ -52,18 +52,18 @@ Already removed earlier (sites must have migrated): `search.js`,
 
 ## IIIF Presentation API 2 support (removed)
 
-Generation of Presentation API 2 manifests is no longer supported;
-templates that used to generate them now abort the build with an
-`errorf` instead, and legacy front matter keys are rejected with build
-errors:
+Generation of Presentation API 2 manifests is no longer supported; the
+former guard templates and tripwires have been removed entirely — no
+known site ever still used them:
 
 - `layouts/_default/single.json` and `layouts/_default/single.iiif.json`
-  abort when a page still requests API 2 output via a `presentation/`
-  prefixed `iiifContext`
-- `layouts/partials/iiif/3/common.json` aborts on the legacy
-  `iiifMetadata` / `iiifStructure` front matter keys
-- `layouts/partials/iiif/3/structures.html` aborts on legacy `type:`
-  structure entries
+  (the API-2 guard templates) — deleted. Pages requesting a
+  `presentation/2` context produce no manifest output at all
+- the `iiifMetadata` / `iiifStructure` tripwires in
+  `layouts/partials/iiif/3/common.json` — removed
+- the legacy `type:` structure-entry guard in
+  `layouts/partials/iiif/3/structures.html` — removed (current input
+  validation for label/page/items entries stays)
 
 The migration path is documented in "Upgrading IIIF Presentation API
 2 → 3" in [Upgrade.md](Upgrade.md).

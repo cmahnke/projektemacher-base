@@ -52,5 +52,7 @@
   </div>
 </div>
 <script type="text/javascript">
-  var {{ $var | safeJS }} = window.projektemacherMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', '{{ $source | safeJS }}', {{ $styleJS | safeJS }}, {{ $bbox | safeJS }}, {{ $center | safeJS }}, undefined, undefined, undefined, {{ $cluster | safeJS }}, false, true, undefined, false, {{ $marker | safeJS }});
+  document.addEventListener('DOMContentLoaded', function() {
+    var {{ $var | safeJS }} = window.projektemacherMap('{{ $id | safeJS }}', '{{ $geojson | safeJS }}', '{{ $source | safeJS }}', {{ $styleJS | safeJS }}, {{ $bbox | safeJS }}, {{ $center | safeJS }}, undefined, undefined, undefined, {{ $cluster | safeJS }}, false, true, undefined, false, {{ $marker | safeJS }});
+  });
 </script>
