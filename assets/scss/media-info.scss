@@ -1,4 +1,4 @@
-@use "icons" as *;
+@use "icons";
 
 a.worldcat {
     text-decoration: none;
@@ -6,6 +6,6 @@ a.worldcat {
     &::after {
         display: inline-block;
         width: 1em;
-        content: url($link-light);
+        content: url(icons.$link-light);
     }
 }

@@ -465,6 +465,16 @@ still succeeds" is not enough. Verify the migration by direct comparison:
 Typical pitfalls:
 
 * `@use`/`@forward` statements must come before any other rules in a file.
+* **Never `@use … as *` a module that exports variables from inside a
+  partial** — files loaded via `@import` (consumer entry points, copied
+  templates) dump those members into the *global* scope, where they
+  collide with the consumer's own pre-declarations (`This module and
+  the new module both define a variable named …`). Partials import
+  namespaced (`@use "icons";` → `icons.$link-light`); `as *` and
+  `… with (…)` belong in entry points (`base.scss`, `lint_dummy.scss`)
+  only. This bit `media-info.scss`/`services/cookie-consent.scss`
+  (both `as *`-ing `icons`) and broke `backsteinexpressionismus`'s
+  build via its `$color-light` pre-declaration.
 * Variables overridden *before* an `@import` become module configuration —
   e.g. `@use "theme" with ($font-body-font: …)`. A module can be configured
   only once per compilation, so configure it in the entry point.

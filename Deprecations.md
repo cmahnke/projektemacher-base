@@ -129,15 +129,22 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
   variable declarations (sites composing the coder look via `@import`
   rely on the leakage, e.g. `section-toc`), while the chrome partials
   read `./variables` **namespaced** (`variables.$fg-color` — `as *`
-  would collide with those globals). Verified via sass before/after
-  comparison + a green exampleSite build. Two silent font-matching
-  bugs were fixed: `color-sample.scss`/`coder` used `'Source Code Pro'`
-  and `_site-shared` used `Lora` — the generated faces are named
-  `'Source Code Pro Variable'` / `'Lora Variable'`, so those fonts
-  never applied and silently fell back. Remaining: `audioplayer.scss`
-  (`encodecolor()` from `functions/color`) and the three deliberate
-  plain-CSS imports (`lucienne.css`, `tify`, `ol` — dart-sass warns on
-  them, but inlining would change output semantics). Several consumers
+  would collide with those globals). **Same lesson applied to
+  `media-info.scss`/`services/cookie-consent.scss`**: their
+  `@use "icons" as *` dumped the icons members into the importing
+  site's global scope and collided with `backsteinexpressionismus`'s
+  `$color-light` pre-declaration (CI error) — both partials import
+  `icons` namespaced now; schatten's pre-declared `$close-*`/
+  `$color-*` would have broken on the next submodule raise. Verified
+  via sass before/after comparison + a green exampleSite build. Two
+  silent font-matching bugs were fixed: `color-sample.scss`/`coder`
+  used `'Source Code Pro'` and `_site-shared` used `Lora` — the
+  generated faces are named `'Source Code Pro Variable'` /
+  `'Lora Variable'`, so those fonts never applied and silently fell
+  back. Remaining: `audioplayer.scss` (`encodecolor()` from
+  `functions/color`) and the three deliberate plain-CSS imports
+  (`lucienne.css`, `tify`, `ol` — dart-sass warns on them, but
+  inlining would change output semantics). Several consumers
   (`backsteinexpressionismus`, `christianmahnke`, `xn--h-zfa.xyz`,
   `never-built`) import theme partials by path and must be migrated in
   the same pass. See the migration section in
