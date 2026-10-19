@@ -1,36 +1,50 @@
-/* Variables that need to be defined */
-$font-body-font: "Inconsolata" !default;
-$color-body-text: #333 !default;
-$font-color-body: #333 !default;
-$color-link-text: #333 !default;
-$color-link-hover: #333 !default;
-$color-link-active: #333 !default;
-$color-header-text: #333 !default;
-$color-paper: hsl(48deg 93% 89%);
-$color-paper-dark: darken($color-paper, 4%);
-$color-paper-light: lighten($color-paper, 4%);
-
-/* Imports */
-@import "projektemacher-base";
-@import "iframe-consent";
-@import "media-info";
-@import "theme";
-@import "timeline";
-@import "share";
-@import "map";
-@import "icons";
-@import "iiif";
-@import "ol-iiif";
-@import "footer";
-@import "menu";
-@import "audioplayer";
-@import "browser-banner";
-@import "color-sample";
-@import "textures/wood";
-@import "3d/3d-model";
-@import "services/cookie-consent";
-@import "shortcodes/code";
 /*
-@import "lucienne/lucienne";
-@import "iiif/presentation-tify";
+ * Lint and compile smoke harness: imports (as @use) every component so
+ * `npm run lint-scss` and a full `npx sass` compile cover the whole tree.
+ * Not referenced by any layout — never deployed.
+ *
+ * Variable pre-occupation from the @import era is gone: under @use every
+ * module applies its own !default values.
+ */
+@use "projektemacher-base";
+@use "iframe-consent";
+@use "media-info";
+@use "theme";
+@use "timeline";
+@use "share";
+@use "map";
+@use "icons";
+@use "iiif";
+@use "ol-iiif";
+@use "footer";
+@use "menu";
+@use "audioplayer";
+@use "browser-banner";
+@use "color-sample";
+@use "vars";
+@use "textures/wood";
+@use "3d/3d-model" as threed-model;
+@use "services/cookie-consent";
+@use "shortcodes/code";
+@use "coder/_site-shared";
+@use "coder/_base";
+@use "coder/_content";
+@use "coder/_footer" as coder-footer;
+@use "coder/_navigation";
+@use "coder/_pagination";
+@use "coder/_variables";
+@use "flags/flags";
+@use "openlayers";
+@use "pdf-preview";
+@use "pdf-viewer";
+@use "shortcodes/chart";
+@use "shortcodes/csv-chart";
+@use "shortcodes/gallery";
+@use "shortcodes/hdr-check";
+@use "shortcodes/hdr-model";
+@use "shortcodes/model";
+@use "shortcodes/slider-canvas";
+/*
+@use "lucienne/lucienne";
+@use "iiif/presentation-tify";
 */

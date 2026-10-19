@@ -24,6 +24,9 @@ Step-by-step instructions for past migrations live in the
 | Consumer overrides of deprecated theme parts | cleaned — hptz's forked `collection.json` replaced by the new `place-label.json` label hook, vorsatzpapier's stale `iiif-presentation.html` fork deleted, dead `iiifmanifest` conditions simplified in never-built, labs and wilmabraeuner | done |
 | `disableScale` / `paginate` params in site configs | removed from all top-level consumer sites (`params.paginate` was never read; the theme's `disableScale` handling is deleted — unknown params are ignored by Hugo) | done |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
+| Consumer fonts npm migration | done — npm-backed `fonts/` imports swapped to `npm-fonts/` in blaufusstoelpel, briefsteller (→ `alata`), kinderbuecher, kraehenbeisser, labs, never-built, schriftmuster, vorsatzpapier, wilmabraeuner, xn--h-zfa.xyz; `font-family:` usages already used the mapped names; exceptions (`futura-renner`, `ds-behrensschrift`) keep their `fonts/` partials; kinderbuecher/wilmabraeuner/xn--h-zfa.xyz need `scripts/init/get-fonts.sh` in their theme copy after the next raise | done |
+| PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed | informational |
+| `jxlpy` module | removed — all scripts decode JXL via pyvips; the Upgrade.md section was dropped | done |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` | medium |
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
 | Hugo < 0.165 compatibility code | removable since Hugo 0.166 | low |
@@ -113,9 +116,15 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
 
 ## Other deprecated remainders
 
-- **SCSS `@import`**: the theme still uses `@import` throughout the
-  SCSS sources; Dart Sass deprecates it in favour of `@use`. Several
-  consumers (`backsteinexpressionismus`, `christianmahnke`,
+- **SCSS `@import`**: mostly migrated to `@use` — `lint_dummy.scss`
+  (now also covering the previously missing coder partials, flags,
+  openlayers, pdf styles and 7 shortcode styles), `map.scss`,
+  `color-sample.scss` and `media-info.scss` are converted; the compiled
+  output was verified byte-identical (sass before/after comparison).
+  Remaining: `audioplayer.scss` (`encodecolor()` from
+  `functions/color`), `coder/_site-shared.scss` and the three
+  deliberate plain-CSS imports (`lucienne.css`, `tify`, `ol`).
+  Several consumers (`backsteinexpressionismus`, `christianmahnke`,
   `xn--h-zfa.xyz`, `never-built`) import theme partials by path and
   must be migrated in the same pass. See the migration section in
   [Upgrade.md](Upgrade.md). (medium)

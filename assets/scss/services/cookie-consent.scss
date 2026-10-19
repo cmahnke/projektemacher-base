@@ -1,5 +1,7 @@
 /* Inspired by https://defency.eu/posts/2023/10/hugo.io-how-to-integrate-cookie-consent-for-google-analytics/ */
 
+@use "icons" as *;
+
 /*
  * Button colors are chosen for WCAG 1.4.3 contrast (≥ 4.5:1) against
  * their own background: white on #595959 ≈ 6.3:1, white on the dark
