@@ -35,8 +35,19 @@ if [ -z "$DEPENDENCY_MANAGER" ] ; then
 fi
 
 if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
-  echo "yarn is retired - set DEPENDENCY_MANAGER to 'npm' or 'pnpm' (see Upgrade.md)"
-  exit 1
+  YARN=`which yarn`
+  if [ -z "$YARN" ] ; then
+    #Try /usr/local/bin/yarn
+    if [ -x /usr/local/bin/yarn ] ; then
+      YARN=/usr/local/bin/yarn
+    elif [ -x `npm root -g`/yarn/bin/yarn ] ; then
+      YARN=`npm root -g`/yarn/bin/yarn
+    else
+      npm install -g yarn
+      YARN='npm run yarn'
+    fi
+  fi
+  echo "Using 'yarn' from '$YARN'"
 fi
 
 echo "OS is '$OS', sed is '$SED', realpath is '$REALPATH', dependency manager is '$DEPENDENCY_MANAGER'"
@@ -82,16 +93,30 @@ if [ "$DEPENDENCY_MANAGER" = 'pnpm' ] ; then
     fi
   fi
 else
-  if [ ! -f .npmrc ] ; then
-    cp ./themes/projektemacher-base/.npmrc .
+  # npm and yarn don't know pnpm's 'node-linker' setting (npm warns about an
+  # unknown project config) - only write the settings they need
+  if [ -f .npmrc ] ; then
+    $SED -i '/^[[:space:]]*node-linker[[:space:]]*=/d' .npmrc
+  else
+    printf 'legacy-peer-deps=true\n' > .npmrc
+  fi
+  if ! grep -Eq '^[[:space:]]*legacy-peer-deps[[:space:]]*=' .npmrc ; then
+    printf '\nlegacy-peer-deps=true\n' >> .npmrc
   fi
 fi
 
-$DEPENDENCY_MANAGER install
-ERR=$?
+if [ "$DEPENDENCY_MANAGER" = 'yarn' ] ; then
+  yarn config set ignore-engines true
+  INSTALL_OPTS="--ignore-engines"
+  $YARN install $INSTALL_OPTS
+  ERR=$?
+else
+  $DEPENDENCY_MANAGER install
+  ERR=$?
+fi
 
 if [ $ERR -ne 0 ] ; then
-    echo "$DEPENDENCY_MANAGER install failed with $ERR"
+    echo "yarn install failed with $ERR"
     cat package.json | jq -C .
     if [ -r yarn-error.log ] ; then
         cat yarn-error.log
