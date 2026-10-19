@@ -27,10 +27,12 @@
   </div>
 
   <script type="text/javascript">
-    const imageUrl = '{{ $image | safeJS }}';
-    const canvas = document.querySelector('#{{ $id | safeJS }}');
+    document.addEventListener('DOMContentLoaded', function() {
+      const imageUrl = '{{ $image | safeJS }}';
+      const canvas = document.querySelector('#{{ $id | safeJS }}');
 
-    window.initCanvas(canvas, imageUrl);
+      window.initCanvas(canvas, imageUrl);
+    });
   </script>
 </div>
 

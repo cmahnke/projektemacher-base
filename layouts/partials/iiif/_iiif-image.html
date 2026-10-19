@@ -57,10 +57,12 @@
   <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}" role="region"{{ with $heading }} aria-label="{{ . }}"{{ end }}></div>
 
   <script type="text/javascript">
-    {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
-    {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }}{{if $hdr }}, {{ $hdr }}{{ end }});
-    {{ $mapName | safeJS }}.updateSize();
-    {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
+    document.addEventListener('DOMContentLoaded', function() {
+      {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");
+      {{ $mapName | safeJS }} = addMap({{ $mapName | safeJS }}_Div, "{{ $infoJson }}", {{ $rotation }}, {{ $baseURL }}{{if $hdr }}, {{ $hdr }}{{ end }});
+      {{ $mapName | safeJS }}.updateSize();
+      {{ $mapName | safeJS }}_Div.data = {{ $mapName | safeJS }};
+    });
   </script>
   {{ if $share }}
     <div class="share">
