@@ -35,7 +35,7 @@ Step-by-step instructions for past migrations live in the
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
 | Hugo < 0.165 compatibility code | removable since Hugo 0.166 | low |
 | Third-party scripts loaded from CDNs | A-Frame via npm (`ts/aframe.ts`), Mastodon embed vendored (`assets/js/vendor/mastodon-embed.js`) | done |
-| Hugo v0.156 deprecations (`.Sites`, `site.Data`, `site.AllPages`, `site.BuildDrafts`) | `.Sites`/`site.Data`/`site.AllPages` fixed across theme + consumers; `site.BuildDrafts` (5×, 4 repos) and blaufusstoelpel's `hugo.Data.Pages` still open — see the section below | medium |
+| Hugo v0.156 deprecations (`.Sites`, `site.Data`, `site.AllPages`, `site.BuildDrafts`) | **all fixed** across theme + consumers (`.BuildDrafts` semantics: draft menu entries always skipped; `check.html` checks `.Draft` only) — see the section below | done |
 
 ## JavaScript assets
 
@@ -143,8 +143,10 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
   the same pass. See the migration section in
   [Upgrade.md](Upgrade.md). (medium)
 - **Outdated Hugo constructs** (medium):
-  - *theme*: only `.Scratch` remains (7 partials; the `footer` /
-    `iiifPrefix` Scratch keys are consumer-coupled — see below)
+  - *theme*: only `.Scratch` remains — and only the `iiifPrefix`
+    extension point in `iiif-js.html` (consumer-coupled, documented
+    below); the `footer` Scratch contract was retired — `footer.html`
+    passes the footer string as a partial argument now
   - *fixed in the 2026-10 cleanup*: `.Site.` → `site.` (383× in 15
     consumer repos; context receivers only — the multilingual
     translation-loop receivers were reviewed and kept where needed),
@@ -159,10 +161,8 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
   - *deliberately not pursued*: nondeterministic element IDs —
     deterministic discriminators break more than they fix (decision
     recorded in Upgrade.md)
-  - *still broken from an old sweep*: `labs.projektemacher.org`'s
-    `section.html` uses `site.LanguagePrefix` — the method was removed
-    in Hugo 0.124; the multilingual branch errors at build time and
-    needs a `strings.TrimPrefix`-based rework
+  - *still broken from an old sweep*: ~~labs' `site.LanguagePrefix`~~ —
+    fixed via `strings.TrimPrefix`; nothing outstanding here
 - **Nondeterministic element IDs** — removed from the mandatory
   checklist; see Upgrade.md. (won't fix)
 - **Hugo < 0.165 compatibility code**: single-`return` partial
@@ -196,10 +196,12 @@ consumers:
   partial already uses the modern `range hugo.Sites` pattern and serves
   `post-list.json`, `kleiderbuegel` and `never-built`;
   `wilmabraeuner`'s `alias-resolver.html` now calls the wrapper too. (done)
-- **`site.BuildDrafts`**: still used in the theme (`menu.html`) and the
-  consumers `christianmahnke`, `kleiderbuegel` (2×) and `wilmabraeuner`
-  — needs a semantic rework (draft pages don't render in production
-  builds anyway). (open)
+- ~~**`site.BuildDrafts`**~~: fixed — the 4 menu partials (theme,
+  `christianmahnke`, `kleiderbuegel`, `wilmabraeuner`) now skip draft
+  menu entries unconditionally (behavior-identical: drafts don't render
+  in any default build), and `kleiderbuegel`'s `check.html` draft
+  notice checks `.Draft` only (draft pages only render when drafts are
+  built). (done)
 - ~~**`hugo.Data.Pages` in `blaufusstoelpel`**~~ (`list.html:20`): the
   site has no `data/` directory, so this paginated `nil` — the line now
   paginates `site.RegularPages`. (done)

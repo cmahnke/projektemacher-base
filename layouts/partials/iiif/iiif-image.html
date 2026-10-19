@@ -3,15 +3,9 @@
 {{- $page := .pageContext }}
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
-{{/* TODO: Remove this */}}
-{{/* TODO: Add param for context to use this: {{- $debug := partialCached "functions/debug/enabled.html" $context -}}
-*/}}
 {{- $site := .site }}
 {{- if eq $site nil -}}
     {{- $site = site -}}
-{{- end -}}
-{{- if eq $site nil -}}
-    {{- errorf "[partials/iiif/iiif-image.html] Site is %#v (nil)" $site -}}
 {{- end -}}
 {{- $isServer := hugo.IsServer -}}
 

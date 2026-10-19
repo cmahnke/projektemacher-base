@@ -1,5 +1,3 @@
-{{/* TODO: Check for other methods for favicons in 'head.html' */}}
-
 {{- if or site.Params.favicon_32 site.Params.favicon_16 -}}
   <link rel="icon" type="image/png" href="{{ site.Params.favicon_32 | default "/images/favicon-32.png" | absURL }}" sizes="32x32">
   <link rel="icon" type="image/png" href="{{ site.Params.favicon_16 | default "/images/favicon-16.png" | absURL }}" sizes="16x16">

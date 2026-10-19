@@ -753,12 +753,13 @@ Deliberate exceptions in the theme's own templates — not outdated code:
 * `layouts/partials/preview/prerendered.html` compares
   `hugo.Sites.Default` against `.context.Site` — a site *identity* check
   (multilingual awareness) that the `site.` global cannot express.
-* `layouts/partials/footer-content.html` and
-  `layouts/partials/html/head/iiif-js.html` read the page Scratch keys
-  `footer` / `iiifPrefix`. Nothing in the theme sets them — they are
-  consumer-facing extension points, so they cannot become plain
-  variables. Local `newScratch` objects (e.g. in `kenburns.html`) are
-  fine as-is; the rule targets page/`$`-Scratch state.
+* `layouts/partials/html/head/iiif-js.html` reads the page Scratch key
+  `iiifPrefix`. Nothing in the theme sets it — it is a consumer-facing
+  extension point, so it cannot become a plain variable. (The former
+  `footer` Scratch key was retired: `footer.html` now passes the
+  footer string as a partial argument.) Local `newScratch` objects
+  (e.g. in `kenburns.html`) are fine as-is; the rule targets
+  page/`$`-Scratch state.
 * `layouts/partials/pagination.html` still reads `$.Paginator` — as the
   *fallback* branch when the partial is called with a page context; the
   preferred input is the pager object returned by `.Paginate`.

@@ -22,7 +22,7 @@
       {{- end -}}
       <p class="privacy"><a href="{{ $privacyUrl | safeHTML }}" title="{{ i18n "privacyPolicy" | safeHTML }}">{{ i18n "privacyPolicy" | safeHTML }}</a></p>
 	  {{- end -}}
-    {{- if ne (.Scratch.Get "footer") nil -}}
-        {{- .Scratch.Get "footer" | safeHTML -}}
+    {{- with .footer -}}
+        {{- . | safeHTML -}}
     {{- end -}}
 </div>

@@ -255,8 +255,8 @@ function setupMap(
   // Languages
   let lang: string = 'en';
   if (document.documentElement.lang !== undefined) {
-    /* TODO: Check for lang locale combinations here: "de-de" instead of "de" will currently break this. */
-    lang = document.documentElement.lang;
+    /* Map the html lang to the tooltip key: "de-de" etc. resolve to "de" */
+    lang = document.documentElement.lang.split('-')[0].toLowerCase();
   }
   const langKey = (lang in toolTips ? lang : 'en') as Lang;
 

@@ -36,18 +36,12 @@
   {{- $initialPosition = .Get "initialPosition" -}}
 {{- end -}}
 
-{{/* TODO: This shgoulkd be done with a bool */}}
 {{- $xrMode := "true" -}}
 {{- if (.Get "xrMode") -}}
   {{- $xrMode = .Get "xrMode" -}}
   {{- if eq (printf "%T" $xrMode) "bool" -}}
     {{- $xrMode = printf "%v" $xrMode -}}
   {{- end -}}
-  {{/*
-  {{- if eq $xrMode "false" -}}
-    {{- printf "$s ; arEnabled: false;" $xrMode -}}
-  {{- end -}}
-  */}}
 {{- end -}}
 
 {{- $controls := printf "autoRotate: %s; enableDamping: true; dampingFactor: 0.05; minDistance: %d; maxDistance: %d; initialPosition: %s;" $autorotate $minDistance $maxDistance $initialPosition -}}

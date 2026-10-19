@@ -1,8 +1,8 @@
 {{- if resources.Get "scss/coder-dark.scss" -}}
 	{{- if not .IsHome -}}
+		{{- $footerStr := printf `%s <div class="footer-powered-by"><a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.</div>` (i18n "powered_by") -}}
 		<footer class="footer">
-			{{- .Scratch.Set "footer" (printf `%s <div class="footer-powered-by"><a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.</div>` (i18n "powered_by")) -}}
-			{{- partialCached "footer-content.html" . -}}
+			{{- partial "footer-content.html" (dict "page" . "footer" $footerStr) -}}
 		</footer>
 	{{- end -}}
 {{- else -}}
@@ -21,6 +21,7 @@
         </div>
     </div>
 
-   {{- partialCached "footer-content.html" . -}}
+   {{- $footerStr := "" -}}
+   {{- partial "footer-content.html" (dict "page" . "footer" $footerStr) -}}
 </footer>
 {{- end -}}
