@@ -147,6 +147,7 @@ replacing). Pre-made manifests without front-matter structures keep their own.
             {{- $newAnnotations = $newAnnotations | append $annotation -}}
           {{- end -}}
           {{- $annotationPage = merge $annotationPage (dict "items" $newAnnotations) -}}
+          {{- $newAnnotationPages = $newAnnotationPages | append $annotationPage -}}
         {{- end -}}
         {{- $canvasRenderings := index $canvas "rendering" -}}
         {{- if reflect.IsMap $canvasRenderings -}}{{- $canvasRenderings = slice $canvasRenderings -}}{{- end -}}
