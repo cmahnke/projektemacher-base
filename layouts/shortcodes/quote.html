@@ -1,7 +1,7 @@
 {{- $quote := .Get "quote" | markdownify -}}
 {{- $from := .Get "from" | markdownify -}}
 {{- if (.Get "file") }}
-    {{ $quote = readFile (.Get "file") | markdownify -}}
+    {{ $quote = os.ReadFile (.Get "file") | markdownify -}}
 {{- end -}}
 {{- if len .Inner -}}
     {{- $quote = .Inner | markdownify -}}

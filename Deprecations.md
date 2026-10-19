@@ -1,11 +1,14 @@
 # Deprecations and shims
 
-This document tracks everything in the theme that is deprecated or only
-kept alive through a compatibility shim, together with the work needed
-to get rid of it. Items marked 🔴 are **urgent to fix** — they are
-scheduled for removal in an upcoming release and should be resolved
-before the next one. Step-by-step instructions for past migrations live
-in the [Upgrade.md](Upgrade.md) guide.
+This document tracks everything that is deprecated or only kept alive
+through a compatibility shim — in this theme **and** in its known
+consumer sites (the top-level sibling repositories; the
+`projektemacher/blogs/*` mirrors and `wilmabraeuner-complete` are
+tracked separately) — together with the work needed to get rid of it.
+Items marked 🔴 are **urgent to fix** — they are scheduled for removal
+in an upcoming release and should be resolved before the next one.
+Step-by-step instructions for past migrations live in the
+[Upgrade.md](Upgrade.md) guide.
 
 ## Summary
 
@@ -25,6 +28,7 @@ in the [Upgrade.md](Upgrade.md) guide.
 | Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
 | Hugo < 0.165 compatibility code | removable since Hugo 0.166 | low |
 | Third-party scripts loaded from CDNs | A-Frame via npm (`ts/aframe.ts`), Mastodon embed vendored (`assets/js/vendor/mastodon-embed.js`) | done |
+| Hugo v0.156 deprecations (`.Sites`, `site.Data`, `site.AllPages`, `site.BuildDrafts`) | `.Sites`/`site.Data`/`site.AllPages` fixed across theme + consumers; `site.BuildDrafts` (5×, 4 repos) and blaufusstoelpel's `hugo.Data.Pages` still open — see the section below | medium |
 
 ## JavaScript assets
 
@@ -40,11 +44,8 @@ The `assets/js/` directory has been deleted: every script lives in
 `assets/ts/` now (see the "Upgrading shortcode scripts from
 `assets/js` to TypeScript" section in [Upgrade.md](Upgrade.md)). Sites
 referencing the old `js/` paths get a build error from
-`html/head/script.html` and must switch to the `ts/` paths.
-
-Known outstanding reference: `backsteinexpressionismus` still requests the
-long-removed `js/search.js` from `content/search/_index*.md` (migration
-handled separately in that repo).
+`html/head/script.html` and must switch to the `ts/` paths. No known
+consumer references the old paths anymore.
 
 Already removed earlier (sites must have migrated): `search.js`,
 `timeline.js`, `iiif/mirador.js`, `maps/projektemacher-map.js`,
@@ -110,23 +111,34 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
 - `static/fonts/FuturaRenner-Regular.*` (`.eot`, `.svg`, `.ttf`,
   `.woff`, `.woff2`)
 
-Note: `assets/scss/fonts/ds-behrensschrift.scss` declares the `.otf`
-file with `format('woff')` — a bug to fix while touching these files.
-
 ## Other deprecated remainders
 
 - **SCSS `@import`**: the theme still uses `@import` throughout the
-  SCSS sources; Dart Sass deprecates it in favour of `@use`. See the
-  migration section in [Upgrade.md](Upgrade.md). (medium)
-- **Outdated Hugo constructs**: `.Site.` → `site.`, `paginate` config
-  key, `Scratch` → plain variables, bare `substr` → `strings.Substr` —
-  see the table in [Upgrade.md](Upgrade.md). (medium)
+  SCSS sources; Dart Sass deprecates it in favour of `@use`. Several
+  consumers (`backsteinexpressionismus`, `christianmahnke`,
+  `xn--h-zfa.xyz`, `never-built`) import theme partials by path and
+  must be migrated in the same pass. See the migration section in
+  [Upgrade.md](Upgrade.md). (medium)
+- **Outdated Hugo constructs** (medium):
+  - *theme*: only `.Scratch` remains (7 partials; the `footer` /
+    `iiifPrefix` Scratch keys are consumer-coupled — see below)
+  - *consumers*: `.Site.` (6+ sites, e.g. `kleiderbuegel` in 26 files),
+    `.Scratch` (8 sites), bare `substr` → `strings.Substr`
+    (`kleiderbuegel` 8×, `labs.projektemacher.org`, `never-built`,
+    `ric-unknownartist`)
+  - *fixed in the 2026-10 cleanup*: `.RSSLink` (vorsatzpapier),
+    `.LastChange` (schatten), removed `preserveTaxonomyNames`
+    (christianmahnke, never-built, plastikwarenfabrik), `paginate`
+    params (all known consumers), `readFile` → `os.ReadFile`
+    (theme, labs.projektemacher.org, ric-unknownartist), `.Hugo.*` →
+    `hugo.*` (labs.projektemacher.org, wilmabraeuner) — all modern
+    `hugo.IsServer` / `hugo.IsMultilingual` now, no legacy config keys
 - **Hugo < 0.165 compatibility code**: single-`return` partial
   workarounds in `layouts/partials/iiif/3/structures.html`,
   `functions/iiif/coerce-language-map.html` and
   `functions/iiif/structure-span.html` can be dropped with Hugo 0.166
   as the minimum. (low)
-- **Third-party scripts from CDNs**: fixed — the `aframe-3d-model`
+- ~~**Third-party scripts from CDNs**~~: fixed — the `aframe-3d-model`
   shortcode bundles the `aframe`/`aframe-orbit-controls` npm packages via
   `ts/aframe.ts` (the former `aframe.io`/`unpkg.com` URLs are gone), and
   the `mastodon` shortcode serves a pinned copy of the embed script from
@@ -134,3 +146,31 @@ file with `format('woff')` — a bug to fix while touching these files.
 - ~~**File name typo**~~: `assets/scss/fonts/noto-serif-dispaly.scss` was
   renamed to `noto-serif-display.scss` (no importer of the misspelled
   name existed; imports of the correct name now resolve). (done)
+
+## Hugo v0.156 deprecations
+
+Hugo 0.156 deprecated the site/page `Data`/`Sites` accessors plus
+`AllPages`, `BuildDrafts` and `Languages` (info log now, warnings in
+~3 months, errors in ~12 months). State across the theme and its known
+consumers:
+
+- ~~**`.Sites` (page method)**~~ → `hugo.Sites`: fixed in the theme
+  (`footer-content.html`), `labs.projektemacher.org`,
+  `wilmabraeuner`, `projektemacher` and `schatten`. (done)
+- ~~**`site.Data`**~~ → `hugo.Data`: fixed in `christianmahnke`
+  (schema.org partials), `never-built` (scrollify) and `projektemacher`
+  (archive). (done)
+- ~~**`site.AllPages`**~~: the theme's `hugo/site/AllPages` wrapper
+  partial already uses the modern `range hugo.Sites` pattern and serves
+  `post-list.json`, `kleiderbuegel` and `never-built`;
+  `wilmabraeuner`'s `alias-resolver.html` now calls the wrapper too. (done)
+- **`site.BuildDrafts`**: still used in the theme (`menu.html`) and the
+  consumers `christianmahnke`, `kleiderbuegel` (2×) and `wilmabraeuner`
+  — needs a semantic rework (draft pages don't render in production
+  builds anyway). (open)
+- **`hugo.Data.Pages` in `blaufusstoelpel`** (`list.html:20`): the site
+  has no `data/` directory, so this paginates `nil` — intent unclear
+  (probably `site.RegularPages`). (open, investigate)
+- **Dead `[privacy.instagram]` blocks** removed from `christianmahnke`,
+  `never-built` and `plastikwarenfabrik` — the Instagram shortcode was
+  removed from Hugo, the keys were no-ops. (done)

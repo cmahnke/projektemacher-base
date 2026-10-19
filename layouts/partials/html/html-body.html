@@ -31,7 +31,7 @@
 
 {{- $content := "" -}}
 {{- if fileExists $fileName -}}
-    {{- $content = readFile $fileName -}}
+    {{- $content = os.ReadFile $fileName -}}
 {{- else -}}
     {{- errorf "Can't find %s!" $fileName -}}
 {{- end -}}
