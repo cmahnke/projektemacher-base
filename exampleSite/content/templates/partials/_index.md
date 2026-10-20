@@ -41,7 +41,7 @@ The pages of this section are listed in the table of contents.
 | `linkedart` | [Linked Art](metadata-partials/) | Linked Art configuration |
 | `wikidatasparqlendpoint` | [data/wikidata.html](helpers/#wikidata) | SPARQL endpoint for label lookups |
 | `debug` | [debug helpers](helpers/#debug) | Enable build warnings (`debug.enabled`) |
-| `env` | [print partials](print-partials/) | Print edition environment |
+| `env` | [cookie-consent.html](helpers/#services) | Environment setting (`production`) |
 | `skipShortcodeAssets` | [shortcode helper](helpers/#shortcode-helper) | Skip automatic asset loading |
 | `copyright`, `copyrightYears`, `cc`, `footer.privacy`, `footer.privacyUrl` | [footer-content.html](structural/#footer) | Footer content |
 | `robots.llmsTXT` | robots.txt | `llms.txt` reference, see [404 and robots](../404-robots/) |

@@ -73,7 +73,7 @@ Placeholder container above the header, empty by default — a site can override
 
 ## `list.html` and `home.html` {#list}
 
-`list.html` renders a paginated page list: filters `metaPage` pages, keeps pages with `displayinlist != false`, renders each with the site's [`li.html`](extension-points/#lihtml-required-for-list-pages) partial, then pagination links via `pagination.html`. `home.html` is a thin wrapper feeding `.Site.RegularPages` into the same markup.
+`list.html` renders a paginated page list: filters `metaPage` pages, keeps pages with `displayinlist != false`, renders each with the site's [`li.html`](extension-points/#lihtml-required-for-list-pages) partial, then previous/next pagination links if there is more than one page. `home.html` is a thin wrapper feeding `.Site.RegularPages` into the same markup.
 
 ## `pagination.html` {#pagination}
 

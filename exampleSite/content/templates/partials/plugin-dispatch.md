@@ -13,7 +13,7 @@ Several theme features select a partial **by name** at build time — new varian
 The [`tags/cloud` shortcode](/shortcodes/tags/cloud/) and [`meta/tags.html`](structural/#tags) render each tag through a partial selected by name:
 
 - `meta/tags.html`: the page parameter `render` names the variant, prefixed with `tag-` (default: `tag.html`)
-- `tags/cloud` shortcode: each `key` in the shortcode is used as the partial name directly
+- `tags/cloud` shortcode: the `tag` parameter names the variant, prefixed with `tag-` (default: `tag.html`)
 
 Shipped variants (all receive the tag as input, via the `tag2str` normalizer which accepts strings, terms and taxonomy entries):
 

@@ -22,7 +22,7 @@ Renders section, taxonomy and term pages, as well as the home page. It delegates
 - filters out pages with `metaPage: true`
 - paginates the remaining pages (only pages with `displayinlist != false`)
 - renders each page with a `li.html` partial — a site can override it by providing `layouts/_partials/li.html`, otherwise a warning is emitted and a plain link is rendered
-- renders pagination links (via the `pagination.html` partial) if there is more than one page
+- renders previous/next pagination links if there is more than one page
 
 The home page uses the same template, it just feeds `.Site.RegularPages` into the same partial (see `partials/home.html`).
 

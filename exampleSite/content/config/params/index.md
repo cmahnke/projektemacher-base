@@ -22,6 +22,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 | `debug` | `false` | Enable the theme's debug warnings (extra build time output) |
 | `env` | — | Environment name (e.g. `production`), used e.g. by the cookie consent service |
 | `stylesheets` | — | List of external stylesheets to include in `<head>` |
+| `disableOpenGraph` | `false` | Set to `true` to skip the OpenGraph meta tags in `<head>` |
 
 ## Header and footer
 
@@ -41,6 +42,10 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 | `skipShortcodeAssets` | `false` | Disable automatic loading of shortcode specific JS/CSS |
 | `favicon_16` / `favicon_32` | — | Favicon PNGs |
 | `favicon_svg` | — | Favicon SVG (modern browsers prefer it over the PNGs) |
+| `favicon` | — | Fallback favicon (a single URL or a list of `rel`/`sizes`/`href` maps), only used when `favicon_16`/`favicon_32` are unset |
+| `colorscheme` | — | `auto` or `dark` enables the theme's dark stylesheet |
+| `custom_css` | — | List of stylesheet URLs to include in `<head>` |
+| `custom_scss` | — | List of SCSS assets (below `assets/`) compiled to CSS |
 
 ## IIIF and viewers
 
@@ -67,6 +72,7 @@ is a silent no-op (Hugo ignores unknown params).
 | `preview.size.width` / `preview.size.height` | — | Preview image dimensions |
 | `preview.outputPrefix` / `preview.outputSuffix` | — | Output file naming for generated previews |
 | `preview.background` | — | Background color for generated previews |
+| `preview.og.format` | `jpeg` | Output format of the generated OpenGraph image (`webp` supported) |
 
 A site can further customize preview resolution via the `preview/image.html` partial, see [extension points](/templates/partials/extension-points/).
 

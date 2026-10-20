@@ -12,18 +12,18 @@ The theme ships a set of quality assurance scripts, used by the [example site](.
 
 - a browser console message matching one of the `messages` entries of `test-urls.json`
 - an uncaught page error (`pageerror`)
-- a request that fails or returns an error for a local resource
+- a request for a local resource that fails (network error)
 
 | Exit code | Meaning |
 |---|---|
 | 122 | Browser console message matched a configured `messages` entry |
 | 123 | Uncaught page error |
-| 124 | Failed or erroring request for a local resource |
-| 125 | CSS selector found, but the property value didn't match the expectation |
+| 124 | Failed request (network error) for a local resource |
+| 125 | CSS selector found and the property value matched the given `value` (a check for unwanted styles) |
 | 126 | CSS selector not found |
 | 127 | Missing IIIF asset (see below) |
 
-Entries in `test-urls.json` can additionally contain `click` sequences and CSS `selector`/`property`/`value` (optionally with `pseudo`) assertions, checked with `getComputedStyle`.
+Entries in `test-urls.json` can additionally contain `click` sequences and CSS `selector`/`property`/`value` (optionally with `pseudo`) checks, resolved with `getComputedStyle` — the run fails when the element is found and its computed value equals `value` (see exit code 125).
 
 | Flag | Meaning |
 |---|---|
