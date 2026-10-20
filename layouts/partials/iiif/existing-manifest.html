@@ -21,6 +21,10 @@ thumbnail ids, annotation ids, annotation targets (remapped consistently
 with the canvas ids), painting body ids + service ids, and rendering ids on
 canvas and manifest level. The top-level manifest `id` is left untouched
 (it documents the source file; consumers fetch the served URL).
+Thumbnail ids are additionally snapped to the guaranteed
+`full/full/0/default.jpg` rendition: static level0 pipelines do not generate
+arbitrary widths (`full/<w>,/0/default.jpg` 404s), and the canvas dimensions
+are declared on the thumbnail entry so viewers use the URL as-is.
 The deployment prefix follows the same scheme as the generated manifests
 (layouts/partials/iiif/3/manifest.json):
 - development (hugo server) or no 'productionIIIFURLPrefix' set: site base URL + page path
@@ -85,7 +89,11 @@ replacing). Pre-made manifests without front-matter structures keep their own.
         {{- $newThumbs := slice -}}
         {{- range $thumb := ($thumbs | default slice) -}}
           {{- if and (reflect.IsMap $thumb) (isset $thumb "id") -}}
-            {{- $thumb = merge $thumb (dict "id" (partial "iiif/rewrite-url.html" (dict "url" (index $thumb "id") "cut" $cutPrefix "base" $urlBase))) -}}
+            {{- $thumbID := partial "iiif/rewrite-url.html" (dict "url" (index $thumb "id") "cut" $cutPrefix "base" $urlBase) -}}
+            {{- $thumbID = replaceRE "/full/[^/]+/0/default\\.jpg$" "/full/full/0/default.jpg" $thumbID -}}
+            {{- $thumb = merge $thumb (dict "id" $thumbID) -}}
+            {{- with index $canvas "width" -}}{{- $thumb = merge $thumb (dict "width" .) -}}{{- end -}}
+            {{- with index $canvas "height" -}}{{- $thumb = merge $thumb (dict "height" .) -}}{{- end -}}
           {{- end -}}
           {{- $newThumbs = $newThumbs | append $thumb -}}
         {{- end -}}
