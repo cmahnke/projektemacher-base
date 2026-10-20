@@ -19,6 +19,7 @@
     "howler": "^2.2.4",
     "i18next": "^26.4.4",
     "i18next-browser-languagedetector": "^8.2.1",
+    "img-comparison-slider": "^8.0.7",
     "js-cookie": "^3.0.8",
     "manifesto.js": "^4.3.5",
     "mermaid": "^12.2.0",

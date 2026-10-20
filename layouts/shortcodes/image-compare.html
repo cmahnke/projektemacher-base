@@ -1,0 +1,52 @@
+{{- /*
+TODO: Accept plain image URLs in addition to page bundle resources (e.g. for
+      sites using static or IIIF images instead of page resources)
+TODO: Make the target width configurable via a 'width' parameter instead of
+      the hardcoded $defaultWidth, add an optional aspect ratio parameter
+TODO: Add options for caption position and visibility
+*/}}
+{{- $src := .Page.File -}}
+{{- $loader := .Page.Resources -}}
+{{- $id := printf "image-compare-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
+{{- $defaultWidth := 1280 -}}
+
+
+{{- $image1 := "" -}}
+{{- $image2 := "" -}}
+{{- $caption1 := "" -}}
+{{- $caption2 := "" -}}
+
+{{- with .Get "image1" -}}
+  {{- $image1 = $loader.Get . -}}
+  {{- $image1 = $image1.Process (printf "resize %dx" $defaultWidth) -}}
+{{- end -}}
+{{- with .Get "image2" -}}
+  {{- $image2 = $loader.Get . -}}
+  {{- $image2 = $image2.Process (printf "resize %dx" $defaultWidth) -}}
+{{- end -}}
+
+{{- with .Get "caption1" -}}
+  {{- $caption1 = . -}}
+{{- end -}}
+{{- with .Get "caption2" -}}
+  {{- $caption2 = . -}}
+{{- end -}}
+
+<img-comparison-slider class="compare script" id="{{ $id }}">
+  <figure slot="first" class="first">
+    <img width="100%" src="{{ $image1.RelPermalink }}" alt="{{ $caption1 }}">
+    {{- if ne $caption1 "" -}}
+      <figcaption>{{ $caption1 | safeHTML }}</figcaption>
+    {{- end -}}
+  </figure>
+  <figure slot="second" class="second">
+    <img width="100%" src="{{ $image2.RelPermalink }}" alt="{{ $caption2 }}">
+    {{- if ne $caption2 "" -}}
+      <figcaption>{{ $caption2 | safeHTML }}</figcaption>
+    {{- end -}}
+  </figure>
+</img-comparison-slider>
+
+{{- define "_partials/shortcodes/image-compare-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/image-compare.ts") "scss" (slice "scss/image-compare.scss")) | jsonify -}}
+{{- end -}}
