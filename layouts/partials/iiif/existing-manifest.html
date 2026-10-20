@@ -116,8 +116,9 @@ replacing). Pre-made manifests without front-matter structures keep their own.
               {{- end -}}
               {{- $annotation = merge $annotation (dict "target" $target) -}}
             {{- end -}}
+            {{- $bodyWasMap := false -}}
             {{- $bodies := index $annotation "body" -}}
-            {{- if reflect.IsMap $bodies -}}{{- $bodies = slice $bodies -}}{{- end -}}
+            {{- if reflect.IsMap $bodies -}}{{- $bodyWasMap = true -}}{{- $bodies = slice $bodies -}}{{- end -}}
             {{- $newBodies := slice -}}
             {{- $sawBodies := false -}}
             {{- range $body := ($bodies | default slice) -}}
@@ -142,7 +143,11 @@ replacing). Pre-made manifests without front-matter structures keep their own.
               {{- $newBodies = $newBodies | append $body -}}
             {{- end -}}
             {{- if $sawBodies -}}
-              {{- $annotation = merge $annotation (dict "body" $newBodies) -}}
+              {{- if $bodyWasMap -}}
+                {{- $annotation = merge $annotation (dict "body" (index $newBodies 0)) -}}
+              {{- else -}}
+                {{- $annotation = merge $annotation (dict "body" $newBodies) -}}
+              {{- end -}}
             {{- end -}}
             {{- $newAnnotations = $newAnnotations | append $annotation -}}
           {{- end -}}
