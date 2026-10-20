@@ -4,7 +4,7 @@ title = "Projektemacher Base"
 locale = "en"
 defaultcontentlanguage = "en"
 publishDir = "docs"
-canonifyurls = true
+canonifyURLs = true
 disablePathToLower = true
 
 [params]

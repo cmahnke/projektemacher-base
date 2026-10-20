@@ -10,13 +10,21 @@ These partials render the common page chrome. They are used by the theme's templ
 
 ## ~~`head.html`~~ {#head}
 
-The legacy `head.html` partial has been removed. It rendered only meta tags, favicons and `<link>` alternates — everything it did is now covered by the `html/head/meta.html` and `html/head/links.html` partials (see below), which `baseof.html` calls directly. Sites that still keep a copy of `head.html` are unaffected (their copy shadows the theme), but should migrate to the `html/head/*` partials — see the [upgrade guide](/templates/partials/).
+The legacy `head.html` partial has been removed. It rendered only meta tags, favicons and `<link>` alternates — everything it did is now covered by the `html/head/meta.html` and `html/head/links.html` partials (see below), which `baseof.html` calls directly. Sites that still keep a copy of `head.html` are unaffected (their copy shadows the theme), but should migrate to the `html/head/*` partials.
+
+## `html/head/title.html` {#html-head-title}
+
+Renders the `<title>` element: the page title, appended with the [`slogan`](../#site-parameters-used-by-partials) on the home page. The `title` block inside can be overridden by site templates (see [base template](../../baseof/#blocks)) — `single.html`, `list.html` and `search.html` use this to render `Title · site.Title`. Pages without a title render no `<title>` element.
 
 ## `html/head/links.html` {#html-head-links}
 
 Emits the `<head>` link tags that are not meta data: external `stylesheets`, the font CSS (see [fonts](/posts/)), and the `<link>` alternates for the RSS and `iiif-collection` output formats. Called by `baseof.html` after `html/head/meta.html`.
 
-The `<title>` (with the `slogan` site parameter appended on the home page) is emitted by `baseof.html` itself.
+The `<title>` (with the `slogan` site parameter appended on the home page) is emitted by the [`html/head/title.html`](#html-head-title) partial.
+
+## `html/head/viewport.html` {#html-head-viewport}
+
+Emits the `<meta name="viewport">` tag: `width=device-width, initial-scale=1.0, minimum-scale=1.0` — pinch zoom-in stays allowed (accessibility), only zoom-out is blocked. The `minimalUI` site parameter appends `minimal-ui`.
 
 ## `html/head/script.html` {#html-head-script}
 
@@ -32,7 +40,9 @@ Renders the site header: the [menu](#menu), the header image and the page title 
 
 ## `menu.html` {#menu}
 
-Renders the main navigation: all `.Site.Menus.main` entries (with `draft` menu params honored, HTML menu entries via `params.html = true`, see [menu configuration](/config/menu/)) plus the language switcher for multilingual sites (`label` from the language configuration). Entries pointing to the current section get a `current` CSS class.
+Renders the main navigation: all `.Site.Menus.main` entries (with `draft` menu params honored, HTML menu entries via `params.html = true`, see [menu configuration](/config/menu/)) plus the language switcher for multilingual sites (`label` from the language configuration). Entries pointing to the current section get a `current` CSS class; the current page link carries `aria-current="page"`.
+
+The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced by `ts/menu.ts` (loaded by the partial): once the script runs, the toggle is a real `<button>` with `aria-expanded`/`aria-controls`, the closed list is `inert`, and the menu closes on Escape, outside clicks or focus leaving it.
 
 ## `topnavigation.html` {#topnavigation}
 
@@ -67,7 +77,7 @@ Placeholder container above the header, empty by default — a site can override
 
 ## `pagination.html` {#pagination}
 
-Renders previous/next pagination links with i18n labels.
+Renders the numbered pagination: previous/next links with i18n labels plus the page number list — the current page carries `aria-current="page"`, every page number link gets a visually hidden "page N" label.
 
 ## `page.html` {#page}
 
@@ -89,8 +99,11 @@ Renders a table of contents for a section page — a list of the section's child
 
 Pages with the front matter parameter `tocExclude: true` are skipped. Pages stored directly in the section root and child sections are top level entries; pages in subdirectories without their own `_index.md` are grouped under the directory name — e.g. the `shortcodes/html/` pages become an `html` group on the `/shortcodes/` section. A subdirectory holding only one page is promoted to a top level entry. The partial emits an `<aside class="section-toc">` with a `<nav class="toc">` inside; it renders nothing when no entries remain after filtering. A site can ship its own version through `layouts/partials/toc.html`.
 
-## `html/html-body.html` {#html-body}
+## `html/iframe-consent.html` {#html-iframe-consent}
 
+Renders the consent overlay for embedded iframes: notice text (i18n), an optional `preview` and the consent toggle. The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced to a `<button role="switch" aria-checked>` (see the [`html/iframe-consent` shortcode](/shortcodes/html/iframe-consent/)).
+
+## `html/html-body.html` {#html-body}
 Renders the body of a standalone HTML page, used by the [`html-body` template](../single-list/#html-body) and the [`html/include` shortcode](/shortcodes/html/include/).
 
 ## `meta/tags.html` and `meta/i18n-tags.html` {#tags}

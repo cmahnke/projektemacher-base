@@ -35,4 +35,4 @@ Loads the example model from the [3D model manifest post](/posts/3d-model/):
 
 ## Assets
 
-Via the shortcode helper: external JS `aframe.min.js` (1.5.0) and `aframe-orbit-controls` (1.3.2), SCSS `scss/3d/3d-model.scss`.
+Via the shortcode helper: JS `ts/aframe.ts` (bundles the `aframe` ^1.8.0 and `aframe-orbit-controls` ^1.3.2 npm packages), SCSS `scss/3d/3d-model.scss`.

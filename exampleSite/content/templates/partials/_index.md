@@ -7,7 +7,7 @@ toc: true
 
 # Partials
 
-The theme ships around 90 partials in `layouts/partials/`. They fall into three categories:
+The theme ships around 130 partials in `layouts/partials/`. They fall into three categories:
 
 1. **Extension points** — partials the *site* is expected to provide, the theme only calls them (with a warning fallback), see [extension points](extension-points/)
 2. **Reusable building blocks** — complete blocks (header, footer, viewers, …) that can be called from site layouts, several of them are already in use by sites built on this theme, see the [categorized pages](#pages) below
@@ -24,10 +24,10 @@ The pages of this section are listed in the table of contents.
 | Parameter | Used by | Purpose |
 |---|---|---|
 | `headerimage` | [header.html](structural/#header) | Header logo image, `false` disables it |
-| `slogan` | head.html | Appended to the `<title>` on the home page |
+| `slogan` | html/head/title.html | Appended to the `<title>` on the home page |
 | `description`, `keywords` | html/head partials | Meta tags |
 | `favicon`, `favicon_16`, `favicon_32`, `favicon_svg` | html/head/favicon.html | Favicons |
-| `stylesheets` | head.html | External stylesheets |
+| `stylesheets` | html/head/links.html | External stylesheets |
 | `css` | html/head/style.html | Additional stylesheet |
 | `logo` | [404-content.html](structural/#404) | Error image |
 | `errorimg` | [404-content.html](structural/#404) | Enable the error image |

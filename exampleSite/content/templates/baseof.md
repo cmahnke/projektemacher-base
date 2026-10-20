@@ -6,7 +6,7 @@ metaPage: true
 
 # Base template
 
-The base template `_default/baseof.html` defines the common page skeleton: `<head>` (via the `head.html` partial), the site header with top navigation, the `<main>` element and the footer.
+The base template `_default/baseof.html` defines the common page skeleton: `<head>` (via the `html/head/meta.html`, `links.html`, `style.html` and `script.html` partials), the site header with top navigation, the `<main>` element and the footer.
 
 ## Blocks
 
@@ -14,7 +14,7 @@ Custom templates override the following blocks:
 
 | Block | Purpose |
 |---|---|
-| `title` | `<title>` content, defaults to nothing (the `head.html` partial renders a fallback) |
+| `title` | `<title>` content, defaults to the page title (plus the `slogan` on the home page) — the `html/head/title.html` partial renders it |
 | `body` | Attributes and content at the start of `<body>` |
 | `main` | Content before the `content` block inside `<main>` |
 | `content` | The actual page content |
