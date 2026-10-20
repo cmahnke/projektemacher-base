@@ -2,8 +2,8 @@
 {{- $popupContent := partial "geojson/popupContent.html" . | jsonify -}}
 
 {{- if in . "Scratch" -}}
-    {{- if $.Scatch.Get "popupContent" -}}
-        {{- $popupContent = partial (printf "geojson/popupContent-%s.html" $.Scatch.Get "popupContent") . | jsonify -}}
+    {{- if $.Scratch.Get "popupContent" -}}
+        {{- $popupContent = partial (printf "geojson/popupContent-%s.html" $.Scratch.Get "popupContent") . | jsonify -}}
     {{- end -}}
 {{- end -}}
 

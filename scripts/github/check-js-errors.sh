@@ -19,6 +19,6 @@ THEME_PATH=$($REALPATH --relative-to="$(cd $CTX_PATH/../../../..; echo $PWD)" $C
 PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=true node $THEME_PATH/scripts/check-js-browser-errors.mjs -f "$@"
 ERR=$?
 if [ $ERR -ne 0 ] ; then
-    echo "ERROR! Page contains loading (124) or JS (123) errors: $ERR"
+    echo "ERROR! Page contains loading (124) or JS (123) errors or missing IIIF assets (127): $ERR"
     exit $ERR
 fi

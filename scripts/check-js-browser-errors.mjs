@@ -58,6 +58,11 @@ const argv = yargs(hideBin(process.argv))
     description: 'Log if the internal webserver could fulfill a request',
     type: 'boolean'
   })
+  .option('i', {
+    alias: 'iiif',
+    description: 'Enable IIIF awareness: manifest/info/collection JSON URLs are checked for referenced assets instead of being opened in the browser',
+    type: 'boolean'
+  })
   .help()
   .alias('help', 'h')
   .parse();
@@ -152,6 +157,138 @@ if (baseURL === '' || !baseURL) {
 // it contains a path, map them to the local webserver as well
 const baseOrigin = new URL(baseURL).origin;
 console.log('Base URL is %s', baseURL);
+
+/* IIIF reference checking */
+const iiifFileSuffixes = ['manifest.json', 'info.json', 'collection.json'];
+const iiifFailures = [];
+const iiifCheckedRefs = new Set();
+let iiifFilesChecked = 0;
+let iiifUrlsChecked = 0;
+const iiifAssetExtensions = /\.(jpg|jpeg|png|webp|gif|avif|tif|tiff|jp2|pdf|mp3|mp4|webm)$/i;
+const iiifImageRequestPattern = /\/full\/[^/]+\/[^/]+\/[^/]+\.(jpg|jpeg|png|webp|gif|avif|tif|tiff|jp2)$/i;
+const localOrigin = new URL(remotePrefix).origin;
+
+function mapToLocal(url) {
+    if (url.startsWith(baseURL)) {
+        return remotePrefix + url.slice(baseURL.length);
+    }
+    if (url.startsWith(baseOrigin)) {
+        return remotePrefix.replace(/\/$/, '') + url.slice(baseOrigin.length);
+    }
+    if (url.startsWith('https://localhost:3000')) {
+        return url.replace('https://localhost:3000', 'http://localhost:3000');
+    }
+    if (url.startsWith('/')) {
+        return remotePrefix.replace(/\/$/, '') + url;
+    }
+    return url;
+}
+
+function isAssetRef(pathname) {
+    const p = decodeURIComponent(pathname).toLowerCase();
+    return iiifAssetExtensions.test(p) || iiifImageRequestPattern.test(p) || p.endsWith('info.json');
+}
+
+function isIiifJson(json, kind) {
+    if (json === null || typeof json !== 'object') return false;
+    const rawContext = json['@context'];
+    const context = String(Array.isArray(rawContext) ? rawContext.join(' ') : rawContext || '');
+    const type = String(json['type'] || json['@type'] || '');
+    if (kind === 'info.json') {
+        return /iiif\.io\/api\/image/.test(context) || /iiif\.io\/api\/image/.test(String(json.protocol || ''));
+    }
+    return /\b(Manifest|Collection)\b/.test(type) || /iiif\.io\/api\/presentation/.test(context);
+}
+
+const iiifAssetKeys = new Set(['thumbnail', 'rendering', 'logo', 'seeAlso', 'body']);
+function extractAssetRefs(node, collect = false, out = []) {
+    if (Array.isArray(node)) {
+        for (const item of node) extractAssetRefs(item, collect, out);
+        return out;
+    }
+    if (node !== null && typeof node === 'object') {
+        for (const [key, value] of Object.entries(node)) {
+            const next = collect || iiifAssetKeys.has(key);
+            if (next && (key === 'id' || key === '@id') && typeof value === 'string') {
+                out.push(value);
+            } else {
+                extractAssetRefs(value, next, out);
+            }
+        }
+        return out;
+    }
+    if (collect && typeof node === 'string' && (node.startsWith('http') || node.startsWith('/'))) {
+        out.push(node);
+    }
+    return out;
+}
+
+async function checkIiifRef(ref, source) {
+    if (typeof ref !== 'string' || ref === '') return;
+    let mapped;
+    try {
+        mapped = mapToLocal(ref);
+    } catch {
+        return;
+    }
+    let parsed;
+    try {
+        parsed = new URL(mapped);
+    } catch {
+        return;
+    }
+    if (parsed.origin !== localOrigin) {
+        console.log('[IIIF] Skipping external/non-local reference %s', ref);
+        return;
+    }
+    if (!isAssetRef(parsed.pathname)) {
+        console.log('[IIIF] Skipping non-asset reference %s', ref);
+        return;
+    }
+    if (iiifCheckedRefs.has(mapped)) return;
+    iiifCheckedRefs.add(mapped);
+    iiifUrlsChecked++;
+    try {
+        const res = await fetch(mapped);
+        if (res.status >= 400) {
+            iiifFailures.push({ source: source, url: mapped, status: res.status });
+            console.log('[IIIF] Missing asset %s (HTTP %d, referenced by %s)', mapped, res.status, source);
+        }
+    } catch (error) {
+        iiifFailures.push({ source: source, url: mapped, status: 0 });
+        console.log('[IIIF] Request failed for %s: %s', mapped, error.message);
+    }
+}
+
+async function checkIiifInfoJson(json, source) {
+    const serviceId = json['id'] || json['@id'];
+    if (typeof serviceId !== 'string' || serviceId === '') {
+        console.log('[IIIF] info.json without id referenced by %s', source);
+        return;
+    }
+    const rawContext = json['@context'];
+    const context = String(Array.isArray(rawContext) ? rawContext.join(' ') : rawContext || '');
+    const isV3 = context.includes('/image/3') || json.protocol === 'http://iiif.io/api/image/3';
+    const sizeWord = isV3 ? 'max' : 'full';
+    await checkIiifRef(serviceId + '/full/' + sizeWord + '/0/default.jpg', source);
+    for (const size of json.sizes || []) {
+        if (size && typeof size.width === 'number' && typeof size.height === 'number') {
+            await checkIiifRef(serviceId + '/full/' + size.width + ',' + size.height + '/0/default.jpg', source);
+        }
+    }
+    for (const tile of json.tiles || []) {
+        const scaleFactors = Array.isArray(tile.scaleFactors) ? tile.scaleFactors : [];
+        const tileWidth = tile.width || 512;
+        const tileHeight = tile.height || tileWidth;
+        for (const factor of scaleFactors) {
+            if (typeof factor !== 'number') continue;
+            await checkIiifRef(
+                serviceId + '/0,0,' + (tileWidth * factor) + ',' + (tileHeight * factor) + '/' + tileWidth + ',' + tileHeight + '/0/default.jpg',
+                source
+            );
+        }
+    }
+}
 
 // Use native Node.js temp directory instead of mktemp
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-'));
@@ -415,6 +552,49 @@ console.log('Wrote preference file to %s', prefFile);
             process.exit(3);
         }
 
+        if (argv.iiif) {
+            const lower = localFile.toLowerCase();
+            const kind = iiifFileSuffixes.find(suffix => lower.endsWith(suffix));
+            if (kind) {
+                const source = testItem.url || testItem;
+                const localUrl = remotePrefix + localFile;
+                let status = 0;
+                let json = null;
+                try {
+                    const res = await fetch(localUrl);
+                    status = res.status;
+                    if (status < 400) {
+                        try {
+                            json = JSON.parse(await res.text());
+                        } catch {
+                            json = null;
+                        }
+                    }
+                } catch (error) {
+                    console.log('[IIIF] Request failed for %s: %s', localUrl, error.message);
+                }
+                if (status >= 400) {
+                    iiifFailures.push({ source: source, url: localUrl, status: status });
+                    console.log('[IIIF] Failed to read %s (HTTP %d)', localUrl, status);
+                    continue;
+                }
+                if (json !== null && isIiifJson(json, kind)) {
+                    iiifFilesChecked++;
+                    iiifUrlsChecked++;
+                    if (kind === 'info.json') {
+                        await checkIiifInfoJson(json, source);
+                    } else {
+                        const refs = [...new Set(extractAssetRefs(json))];
+                        for (const ref of refs) {
+                            await checkIiifRef(ref, source);
+                        }
+                    }
+                    continue;
+                }
+                console.log('[IIIF] %s is not IIIF content, checking in browser as usual', source);
+            }
+        }
+
         var checkURL = baseURL + localFile;
         if (fragment !== undefined && fragment !== "") {
           checkURL = checkURL + '#' + fragment;
@@ -472,6 +652,17 @@ console.log('Wrote preference file to %s', prefFile);
 
         await new Promise(r => setTimeout(r, 6000));
         checkedUrls.push(testItem.url || testItem);
+    }
+
+    if (argv.iiif) {
+        console.log('IIIF check: %d files, %d URLs, %d failures', iiifFilesChecked, iiifUrlsChecked, iiifFailures.length);
+        for (const failure of iiifFailures) {
+            console.log('[IIIF] %s (HTTP %d) referenced by %s', failure.url, failure.status, failure.source);
+        }
+        if (iiifFailures.length > 0) {
+            await browser.close();
+            process.exit(127);
+        }
     }
 
     console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`);

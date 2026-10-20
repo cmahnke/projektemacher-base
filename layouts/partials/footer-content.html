@@ -18,7 +18,7 @@
     {{- if and hugo.Sites.Default.Params.footer.privacy (eq hugo.Sites.Default.Params.footer.privacy true) -}}
       {{ $privacyUrl := "/privacy" }}
       {{- if and hugo.Sites.Default.Params.footer.privacyUrl -}}
-        {{ $privacyUrl := hugo.Sites.Default.Params.footer.privacyUrl }}
+        {{ $privacyUrl = hugo.Sites.Default.Params.footer.privacyUrl }}
       {{- end -}}
       <p class="privacy"><a href="{{ $privacyUrl | safeHTML }}" title="{{ i18n "privacyPolicy" | safeHTML }}">{{ i18n "privacyPolicy" | safeHTML }}</a></p>
 	  {{- end -}}

@@ -51,7 +51,11 @@ Placeholder container above the header, empty by default — a site can override
 | `footer.privacy: true` | Adds a privacy policy link |
 | `footer.privacyUrl` | Alternative privacy URL (default `/privacy`) |
 
-The page Scratch key `footer` can hold HTML that is appended to the footer.
+`footer-content.html` is called with a `dict` of `page` (the current page) and `footer` — an HTML string that is appended after the copyright block. The theme itself passes an empty string; a site overriding `footer.html` supplies its own footer content:
+
+```
+{{- partial "footer-content.html" (dict "page" . "footer" $footerStr) -}}
+```
 
 ## `404.html` and `404-content.html` {#404}
 
