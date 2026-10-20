@@ -2,10 +2,18 @@
  * Shared skin foundation for sites built on the coder look
  * (https://projektemacher.org/ and sites derived from it).
  *
- * Provides the variable block, the base fonts and the burger menu
- * icon used by the coder navigation markup. Import it after
- * "normalize" (and any CSS resets) and before the coder chrome
- * styles ("coder/base" … "coder/footer").
+ * Provides the variable block and the burger menu icon used by the
+ * coder navigation markup. Import it after "normalize" (and any CSS
+ * resets) and before the coder chrome styles ("coder/base" …
+ * "coder/footer").
+ *
+ * The base fonts (@font-face via npm-fonts/lato and npm-fonts/lora)
+ * are NOT loaded here: this file may be loaded twice (once as a
+ * module via @use, once via @import) while fonts must be emitted
+ * exactly once — the entry stylesheets load them directly:
+ *
+ *   @use "npm-fonts/lato";
+ *   @use "npm-fonts/lora";
  *
  * The importing file must load the theme's color functions first:
  *
@@ -16,8 +24,6 @@
  */
 
 @use "functions/color" as *;
-@use "npm-fonts/lato";
-@use "npm-fonts/lora";
 
 /*
  * NOTE: these are deliberate global declarations (not a @use module):

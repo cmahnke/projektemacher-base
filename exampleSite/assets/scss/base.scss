@@ -15,27 +15,36 @@
 
 @use "functions/color" as *;
 
-@import "normalize";
-
-/* Shared skin foundation: variables, base fonts, burger icon */
-@import "coder/site-shared";
-
-/* Vendored coder chrome */
-@import "coder/base";
-@import "coder/content";
-@import "coder/navigation";
-@import "coder/pagination";
-@import "coder/footer";
+/*
+ * Partial @use migration: all module based partials are loaded via
+ * @use — the rules emit in the order given here, which matches the
+ * previous @import order (normalize first, then the coder chrome).
+ * coder/site-shared stays @import'ed: it is a deliberate global-leak
+ * module whose variables the adapter rules below use directly.
+ */
+@use "normalize";
+/* Base fonts — loaded exactly once here (not via site-shared, which
+   is still @import'ed below) */
+@use "npm-fonts/lato";
+@use "npm-fonts/lora";
+@use "coder/base";
+@use "coder/content";
+@use "coder/navigation";
+@use "coder/pagination";
+@use "coder/footer";
 
 /*
  * Shared site chrome used by the projektemacher sites: icon
  * replacements, fixed navigation, home/404 background, about/404
  * containers, list styles, flags, body watermark, footer, skip link.
  */
-@import "coder/site-chrome";
+@use "coder/site-chrome";
 
 /* Section table of contents sidebar (theme's partials/toc.html) */
-@import "section-toc";
+@use "section-toc";
+
+/* Shared skin foundation: variables, base fonts, burger icon */
+@import "coder/site-shared";
 
 /*
  * Adapter: the theme's baseof.html wraps the site header in

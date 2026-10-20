@@ -9,7 +9,13 @@
  * coder container (90rem), so it never reserves any width from the
  * content. On narrower screens it falls back to a plain block above
  * the article.
+ *
+ * Loads the site-shared variables module itself so it can be pulled in
+ * via @use (partial @use migration); when @import'ed, the module
+ * instance is variables-only and emits no CSS.
  */
+
+@use "coder/site-shared" as *;
 
 .section-toc {
     /* Fallback for viewports too narrow for the margin sidebar:
