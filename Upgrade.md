@@ -82,6 +82,12 @@ The same page set is the input for the accessibility checks (see
 "Add accessibility checks" below) — run those against the production
 site as well.
 
+> [!NOTE]
+> Complete — all known consumers now ship a `test-urls.json` (2026-10:
+> `flohmarktfunde`, `haesslicheplastiktiereundzeugs`,
+> `plastikwarenfabrik` and `kraehenbeisser` were the last ones without
+> it). Keep the lists current when adding JS functionality.
+
 # CSS pipeline: PostCSS deduplication added
 
 Production builds now run the concatenated stylesheet through PostCSS

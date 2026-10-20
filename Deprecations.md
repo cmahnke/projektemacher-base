@@ -32,7 +32,7 @@ Step-by-step instructions for past migrations live in the
 | **Yarn package manager** | retired — the theme's dependency scripts exit with an error on `DEPENDENCY_MANAGER=yarn`; consumers switch to `npm`/`pnpm` via the `DEPENDENCY_MANAGER` variable mechanism (CI, package.json scripts, READMEs, `yarn.lock` deletions) | done |
 | **svgo 3 → 4** | updated (`^4.1.0` theme + 14 consumers); the theme's `config/svgo.config.js` is the canonical config and mimics the v3 preset defaults (`removeViewBox`/`removeTitle` re-enabled explicitly — v4 disabled both); dependabot svgo ignores removed (theme, christianmahnke); **consolidated**: the 5 unused identical configs (flugzeugbesteck, kleiderbuegel, labs, never-built, plastikwarenfabrik) + christianmahnke's and backstein's semantically identical copies deleted, their scripts re-pointed at the theme's config; deliberately divergent local configs kept (blaufusstoelpel, briefsteller — extra `style` attr stripping; schatten, vintagereality — explicit plugin lists; wilmabraeuner — no preset); config-less svgo runs (kraehenbeisser, projektemacher, backstein's `svgo-background`) now get v4's defaults (viewBox/title **kept** — an improvement, nothing to mimic) | done |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` | medium |
-| Outdated Hugo constructs | see the table in [Upgrade.md](Upgrade.md) | medium |
+| Outdated Hugo constructs | fixed across theme + consumers (second pass 2026-10: `canonifyURLs`, `.Language.Locale`, Scratch → variables, labs' dead `Params.paginate` read) — see the table in [Upgrade.md](Upgrade.md) | done |
 | Hugo < 0.165 compatibility code | removable since Hugo 0.166 | low |
 | Third-party scripts loaded from CDNs | A-Frame via npm (`ts/aframe.ts`), Mastodon embed vendored (`assets/js/vendor/mastodon-embed.js`) | done |
 | Hugo v0.156 deprecations (`.Sites`, `site.Data`, `site.AllPages`, `site.BuildDrafts`) | **all fixed** across theme + consumers (`.BuildDrafts` semantics: draft menu entries always skipped; `check.html` checks `.Draft` only) — see the section below | done |
@@ -141,8 +141,7 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
   used `'Source Code Pro'` and `_site-shared` used `Lora` — the
   generated faces are named `'Source Code Pro Variable'` /
   `'Lora Variable'`, so those fonts never applied and silently fell
-  back. Remaining: `audioplayer.scss` (`encodecolor()` from
-  `functions/color`) and the three deliberate plain-CSS imports
+  back. Remaining: the three deliberate plain-CSS imports
   (`lucienne.css`, `tify`, `ol` — dart-sass warns on them, but
   inlining would change output semantics). Several consumers
   (`backsteinexpressionismus`, `christianmahnke`, `xn--h-zfa.xyz`,
@@ -164,7 +163,14 @@ These git-tracked files have no npm source and stay in `static/fonts/`:
     params (all known consumers), `readFile` → `os.ReadFile`
     (theme, labs.projektemacher.org, ric-unknownartist), `.Hugo.*` →
     `hugo.*` (labs.projektemacher.org, wilmabraeuner) — all modern
-    `hugo.IsServer` / `hugo.IsMultilingual` now, no legacy config keys
+    `hugo.IsServer` / `hugo.IsMultilingual` now, no legacy config keys.
+    *Second pass (2026-10)*: remaining `canonifyurls` → `canonifyURLs`
+    (15 consumers, the `blogs/*` mirrors and `wilmabraeuner-complete`
+    excluded), `.Language.LanguageCode` → `.Language.Locale`
+    (kraehenbeisser, projektemacher), `.Scratch` → plain variables
+    (blaufusstoelpel's pagination loop — only the documented
+    `iiifPrefix` extension point remains), labs'
+    `hugo.Sites.Default.Params.paginate` read → literal `3`
   - *deliberately not pursued*: nondeterministic element IDs —
     deterministic discriminators break more than they fix (decision
     recorded in Upgrade.md)

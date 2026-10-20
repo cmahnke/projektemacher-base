@@ -1,67 +1,67 @@
 .compare {
-  --default-handle-shadow: 0px 0px 5px rgb(0 0 0 / 1);
-  --divider-width: 4px;
-  --divider-shadow: 0px 0px 5px rgb(0 0 0 / 0.5);
-  --default-handle-width: clamp(40px, 10vw, 200px);
+    --default-handle-shadow: 0px 0px 5px rgb(0 0 0 / 1);
+    --divider-width: 4px;
+    --divider-shadow: 0px 0px 5px rgb(0 0 0 / 0.5);
+    --default-handle-width: clamp(40px, 10vw, 200px);
 
-  border-radius: .4rem;
+    border-radius: 0.4rem;
 
-  @media (min-width: 36em) {
-    margin: 1.2rem .4rem;
-  }
-
-  figure {
-    margin-block-start: unset;
-    margin-block-end: unset;
-    margin-inline-start: unset;
-    margin-inline-end: unset;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  .first figcaption,
-  .second figcaption {
-    background: #fff;
-    border: 1px solid #c0c0c0;
-    border-radius: .4rem;
-    color: #2e3452;
-    opacity: 0.8;
-    padding: .8rem;
-    position: absolute;
-    top: 92%;
-    transform: translateY(-50%);
-    line-height: 120%;
-
-    @media (max-width: 36em) {
-      top: 80%;
-      width: 47%;
-      border-radius: unset;
-      padding: .2rem;
-      font-size: .8rem;
+    @media (min-width: 36em) {
+        margin: 1.2rem 0.4rem;
     }
-  }
 
-  .first figcaption {
-    left: 3%;
-    text-align: left;
-
-    @media (max-width: 36em) {
-      left: 0;
+    figure {
+        margin-block-start: unset;
+        margin-block-end: unset;
+        margin-inline-start: unset;
+        margin-inline-end: unset;
     }
-  }
 
-  .second figcaption {
-    right: 3%;
-    text-align: right;
-
-    @media (max-width: 36em) {
-      right: 0;
+    &:focus {
+        outline: none;
     }
-  }
 
-  img {
-    width: 100%;
-  }
+    .first figcaption,
+    .second figcaption {
+        background: #fff;
+        border: 1px solid #c0c0c0;
+        border-radius: 0.4rem;
+        color: #2e3452;
+        opacity: 0.8;
+        padding: 0.8rem;
+        position: absolute;
+        top: 92%;
+        transform: translateY(-50%);
+        line-height: 120%;
+
+        @media (max-width: 36em) {
+            top: 80%;
+            width: 47%;
+            border-radius: unset;
+            padding: 0.2rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    .first figcaption {
+        left: 3%;
+        text-align: left;
+
+        @media (max-width: 36em) {
+            left: 0;
+        }
+    }
+
+    .second figcaption {
+        right: 3%;
+        text-align: right;
+
+        @media (max-width: 36em) {
+            right: 0;
+        }
+    }
+
+    img {
+        width: 100%;
+    }
 }
