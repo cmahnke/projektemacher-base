@@ -12,6 +12,9 @@ guide.
 |---|---|---|
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | removable if a site bumps to Hugo ≥ 0.166 (optional) — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
+| JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
+| Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | new template system layout since Hugo 0.146.0; the old structure keeps working (optional) — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
+| Custom site parameters outside `params` | top-level params work via the legacy merge only — move them under `[params]` / `[languages.<lang>.params]` (optional) — see ["Move custom site parameters into the `params` namespace"](#move-custom-site-parameters-into-the-params-namespace) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only — see ["Upgrading fonts to the npm (Fontsource) based system"](#upgrading-fonts-to-the-npm-fontsource-based-system) | keep (exceptions stay) |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
 
@@ -252,6 +255,152 @@ removed together with Mirador. The unreferenced `assets/js/` shims were
 deleted in the 2026-10 cleanup; consumer front matter references `ts/`
 paths everywhere.
 
+## Switch the JS bundles from IIFE to ESM
+
+Every JS bundle the theme emits is an esbuild IIFE: `js.Build` runs with
+Hugo's default `format: "iife"` and produces a self-contained classic
+script — no `import`/`export` statements — that `html/head/script.html`
+loads with `defer`, fingerprinting and SRI. The same pattern covers the
+main bundle and the page/shortcode bundles (`script.html`), the menu
+script (`menu.html`, `js/menu.js`) and the print script
+(`baseof.print.html`, `js/print.js`).
+
+There are two ways to switch to ES modules; both are optional — a site
+picks one (Path B subsumes Path A's module semantics, see Risks below).
+
+### Path A — opt in per bundle with `format: "esm"`
+
+`html/head/script.html` already supports it:
+
+```
+partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
+```
+
+With `format` set to `esm` the partial emits `<script type="module">`
+instead of the `defer` variant — modules are deferred implicitly, so the
+timing stays the same. One opts pass covers all bundles built within the
+call (main bundle, IIIF viewers, page scripts). Steps:
+
+1. Pass `"opts" (dict "format" "esm")` to the `script.html` call in the
+   site's `baseof.html` (or default the format in a site-side override
+   of the partial).
+2. Empty the `externals` list. The partial hardcodes `slice "domain"` —
+   under esm an external dependency is emitted as an `import` statement
+   and the bundle fails to load. Nothing imports `domain` today (checked
+   2026-10), it is a leftover; drop it when switching.
+3. Keep the concatenated bundles free of top-level `import`/`export`
+   statements (see risks below) — re-check after every theme raise.
+4. `menu.js` and `print.js` can be switched one at a time by adding
+   `"format" "esm"` to their `js.Build` options and changing their script
+   tags to `type="module"` (drop `defer`, it is redundant on modules).
+   Switch both branches of `baseof.print.html` (the development branch
+   emits the tag without `defer` today). The `"target" "es2018"` of
+   `print.js` is unrelated to the output format and can stay.
+
+### Path B — switch the bundle pipeline to `js.Batch`
+
+Hugo's `js.Batch` (available since Hugo 0.140.0, well above the theme's
+0.165 floor) is the real code splitting path: `format` must be `esm`,
+all entry points of a batch are bundled in one esbuild run, and shared
+dependencies are extracted into shared chunks. Compared to Path A it
+removes the concatenation step completely and deduplicates code that
+today is inlined into every bundle (OpenLayers, tify, …). It fits the
+theme's architecture: shortcodes can register scripts into batch groups
+while their templates run concurrently, and `baseof.html` renders the
+group's outputs in a `templates.Defer` block as `<script type="module">`
+tags. The current inputs (shortcode metadata `js` entries, page `js:`
+front matter, the `iiif-js` partial) map onto that flow.
+
+Restructuring `script.html`/`baseof.html` onto a batch is the bigger
+template surgery — sites with their own copy of `script.html` need the
+same rework. Consider it when the bundled code grows (maps and viewers
+on many pages); for a minimal footprint stay with Path A.
+
+Two extensions become possible with a batch; both need their own design
+work and are not part of this migration:
+
+- the Runner/Instance/params mechanism could replace the inline script
+  blocks that call `window.initMap(...)` and friends with per-instance
+  params (JSON, `@params` namespace) — it would reduce the reliance on
+  the `window.*` globals contract described below;
+- split output can contain CSS chunks — a possible future home for the
+  three deliberate plain-CSS imports (`lucienne.css`, `tify`, `ol`, see
+  the SCSS migration section below).
+
+### Risks
+
+Common to both paths (module semantics):
+
+- **Implicit strict mode** — module code always runs in strict mode. The
+  bundled TypeScript already compiles to strict-friendly output, but any
+  legacy hand-written or vendor JavaScript relying on sloppy mode breaks.
+- **`this` at module top level is `undefined`** (not `window`) — a bare
+  `this` at the top of an entry file changes meaning.
+- **No implicit globals** — module top-level declarations do not leak
+  into `window`. Every cross-bundle API must keep using the explicit
+  `window.x = …` assignments; the theme's sources already do this
+  (`window.initMap`, `window.addTimeline`, …), consumer JS must follow
+  the same rule.
+- **`file://` preview breaks** — `<script type="module">` fails when the
+  built output is opened from disk (CORS, null origin). `hugo server`
+  and HTTP deployments (GitHub Pages) are unaffected.
+- **Cross-origin asset hosting** — module scripts are always CORS-mode
+  requests; serving assets from another domain (CDN) needs the
+  `crossorigin` attribute plus CORS headers on the server. The module
+  branch of `script.html` currently omits `crossorigin` (the print base
+  template already has it); classic `defer` + SRI works without it.
+- **Browser floor** — `type="module"` needs 2017+ browsers (IE11 not at
+  all); no `nomodule` fallback is shipped. Consistent with the
+  "pre-2024 browsers" housekeeping item above.
+
+Path A specific:
+
+- **Concatenation is the fragile spot.** `script.html` concatenates
+  independently built bundles (`resources.Concat`: main + IIIF viewers +
+  page scripts). That is safe only while every part is self-contained:
+  the moment one part emits top-level `import`/`export` statements,
+  imports hoist above the concatenated code (execution order changes)
+  and relative specifiers resolve against the concatenated file's URL,
+  not the original bundle's. Guard: keep `externals` empty and no
+  re-exports.
+
+Path B specific:
+
+- **Import ordering across chunks** — a known esbuild splitting issue
+  (documented under `js.Batch` "Known Issues"): the execution order of
+  imports between split chunks is undefined or fixed to one order.
+  Hugo's workaround is an explicit import-order entry point registered
+  early in the batch. Keep entry points ordered and verify.
+- **Fingerprinting + SRI needs verification** — the `js.Batch` examples
+  render their output without fingerprint. Fingerprinting a resource
+  renames the file but does not rewrite the import URLs *inside* the
+  other chunks, so per-chunk fingerprinting may break inter-chunk
+  imports. Test before adopting: build a batch, fingerprint every
+  output, check that all chunks load. If it does not work, batches live
+  without SRI until Hugo grows support — decide consciously (the theme
+  fingerprints everything else today).
+- **Caching structure changes** — per-page entry files multiply while
+  shared chunks become stable across pages; purge rules for CDNs or
+  service workers that assumed one `js/*.js` blob need review.
+
+### Verification (both paths)
+
+- `hugo` build green; run the runtime browser check
+  (`./scripts/github/check-js-errors-example.sh`, or the site's own
+  `scripts/github/check-js-errors.sh`) — module load failures and syntax
+  errors surface as console errors, same as for classic scripts.
+- Check the dev server output (`hugo server`, unminified and source
+  mapped) for stray statements in the built bundles:
+
+  ```bash
+  grep -nE '^(import|export)[ ({]' docs/js/*.js
+  ```
+
+  On minified production files the same grep is best effort (statements
+  may not start a line); the browser check above is the real gate.
+- Visual smoke check of the affected pages (the same bundle serves all
+  of them — one page per shortcode is enough).
+
 ## Add accessibility checks
 
 The theme ships no automated accessibility *gate* in CI, but a
@@ -361,6 +510,198 @@ partial — `layouts/partials/iiif/3/structures.html`,
 guarantees Hugo ≥ 0.166 in its own builds, the natural multi-`return` code
 can be restored; sites on 0.165.x keep the workarounds — the theme keeps
 shipping them while 0.165 stays the floor.
+
+## Migrate to the new Hugo template system (v0.146.0)
+
+Hugo re-implemented its template handling in v0.146.0 and changed the
+layouts structure: `layouts/_default/` is gone (its files move up to the
+`layouts/` root), `partials/` is renamed to `_partials/`, `shortcodes/`
+to `_shortcodes/`, `index.<format>` home templates become `home.<format>`,
+the `_internal/` template concept is removed and the lookup order is
+unified — see
+[gohugo.io/templates/new-templatesystem-overview](https://gohugo.io/templates/new-templatesystem-overview/).
+Hugo keeps resolving the old structure by mapping old to new, so nothing
+is required: any Hugo release the theme supports (≥ 0.165.0) already
+ships the mapping, and this theme still builds from the old structure
+today. Only `baseof.print.html` already uses new-style naming (the
+identifier sits after `baseof.`).
+
+### Mixing old and new layouts across site and theme
+
+A site adopting the new layout keeps working with a theme that still
+ships the old one — and the other way round. The old-to-new mapping is
+applied per template candidate in the unified lookup that spans all
+file system layers (project, theme module), so the two components
+migrate independently (the same pattern the community used on Hugo
+0.146+: themes and sites converted one side at a time). The mapping is
+documented as best-effort — "try it against your site" is part of the
+official advice — and three changed behaviours deserve an explicit test
+in mixed setups:
+
+- **`{{ block }}`/`{{ define }}` semantics changed.** Redefining blocks
+  in per-page-path or per-type base templates that are themselves
+  redefined produced blank output in a number of reported cases after
+  0.146.0 (an undocumented inheritance capability was dropped). Sites
+  that copy `baseof.html` and redefine blocks per section must test
+  before and after.
+- **Custom layouts with output formats and cascaded `type:` broke** in
+  edge cases (hugo issue #13667: templates like
+  `section/list.<format>.xml` no longer found under some `type:`
+  cascades). This theme's output format templates are fixed-name; the
+  build comparison below covers the spot.
+- **`taxonomy.html` no longer covers the term kind** — list-shaped
+  templates now resolve per kind (`taxonomy.html` matches taxonomy
+  pages only, `term.html` term pages). The theme covers all three list
+  kinds with `list.html` at `_default/`, which keeps working; sites
+  with their own `taxonomy.html`/`term.html` copies must check their
+  term pages render.
+
+### Migrating the theme's layouts
+
+Inventory for this theme, when the switch happens (theme side and
+consumer copies apply the same moves):
+
+* `layouts/_default/*` → up to `layouts/`: `baseof.html`,
+  `baseof.print.html` (names unchanged), `list.html`, `single.html`,
+  `search.html` and `html-body.html` (custom layout identifiers),
+  `sitemap.xml`, the render hooks (`_default/_markup/` → `_markup/`,
+  the old location keeps working), and the output format templates —
+  `home.iiif-collection.json`, `term.iiif-collection.json`,
+  `section.iiif-manifest.json`, `single.iiif-manifest.json`,
+  `single.codemeta.json`, `single.linkedart.json`, `single.qrcode.json`,
+  `section.qrcode.json`, `section.geojson`, `post-list.json`,
+  `tag-list.json`, `wikidata-list.json`, `linked-art-collection.json`,
+  `schema-org.json` — which keep their names and just move up.
+* `index.rss.xml` → `home.rss.xml` (the only `index.`-named template —
+  home templates are `home.` in the new system).
+* `layouts/partials/` → `layouts/_partials/`, `layouts/shortcodes/` →
+  `layouts/_shortcodes/`.
+* `layouts/redirect/` and the already-root-level `404.html`,
+  `robots.txt` stay where they are — non-underscore directories are
+  page paths in both eras, and the special template types live at the
+  root.
+* `layouts/redirect/single.html` calls *and* redefines
+  `{{ template "_internal/alias.html" … }}` on purpose (see the
+  exceptions section below). The call keeps working in compatibility
+  mode (`_internal` removal is deferred to a future release) — when
+  migrating, verify the new-system form (`partial "alias.html"`)
+  resolves to Hugo's embedded template or the local redefine before
+  switching.
+
+### Risks
+
+* **The mapping is best-effort, not a guarantee** — Hugo's own advice
+  is to test; the build comparison below is the theme's translation of
+  that advice.
+* **Block redefinition breakage** (see above) — same check for the
+  theme's own `baseof.html` consumers.
+* **`_internal` templates are deprecated** — `redirect/single.html` is
+  the theme's only user; pin the replacement behaviour before Hugo
+  removes them.
+* **Partials called with a `partials/` prefix** are no longer resolved
+  (previously `partial "partials/foo.html"` and `partial "foo.html"`
+  were equivalent). The theme calls partials without the prefix
+  (verified 2026-10); consumer copies often don't — results in a
+  "no such template" error, so this one fails loudly.
+
+### Verification
+
+1. Build the current (old-layout) implementation and keep the output:
+   `hugo --destination /tmp/layouts-old`.
+2. Apply the moves (git `mv`, no content changes).
+3. Rebuild: `hugo --destination /tmp/layouts-new && diff -r
+   /tmp/layouts-old /tmp/layouts-new` — acceptable differences: build
+   timestamps (they are embedded in the HTML), sitemap, and RSS file
+   paths only after intentional renames. Anything else means the
+   lookup mapping changed behaviour — fix before committing.
+4. Run the runtime browser check
+   (`./scripts/github/check-js-errors-example.sh`) and spot check the
+   non-HTML output formats (qrcode/codemeta/iiif-collection JSON, RSS,
+   sitemap, redirect pages).
+
+## Move custom site parameters into the `params` namespace
+
+The Hugo documentation
+([gohugo.io/configuration/params](https://gohugo.io/configuration/params/))
+puts custom parameters under the `params` key — and for multilingual
+sites under a `params` key per language (`[languages.<lang>.params]`).
+Custom keys at the configuration root, or directly under
+`[languages.<lang>]` without a `params` sub-key, only work through
+Hugo's legacy backward-compatibility merge into `site.Params` — that
+path is discouraged, and this guide proposes moving such keys into the
+namespace proper. Grouped settings follow the same rule
+(`[params.<group>]`, e.g. `[params.iiif]`, `[params.css]`), and the
+docs advise theme developers to namespace their module-specific keys
+at all.
+
+The theme side is already clean (verified 2026-10):
+
+- the theme ships no site configuration of its own — templates read
+  everything via `site.Params.…`;
+- the exampleSite config carries only standard Hugo keys at the root,
+  its `[languages]` blocks hold only `locale`/`label`/`weight`/
+  `contentDir`, and all custom settings live under `[params]` /
+  `[params.author]`;
+- the theme's documentation teaches the right locations
+  (`exampleSite/content/config/params/index.md`: everything under
+  `[params]` or `[params.<group>]`).
+
+What consumer sites do (optional):
+
+1. Move bare custom keys from the configuration root into `[params]`.
+2. Move bare custom keys from `[languages.<lang>]` into
+   `[languages.<lang>.params]` — recognized per-language keys stay put
+   (the list is the Hugo languages configuration docs); only custom
+   ones move.
+3. Find the candidates from the site root:
+
+   ```bash
+   # 1. top-level assignments — compare against Hugo's key list; keys
+   #    for theme settings belong into [params]
+   grep -nE '^[a-zA-Z_]+\s*=' config*/ hugo.toml config.toml 2>/dev/null
+
+   # 2. the [languages] section — recognized keys (locale, label,
+   #    direction, weight, contentDir, title, timeZone, disabled,
+   #    baseURL, …) stay, custom ones move into
+   #    [languages.<lang>.params]; review the block manually
+   grep -nE '^\[languages' config*/ hugo.toml config.toml 2>/dev/null
+   ```
+
+4. Verify with a build comparison — both configurations keep working
+   today, so a correct move is invisible: the output must be identical
+   apart from build timestamps. Watch for duplicates: a key defined at
+   the root *and* under `[params]` may change which value wins after
+   the move — the same "unexpected override" class of danger as the
+   duplicated i18n keys above.
+
+### Scripts that read posts must look at both places
+
+The same old-new duality exists inside content and for the scripts
+that consume it. Hugo resolves page parameters from two front matter
+locations — the bare top-level key and the front matter `params` block
+— and site configuration from the bare root key and `[params]`. While
+a site migrates (and for content that will never be updated again),
+any script reading posts must look at both places.
+
+The repository's tooling shows the two possible policies:
+
+- `scripts/PyHugo` (`content.py`, `getParam`): root key first, then
+  `metadata.params[key]` — and an error when the key exists in both
+  places ("Key '…' was found in both root and 'params'"). The hard
+  error makes silent shadowing impossible; reconcile the content
+  before migrating.
+- `scripts/preview.py` (`getMetadataParam`): prefers the `params`
+  section and falls back to the root key — the lenient variant;
+  workable, but decide the precedence explicitly and note it in the
+  script's docstring, never leave both paths active with different
+  results.
+
+`preview.py`, `post-calendar.py` and `pdf.py` are built on PyHugo, so
+sites running the repository's scripts unchanged need no update. Sites
+with their own content readers (calendars, previews, wikidata
+enrichment) that read bare front matter keys only take one of the two
+policies above, and collapse back to a single lookup once the content
+is fully migrated.
 
 ## Deduplicate shortcodes and templates against the theme
 
@@ -834,6 +1175,15 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 | `paginate = …` site config key | `pagination.pagerSize = …` (the `paginate` key was deprecated in Hugo 0.128.0) |
 | `Pager.PageSize` method | `Pager.PagerSize` (renamed in Hugo 0.128.0) |
 | `.Language.LanguageCode` method | `.Language.Locale` (deprecated in Hugo 0.158.0) |
+| `languageCode` / `languages.<lang>.languageCode` config keys | `locale` / `languages.<lang>.locale` (deprecated in Hugo 0.158.0) |
+| `languages.<lang>.languageName` config key | `languages.<lang>.label` (deprecated in Hugo 0.158.0) |
+| `languages.<lang>.languageDirection` config key | `languages.<lang>.direction` (deprecated in Hugo 0.158.0) |
+| `.Language.LanguageName` method | `.Language.Label` (deprecated in Hugo 0.158.0) |
+| `.Language.LanguageDirection` method | `.Language.Direction` (deprecated in Hugo 0.158.0) |
+| `.Language.Lang` method | `.Language.Name` (deprecated in Hugo 0.158.0) |
+| `.Site.LanguageCode` method | `.Site.Language.Locale` (deprecated in Hugo 0.158.0) |
+| top-level `imaging.quality` config key | per-format: `imaging.jpeg.quality`, `imaging.webp.quality`, `imaging.avif.quality` (deprecated in Hugo 0.163.0) |
+| top-level `imaging.compression` / `imaging.hint` config keys | format-specific under `[imaging.avif]` / `[imaging.webp]` (deprecated in Hugo 0.163.0) |
 | `$.Scratch.Set` / `.Get` / `.Delete` | Plain variables with reassignment (`$x = …` inside `with` blocks, partial return values) |
 | bare `substr` | `strings.Substr` — same function, namespaced form (`substr` is just its alias) |
 
@@ -897,8 +1247,21 @@ grep -rn 'substr' layouts/ | grep -v 'substring'
 # 6. internal alias template shadowing
 grep -rn '_internal/alias' layouts/
 
-# 7. .Language.LanguageCode → .Language.Locale (deprecated in 0.158.0)
-grep -rn 'LanguageCode' layouts/
+# 7. Language methods (deprecated in 0.158.0):
+#    .Language.LanguageCode → .Language.Locale
+#    .Language.LanguageName → .Language.Label
+#    .Language.LanguageDirection → .Language.Direction
+grep -rnE 'Language(Code|Name|Direction)' layouts/
+# the .Language.Lang method (→ .Language.Name): [^u] keeps LanguageX
+# methods out of the matches
+grep -rnE '\.Language\.Lang([^u]|$)' layouts/
+
+# 8. language config keys → locale / label / direction (deprecated in 0.158.0)
+grep -rnE '^\s*language(Code|Name|Direction)\s*=' config*/ hugo.toml config.toml 2>/dev/null
+
+# 9. top-level imaging quality/compression/hint → per-format sub-tables
+#    (deprecated in 0.163.0) — review matches under the [imaging] section
+grep -rnE '^\s*(quality|compression|hint)\s*=' config*/ hugo.toml config.toml 2>/dev/null
 ```
 
 ### Review the About page dependency list
