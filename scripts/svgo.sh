@@ -39,6 +39,13 @@ if [ -n "$SVGO" ] ; then
   exit 1
 fi
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+CONFIG_FILE=./config/svgo.config.js
+if [ ! -f "$CONFIG_FILE" ] ; then
+  CONFIG_FILE=$SCRIPT_DIR/../config/svgo.config.js
+fi
+
 IFS=$(echo -en "\n\b")
 for IMAGE in $IMAGES
 do
@@ -52,10 +59,10 @@ do
     echo "Processing '$IMAGE' to '$TMP_FILE'"
 
     if [ "$DEPENDENCY_MANAGER" = "npm" ] ; then
-      npx svgo --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
+      npx svgo --config "$CONFIG_FILE" -i "$IMAGE" -o "$TMP_FILE" --multipass
     else
       SVGO=`$DEPENDENCY_MANAGER bin svgo`
-      $SVGO --config ./config/svgo.config.js -i "$IMAGE" -o "$TMP_FILE" --multipass
+      $SVGO --config "$CONFIG_FILE" -i "$IMAGE" -o "$TMP_FILE" --multipass
     fi
 
 
