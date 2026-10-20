@@ -63,6 +63,7 @@
 {{- else -}}
 
 {{- $cffFile := "CITATION.cff" -}}
+{{- $explicitCff := isset .Params "cfffile" -}}
 {{- with .Params.cfffile -}}
   {{- $cffFile = . -}}
 {{- end -}}
@@ -84,10 +85,9 @@
   {{- end -}}
 {{- end -}}
 
-{{- with $cff -}}
+{{- if $cff -}}
   {{- $codemeta := dict -}}
-  {{- if $cff -}}
-    {{- $authors := slice -}} 
+  {{- $authors := slice -}} 
     {{- range $cff.authors -}} 
       {{- $givenName := index . "given-names" -}}
       {{- $familyName := index . "family-names" -}}
@@ -114,18 +114,17 @@
       "runtimePlatform" (index $cff "repository" | default "")
     -}} 
     {{- with $cff.keywords -}}
-      {{- $codemeta = $codemeta | merge $codemeta (dict "keywords" .) -}}
+      {{- $codemeta = merge $codemeta (dict "keywords" .) -}}
     {{- end -}} 
     {{- if index $cff "identifiers" -}} 
       {{- $ids := slice -}} 
       {{- range $cff.identifiers -}} 
         {{- $ids = $ids | append (dict "@type" "PropertyValue" "propertyID" .type "value" .value) -}} 
       {{- end -}} 
-      {{- $codemeta = merge $codemeta (dict "identifier" $ids) -}} 
-    {{- end -}} 
-  {{- end -}}
+      {{- $codemeta = merge $codemeta (dict "identifier" $ids) -}}
+    {{- end -}}
   {{- $codemeta | jsonify -}}
-{{- else -}}
+{{- else if $explicitCff -}}
   {{- errorf "[metadata/codemeta.json] %s not found at %s" $cffFile .RelPermalink -}}
 {{- end -}}
 {{- end -}}

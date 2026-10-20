@@ -1,3 +1,7 @@
 {{- $codeMeta := (partial "metadata/codemeta/codemeta.json" .)  | transform.Unmarshal (dict "format" "json")  -}}
-{{- $codeMeta = $codeMeta | merge (dict "@id" (.OutputFormats.Get "codemeta").Permalink) -}}
-{{- $codeMeta | jsonify -}}
+{{- if reflect.IsMap $codeMeta -}}
+  {{- with .OutputFormats.Get "codemeta" -}}
+    {{- $codeMeta = merge $codeMeta (dict "@id" .Permalink) -}}
+  {{- end -}}
+  {{- $codeMeta | jsonify -}}
+{{- end -}}
