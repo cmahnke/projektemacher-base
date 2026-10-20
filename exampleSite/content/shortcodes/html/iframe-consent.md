@@ -6,7 +6,7 @@ metaPage: true
 
 # html/iframe-consent
 
-GDPR consent wrapper for embedded iframes: renders an overlay ("external content" notice via i18n `externalContent`/`externalContentDescription`) with a toggle switch (i18n `accept`). Accepting stores a consent cookie (30 days, keyed by an md5 of the iframe markup) and loads the iframe — until then only the optional preview is shown.
+GDPR consent wrapper for embedded iframes: renders an overlay ("external content" notice via i18n `externalContent`/`externalContentDescription`) with a toggle switch (i18n `accept`). Accepting stores a consent cookie (30 days, keyed by an md5 of the iframe markup) and loads the iframe — until then only the optional preview is shown. With JavaScript enabled the checkbox fallback is replaced by a real `<button role="switch" aria-checked>` (via `ts/iframe-consent.ts`, loaded automatically); a stored consent is applied on reload without interaction.
 
 ## Parameters
 

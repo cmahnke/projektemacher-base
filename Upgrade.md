@@ -1,7 +1,7 @@
-> **⚠️ Urgent:** the theme still carries deprecations and compatibility
-> shims that are scheduled for removal — see
-> [Deprecations.md](Deprecations.md) for the full list. Work through the
-> items marked urgent there before the next release.
+> **Note:** the 2026-10 cleanup resolved every item marked urgent in
+> [Deprecations.md](Deprecations.md) — no 🔴 entries remain. What is left
+> there is optional or low priority (the deferred consumer `@import`
+> migrations and the Hugo < 0.166 single-`return` workarounds).
 
 # Run the JS runtime check against the example site
 
@@ -16,10 +16,12 @@ checker's internal webserver — the same mechanism the consumer-side
 The URL list lives in `exampleSite/test-urls.json` and covers:
 
 - one page per shortcode that ships JS — `audioplayer`,
-  `browser-banner`, `browser-hide-selector`, `code`, `gist`,
-  `html/iframe-consent`, `iiif/iiif`, `iiif/presentation`, `lucienne`,
-  `maps/osm`, `maps/osm-vector-tiles`, `mastodon`, `mermaid`, `pdf`,
-  `pdf-preview`, `tagcloud`
+  `browser-banner`, `browser-hide-selector`, `chart`, `code`,
+  `csv-chart`, `gallery`, `gist`, `html/iframe-consent`, `hdr-canvas`,
+  `hdr-canvas-check`, `hdr-check`, `iiif/iiif`, `iiif/presentation`,
+  `lucienne`, `maps/osm`, `maps/osm-vector-tiles`, `mastodon`,
+  `mermaid`, `pdf`, `pdf-preview` (`tagcloud` ships no JS — its demo
+  page is only checked for styling)
 - other pages with JS functionality: the search page (Pagefind, see
   below), the IIIF presentation examples, the i18n strings page with
   its client side table filter, the page specific assets post and the
@@ -36,7 +38,8 @@ root are unaffected.
 Pages whose JS requires WebGL or WebGPU are deliberately not listed —
 the checker runs with 3D APIs disabled (`--disable-gpu --disable-3d-apis`,
 see the `-g` flag for GPU emulation via SwiftShader), so
-`shortcodes/aframe-3d-model/` and `posts/3d-model/` would either fail or
+`shortcodes/aframe-3d-model/`, `shortcodes/model/`,
+`shortcodes/hdr-model/` and `posts/3d-model/` would either fail or
 test nothing meaningful. Keep WebGL/WebGPU based JS out of the URL list
 unless you run the check with `-g`.
 
@@ -53,7 +56,7 @@ runtime-checked. To find candidates:
 
 ```bash
 # Pages using shortcodes that ship JS (one page per shortcode is enough)
-grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code)' content
+grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code|chart|csv-chart|gallery|image-compare|hdr-)' content
 
 # Site defined shortcodes with required includes
 # (check the referenced metadata partial for a 'js' entry)
@@ -182,9 +185,11 @@ partials directly; `font-family:` usages use the mapped names (static
 families keep theirs, variable families use `'<Family> Variable'`).
 Exception fonts without an npm source (`DSBehrensschrift`,
 `FuturaRenner`) keep their handwritten `fonts/` partials. Consumers
-without generated files yet (kinderbuecher, wilmabraeuner,
-xn--h-zfa.xyz) must run `scripts/init/get-fonts.sh` in their theme
-copy after the next submodule raise. The family-name mapping table and
+without generated files yet (kinderbuecher, wilmabraeuner, never-built)
+must run `scripts/init/get-fonts.sh` in their theme copy — their pins
+already point at the npm-fonts-based theme, so the generated
+`assets/scss/npm-fonts/` partials are missing until they do. The
+family-name mapping table and
 the migration steps live in the git history of this file (pre-2026-10).
 
 # Hugo site parsers merged into PyHugo
@@ -208,10 +213,12 @@ Pick items as time allows; each one stands on its own.
 
 ## Yarn retired
 
-Yarn is no longer a supported package manager. The dependency scripts
-(`scripts/node/dependency-management.sh`, `scripts/init/package.json.sh`)
-**exit with an error** when `DEPENDENCY_MANAGER=yarn` is still set — switch
-to `DEPENDENCY_MANAGER=npm` (or `pnpm`, the default). Consumers should:
+Yarn is no longer a supported package manager.
+`scripts/node/dependency-management.sh` **exits with an error** when
+`DEPENDENCY_MANAGER=yarn` is still set; `scripts/init/package.json.sh`
+still tolerates yarn for legacy installs, but yarn is unsupported —
+switch to `DEPENDENCY_MANAGER=npm` (or `pnpm`, the dependency-management
+default). Consumers should:
 
 - delete `yarn.lock` and let `npm install` regenerate `package-lock.json`
 - replace `yarn install` / `yarn run X` in CI and package.json scripts with
@@ -228,8 +235,11 @@ paths everywhere.
 
 ## Add accessibility checks
 
-The theme ships no automated accessibility testing yet. A lightweight setup
-for consuming sites: run [axe-core](https://github.com/dequelabs/axe-core)
+The theme ships no automated accessibility *gate* in CI, but a
+ready-to-run reference implementation ships in this repository
+(`npm run check:a11y` / `npm run check:lighthouse` — see the end of this
+section). The underlying idea, for sites that want a lightweight setup of
+their own: run [axe-core](https://github.com/dequelabs/axe-core)
 through the already-present `puppeteer` devDependency against the built
 pages. Sketch:
 
@@ -286,18 +296,23 @@ script still excludes `meta-viewport` by default (opt back in with
 ## Remove downward compatibility (Hugo < 0.165.0)
 
 The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
-hard floor. Consuming sites should:
+hard floor. Consuming sites:
 
 1. Pin Hugo ≥ 0.165.0 in CI and deployment scripts (the theme's own
    workflows use `hugo-setup.yml` for this).
-2. Remove fallbacks and version guards kept for older Hugo releases.
+2. If they have bumped their own floor to Hugo ≥ 0.166, consider removing
+   the fallbacks and version guards kept for older Hugo releases — this is
+   optional; the bump is not required to build against the current theme
+   release.
 
 Known remaining compatibility code: three partials keep a single top-level
 `return` statement, because Hugo < 0.166 supports only one value-return per
 partial — `layouts/partials/iiif/3/structures.html`,
 `layouts/partials/functions/iiif/coerce-language-map.html` and
 `layouts/partials/functions/iiif/structure-span.html`. Once a site
-guarantees Hugo ≥ 0.166, the natural multi-`return` code can be restored.
+guarantees Hugo ≥ 0.166 in its own builds, the natural multi-`return` code
+can be restored; sites on 0.165.x keep the workarounds — the theme keeps
+shipping them while 0.165 stays the floor.
 
 ## Deduplicate shortcodes and templates against the theme
 
@@ -381,9 +396,8 @@ at a time):
 - **SCSS is linted non-recursively** — `lint-scss` runs
   `stylelint 'assets/scss/*'`, so the subdirectories (`scss/shortcodes/`,
   `scss/iiif/`, …) are never linted. Change the glob to
-  `'assets/scss/**/*.scss'` — expect new findings in files that were never
-  linted, the same effect the `lint-js` coverage change documented in the
-  TypeScript guide.
+   `'assets/scss/**/*.scss'` — expect new findings in files that were never
+   linted, the same effect the `lint-js` extension to `assets/ts` had.
 - **Markdown is not linted at all** — `markdownlint-cli` is already a
   devDependency, but no script uses it. Add `lint-md` over the content
   directory (with a `.markdownlint.json` config) to catch broken heading
@@ -435,9 +449,10 @@ Chrome, Firefox and Safari, and `npm run lint` passes.
 
 Dart Sass has deprecated `@import` (removal is planned for Dart Sass 3.0),
 and the Hugo `dartsass` transpiler surfaces the deprecation warnings during
-the build. The theme still uses `@import` throughout
-(`assets/scss/fonts/*.scss`, `assets/scss/lint_dummy.scss`, the component
-styles) — existing builds keep working, so the migration is optional, but
+the build. The theme itself is migrated (`@use` throughout; only the
+three deliberate plain-CSS imports remain, see
+[Deprecations.md](Deprecations.md)) — existing builds keep working, so
+migrating the remaining consumer entry points is optional, but
 new SCSS should use the module system (`@use`/`@forward`) from the start.
 
 `@use` changes evaluation semantics (modules are evaluated once, members are
@@ -812,8 +827,9 @@ grep -rn 'Scratch' layouts/
 # 4. bare substr → strings.Substr (exclude JS substring() calls; strings.Substr doesn't match)
 grep -rn 'substr' layouts/ | grep -v 'substring'
 
-# 5. nondeterministic IDs
-grep -rnE 'UnixNano|shuffle' layouts/
+# 5. nondeterministic IDs — deliberate exception, no action
+# (the theme keeps its current ID generation, see above)
+# grep -rnE 'UnixNano|shuffle' layouts/
 
 # 6. internal alias template shadowing
 grep -rn '_internal/alias' layouts/
@@ -849,7 +865,7 @@ imports and `package.json`) is:
 | pdfobject | PDF viewer and preview |
 | vis-timeline | Timeline |
 | Pagefind | Search |
-| A-Frame | 3D models (loaded from CDN) |
+| A-Frame | 3D models (`aframe-3d-model` shortcode, bundled via `ts/aframe.ts`) |
 | @projektemacher/lucienne | Generative art (`lucienne` shortcode) |
 | three.js | 3D models (`model` / `hdr-model` shortcodes) |
 

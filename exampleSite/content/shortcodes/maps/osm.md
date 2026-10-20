@@ -30,5 +30,5 @@ Loads the example GeoJSON from [`static/geojson/`](https://github.com/cmahnke/pr
 
 ## Notes
 
-- The map JS (`ts/maps/osm-map.ts`, exposing `window.initMap`) and the styles (`scss/map.scss`, `scss/ol.scss` with the OpenLayers base CSS) are loaded automatically via the shortcode metadata
+- The map JS (`ts/maps/osm-map.ts`, exposing `window.initMap`) and the styles (`scss/map.scss`, `scss/openlayers.scss` with the OpenLayers base CSS) are loaded automatically via the shortcode metadata
 - The partial has a TODO about wrapping the map in a consent overlay (see [html/iframe-consent](../html/iframe-consent/))

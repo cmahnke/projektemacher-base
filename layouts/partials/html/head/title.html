@@ -1,1 +1,1 @@
-<title>{{- block "title" . }}{{ end -}}</title>
+{{- with .Title }}<title>{{- block "title" $ }}{{ .Title }} {{ if $.IsHome }}- {{ site.Params.slogan | default "" | safeHTML }}{{ end }}{{ end -}}</title>{{ end -}}

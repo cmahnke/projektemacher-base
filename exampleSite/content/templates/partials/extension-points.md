@@ -24,9 +24,9 @@ Called by the [`html-body` template](../single-list/#html-body) if a page has ma
 
 Note: the theme checks the template with `templates.Exists "article.html"`, so the site needs both a marker template at `layouts/article.html` and the actual partial at `layouts/_partials/article.html` — see the example site.
 
-## `print/toc-level.html` (required for print TOCs)
+## `print/toc-level.html` (print TOCs)
 
-Called by the theme's `print/toc.html` partial to render a single level of the table of contents. Unlike the other extension points it is **not optional** — building a print edition with a TOC fails without it.
+Called by the theme's `print/toc.html` partial to render a single level of the table of contents. The theme ships an inline fallback implementation, so a print edition with a TOC builds without a site-provided partial — a site partial at `layouts/_partials/print/toc-level.html` overrides it.
 
 - Input: a dict with `entries` (list of pages), optional `level` and `maxLevels`
 

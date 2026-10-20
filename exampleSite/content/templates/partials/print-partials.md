@@ -29,7 +29,7 @@ Renders a blank page (e.g. as a spacer in a booklet). Requires `class` in the di
 
 ## `print/toc.html`
 
-Renders a table of contents. Optional dict parameter with `entries` (defaults to the current section's pages) and `maxLevels` (default `3`). Each level is rendered through the site provided [`print/toc-level.html` partial](../extension-points/#printtoc-levelhtml-required-for-print-tocs) — without it the build fails.
+Renders a table of contents. Optional dict parameter with `entries` (defaults to the current section's pages) and `maxLevels` (default `3`). Each level is rendered through the site provided [`print/toc-level.html` partial](../extension-points/#printtoc-levelhtml-print-tocs) — the theme ships an inline fallback for it, a site partial overrides it.
 
 ## `print/footnotes.html`
 
