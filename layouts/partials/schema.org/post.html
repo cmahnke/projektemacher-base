@@ -1,5 +1,5 @@
 {{- $lang := .Lang -}}
-{{- with site.Language.LanguageCode -}}
+{{- with site.Language.Locale -}}
   {{- $lang = . -}}
 {{- end -}}
 {{- $permalink := site.BaseURL -}}

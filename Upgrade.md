@@ -749,6 +749,7 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 | `.Site.Params.…`, `$.Site.Title`, … | Global `site.` function: `site.Params.…`, `site.Title`, … |
 | `paginate = …` site config key | `pagination.pagerSize = …` (the `paginate` key was deprecated in Hugo 0.128.0) |
 | `Pager.PageSize` method | `Pager.PagerSize` (renamed in Hugo 0.128.0) |
+| `.Language.LanguageCode` method | `.Language.Locale` (deprecated in Hugo 0.158.0) |
 | `$.Scratch.Set` / `.Get` / `.Delete` | Plain variables with reassignment (`$x = …` inside `with` blocks, partial return values) |
 | bare `substr` | `strings.Substr` — same function, namespaced form (`substr` is just its alias) |
 
@@ -810,6 +811,9 @@ grep -rnE 'UnixNano|shuffle' layouts/
 
 # 6. internal alias template shadowing
 grep -rn '_internal/alias' layouts/
+
+# 7. .Language.LanguageCode → .Language.Locale (deprecated in 0.158.0)
+grep -rn 'LanguageCode' layouts/
 ```
 
 ### Review the About page dependency list
