@@ -92,11 +92,12 @@
     "xslt3": "^2.7.0"
   },
   "scripts": {
-    "lint-scss": "stylelint 'assets/scss/*'",
+    "lint-scss": "stylelint 'assets/scss/**/*.scss'",
+    "lint-md": "markdownlint 'Upgrade.md' 'exampleSite/content/**/*.md'",
     "lint-js": "eslint 'assets/js' 'assets/ts'",
     "lint-toml": "eslint i18n",
     "typecheck": "tsc --noEmit",
-    "lint": "npm run lint-scss && npm run lint-js && npm run lint-toml",
+    "lint": "npm run lint-scss && npm run lint-js && npm run lint-toml && npm run lint-md",
     "check-generated-css": "stylelint --config ./themes/projektemacher-base/.stylelintrc-postbuild.yaml 'docs/css/*.css'",
     "postbuild-lint": "npm run check-generated-css",
     "check:a11y": "node scripts/check-a11y.mjs",

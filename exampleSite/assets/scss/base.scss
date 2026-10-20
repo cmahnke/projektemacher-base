@@ -5,8 +5,9 @@
  * stylesheet pipeline (loaded via partials/head.html and
  * partials/html/head/style.html). It recreates the look of
  * https://projektemacher.org/ by combining the vendored coder SCSS
- * (assets/scss/coder/) with adapters for the markup the theme's
- * templates emit.
+ * (assets/scss/coder/), the shared site chrome ("coder/site-chrome",
+ * the same partial the projektemacher sites import) and adapters for
+ * the markup the theme's templates emit.
  *
  * Note: this file is processed with resources.ExecuteAsTemplate — no
  * Go template syntax may appear here.
@@ -26,36 +27,31 @@
 @import "coder/pagination";
 @import "coder/footer";
 
+/*
+ * Shared site chrome used by the projektemacher sites: icon
+ * replacements, fixed navigation, home/404 background, about/404
+ * containers, list styles, flags, body watermark, footer, skip link.
+ */
+@import "coder/site-chrome";
+
 /* Section table of contents sidebar (theme's partials/toc.html) */
 @import "section-toc";
 
 /*
  * Adapter: the theme's baseof.html wraps the site header in
  * header#site-header and the site's header.html renders the coder
- * navigation inside it.
+ * navigation inside it. Position, colors and the mobile breakpoints
+ * come from the shared "coder/site-chrome" — only the structural
+ * adaptations live here.
  */
 nav.navigation {
-    position: fixed;
     top: 0;
     left: 0;
-    background: $nav-color;
-    z-index: 1001;
 
     /* The example site's menu has more entries than the nav's default
        width can hold — widen the nav container */
     .container {
         max-width: 110rem;
-
-        a,
-        span {
-            color: #FAFAFA;
-        }
-
-        a:active,
-        a:hover {
-            text-decoration: none;
-            color: #FAFAFA;
-        }
 
         /* The theme's menu.html emits a nested nav — dissolve it so the
            coder sibling selectors work unchanged */
@@ -85,27 +81,6 @@ nav.navigation {
 
         .navigation-item.current a {
             text-decoration: underline;
-        }
-
-        @media only screen and (max-width: 840px) {
-            padding-left: 1rem;
-            padding-right: 1rem;
-
-            .navigation-list {
-                padding-left: 1rem;
-            }
-        }
-
-        @media only screen and (max-width: 768px) {
-            .navigation-item {
-                .navigation-link {
-                    color: black;
-                }
-            }
-
-            .menu-button i {
-                color: $bg-color;
-            }
         }
     }
 }
@@ -285,57 +260,18 @@ main.main {
     }
 }
 
-/* Footer (site's footer.html + theme's footer-content.html markup) */
-footer.footer {
-    background: #293133;
-    font-family: $heading-font-family;
-    margin-top: 3em;
-
-    .footer-container {
-        max-width: 60%;
-        margin: auto;
-        text-align: center;
-        color: #fafafa;
-
-        p {
-            margin: unset;
-        }
-
-        a {
-            color: #fafafa;
-            text-decoration: none;
-        }
-
-        .footer-link-cm img {
-            vertical-align: bottom;
-        }
-
-        .footer-powered-by {
-            font-size: small;
-        }
-    }
+/* Footer extras on top of the shared footer in coder/site-chrome */
+footer .footer-link-cm img {
+    vertical-align: bottom;
 }
 
 /*
- * Skip link and visually-hidden utility for the theme's baseof.html
- * markup (WCAG 2.4.1). The theme's own SCSS library ships the same
- * rules in assets/scss/theme.scss for consumers using it - this site
- * uses the coder skin instead, so the adapter lives here.
+ * Visually-hidden utility for the theme's baseof.html markup
+ * (WCAG 2.4.1). The skip link comes from "coder/site-chrome". The
+ * theme's own SCSS library ships the same rules in
+ * assets/scss/theme.scss for consumers using it - this site uses the
+ * coder skin instead, so the utility lives here.
  */
-.skip-link {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    z-index: 10000;
-    padding: 0.5em 1em;
-    background: #212121;
-    color: #fafafa;
-
-    &:focus {
-        left: 0;
-    }
-}
-
 .visually-hidden {
     position: absolute;
     width: 1px;
