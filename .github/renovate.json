@@ -6,18 +6,13 @@
   "platform": "github",
   "autodiscover": true,
   "autodiscoverFilter": ["cmahnke/projektemacher-base"],
-  "packageRules": [
-    {
-      "matchCategories": ["js"],
-      "enabled": false
-    }
-  ],
+  "enabledManagers": ["custom.regex"],
   "customManagers": [
     {
       "customType": "regex",
       "description": "Automatically update HUGO_VERSION in GitHub Actions workflows",
       "managerFilePatterns": [
-        "^\\.github/workflows/.*\\.ya?ml$"
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
       ],
       "matchStrings": [
         "HUGO_VERSION:\\s*[\"']?(?<currentValue>[\\w.-]+)[\"']?"
