@@ -1,4 +1,27 @@
 /*
  * Site specific plain CSS additions, concatenated by the theme's
- * partials/html/head/style.html next to the compiled SCSS.
+ * partials/html/head/style.html next to the compiled SCSS. Loaded
+ * after it, so equal-specificity rules override the theme defaults
+ * without touching the theme itself.
  */
+
+/* Homepage: one solid color instead of the theme's white/dark split
+   (theme's coder/site-chrome sets a 50/50 linear gradient) */
+.content.home {
+    background: #fff;
+}
+
+/* Remove the space below the footer (theme's coder/footer sets a
+   1rem margin-bottom on .footer) */
+.footer {
+    margin-bottom: 0;
+}
+
+/* Search page: the theme's coder/site-chrome offsets the search page
+   content with '.content.search { margin-top: 10em }', but the theme's
+   search.html emits the content wrapper as '.post.search > .content',
+   so that rule never matches and the search box ends up behind the
+   fixed navigation — re-apply the offset here */
+main.main > .post.search > .content {
+    margin-top: 10em;
+}

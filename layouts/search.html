@@ -7,11 +7,15 @@
 {{- end }}
 {{ define "content" }}
   {{ $class := "search" }}
+  {{/* Pagefind index bundle location: page front matter wins over site
+     params ('searchBundlePath'), default '/index/' only works for
+     deployments at a domain root */}}
+  {{ $bundlePath := .Params.searchBundlePath | default site.Params.searchBundlePath | default "/index/" }}
   <div class="post {{ $class }}">
     <div class="content">
       <h1 class="post-title">{{ .Title }}</h1>
       <div class="post search">
-        <div class="search-box-container" role="search">
+        <div class="search-box-container" role="search" data-bundle-path="{{ $bundlePath }}">
           <input id="search-box" class="search-input" type="text" name="search-bar" value="" aria-label="{{ i18n "Search" }}">
           <button id="search-button" class="search-button" type="button" name="search-button" aria-label="{{ i18n "Search" }}"><i class="search-icon" aria-hidden="true"></i>{{ i18n "Search" }}</button>
         </div>

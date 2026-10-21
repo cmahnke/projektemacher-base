@@ -7,4 +7,4 @@
   # 'services/webmentions/README.md'). When set, both the webmention and
   # the pingback endpoint are advertised in the document head; explicit
   # 'advertisePingback = false' opts out of the pingback link.
-  endpoint = 'https://static.projektemacher.org/services/webmention.php'
+  endpoint = 'https://static.projektemacher.org/services/webmentions/webmention.php'

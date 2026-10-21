@@ -59,7 +59,12 @@ i18next.use(LanguageDetector).init({
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  const bundlePath = "/index/"
+  /* Path of the pagefind index bundle, relative or absolute. Set per page
+     ('searchBundlePath' front matter) or site wide (same key in site params)
+     via the emitted 'data-bundle-path' attribute — defaults to '/index/',
+     which only works for deployments at a domain root. */
+  const bundlePath =
+      document.querySelector(".search-box-container")?.getAttribute("data-bundle-path") ?? "/index/"
   const urlParams = new URLSearchParams(window.location.search);
   const query = urlParams.get('q');
   const searchInputSelector = "#search-box";
