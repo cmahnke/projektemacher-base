@@ -1,24 +1,9 @@
 {{- $src := .Get "src" -}}
-{{- $class := "" -}}
-{{ if isset .Params "class" }}
-  {{- $class = .Get "class" -}}
-{{- end -}}
+{{- $class := .Get "class" -}}
 
-{{- $urlinput := false -}}
-{{ if isset .Params "urlInput" }}
-  {{- $urlinput = .Get "urlinput" -}}
-{{- end -}}
-{{ if isset .Params "urlinput" }}
-  {{- $urlinput = .Get "urlinput" -}}
-{{- end -}}
-{{- $resize := true -}}
-{{ if isset .Params "resize" }}
-  {{- $resize = .Get "resize" -}}
-{{- end -}}
-{{- $download := true -}}
-{{ if isset .Params "download" }}
-  {{- $download = .Get "download" -}}
-{{- end -}}
+{{- $urlinput := .Get "urlinput" | default false -}}
+{{- $resize := .Get "resize" | default true -}}
+{{- $download := .Get "download" | default true -}}
 
 {{- $useLocation := true -}}
 {{ if isset .Params "useLocation" }}
@@ -29,15 +14,9 @@
   {{- $useLocation = .Get "uselocation" -}}
 {{- end -}}
 
-{{- $autoLoad := true -}}
-{{ if isset .Params "autoLoad" }}
-  {{- $autoLoad = .Get "autoLoad" -}}
-{{- end -}}
+{{- $autoLoad := .Get "autoLoad" | default true -}}
 
-{{- $shifts := false -}}
-{{ if isset .Params "shifts" }}
-  {{- $shifts = .Get "shifts" -}}
-{{- end -}}
+{{- $shifts := .Get "shifts" | default false -}}
 
 {{- $id := printf "_lucienne-%s" (md5 (printf "%s-%d" $src .Ordinal)) -}}
 

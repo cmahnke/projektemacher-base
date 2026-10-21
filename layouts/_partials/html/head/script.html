@@ -63,26 +63,17 @@ Example usage:
 {{- end -}}
 {{- $callFormat := "" -}}
 {{- if isset . "opts" -}}
-  {{- with .opts.format -}}{{- $callFormat = . -}}{{- end -}}
+  {{- $callFormat = .opts.format | default "" -}}
 {{- end -}}
-{{- $format := "iife" -}}
-{{- if ne $configFormat "" -}}{{- $format = $configFormat -}}{{- end -}}
-{{- if ne $callFormat "" -}}{{- $format = $callFormat -}}{{- end -}}
+{{- $format := $callFormat | default $configFormat | default "iife" -}}
 
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
-    {{- if isset . "ctx" -}}
-        {{- $context = .ctx -}}
-    {{- end -}}
-    {{- if isset . "context" -}}
-        {{- $context = .context -}}
-    {{- end -}}
+    {{- $context = .context | default .ctx | default $context -}}
     {{- if isset . "opts" -}}
         {{- $additionalOpts = .opts -}}
         {{- warnf "[partials/html/head/script.html] Using additional JS Opts: %#v" $additionalOpts -}}
     {{- end -}}
-    {{- if isset . "splitBundles" -}}
-        {{- $splitBundles = .splitBundles -}}
-    {{- end -}}
+    {{- $splitBundles = .splitBundles | default false -}}
     {{- if isset . "js" -}}
         {{- if reflect.IsSlice .js -}}
             {{- $js = .js -}}

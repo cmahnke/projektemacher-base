@@ -4,10 +4,10 @@
 
 {{- $section := "post" -}}
 {{- $type := "Blog" -}}
-{{- if isset "section" .Params -}}
+{{- if isset .Params "section" -}}
   {{- $section = .Params.section -}}
 {{- end -}}
-{{- if isset "type" .Params -}}
+{{- if isset .Params "type" -}}
   {{- $type = .Params.type -}}
 {{- end -}}
 

@@ -3,21 +3,12 @@
 {{- $page := .pageContext }}
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
-{{- $site := .site }}
-{{- if eq $site nil -}}
-    {{- $site = site -}}
-{{- end -}}
+{{- $site := .site | default site -}}
 {{- $isServer := hugo.IsServer -}}
 
 {{- $imgLocation := path.Join $contextPath .context.src -}}
-{{- $class := "" -}}
+{{- $class := .context.params.class | default "" -}}
 {{- $orientation := "" -}}
-{{/*
-{{- if (isset .Page.Params "iiifclass") -}}
-*/}}
-{{- if (isset .context.params "class") -}}
-    {{- $class = .context.params.class -}}
-{{- end -}}
 {{- $name := "" -}}
 
 {{- $previewImg := "" -}}
@@ -88,10 +79,7 @@
     */}}
     <div id="{{ $mapName }}" class="viewer {{ $class }} {{ $orientation | safeHTML }}" role="region"{{ with .heading }} aria-label="{{ . }}"{{ else }} aria-label="{{ i18n "preview" }}"{{ end }}></div>
 
-    {{ $rotation := 0 }}
-    {{ if .context.params.rotate }}
-        {{ $rotation = .context.params.rotate }}
-    {{ end }}
+    {{ $rotation := .context.params.rotate | default 0 }}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             {{ $mapName | safeJS }}_Div = document.getElementById("{{ $mapName }}");

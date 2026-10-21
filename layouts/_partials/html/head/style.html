@@ -9,10 +9,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- $context := "" -}}
-{{- if isset . "context" -}}
-  {{- $context = .context -}}
-{{- end -}}
+{{- $context := .context | default "" -}}
 {{- if isset . "base" -}}
   {{- $baseSCSS := .base  -}}
   {{- if reflect.IsMap $baseSCSS -}}

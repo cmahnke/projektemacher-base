@@ -3,51 +3,25 @@
 {{- if isset . "context" -}}
   {{- warnf "Context set for IIIF image partial, but not yet implemented!" -}}
 {{- end -}}
-
-{{/* Check defaults - optional parameters */}}
-{{- $baseURL := "" -}}
-{{- if isset . "baseURL" -}}
-  {{- $baseURL = .baseURL -}}
-{{- else -}}
-  {{- $baseURL := path.Dir $infoJson -}}
-{{- end -}}
-{{- $share := false -}}
-{{- if isset . "share" -}}
-  {{- $share = .share -}}
-{{- end -}}
-{{- $heading := "" -}}
-{{- if isset . "heading" -}}
-  {{- $heading = .heading -}}
-{{- end -}}
+{{- /* Check defaults - optional parameters */ -}}
+{{- /* Only absolute info.json URLs keep an empty baseURL (path.Dir would mangle them), relative paths fall back to their directory */ -}}
+{{- $baseURL := .baseURL | default (cond (strings.Contains $infoJson "://") "" (path.Dir $infoJson)) -}}
+{{- $share := .share | default false -}}
+{{- $heading := .heading | default "" -}}
 {{- $idSuffix := replaceRE "[^a-zA-Z0-9_]" "_" $infoJson -}}
 {{- $mapName := printf "iiif_image_%s" $idSuffix -}}
 {{- if isset . "mapName" -}}
   {{- $mapName = .mapName -}}
 {{- end -}}
-{{- $rotation := 0 -}}
-{{- if isset . "rotation" -}}
-  {{- $rotation = .rotation -}}
-{{- end -}}
+{{- $rotation := .rotation | default 0 -}}
 {{- $class := "iiif iiif-image" -}}
 {{- if isset . "class" -}}
   {{- $class = .class -}}
 {{- end -}}
-{{- $orientation := "" -}}
-{{- if isset . "orientation" -}}
-  {{- $orientation = .orientation -}}
-{{- end -}}
-{{- $downloadURL := "" -}}
-{{- if isset . "downloadURL" -}}
-  {{- $downloadURL = .downloadURL -}}
-{{- end -}}
-{{- $pageURL := "" -}}
-{{- if isset . "pageURL" -}}
-  {{- $pageURL = .pageURL -}}
-{{- end -}}
-{{- $hdr := false -}}
-{{- if isset . "hdr" -}}
-  {{- $hdr = .hdr -}}
-{{- end -}}
+{{- $orientation := .orientation | default "" -}}
+{{- $downloadURL := .downloadURL | default "" -}}
+{{- $pageURL := .pageURL | default "" -}}
+{{- $hdr := .hdr | default false -}}
 
 <div class="{{ $class | safeHTML }} {{ $orientation | safeHTML }}">
   <a name="{{ $mapName }}"></a>

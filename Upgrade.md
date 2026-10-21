@@ -13,7 +13,8 @@ guide.
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0) — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
-| Custom site parameters outside `params` | audit corrected: root `description` (kraehenbeisser, diapraesentation), language-level `description`/`decription` typo (christianmahnke), `lanbel`/`lable` typos (flugzeugbesteck, ric-unknownartist) — see ["Move custom site parameters into the `params` namespace"](#move-custom-site-parameters-into-the-params-namespace) | medium |
+| Custom site parameters outside `params` | audit corrected: root `description` (kraehenbeisser, diapraesentation), language-level `description`/`decription` typo (christianmahnke), `lanbel`/`lable` typos (flugzeugbesteck, ric-unknownartist) — see ["Move custom site configuration parameters into the `params` namespace"](#move-custom-site-configuration-parameters-into-the-params-namespace) | medium |
+| Front matter `params` usage | reference: reserved field names vs. the `params` key, and the theme's description fallback chain — see ["Custom front matter parameters go under the `params` key"](#custom-front-matter-parameters-go-under-the-params-key) | informational |
 | Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | consumers: 14 converted, 4 need no conversion, 7 pending (2026-10); old structure keeps working — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | Deprecated `.Site.Data` template access | **mandatory**: Hugo deprecated `.Site.Data` (0.156.0, "Use `hugo.Data` instead") and will remove it — the theme's templates now use `hugo.Data`, sites with own `site.Data`/`.Site.Data` code must follow — see ["Replace deprecated `.Site.Data` access with `hugo.Data`"](#replace-deprecated-sitedata-access-with-hugodata) | high |
@@ -710,7 +711,28 @@ a build.
    non-HTML output formats (qrcode/codemeta/iiif-collection JSON, RSS,
    sitemap, redirect pages).
 
-## Move custom site parameters into the `params` namespace
+## Custom front matter parameters go under the `params` key
+
+In front matter, the standard field names are **reserved** (`title`,
+`type`, `description`, `date`, …) and are read through their dedicated
+methods (`.Title`, `.Type`, `.Description`, …) — a custom field cannot
+use them. Custom page parameters must go under the front matter
+`params` key and are read via `.Params` — see [Hugo docs: Front matter
+→ Parameters](https://gohugo.io/content-management/front-matter/#parameters).
+
+The theme's meta description chain reflects this
+(`layouts/_partials/html/head/description.html`):
+`site.Params.description` → `.Params.description` → `.Description` (the
+reserved front matter field) → `.Summary`. A page's front matter root
+`description` is therefore the reserved field, not a custom parameter —
+moving it under `params.description` changes precedence (it then wins
+over `.Description`).
+
+## Move custom site configuration parameters into the `params` namespace
+
+Custom site parameters belong under `[params]` (or
+`[languages.<lang>.params]` for per-language values); unknown root keys
+are not standard configuration — see [Hugo docs: Configure params](https://gohugo.io/configuration/params/).
 
 **Open (2026-10)** — an earlier "complete" claim here was wrong: the
 first audit whitelisted `description` as a standard root key (it is not
@@ -763,6 +785,51 @@ deliberate customization (header/footer redesigns, section layouts,
 custom menus) — review opportunistically, the remaining `R` renames to
 the new template structure in briefsteller/schatten/xn--h-zfa.xyz/
 yaapb/kraehenbeisser are staged migrations in progress.
+
+## Shorten template fallbacks with the `default` function (optional)
+
+**Done in the theme (2026-10), optional for sites.** Template constructs of
+the shape "initialize with a fallback, then overwrite via `isset`/`with`"
+
+```go
+{{- $share := false -}}
+{{- if isset . "share" -}}
+  {{- $share = .share -}}
+{{- end -}}
+```
+
+were shortened to the equivalent one-liner:
+
+```go
+{{- $share := .share | default false -}}
+```
+
+Applied to the theme's `iiif/_iiif-image.html`, `iiif/iiif-image.html`,
+`html/head/script.html`, `html/head/style.html` and the `lucienne`
+shortcode. Sites that copied these templates can apply the same pattern,
+but mind the semantics: `default` treats `""`, `false` and `nil` as
+unset, while `isset` distinguishes them — only convert when the fallback
+itself is falsy (`""`, `false`, `0`), otherwise an explicitly empty
+value would silently switch to the fallback. Non-falsy fallbacks (e.g.
+`class="iiif iiif-image"`) were intentionally kept on `isset`.
+
+Two bugs surfaced while refactoring and were fixed (relevant if you
+copied the affected templates):
+
+- `schema-org.json` and `metadata/linked-art/collection.json` called
+  `isset "section" .Params` with swapped arguments — always false, so
+  the `section`/`type` page params were never honoured. Arguments are
+  now in the right order; sites setting these params will see the
+  JSON output change accordingly.
+- `iiif/_iiif-image.html` assigned `$baseURL :=` inside its `else`
+  branch (shadowed, so the fallback never took effect). The un-shadowed
+  fallback `path.Dir $infoJson` would mangle absolute info.json URLs
+  (`https://` → `https:/`), so it is guarded: relative info.json paths
+  now fall back to their directory, absolute URLs keep an empty
+  `baseURL` (the previous effective behaviour).
+
+Verification pattern: build before and after and diff the output —
+`diff -r` should be empty apart from embedded build timestamps.
 
 ## Remove legacy browser support (pre-2024 browsers)
 
