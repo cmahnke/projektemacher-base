@@ -180,18 +180,24 @@ protected from `rsync --delete` (only the tracked `data/.htaccess` is
 kept in place). Use `--dry-run` to preview. Point the site's endpoint
 parameter at the deployed `endpoint.php`.
 
-# 3. Deploying and collecting - one workflow, one connection
+# 3. Deploying and collecting - two workflows, one connection
 
-The single workflow `.github/workflows/webmentions.yaml` handles both
-directions over the same deployment connection (push to `main` for
-`services/webmentions/**` changes and the workflow file, manual
-*workflow_dispatch*, hourly cron):
+Two workflows handle the two directions over the same deployment
+connection:
 
-- job `deploy`: variable check + connection test via `host.sh`, `php -l`
-  on every service PHP file, the full `test-endpoint.sh` suite, the
-  rsync deployment, and the post-deploy Check of the endpoint file
-  layout over the same connection
-- job `collect` (runs after `deploy`):
+- `.github/workflows/webmentions-deploy.yaml` - deploy on commits, no
+  schedule. Runs on push to `main` (`services/webmentions/**`,
+  `scripts/webmention/**`, the workflow file itself) and on manual
+  *workflow_dispatch*:
+  - job `deploy`: variable check + connection test via `host.sh`,
+    `php -l` on every service PHP file, the full `test-endpoint.sh`
+    suite, the rsync deployment, and the post-deploy check of the
+    endpoint file layout over the same connection
+  - job `harvest` (needs `deploy`, calls the reusable harvest
+    workflow below): chain a collection run onto the fresh deployment
+- `.github/workflows/webmentions-harvest.yaml` - one reusable harvest
+  pipeline, running on the hourly cron, on manual *workflow_dispatch*,
+  and on `workflow_call` from the deploy workflow:
   1. harvest the host's `data/` through the same connection
      (`scripts/webmention/collect.sh`)
   2. `scripts/webmention/lint.py` validates and merges the entries
@@ -199,6 +205,13 @@ directions over the same deployment connection (push to `main` for
      (`$WEBMENTIONS_DATA_DIR`/`mentions.json`, default
      `data/webmentions`), commits carry `[skip ci]` and only happen
      when something changed
+
+| Trigger                        | deploy | harvest |
+|--------------------------------|--------|---------|
+| commit (`push` to `main`)       | yes    | chained |
+| hourly cron (`schedule`)        | no     | yes     |
+| dispatch of the deploy workflow | yes    | chained |
+| dispatch of the harvest workflow| no     | yes     |
 
 Required **repository Actions secrets** (the deployment connection,
 used by both jobs):
@@ -325,7 +338,9 @@ without further configuration.
   the data directory reconciles itself; for a quick fix, remove the
   entry from `data/webmentions/mentions.json` in the site repository
   as well.
-- **Forcing a run:** Actions -> "Deploy and harvest webmentions" -> `workflow_dispatch`.
+- **Forcing a run:** Actions -> "Deploy webmentions" (deploys first,
+  then chain-harvests) or "Harvest webmentions" (harvest only) ->
+  `workflow_dispatch`.
 - **Rate limit hit accidentally:** raise `WEBMENTION_RATE_LIMIT` via
   the environment variable, or clear `data/.ratelimit/` on the host.
 - **Broken storage:** the store is a plain directory; files are only

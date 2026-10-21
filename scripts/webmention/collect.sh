@@ -4,7 +4,7 @@
 # into a local directory - over the single deployment connection
 # ('host.sh', DEPLOY_SERVER/DEPLOY_USER/DEPLOY_PATH/DEPLOY_PASS). This
 # is the first half of the collection pipeline; 'lint.py' and the
-# branch commit run afterwards ('.github/workflows/webmentions.yaml').
+# branch commit run afterwards ('.github/workflows/webmentions-harvest.yaml').
 #
 # Usage: collect.sh <local-destination-directory>
 #

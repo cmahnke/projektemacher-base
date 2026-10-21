@@ -1,0 +1,68 @@
+name: Deploy webmentions
+
+# Fires on commits (main, webmention-relevant paths only) and on
+# manual workflow_dispatch. Deploying never happens on schedule - the
+# hourly cron runs the harvest workflow alone.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/webmentions/**'
+      - 'scripts/webmention/**'
+      - '.github/workflows/webmentions-deploy.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+# The single connection to the deployment host - the deploy job uses
+# it directly, the chained harvest job inherits the same secrets (see
+# 'scripts/webmention/host.sh').
+env:
+  DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+  DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Check the deployment connection
+        run: |
+          ./scripts/webmention/host.sh exec true
+
+      - name: Sanity check PHP sources
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-cli php-curl
+          for FILE in services/webmentions/endpoint.php services/webmentions/config.php services/webmentions/lib/*.php ; do
+            php -l "$FILE"
+          done
+
+      - name: Run endpoint test suite
+        run: |
+          ./scripts/webmention/test-endpoint.sh
+
+      - name: Deploy endpoint
+        run: |
+          ./scripts/webmention/deploy.sh
+
+      - name: Post-deploy sanity check
+        run: |
+          SERVICE_PATH="$(./scripts/webmention/host.sh path)"
+          ./scripts/webmention/host.sh exec "test -f '$SERVICE_PATH/endpoint.php' && test -d '$SERVICE_PATH/data'"
+
+  harvest:
+    needs: deploy
+    uses: ./.github/workflows/webmentions-harvest.yaml
+    secrets: inherit

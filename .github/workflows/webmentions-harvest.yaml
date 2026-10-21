@@ -1,13 +1,10 @@
-name: Deploy and harvest webmentions
+name: Harvest webmentions
 
+# The reusable harvest pipeline: called by the deploy workflow after a
+# fresh endpoint deployment, run standalone on the hourly cron (no
+# deploy) and on manual workflow_dispatch.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'services/webmentions/**'
-      - 'scripts/webmention/**'
-      - '.github/workflows/webmentions.yaml'
+  workflow_call:
   workflow_dispatch:
   schedule:
     - cron: '17 * * * *'
@@ -22,11 +19,13 @@ permissions:
 # Where the merged mention data is committed in this repository - the
 # site's own data directory, which Hugo reads directly as build data
 # ('hugo.Data.webmentions.mentions'), no fetch step needed. The theme
-# repository itself collects nothing: copy this workflow into the site
-# repository and keep the default ('data/webmentions' at the site
-# root); adjust only if the site lives in a subdirectory.
-# The single connection to the deployment host - deploy and harvest
-# share it, defined once here (see 'scripts/webmention/host.sh').
+# repository itself collects nothing: copy this workflow and the deploy
+# workflow into the site repository and keep the default
+# ('data/webmentions' at the site root); adjust only if the site lives
+# in a subdirectory.
+# The single connection to the deployment host - harvest runs over the
+# same connection the deploy workflow uses, defined here and there (see
+# 'scripts/webmention/host.sh').
 env:
   WEBMENTIONS_DATA_DIR: data/webmentions
   DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
@@ -35,40 +34,7 @@ env:
   DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
 
 jobs:
-  deploy:
-    runs-on: ubuntu-26.04
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Check the deployment connection
-        run: |
-          ./scripts/webmention/host.sh exec true
-
-      - name: Sanity check PHP sources
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php-cli php-curl
-          for FILE in services/webmentions/endpoint.php services/webmentions/config.php services/webmentions/lib/*.php ; do
-            php -l "$FILE"
-          done
-
-      - name: Run endpoint test suite
-        run: |
-          ./scripts/webmention/test-endpoint.sh
-
-      - name: Deploy endpoint
-        run: |
-          ./scripts/webmention/deploy.sh
-
-      - name: Post-deploy sanity check
-        run: |
-          SERVICE_PATH="$(./scripts/webmention/host.sh path)"
-          ./scripts/webmention/host.sh exec "test -f '$SERVICE_PATH/endpoint.php' && test -d '$SERVICE_PATH/data'"
-
-  collect:
-    needs: deploy
+  harvest:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
