@@ -125,9 +125,10 @@ def ok(name):
 
 
 doc = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-if "generated" not in doc:
-    fail("generated timestamp missing")
-ok("generated timestamp present")
+if "generated" in doc:
+    fail("generated timestamp present (output must stay deterministic)")
+else:
+    ok("no generated timestamp (deterministic output)")
 mentions = doc.get("mentions", {})
 
 if "https://example.org/blog/post" not in mentions:
@@ -181,6 +182,17 @@ else
 fi
 
 check "lint exit code" "0" "$EXIT"
+
+# Deterministic output: a second run over the same fixtures must be
+# byte-identical (the harvest workflow only commits on real mention
+# changes).
+python3 "$SCRIPT_DIR/lint.py" "$TMP/raw" "$TMP/out2/mentions.json" > "$TMP/lint2.log" 2>&1
+if cmp -s "$TMP/out/mentions.json" "$TMP/out2/mentions.json"; then
+  REPEAT="same"
+else
+  REPEAT="differ"
+fi
+check "byte-identical output on re-run" "same" "$REPEAT"
 
 echo
 if [ "$FAILURES" -gt 0 ]; then

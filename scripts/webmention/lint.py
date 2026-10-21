@@ -7,7 +7,6 @@ the valid entries into a single 'mentions.json' for the Hugo data
 directory:
 
     {
-      "generated": "2026-10-21T12:00:00Z",
       "mentions": {
         "https://example.org/blog/post/": [ { "source": ..., ... } ]
       }
@@ -226,10 +225,10 @@ def main() -> int:
         for key in target_keys(group_key):
             mentions_by_key[key] = entries
 
-    document = {
-        "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "mentions": dict(sorted(mentions_by_key.items())),
-    }
+    # No run timestamp: the output must stay byte-identical across
+    # harvests without mention changes (the harvest workflow commits
+    # only on real changes), freshness lives in the git history.
+    document = {"mentions": dict(sorted(mentions_by_key.items()))}
     output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(
         json.dumps(document, ensure_ascii=False, separators=(",", ":")),
