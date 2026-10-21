@@ -9,6 +9,13 @@ Example usage:
 
  partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
 
+  * ESM via site config (per-call opts still win):
+
+ [params.js]
+   format = "esm"
+
+ … or the string shorthand: [params] js = 'esm'
+
 */}}
 
 {{- $defaultScriptEntrypoint := "js/main.js" -}}
@@ -30,6 +37,22 @@ Example usage:
 {{- $context := . -}}
 {{- $splitBundles := false -}}
 {{- $debug := partialCached "functions/debug/enabled.html" $context -}}
+
+{{- $configFormat := "" -}}
+{{- with site.Params.js -}}
+  {{- if reflect.IsMap . -}}
+    {{- with .format -}}{{- $configFormat = . -}}{{- end -}}
+  {{- else -}}
+    {{- $configFormat = . -}}
+  {{- end -}}
+{{- end -}}
+{{- $callFormat := "" -}}
+{{- if isset . "opts" -}}
+  {{- with .opts.format -}}{{- $callFormat = . -}}{{- end -}}
+{{- end -}}
+{{- $format := "iife" -}}
+{{- if ne $configFormat "" -}}{{- $format = $configFormat -}}{{- end -}}
+{{- if ne $callFormat "" -}}{{- $format = $callFormat -}}{{- end -}}
 
 {{- if ne (printf "%T" .) "*hugolib.pageState" -}}
     {{- if isset . "ctx" -}}
@@ -76,6 +99,7 @@ Example usage:
                       "defines" $defines
                       "minify" (cond hugo.IsDevelopment false true)
                       "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+                      "format" $format
 -}}
 {{- $mainOpts = merge $mainOpts $additionalOpts -}}
 {{- $main := resources.Get $defaultScriptEntrypoint -}}
@@ -134,6 +158,7 @@ Example usage:
                           "defines" $defines
                           "minify" (cond hugo.IsDevelopment false true)
                           "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+                          "format" $format
   -}}
   {{- $scriptOpts = merge $scriptOpts $additionalOpts -}}
   {{- $builtScript := "" -}}
@@ -150,7 +175,7 @@ Example usage:
 {{- end -}}
 
 {{- $scriptType := "" -}}
-{{- if and (isset . "opts") (isset .opts "format") (eq .opts.format "esm") -}}
+{{- if eq $format "esm" -}}
   {{- $scriptType = "module" -}}
 {{- end -}}
 

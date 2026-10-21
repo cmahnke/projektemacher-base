@@ -13,6 +13,7 @@ guide.
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0) — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
+| Custom site parameters outside `params` | audit corrected: root `description` (kraehenbeisser, diapraesentation), language-level `description`/`decription` typo (christianmahnke), `lanbel`/`lable` typos (flugzeugbesteck, ric-unknownartist) — see ["Move custom site parameters into the `params` namespace"](#move-custom-site-parameters-into-the-params-namespace) | medium |
 | Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | consumers: 14 converted, 4 need no conversion, 7 pending (2026-10); old structure keeps working — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only — see ["Upgrading fonts to the npm (Fontsource) based system"](#upgrading-fonts-to-the-npm-fontsource-based-system) | keep (exceptions stay) |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
@@ -241,11 +242,13 @@ the git history of this file (pre-2026-10).
 
 ## Finish the JS → TypeScript migration
 
-Done — the remaining plain-JS sources are ported (`ts/search.ts`,
-`ts/timeline.ts`, `ts/fullscreen.ts`, `ts/maps/projektemacher-map.ts`) or
-removed together with Mirador. The unreferenced `assets/js/` shims were
-deleted in the 2026-10 cleanup; consumer front matter references `ts/`
-paths everywhere.
+Moved to the required checks — see
+["Migrate JS sources to TypeScript"](#migrate-js-sources-to-typescript)
+under Mandatory post-upgrade checks. The theme's own migration completed
+2026-10 (`ts/search.ts`, `ts/timeline.ts`, `ts/fullscreen.ts`,
+`ts/maps/projektemacher-map.ts` ported, Mirador-related sources removed,
+unused `assets/js/` shims deleted); consumer front matter references
+`ts/` paths everywhere.
 
 ## Switch the JS bundles from IIFE to ESM
 
@@ -256,6 +259,38 @@ loads with `defer`, fingerprinting and SRI. The same pattern covers the
 main bundle and the page/shortcode bundles (`script.html`), the menu
 script (`menu.html`, `js/menu.js`) and the print script
 (`baseof.print.html`, `js/print.js`).
+
+Consumer status (2026-10): eleven consumers emit ESM today —
+ric-unknownartist (own pipeline, unconditional), diapraesentation and
+flohmarktfunde (own baseof pipelines), never-built (via the wired
+`js = 'esm'` param), yaapb (own `main.ts`, TS-ported), blaufusstoelpel
+(own `main.ts`, TS-ported), merch.projektemacher (pdf-preview),
+projektemacher (script.html opts), kleiderbuegel (print bundle + menu)
+and vorsatzpapier (viewer builds) — with christianmahnke mixed
+(script.html ESM + `splitBundles`, own menu/iiif/pdf builds still IIFE)
+and wilmabraeuner partial (menu.js ESM, main bundle IIFE). The remaining
+theme-pipeline consumers (backsteinexpressionismus, briefsteller,
+kinderbuecher, kraehenbeisser, labs.projektemacher.org, schatten,
+schriftmuster, vintagereality) can now flip via config alone — see the
+config-driven switch below. flugzeugbesteck,
+haesslicheplastiktiereundzeugs, plastikwarenfabrik and xn--h-zfa.xyz
+have no JS pipeline.
+
+### Config-driven switch (Path A via site config)
+
+`script.html` reads the bundle format from the site configuration when
+the call does not pass its own `opts`:
+
+```toml
+[params.js]
+  format = "esm"
+```
+
+… or the string shorthand `[params] js = 'esm'`. Per-call `opts.format`
+still wins over the config; valid values are `esm` and `iife` (the
+default). Setting the param makes every `script.html`-delivered bundle —
+main, IIIF viewers and page scripts — build as ESM and ship as
+`type="module"`.
 
 There are two ways to switch to ES modules; both are optional — a site
 picks one (Path B subsumes Path A's module semantics, see Risks below).
@@ -653,15 +688,26 @@ a build.
 
 ## Move custom site parameters into the `params` namespace
 
-Complete (2026-10) — the theme ships no site configuration of its own
-(templates read everything via `site.Params.…`), the exampleSite config
-is clean, and every known consumer keeps custom settings under
-`[params]` / `[languages.<lang>.params]`; the only top-level keys found
-are standard Hugo ones (`publishDir`, `rssLimit`, `description`, …).
-The audit greps and the scripts dual-lookup policy (`scripts/PyHugo`
-errors when a key exists in both root and `params`, `preview.py`
-prefers `params` and falls back to the root key) live in the git
-history of this file (pre-2026-10).
+**Open (2026-10)** — an earlier "complete" claim here was wrong: the
+first audit whitelisted `description` as a standard root key (it is not
+— the theme reads `site.Params.description`, so a root `description`
+works only through Hugo's legacy merge) and its `[languages.<lang>]`
+scan missed indented keys. The corrected audit found, **not yet fixed**:
+
+| Site | Finding | Fix |
+|---|---|---|
+| kraehenbeisser | `description` at config root | move into a `[params]` table |
+| diapraesentation | `description` at config root — redundant, both `[languages.<lang>.params] description` exist | delete the root key |
+| christianmahnke | `[languages.de] description` at language level; `[languages.en] decription` — typo, never worked | move both under `[languages.<lang>.params]`, fixing the typo |
+| flugzeugbesteck | `[languages.en] lanbel = "English"` — typo'd `label` | → `label` (broken English switcher label) |
+| ric-unknownartist | `[languages.en] lable = "English"` — same typo class | → `label` |
+| ric-unknownartist, schatten | `defaultcontentlanguage` + `DefaultContentLanguage` both present | drop the lowercase variant |
+
+The theme and the exampleSite are clean (`description` lives under
+`[params]`). The original audit greps and the scripts dual-lookup policy
+(`scripts/PyHugo` errors when a key exists in both root and `params`,
+`preview.py` prefers `params` and falls back to the root key) live in
+the git history of this file (pre-2026-10).
 
 ## Deduplicate shortcodes and templates against the theme
 
@@ -688,11 +734,11 @@ change is still needed — if not, delete the override so the theme's version
 applies again; if yes, re-sync everything else from the theme version to
 minimize the diff.
 
-Still open (2026-10): ric-unknownartist's identical
-`layouts/shortcodes/quote.html` (deletion candidate). Everything else
-drifted in the consumer audits is deliberate customization (header/footer
-redesigns, section layouts, custom menus) — review opportunistically, the
-remaining `R` renames to the new template structure in
+Still open (2026-10): the identical `quote.html` copy in
+ric-unknownartist was removed (resolved); everything else drifted in the
+consumer audits is deliberate customization (header/footer redesigns,
+section layouts, custom menus) — review opportunistically, the remaining
+`R` renames to the new template structure in
 briefsteller/schatten/xn--h-zfa.xyz/yaapb/kraehenbeisser are staged
 migrations in progress.
 
@@ -752,22 +798,17 @@ file (pre-2026-10).
 
 ## Extend lint coverage
 
-The lint setup has known blind spots worth closing (all optional, done one
-at a time):
+Complete (2026-10) — all three blind spots are closed:
 
-- **SCSS is linted non-recursively** — `lint-scss` runs
-  `stylelint 'assets/scss/*'`, so the subdirectories (`scss/shortcodes/`,
-  `scss/iiif/`, …) are never linted. Change the glob to
-   `'assets/scss/**/*.scss'` — expect new findings in files that were never
-   linted, the same effect the `lint-js` extension to `assets/ts` had.
-- **Markdown is not linted at all** — `markdownlint-cli` is already a
-  devDependency, but no script uses it. Add `lint-md` over the content
-  directory (with a `.markdownlint.json` config) to catch broken heading
-  hierarchies and inconsistent lists in docs and posts.
-- **Generated CSS is not checked** — the theme lints its built CSS
-  (`npm run postbuild-lint`, stylelint against `docs/css/*.css`).
-  Consuming sites can adopt the same post-build check to catch regressions
-  that only appear in the compiled output.
+- **SCSS is linted recursively** — `lint-scss` runs
+  `stylelint 'assets/scss/**/*.scss'`; the generated `assets/scss/npm-fonts/`
+  partials are excluded via `ignoreFiles` (they are regenerated on every
+  build and can never pass).
+- **Markdown is linted** — `lint-md` runs `markdownlint` over `Upgrade.md`
+  and the exampleSite content, configured via `.markdownlint.json`.
+- **Generated CSS is checked** — `postbuild-lint` stylelints `docs/css/*.css`
+  after builds. Consuming sites can adopt the same post-build check to catch
+  regressions that only appear in the compiled output.
 
 ## Remove legacy browser support (pre-2024 browsers)
 
@@ -884,9 +925,10 @@ Still open (2026-10):
 - `services/cookie-consent.scss` still `as *`-imports `icons` (pending
   conversion — schatten's pre-declared `$close-*`/`$color-*` would
   collide with it on the next submodule raise).
-- **Deferred** consumers: never-built (largest site; its duplicate
-  `maps/projektemacher`/`link` loads must be deduped first),
-  merch.projektemacher + projektemacher (coder leakage architecture).
+- **Deferred** consumers: merch.projektemacher + projektemacher (coder
+  leakage architecture). never-built is cleared (2026-10): its `@import`
+  backlog — including the duplicate `maps/projektemacher`/`link` loads —
+  is gone from the audited files.
 - **Kept by decision**: yaapb's `_bootstrap-subset.scss` shim and
   wilmabraeuner's `@import "bootstrap"` (isolated vendor code pending
   Bootstrap 6 module support).
@@ -1112,8 +1154,13 @@ unnamed buttons. Changes:
 
 ## Consumer migration
 
+Complete (2026-10) — no known consumer styles `.ol-popup-content h1`
+(audited), so nothing breaks with the theme's heading change. Drifted
+`geojson/popupContent.html` copies (kleiderbuegel, labs.projektemacher.org,
+never-built, vintagereality) carry no `h1` styling of their own.
+
 - Sites styling map popups via `.ol-popup-content h1` (font sizes
-  etc.) need to target `h2` instead.
+  etc.) would need to target `h2` instead.
 - No other markup changes - the controls keep their classes and
   visuals.
 
@@ -1227,6 +1274,30 @@ grep -rnE '^\s*language(Code|Name|Direction)\s*=' config*/ hugo.toml config.toml
 #    (deprecated in 0.163.0) — review matches under the [imaging] section
 grep -rnE '^\s*(quality|compression|hint)\s*=' config*/ hugo.toml config.toml 2>/dev/null
 ```
+
+### Migrate JS sources to TypeScript
+
+Consumer-specific JavaScript sources are TypeScript — plain-JS sources in
+the site's `assets/` and `.js` references in front matter `js:` entries or
+layouts predate the theme's TS migration and miss every upstream fix. Find
+the candidates from the site root:
+
+```bash
+# 1. front matter js: entries pointing at .js sources
+grep -rE "^\s*(js:|-)\s*[\"']?(js/)?[^\"']*\.js" content
+
+# 2. plain-JS sources in the site's assets
+find assets/js -maxdepth 1 -name "*.js" 2>/dev/null
+
+# 3. .js source references in layouts (built targets are fine)
+grep -rn 'resources.Get "js/' layouts/
+```
+
+Port plain-JS sources to TypeScript — the theme's `ts/` modules cover the
+shared functionality (menu, viewers, search) — reference them from front
+matter and layouts, then delete the `.js` originals. Deliberate plain-JS
+entries are exceptions when ESM-built (yaapb's `js/main.js`): document
+them and keep the ESM build.
 
 ### Review the About page dependency list
 
