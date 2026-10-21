@@ -38,37 +38,14 @@
     {{- end -}}
 {{- end -}}
 
-{{- $defines := dict "process.env.NODE_ENV" `"production"` -}}
-
-{{- if $isServer -}}
-    {{ $defines = dict "process.env.NODE_ENV" `"development"` }}
-{{- end -}}
-
-{{- $minify := false -}}
 {{- $iiifJs := slice -}}
 
-{{- $configFormat := "" -}}
-{{- with site.Params.js -}}
-  {{- if reflect.IsMap . -}}
-    {{- with .format -}}{{- $configFormat = . -}}{{- end -}}
-  {{- else -}}
-    {{- $configFormat = . -}}
-  {{- end -}}
-{{- end -}}
-{{- $format := "iife" -}}
-{{- if ne $configFormat "" -}}{{- $format = $configFormat -}}{{- end -}}
-
 {{- if (hasPrefix $prefix "http://iiif.io/api/image/") -}}
-  {{/* esbuild compiles TypeScript sources, but the built output must be published with a .js targetPath */}}
-  {{- $iiifTargetPath := replaceRE "\\.ts$" ".js" $iiifImageViewerJS -}}
-  {{- $iiifOpts := dict "targetPath" $iiifTargetPath "defines" $defines "minify" $minify "format" $format -}}
-  {{- $iiifJs = $iiifJs | append (resources.Get $iiifImageViewerJS | js.Build $iiifOpts) -}}
+  {{- $iiifJs = $iiifJs | append $iiifImageViewerJS -}}
 {{- end -}}
 
 {{- if (hasPrefix $prefix "http://iiif.io/api/presentation/") -}}
-  {{- $iiifTargetPath := replaceRE "\\.ts$" ".js" $iiifPresentationViewerJS -}}
-  {{- $iiifOpts := dict "targetPath" $iiifTargetPath "defines" $defines "minify" $minify "format" $format -}}
-  {{- $iiifJs = $iiifJs | append (resources.Get $iiifPresentationViewerJS | js.Build $iiifOpts) -}}
+  {{- $iiifJs = $iiifJs | append $iiifPresentationViewerJS -}}
 {{- end -}}
 
 {{- return $iiifJs -}}

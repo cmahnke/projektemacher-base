@@ -831,17 +831,12 @@ Still open (2026-10):
 
 # Pagination label fixes (open)
 
-Two smaller accessibility fixes that change shipped markup. The skip
-link fix is complete (2026-10): every known consumer ships an
-accessible skip link — sites with their own `baseof.html` copy use the
-class-based `.skip-link` markup (the class compiled via the theme's
-`theme.scss` import or a local copy), the rest inherit the theme's
-version.
-
-The pagination labels remain open for sites with drifted
-`list.html` / `pagination.html` copies (backsteinexpressionismus,
-briefsteller, ric-unknownartist, schriftmuster, yaapb) — kleiderbuegel
-adopted the labeled nav today — see the deduplication guide above:
+An accessibility fix that changes shipped markup — the completed skip
+link part (2026-10) lives in the git history. The pagination labels
+remain open for sites with drifted `list.html` / `pagination.html`
+copies (backsteinexpressionismus, briefsteller, ric-unknownartist,
+schriftmuster, yaapb) — kleiderbuegel adopted the labeled nav today —
+see the deduplication guide above:
 
 - `layouts/partials/list.html` had the pagination labels swapped: the
   "previous page" link was labelled `next_page` and vice versa. The
@@ -851,8 +846,6 @@ adopted the labeled nav today — see the deduplication guide above:
 
 ## Verification
 
-- Keyboard only: the skip link becomes the first focusable element,
-  pressing Enter jumps to `#main`.
 - Check a paginated list: both links point in the direction their
   labels announce.
 
