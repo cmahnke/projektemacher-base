@@ -17,11 +17,20 @@
     margin-bottom: 0;
 }
 
-/* Search page: the theme's coder/site-chrome offsets the search page
-   content with '.content.search { margin-top: 10em }', but the theme's
-   search.html emits the content wrapper as '.post.search > .content',
-   so that rule never matches and the search box ends up behind the
-   fixed navigation — re-apply the offset here */
-main.main > .post.search > .content {
-    margin-top: 10em;
+/* Containing block for the absolutely positioned, full page height
+   section TOC (see scss/section-toc.scss). Safe: no other absolutely
+   positioned element anchors to the viewport. */
+body {
+    position: relative;
+}
+
+/* Search page: the theme's search.html emits no centered container,
+   so mirror the theme's .container metrics (max-width 90rem, auto
+   margins, 2rem side padding) and keep the content below the fixed
+   navigation */
+main.main > .post.search {
+    width: 100%;
+    max-width: 90rem;
+    margin: 10em auto 0;
+    padding: 0 2rem;
 }

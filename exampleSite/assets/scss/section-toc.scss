@@ -1,13 +1,19 @@
 /*
  * Section table of contents sidebar: the theme's partials/toc.html
  * renders an <aside class="section-toc"> which the site's
- * _default/list.html places inside the section container on section
- * pages with the front matter parameter `toc: true`.
+ * _default/list.html places inside the section container, before the
+ * article, on section pages with the front matter parameter `toc: true`.
  *
- * The aside is a plain block above the article: it grows with its
- * content and scrolls with the page, so long section TOCs stay fully
- * usable (an earlier fixed margin-sidebar variant with internal
- * scrolling was dropped for that reason).
+ * On wide screens the aside is taken out of the content flow with
+ * `position: absolute` and placed in the page margin left of the
+ * centered coder container (90rem), spanning the full height of the
+ * page: it is at least as high as the document (min-height: 100%) and
+ * grows with its entries — since absolutely positioned overflow
+ * extends the document's scrollable area, a long TOC makes the page
+ * scrollable to the same height, so every entry stays reachable by
+ * normal page scrolling (no internal scrolling, no scroll trap). The
+ * containing block is the body (see the site's style.css). On narrower
+ * screens it falls back to a plain block above the article.
  *
  * Loads the site-shared variables module itself so it can be pulled in
  * via @use (partial @use migration); when @import'ed, the module
@@ -20,9 +26,43 @@
     /* White panel look, slightly brighter than the #fafafa body */
     background: #fff;
     padding: 1rem 2rem;
+
+    /* Fallback for viewports too narrow for the margin sidebar:
+       plain block above the article */
     margin-top: 2rem;
     margin-bottom: 2rem;
+
+    /* The fixed sidebar (18rem width + 4rem gutter) fits next to the
+       90rem container only from 1340px viewport width on. NOTE: rem in
+       media queries refers to the browser's initial 16px font size, not
+       this theme's 62.5% root, so the breakpoint is given in px. */
+    @media only screen and (min-width: 1340px) {
+        position: absolute;
+        top: 0;
+        /* Container's left edge is at calc(50% - 45rem); pull the
+           sidebar 22rem (18rem width + 4rem gutter) further left */
+        left: max(2rem, calc(50% - 67rem));
+        width: 18rem;
+        /* Span the whole page; content clears the fixed navigation */
+        min-height: 100%;
+        padding: 7rem 2rem 2rem;
+        margin: 0;
+    }
+
     font-family: $heading-font-family;
+
+    /*
+     * Dissolve the coder chrome's bare 'nav' rule (_site-chrome.scss:
+     * 'nav { position: fixed; background: …; z-index: … }') which is
+     * meant for the top navigation but also hits the TOC's <nav>: it
+     * must stay in flow here, so the aside grows with its entries and
+     * scrolls with the page.
+     */
+    .toc {
+        position: static;
+        background: none;
+        z-index: auto;
+    }
 
     .toc-title {
         font-size: 1.6rem;
