@@ -10,7 +10,13 @@ on:
     - cron: '17 * * * *'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Harvest always pushes to 'main', so every harvest run (cron,
+  # workflow_dispatch, and called from the deploy workflow) shares one
+  # queue - the group name is static and distinct from the caller's
+  # top-level group on purpose: a 'workflow_call' resolves
+  # 'github.workflow' to the caller's name, and an identical group
+  # string deadlocks against the caller's own hold.
+  group: webmentions-harvest
   cancel-in-progress: false
 
 permissions:
