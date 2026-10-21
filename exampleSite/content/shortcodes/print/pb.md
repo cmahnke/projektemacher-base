@@ -1,7 +1,8 @@
 ---
 title: print/pb
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/pb

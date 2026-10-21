@@ -14,7 +14,7 @@ guide.
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0) — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
 | Custom site parameters outside `params` | audit corrected: root `description` (kraehenbeisser, diapraesentation), language-level `description`/`decription` typo (christianmahnke), `lanbel`/`lable` typos (flugzeugbesteck, ric-unknownartist) — see ["Move custom site configuration parameters into the `params` namespace"](#move-custom-site-configuration-parameters-into-the-params-namespace) | medium |
-| Front matter `params` usage | reference: reserved field names vs. the `params` key, and the theme's description fallback chain — see ["Custom front matter parameters go under the `params` key"](#custom-front-matter-parameters-go-under-the-params-key) | informational |
+| Front matter `params` usage | optional: move custom front matter fields under the `params` key — recipe plus reserved-field caveat (esp. `description` precedence); the exampleSite is converted (2026-10) — see ["Custom front matter parameters go under the `params` key"](#custom-front-matter-parameters-go-under-the-params-key) | optional |
 | Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | consumers: 14 converted, 4 need no conversion, 7 pending (2026-10); old structure keeps working — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | Deprecated `.Site.Data` template access | **mandatory**: Hugo deprecated `.Site.Data` (0.156.0, "Use `hugo.Data` instead") and will remove it — the theme's templates now use `hugo.Data`, sites with own `site.Data`/`.Site.Data` code must follow — see ["Replace deprecated `.Site.Data` access with `hugo.Data`"](#replace-deprecated-sitedata-access-with-hugodata) | high |
@@ -160,7 +160,7 @@ grep -rEl 'define ".*-metadata' layouts/shortcodes/
 grep -rEl '^layout: search' content
 
 # Pages loading page specific scripts
-grep -rEl '^js:' content
+grep -rEl '^\s*js:' content
 ```
 
 Keep the list in sync whenever a new shortcode with JS is added or a
@@ -726,7 +726,78 @@ The theme's meta description chain reflects this
 reserved front matter field) → `.Summary`. A page's front matter root
 `description` is therefore the reserved field, not a custom parameter —
 moving it under `params.description` changes precedence (it then wins
-over `.Description`).
+over `.Description`) — only do that deliberately.
+
+### What sites can do (optional)
+
+Hugo exposes unknown root-level front matter fields through `.Params`,
+and a front matter `params` map is merged into `.Params` as well — both
+resolutions leave the consumed value identical (`.Params.<key>` in
+every case; only the `description` chain above makes the distinction
+visible). Nesting custom fields under `params:` is therefore
+behavior-neutral; it only makes their custom nature explicit in the
+content. The exampleSite was converted this way (2026-10).
+
+Find the root-level candidates:
+
+```bash
+# Front matter root keys per file — keep the standard Hugo fields
+# (title, description, date, tags, outputs, layout, resources, build,
+# draft, slug, aliases, ...) and move the rest under a params: block.
+# Anything the site or theme reads with `.Params.<key>` is such a field
+# (theme inputs: `displayinlist`, `metaPage`, `iiif.*`, `toc`, `src`,
+# `js`, `scss`, ...).
+find content -name '*.md'
+```
+
+Then move the custom fields (YAML front matter shown; TOML sites use a
+`[params]` table instead):
+
+```yaml
+# before               # after
+---                    ---
+title: Presentation 3  title: Presentation 3
+description: "…"       description: "…"
+displayinlist: false   params:
+metaPage: true           displayinlist: false
+iiif:                    metaPage: true
+  structure:             iiif:
+    - label: …             structure:
+      page: page0001         - label: …
+                                 page: page0001
+---                    ---
+```
+
+Do **not** move:
+
+- the standard Hugo fields as listed above — they are preferred over
+  their `params.` twins (with `description` being the precedence
+  exception already covered above);
+- Hugo's `build` front matter (render options) and the `params` maps
+  nested inside `resources` entries — unrelated mechanisms that look
+  similar.
+
+The theme reads all page-level inputs through `.Params.*` (`.Params.js`
+in `layouts/_partials/html/head/script.html`, `.Params.scss` in
+`style.html`, `isset .Params "iiif"` in `iiif/iiif-presentation.html`,
+`.Params.displayinlist`/`.Params.metaPage` in `home.rss.xml` and
+`list.html`), so the move needs no template changes — including for
+`js:`/`scss:`, which may stay at the root where the discovery commands
+in "Run the JS runtime check against the example site" expect them, or
+move under `params:` when the site's content also matches the
+tolerant `^\s*js:` grep form used there.
+
+### Verification
+
+Build the site before and after the move and compare — the output must
+be identical apart from the embedded build timestamps, since
+`.Params.*` resolves the same either way:
+
+```bash
+hugo --destination /tmp/frontmatter-old
+# apply the move
+hugo --destination /tmp/frontmatter-new && diff -r /tmp/frontmatter-old /tmp/frontmatter-new
+```
 
 ## Move custom site configuration parameters into the `params` namespace
 

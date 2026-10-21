@@ -1,7 +1,8 @@
 ---
 title: image-compare
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # image-compare

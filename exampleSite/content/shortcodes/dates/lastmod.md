@@ -1,7 +1,8 @@
 ---
 title: dates/lastmod
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # dates/lastmod

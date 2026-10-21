@@ -1,7 +1,8 @@
 ---
 title: 404 and robots
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # 404 and robots.txt

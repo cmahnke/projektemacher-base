@@ -1,7 +1,8 @@
 ---
 title: browser-hide-selector
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # browser-hide-selector

@@ -1,12 +1,13 @@
 ---
 title: Presentation 3
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
+  iiif:
+    structure:
+      - label: {en: ["Cover"]}
+        page: page0001
 outputs: [html, iiif-manifest]
-iiif:
-  structure:
-    - label: {en: ["Cover"]}
-      page: page0001
 resources:
   - name: page0001
     src: cc.png

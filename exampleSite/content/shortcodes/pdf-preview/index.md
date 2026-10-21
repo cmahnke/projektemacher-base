@@ -1,7 +1,8 @@
 ---
 title: pdf-preview
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # pdf-preview

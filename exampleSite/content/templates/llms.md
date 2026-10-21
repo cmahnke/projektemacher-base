@@ -1,7 +1,8 @@
 ---
 title: LLMS
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # LLMS

@@ -1,7 +1,8 @@
 ---
 title: mastodon
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # mastodon

@@ -1,7 +1,8 @@
 ---
 title: Tag Cloud
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 layout: tagcloud
 ---
 

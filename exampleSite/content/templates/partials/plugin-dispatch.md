@@ -1,7 +1,8 @@
 ---
 title: Plug-in dispatch
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Plug-in dispatch

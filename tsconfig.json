@@ -13,5 +13,5 @@
     "noUnusedLocals": false,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["assets/ts/**/*.ts"]
+  "include": ["assets/ts/**/*.ts", "exampleSite/assets/ts/**/*.ts"]
 }

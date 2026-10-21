@@ -1,7 +1,8 @@
 ---
 title: IIIF partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # IIIF partials

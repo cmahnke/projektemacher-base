@@ -1,7 +1,8 @@
 ---
 title: gallery
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # gallery

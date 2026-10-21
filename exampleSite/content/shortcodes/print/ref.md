@@ -1,7 +1,8 @@
 ---
 title: print/ref
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/ref

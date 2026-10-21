@@ -1,7 +1,8 @@
 ---
 title: Single and list templates
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Single and list templates

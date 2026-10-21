@@ -1,8 +1,9 @@
 ---
 title: Site parameters
 description: "Example page demonstrating site wide parameter usage"
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 ```toml

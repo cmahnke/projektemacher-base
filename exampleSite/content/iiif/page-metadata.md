@@ -1,7 +1,8 @@
 ---
 title: IIIF page metadata
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Page metadata

@@ -1,10 +1,11 @@
 ---
 title: Presentation 4 (draft)
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
+  iiif:
+    presentationVersion: 4
 outputs: [html, iiif-manifest]
-iiif:
-  presentationVersion: 4
 resources:
   - name: page0001
     src: cc.png

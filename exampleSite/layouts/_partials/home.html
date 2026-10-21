@@ -2,7 +2,7 @@
   <section class="container page">
     <article class="content-container">
       <header>
-        <h1 class="header">{{ .Title | default .Site.Title }}</h1>
+        <h1 class="header">{{ .Title | default site.Title }}</h1>
       </header>
       {{ .Content }}
     </article>

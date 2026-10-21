@@ -1,7 +1,8 @@
 ---
 title: browser-banner
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # browser-banner

@@ -1,7 +1,8 @@
 ---
 title: link
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # link

@@ -1,7 +1,8 @@
 ---
 title: gist
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # gist

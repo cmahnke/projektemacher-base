@@ -1,7 +1,8 @@
 ---
 title: aframe-3d-model
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # aframe-3d-model

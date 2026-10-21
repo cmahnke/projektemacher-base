@@ -1,7 +1,8 @@
 ---
 title: QR codes
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # QR code templates

@@ -1,8 +1,9 @@
 ---
 title: Shortcodes
-displayinlist: false
-metaPage: true
-toc: true
+params:
+  displayinlist: false
+  metaPage: true
+  toc: true
 ---
 
 # Shortcodes

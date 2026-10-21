@@ -1,7 +1,8 @@
 ---
 title: hdr-check
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # hdr-check

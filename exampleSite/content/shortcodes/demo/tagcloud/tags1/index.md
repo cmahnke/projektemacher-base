@@ -1,6 +1,7 @@
 ---
 title: Tags 1
-displayinlist: false
+params:
+  displayinlist: false
 tags:
 - Tag 1
 - Some Tag

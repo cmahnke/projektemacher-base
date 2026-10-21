@@ -1,7 +1,8 @@
 ---
 title: Metadata partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Metadata partials

@@ -1,7 +1,8 @@
 ---
 title: Quality assurance scripts
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 The theme ships a set of quality assurance scripts, used by the [example site](../development/) and by sites built on this theme in their CI workflows.

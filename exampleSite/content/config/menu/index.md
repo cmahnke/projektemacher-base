@@ -1,7 +1,8 @@
 ---
 title: Menu
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Adding HTML or draft menu entries

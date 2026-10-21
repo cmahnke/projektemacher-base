@@ -1,7 +1,8 @@
 ---
 title: bibtex
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # bibtex

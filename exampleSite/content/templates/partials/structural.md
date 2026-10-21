@@ -1,7 +1,8 @@
 ---
 title: Structural partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Structural partials

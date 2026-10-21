@@ -1,4 +1,4 @@
-{{- $issues := where .Site.Pages "Params.year" "!=" nil -}}
+{{- $issues := where site.Pages "Params.year" "!=" nil -}}
 {{- $issues = sort $issues ".Params.year" -}}
 <div class="tab-content">
     <div id="horizontal" class="tab-pane fade show active" role="tabpanel" aria-labelledby="horizontal-tab">

@@ -1,7 +1,8 @@
 ---
 title:
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 Make sure the `assets` directory is mounted (in `hugo.toml` or `config.toml`)

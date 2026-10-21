@@ -1,7 +1,8 @@
 ---
 title: iiif/presentation
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # iiif/presentation

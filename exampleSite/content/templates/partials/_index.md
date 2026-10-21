@@ -1,8 +1,9 @@
 ---
 title: Partials
-displayinlist: false
-metaPage: true
-toc: true
+params:
+  displayinlist: false
+  metaPage: true
+  toc: true
 ---
 
 # Partials

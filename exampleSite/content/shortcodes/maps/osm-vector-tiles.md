@@ -1,7 +1,8 @@
 ---
 title: maps/osm-vector-tiles
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # maps/osm-vector-tiles

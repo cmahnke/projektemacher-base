@@ -1,7 +1,8 @@
 ---
 title: print/image
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/image

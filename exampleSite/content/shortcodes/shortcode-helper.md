@@ -1,7 +1,8 @@
 ---
 title: Shortcode helper system
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Shortcode helper system

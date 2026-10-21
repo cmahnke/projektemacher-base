@@ -1,7 +1,8 @@
 ---
 title: code
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # code

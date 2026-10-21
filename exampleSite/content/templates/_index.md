@@ -1,8 +1,9 @@
 ---
 title: Templates
-displayinlist: false
-metaPage: true
-toc: true
+params:
+  displayinlist: false
+  metaPage: true
+  toc: true
 ---
 
 # Templates

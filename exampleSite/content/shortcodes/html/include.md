@@ -1,7 +1,8 @@
 ---
 title: html/include
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # html/include

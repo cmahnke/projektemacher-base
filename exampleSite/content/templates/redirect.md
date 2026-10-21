@@ -1,7 +1,8 @@
 ---
 title: Redirects
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Redirect template

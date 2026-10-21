@@ -1,7 +1,8 @@
 ---
 title: Print partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Print partials

@@ -1,7 +1,8 @@
 ---
 title: print/qr
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/qr

@@ -1,6 +1,6 @@
 <nav class="navigation">
   <section class="container">
-    <a class="navigation-title" href="{{ .Site.BaseURL | relLangURL }}">{{ .Site.Title }}</a>
+    <a class="navigation-title" href="{{ site.BaseURL | relLangURL }}">{{ site.Title }}</a>
     {{- partial "menu.html" . -}}
   </section>
 </nav>

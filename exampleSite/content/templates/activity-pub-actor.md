@@ -1,7 +1,8 @@
 ---
 title: ActivityPub actor
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # ActivityPub actor

@@ -1,7 +1,8 @@
 ---
 title: dates/build-date
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # dates/build-date

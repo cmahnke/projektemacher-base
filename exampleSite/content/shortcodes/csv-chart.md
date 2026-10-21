@@ -1,7 +1,8 @@
 ---
 title: csv-chart
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # csv-chart

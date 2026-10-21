@@ -1,8 +1,9 @@
 ---
 title: IIIF
-displayinlist: false
-metaPage: true
-toc: true
+params:
+  displayinlist: false
+  metaPage: true
+  toc: true
 ---
 
 # IIIF support

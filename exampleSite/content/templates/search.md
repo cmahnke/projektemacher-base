@@ -1,7 +1,8 @@
 ---
 title: Search page
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Search

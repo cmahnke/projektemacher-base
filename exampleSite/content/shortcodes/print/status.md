@@ -1,7 +1,8 @@
 ---
 title: print/status
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/status

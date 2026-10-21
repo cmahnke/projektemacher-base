@@ -1,7 +1,8 @@
 ---
 title: print/env
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # print/env

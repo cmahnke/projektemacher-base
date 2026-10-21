@@ -1,8 +1,9 @@
 ---
 title: Webmentions
 description: "Example page demonstrating the webmention/pingback integration"
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 The theme advertises a [webmention](https://www.w3.org/TR/webmention/)

@@ -1,7 +1,8 @@
 ---
 title: Data lists
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Data list templates

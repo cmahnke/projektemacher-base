@@ -1,7 +1,8 @@
 ---
 title: Media type partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Media type partials

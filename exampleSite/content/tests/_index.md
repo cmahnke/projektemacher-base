@@ -1,7 +1,8 @@
 ---
 title: Tests
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 layout: tests
 build:
   list: never

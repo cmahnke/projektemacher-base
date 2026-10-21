@@ -1,7 +1,8 @@
 ---
 title: list-tag-posts
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # list-tag-posts

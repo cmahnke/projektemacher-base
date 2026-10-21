@@ -1,9 +1,10 @@
 ---
 title: html-body test
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
+  src: demo.html
 layout: html-body
-src: demo.html
 ---
 
 Some markdown content for the article partial.

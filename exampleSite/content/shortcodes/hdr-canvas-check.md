@@ -1,7 +1,8 @@
 ---
 title: hdr-canvas-check
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # hdr-canvas-check

@@ -1,7 +1,8 @@
 ---
 title: model
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # model

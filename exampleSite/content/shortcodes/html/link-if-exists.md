@@ -1,7 +1,8 @@
 ---
 title: html/link-if-exists
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # html/link-if-exists

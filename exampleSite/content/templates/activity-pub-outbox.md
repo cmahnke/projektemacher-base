@@ -1,7 +1,8 @@
 ---
 title: ActivityPub outbox
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # ActivityPub outbox

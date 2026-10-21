@@ -1,7 +1,8 @@
 ---
 title: html/rawhtml
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # html/rawhtml

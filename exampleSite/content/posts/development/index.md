@@ -1,7 +1,8 @@
 ---
 title: Developing shortcodes
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Seting up

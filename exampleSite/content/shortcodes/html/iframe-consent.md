@@ -1,7 +1,8 @@
 ---
 title: html/iframe-consent
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # html/iframe-consent

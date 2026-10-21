@@ -1,7 +1,8 @@
 ---
 title: PDF article
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # PDF article

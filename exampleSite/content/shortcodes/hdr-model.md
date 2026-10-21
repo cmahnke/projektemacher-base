@@ -1,7 +1,8 @@
 ---
 title: hdr-model
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # hdr-model

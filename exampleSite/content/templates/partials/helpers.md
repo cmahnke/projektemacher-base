@@ -1,7 +1,8 @@
 ---
 title: Helper partials
-displayinlist: false
-metaPage: true
+params:
+  displayinlist: false
+  metaPage: true
 ---
 
 # Helper partials
