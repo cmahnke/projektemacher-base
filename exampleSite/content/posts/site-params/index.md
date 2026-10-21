@@ -6,6 +6,9 @@ metaPage: true
 ---
 
 ```toml
+[params]
+  js = "esm"
+
 [params.iiif]
   presentationViewer = "ts/iiif/tify.ts"
 

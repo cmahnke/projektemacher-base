@@ -30,6 +30,8 @@ Emits the `<meta name="viewport">` tag: `width=device-width, initial-scale=1.0, 
 
 Builds and links the site's JavaScript. The entry point is the page parameter `defaultScriptEntrypoint` if set; otherwise a `ts/main.ts` resource is used when present, falling back to the legacy `js/main.js` name. If neither exists the build fails with an `errorf` — create the file in the site's assets directory, an empty file will do (the example site ships an empty `assets/ts/main.ts`). Additional per page scripts come from the page's `js:` front matter and from the shortcode helper metadata; they are bundled separately from the main bundle.
 
+The bundle format follows the site configuration: `[params.js] format = "esm"` (or the string shorthand `[params] js = 'esm'`) builds every bundle as ESM and ships it as its own fingerprinted `<script type="module" … crossorigin="anonymous">` tag — ESM bundles are never concatenated, so per-bundle emission is what makes the format switch safe. Without it the bundles build as classic IIFE scripts and ship concatenated with `defer`; `splitBundles` only affects that classic path.
+
 ## `header.html` {#header}
 
 Renders the site header: the [menu](#menu), the header image and the page title (with the `subtitle` page parameter as `h2`).
@@ -42,7 +44,7 @@ Renders the site header: the [menu](#menu), the header image and the page title 
 
 Renders the main navigation: all `.Site.Menus.main` entries (with `draft` menu params honored, HTML menu entries via `params.html = true`, see [menu configuration](/config/menu/)) plus the language switcher for multilingual sites (`label` from the language configuration). Entries pointing to the current section get a `current` CSS class; the current page link carries `aria-current="page"`.
 
-The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced by `ts/menu.ts` (loaded by the partial): once the script runs, the toggle is a real `<button>` with `aria-expanded`/`aria-controls`, the closed list is `inert`, and the menu closes on Escape, outside clicks or focus leaving it.
+The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced by `ts/menu.ts` (loaded by the partial): once the script runs, the toggle is a real `<button>` with `aria-expanded`/`aria-controls`, the closed list is `inert`, and the menu closes on Escape, outside clicks or focus leaving it. The `menu.js` bundle format follows `[params.js] format` — ESM builds ship it as a `type="module"` tag, classic builds as a `defer` script.
 
 ## `topnavigation.html` {#topnavigation}
 

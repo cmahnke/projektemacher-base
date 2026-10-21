@@ -202,25 +202,6 @@ main bundle and the page/shortcode bundles (`script.html`), the menu
 script (`menu.html`, `js/menu.js`) and the print script
 (`baseof.print.html`, `js/print.js`).
 
-Consumer status (2026-10, end of session): every theme-pipeline consumer
-now emits ESM via the config switch (applied, staged, commit pending) —
-backsteinexpressionismus excluded (still on `1a9ec872`, its catch-up
-cycle pending; bundles stay IIFE until raised). Counted per site:
-ric-unknownartist (own pipeline, unconditional), diapraesentation and
-flohmarktfunde (own baseof pipelines), never-built (via the wired
-`js = 'esm'` param), yaapb (own `main.ts`, TS-ported under the new
-strict tsconfig gate), blaufusstoelpel (own `main.ts` TS-ported +
-script.html via config), merch.projektemacher (pdf-preview),
-projektemacher (script.html opts), kleiderbuegel (print bundle + menu
-ESM; main bundle flips with one pending config line), vorsatzpapier
-(viewer builds), briefsteller, kinderbuecher, kraehenbeisser,
-labs.projektemacher.org, schatten, schriftmuster and vintagereality
-(config switch) — with christianmahnke fully ESM (config + own
-menu/iiif/pdf builds flipped) and wilmabraeuner partial (menu.js ESM;
-main bundle flips with one pending config line). flugzeugbesteck,
-haesslicheplastiktiereundzeugs, plastikwarenfabrik and xn--h-zfa.xyz
-have no JS pipeline.
-
 ### Config-driven switch (Path A via site config)
 
 `script.html` reads the bundle format from the site configuration when
@@ -457,9 +438,7 @@ no warning is printed. Pinch zoom-in must stay allowed for accessibility
 (WCAG 2.5.5 / Lighthouse `meta-viewport`). Only zoom-out is blocked via
 `minimum-scale=1.0`. Pages
 using the theme's partial therefore no longer trigger the `meta-viewport`
-violation ("Zoom blocked"). Verified 2026-10: no known consumer carries
-a viewport partial copy, `user-scalable=no` or a `disableScale`
-reference. The a11y
+violation ("Zoom blocked"). The a11y
 script still excludes `meta-viewport` by default (opt back in with
 `--include-meta-viewport`), so scans of older builds remain usable.
 
@@ -602,8 +581,6 @@ The same moves were applied to the consumer sites (each repo staged
 separately, submodule pointers bumped to the current theme tip in the
 same commit):
 
-- **Converted, committed:** `kraehenbeisser`, `yaapb`, `briefsteller`,
-  `schatten`, `plastikwarenfabrik`, `xn--h-zfa.xyz`.
 - **Converted, staged (commit pending):** `blaufusstoelpel`,
   `haesslicheplastiktiereundzeugs`, `kinderbuecher`, `vintagereality`,
   `vorsatzpapier`, `labs.projektemacher.org`,
@@ -708,13 +685,11 @@ change is still needed — if not, delete the override so the theme's version
 applies again; if yes, re-sync everything else from the theme version to
 minimize the diff.
 
-Still open (2026-10): the identical `quote.html` copy in
-ric-unknownartist was removed (resolved); everything else drifted in the
-consumer audits is deliberate customization (header/footer redesigns,
-section layouts, custom menus) — review opportunistically, the remaining
-`R` renames to the new template structure in
-briefsteller/schatten/xn--h-zfa.xyz/yaapb/kraehenbeisser are staged
-migrations in progress.
+Still open (2026-10): everything else drifted in the consumer audits is
+deliberate customization (header/footer redesigns, section layouts,
+custom menus) — review opportunistically, the remaining `R` renames to
+the new template structure in briefsteller/schatten/xn--h-zfa.xyz/
+yaapb/kraehenbeisser are staged migrations in progress.
 
 ## Remove legacy browser support (pre-2024 browsers)
 
@@ -841,12 +816,10 @@ Still open (2026-10):
 
 # Pagination label fixes (open)
 
-An accessibility fix that changes shipped markup — the completed skip
-link part (2026-10) lives in the git history. The pagination labels
+An accessibility fix that changes shipped markup. The pagination labels
 remain open for sites with drifted `list.html` / `pagination.html`
 copies (backsteinexpressionismus, briefsteller, ric-unknownartist,
-schriftmuster, yaapb) — kleiderbuegel adopted the labeled nav today —
-see the deduplication guide above:
+schriftmuster, yaapb) — see the deduplication guide above:
 
 - `layouts/partials/list.html` had the pagination labels swapped: the
   "previous page" link was labelled `next_page` and vice versa. The
@@ -994,15 +967,9 @@ grep -rnE '^\s*(quality|compression|hint)\s*=' config*/ hugo.toml config.toml 2>
 
 ### Migrate JS sources to TypeScript
 
-Audited 2026-10 across all known consumers (3 parallel subagent scans):
-16 sites clean, 1 hard violation fixed (yaapb's 1162-line `main.ts`
-ported to `assets/ts/main.ts` under a new strict tsconfig gate),
-blaufusstoelpel's `script.ts`/`main.ts` ported the same way, and the
-remaining plain-JS files documented as deliberate — theme-contract ESM
-entry shims (`main.js` placeholders required by `script.html`'s
-fallback), vendored typed libraries (kleiderbuegel's Leaflet plugin set
-with `.d.ts`, kraehenbeisser's pinned `aether.js`, christianmahnke's
-checked-in vendor bundles). The audit below is the recurring check.
+The recurring audit below is the check — the 2026-10 audit pass found
+all consumers clean or carrying documented deliberate exceptions
+(theme-contract ESM entry shims, vendored typed libraries).
 
 Consumer-specific JavaScript sources are TypeScript — plain-JS sources in
 the site's `assets/` and `.js` references in front matter `js:` entries or

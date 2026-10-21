@@ -38,6 +38,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 
 | Parameter | Default | Purpose |
 | --- | --- | --- |
+| `js.format` | `iife` | Bundle format for all script bundles: `esm` ships each bundle as its own fingerprinted `<script type="module" crossorigin="anonymous">` tag (never concatenated), `iife` builds classic scripts and ships them concatenated with `defer`. Set via `[params.js]` or the string shorthand `[params] js = 'esm'` |
 | `css.includeDirs` | built in set | Additional include paths (Sass `includePaths`) for the SCSS pipeline, see the [shortcode helper](/shortcodes/shortcode-helper/) |
 | `skipShortcodeAssets` | `false` | Disable automatic loading of shortcode specific JS/CSS |
 | `favicon_16` / `favicon_32` | — | Favicon PNGs |
