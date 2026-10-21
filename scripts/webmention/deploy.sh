@@ -41,6 +41,9 @@ RSYNC_ARGS=(-avz --delete
   --filter='- /data/*'
   --exclude='.DS_Store'
   --exclude='.git*'
+  # The host user lacks chown/chgrp rights - synchronize content only,
+  # never user, group or modification time (rsync exit code 23).
+  --no-owner --no-group --no-times
 )
 if [ "$DRY_RUN" = "1" ] ; then
   RSYNC_ARGS+=(--dry-run)
