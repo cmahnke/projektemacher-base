@@ -43,8 +43,20 @@
       {{- end -}}
     </ul>
   </nav>
+  {{- $menuFormat := "iife" -}}
+  {{- with site.Params.js -}}
+    {{- if reflect.IsMap . -}}
+      {{- with .format -}}{{- $menuFormat = . -}}{{- end -}}
+    {{- else -}}
+      {{- $menuFormat = . -}}
+    {{- end -}}
+  {{- end -}}
   {{- with resources.Get "ts/menu.ts" -}}
-    {{- $menuJs := . | js.Build (dict "targetPath" "js/menu.js" "minify" (cond hugo.IsDevelopment false true) "sourceMap" (cond hugo.IsDevelopment "linked" "none")) | fingerprint -}}
-    <script defer src="{{ $menuJs.RelPermalink }}" integrity="{{ $menuJs.Data.Integrity | html }}"></script>
+    {{- $menuJs := . | js.Build (dict "targetPath" "js/menu.js" "minify" (cond hugo.IsDevelopment false true) "sourceMap" (cond hugo.IsDevelopment "linked" "none") "format" $menuFormat) | fingerprint -}}
+    {{- if eq $menuFormat "esm" -}}
+      <script type="module" src="{{ $menuJs.RelPermalink }}" integrity="{{ $menuJs.Data.Integrity | html }}"></script>
+    {{- else -}}
+      <script defer src="{{ $menuJs.RelPermalink }}" integrity="{{ $menuJs.Data.Integrity | html }}"></script>
+    {{- end -}}
   {{- end -}}
 {{- end -}}

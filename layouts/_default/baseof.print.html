@@ -23,23 +23,6 @@
     <meta name="date" content="{{ $t.Format $format }}"/>
     {{- $cssOptions := dict "outputStyle" "compressed" "transpiler" "dartsass" "targetPath" "css/print.css" "includePaths" (slice "assets/css") -}}
     {{- $css := resources.Get "scss/print.scss" | toCSS $cssOptions | fingerprint -}}
-    {{ with resources.Get "js/print.js" }}
-      {{$opts := dict
-        "minify" (not hugo.IsDevelopment)
-        "sourceMap" (cond hugo.IsDevelopment "external" "")
-        "targetPath" "js/print.js"
-        "target" "es2018"
-      }}
-      {{ with . | js.Build $opts }}
-        {{ if hugo.IsDevelopment }}
-          <script src="{{ strings.Substr .RelPermalink $relative }}"></script>
-        {{ else }}
-          {{ with . | fingerprint }}
-            <script src="{{ strings.Substr .RelPermalink $relative }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-          {{ end }}
-        {{ end }}
-      {{ end }}
-    {{ end }}
     <link rel="stylesheet" href="{{ strings.Substr $css.RelPermalink $relative }}" type="text/css" integrity="{{ $css.Data.Integrity }}">
   </head>
   <body>
