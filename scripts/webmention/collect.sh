@@ -21,8 +21,8 @@ DEST="$1"
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 
 mkdir -p "$DEST"
-# The service directory on the host - DEPLOY_PATH + 'services/webmentions'
-# (single place: 'host.sh path').
+# The service directory on the host - DEPLOY_PATH +
+# 'projektemacher.org/services/webmentions' (single place: 'host.sh path').
 SERVICE_PATH="$("$SCRIPT_DIR/host.sh" path)"
 "$SCRIPT_DIR/host.sh" rsync -a --delete \
   "$DEPLOY_USER@$DEPLOY_SERVER:$SERVICE_PATH/data/" \

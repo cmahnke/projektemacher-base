@@ -87,8 +87,13 @@ build data, no HTTP during the build.
   advertisePingback = true
 ```
 
+The theme's default `hugo.toml` already sets
+`endpoint = 'https://static.projektemacher.org/services/webmention.php'`;
+site configs can override or unset it.
+
 With `endpoint` set the document head advertises the endpoints
-(`<link rel="webmention">` plus an optional `pingback` link) and
+(`<link rel="webmention">` plus a `pingback` link by default -
+`advertisePingback = false` disables just the pingback link) and
 received mentions render below the page content
 (`layouts/_partials/webmentions/list.html`, also available as the
 `{{< webmentions >}}` shortcode). See

@@ -45,7 +45,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y php-cli php-curl
-          for FILE in services/webmentions/endpoint.php services/webmentions/config.php services/webmentions/lib/*.php ; do
+          for FILE in services/webmentions/webmention.php services/webmentions/config.php services/webmentions/lib/*.php ; do
             php -l "$FILE"
           done
 
@@ -60,7 +60,7 @@ jobs:
       - name: Post-deploy sanity check
         run: |
           SERVICE_PATH="$(./scripts/webmention/host.sh path)"
-          ./scripts/webmention/host.sh exec "test -f '$SERVICE_PATH/endpoint.php' && test -d '$SERVICE_PATH/data'"
+          ./scripts/webmention/host.sh exec "test -f '$SERVICE_PATH/webmention.php' && test -d '$SERVICE_PATH/data'"
 
   harvest:
     needs: deploy

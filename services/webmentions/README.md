@@ -17,7 +17,7 @@ sender (other website)
    |
    | POST source + target                POST XML-RPC pingback.ping
    v
-endpoint.php (web host)  -- verifies + stores -->  data/<sha1(target)>.json
+webmention.php (web host)  -- verifies + stores -->  data/<sha1(target)>.json
    |                                                     (web host)
    |  scheduled GitHub Action (cron) - one connection, one workflow
    |    1. deploy: checks + php -l + test suite + rsync deployment
@@ -42,7 +42,7 @@ committed with `[skip ci]`).
 
 | File             | Purpose                                                    |
 |------------------|------------------------------------------------------------|
-| `endpoint.php`   | POST-only front controller: Webmention (form fields `source`/`target`) and Pingback (XML-RPC `pingback.ping`) in one endpoint |
+| `webmention.php` | POST-only front controller: Webmention (form fields `source`/`target`) and Pingback (XML-RPC `pingback.ping`) in one endpoint |
 | `config.php`     | Configuration, all values overridable via environment variables |
 | `lib/verify.php` | Source verification: fetch (5s timeout, 1 MB cap), SSRF guard, backlink check, basic microformats extraction (`h-entry`, `p-name`, `p-author`, `u-like-of`/`u-repost-of`/`u-in-reply-to`), sanitization |
 | `lib/store.php`  | Flat file storage and rate limiting                        |
@@ -163,7 +163,8 @@ export DEPLOY_SERVER=webhost.example.org   # or set in the workflow secrets
 export DEPLOY_USER=deploy
 export DEPLOY_PATH=/home/deploy            # absolute base dir, no trailing
                                            # slash - the service lives in the
-                                           # fixed 'services/webmentions' subdir
+                                           # fixed 'projektemacher.org/services/webmentions'
+                                           # subdir
 export DEPLOY_PASS=…                       # password auth via sshpass;
                                            # unset = local ssh agent/key
 ./scripts/webmention/deploy.sh [--dry-run]
@@ -178,7 +179,7 @@ connection always uses port 22, host keys are collected with
 files are synchronized - the collected `data/` on the host is
 protected from `rsync --delete` (only the tracked `data/.htaccess` is
 kept in place). Use `--dry-run` to preview. Point the site's endpoint
-parameter at the deployed `endpoint.php`.
+parameter at the deployed `webmention.php`.
 
 # 3. Deploying and collecting - two workflows, one connection
 
@@ -220,7 +221,7 @@ used by both jobs):
 |--------------------|---------------------------------------------|
 | `DEPLOY_SERVER`    | web host hostname                           |
 | `DEPLOY_USER`      | SSH user                                    |
-| `DEPLOY_PATH`      | absolute base directory on the host - the service lives in the fixed subdirectory `services/webmentions` |
+| `DEPLOY_PATH`      | absolute base directory on the host - the service lives in the fixed subdirectory `projektemacher.org/services/webmentions` |
 | `DEPLOY_PASS`      | SSH password (sshpass); without a private SSH key |
 
 The former `WEBMENTION_SSH_KEY` private-key setup and the
@@ -281,12 +282,16 @@ otherwise `data/webmentions/` is silently ignored. The example site's
   advertisePingback = true
 ```
 
+The theme's default `hugo.toml` already sets
+`endpoint = 'https://static.projektemacher.org/services/webmention.php'`;
+site configs can override or unset it.
+
 With `endpoint` set:
 
 - every page advertises the endpoints in the document head
-  (`<link rel="webmention">`, plus `<link rel="pingback">` when
-  `advertisePingback` is true) - see
-  `layouts/_partials/html/head/webmention.html`
+  (`<link rel="webmention">`, plus `<link rel="pingback">` by default -
+  set `advertisePingback = false` to only advertise the webmention
+  link) - see `layouts/_partials/html/head/webmention.html`
 - received mentions render below the current page's content via
   `layouts/_partials/webmentions/list.html`. Include it from your
   layouts or place it with the `{{< webmentions >}}` shortcode; it

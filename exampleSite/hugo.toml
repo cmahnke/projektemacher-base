@@ -28,6 +28,9 @@ disablePathToLower = true
   # 'services/webmentions/README.md'). Enabled only when 'endpoint' is
   # set; the mention data itself lives at 'data/webmentions/mentions.json'
   # (site repository, committed by the collection workflow).
+  # The theme's own 'hugo.toml' defaults to
+  # 'https://static.projektemacher.org/services/webmention.php',
+  # overridden here to demo the local example endpoint.
   # endpoint = 'https://webmentions.example.org/endpoint.php'
   advertisePingback = true
 

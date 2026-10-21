@@ -1,0 +1,10 @@
+# Theme-wide defaults, merged into every site using this theme.
+# Site configs can override any of these; the example site's
+# 'exampleSite/hugo.toml' documents the site-side configuration.
+#
+[params.webmentions]
+  # Webmention/pingback collector endpoint (see the theme's
+  # 'services/webmentions/README.md'). When set, both the webmention and
+  # the pingback endpoint are advertised in the document head; explicit
+  # 'advertisePingback = false' opts out of the pingback link.
+  endpoint = 'https://static.projektemacher.org/services/webmention.php'

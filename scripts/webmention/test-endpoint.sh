@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Integration test for the webmention/pingback endpoint
-# ('services/webmentions/endpoint.php'), using two instances of PHP's
+# ('services/webmentions/webmention.php'), using two instances of PHP's
 # built-in web server - one serving the endpoint, one acting as the
 # "source site" that mentions link from. Requires php and curl.
 #
@@ -130,7 +130,7 @@ SOURCE_PID=$!
     WEBMENTION_ALLOWED_DOMAINS='["example.org"]' \
     WEBMENTION_ALLOW_PRIVATE=1 \
     WEBMENTION_RATE_LIMIT=1000 \
-    php -S "127.0.0.1:$ENDPOINT_PORT" endpoint.php >/dev/null 2>&1
+    php -S "127.0.0.1:$ENDPOINT_PORT" webmention.php >/dev/null 2>&1
 ) &
 ENDPOINT_PID=$!
 
@@ -290,7 +290,7 @@ start_endpoint() {
       WEBMENTION_ALLOW_PRIVATE=1 \
       WEBMENTION_RATE_LIMIT="$rate_limit" \
       "$@" \
-      php -S "127.0.0.1:$ENDPOINT_PORT" endpoint.php >/dev/null 2>&1
+      php -S "127.0.0.1:$ENDPOINT_PORT" webmention.php >/dev/null 2>&1
   ) &
   ENDPOINT_PID=$!
 }
@@ -381,7 +381,7 @@ delete_stale_endpoint
     WEBMENTION_ARCHIVE=1 \
     "WEBMENTION_ARCHIVE_URL=$SOURCE_URL/archive.php" \
     WEBMENTION_ARCHIVE_ACCESS_KEY=test-access \
-    php -S "127.0.0.1:$ENDPOINT_PORT" endpoint.php > "$TMP/half-config-stderr.log" 2>&1
+    php -S "127.0.0.1:$ENDPOINT_PORT" webmention.php > "$TMP/half-config-stderr.log" 2>&1
 ) &
 ENDPOINT_PID=$!
 wait_endpoint_up

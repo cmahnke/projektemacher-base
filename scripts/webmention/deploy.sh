@@ -19,8 +19,8 @@ set -e -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 SOURCE="$(cd "$SCRIPT_DIR/../../services/webmentions" && pwd)"
-# The service directory on the host - DEPLOY_PATH + 'services/webmentions'
-# (single place: 'host.sh path').
+# The service directory on the host - DEPLOY_PATH +
+# 'projektemacher.org/services/webmentions' (single place: 'host.sh path').
 SERVICE_PATH="$("$SCRIPT_DIR/host.sh" path)"
 TARGET="$DEPLOY_USER@$DEPLOY_SERVER:$SERVICE_PATH"
 
@@ -55,6 +55,7 @@ fi
 "$SCRIPT_DIR/host.sh" rsync "${RSYNC_ARGS[@]}" "$SOURCE/" "$TARGET/"
 
 echo "Deployed webmention endpoint to $DEPLOY_SERVER:$SERVICE_PATH"
-echo "Hint: set the endpoint URL in your site config:"
+echo "Hint: the theme's default 'hugo.toml' points at static.projektemacher.org;"
+echo "sites can override with:"
 echo "  [params.webmentions]"
-echo "    endpoint = 'https://<host>/<path>/endpoint.php'"
+echo "    endpoint = 'https://<host>/<path>/webmention.php'"

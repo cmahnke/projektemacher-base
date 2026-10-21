@@ -6,6 +6,10 @@
         endpoint = 'https://example.org/webmentions/endpoint.php'
         advertisePingback = true
 
+  With 'endpoint' set both <link rel="webmention"> and <link rel="pingback">
+  are advertised (the theme's hugo.toml default configuration); an
+  explicit 'advertisePingback = false' disables just the pingback link.
+
   Before advertising, the endpoint URL is verified once per build
   (this partial is cached): the collector answers GET requests with
   405, so any HTTP status proves the endpoint is reachable, while
@@ -34,7 +38,7 @@
   {{- end -}}
   {{- if $reachable -}}
     <link href="{{ $endpoint }}" rel="webmention" />
-    {{- if $webmentions.advertisePingback -}}
+    {{- if ne $webmentions.advertisePingback false -}}
       <link href="{{ $endpoint }}" rel="pingback" />
     {{- end -}}
   {{- else if findRE "is not whitelisted in policy" $message -}}

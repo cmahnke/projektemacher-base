@@ -11,7 +11,8 @@
 #   DEPLOY_USER    ssh user on the host (required)
 #   DEPLOY_PATH    absolute base directory on the host (required) - the
 #                  webmention service lives in the fixed subdirectory
-#                  'services/webmentions' (see 'host.sh path')
+#                  'projektemacher.org/services/webmentions'
+#                  (see 'host.sh path')
 #   DEPLOY_PASS    ssh password; when unset the local ssh agent/key
 #                  setup is used (for interactive runs)
 #
@@ -27,8 +28,8 @@
 #                              destination is expected as
 #                              '$DEPLOY_USER@$DEPLOY_SERVER:<service path>...'
 #   host.sh path               print the service directory on the host
-#                              ($DEPLOY_PATH + 'services/webmentions', the
-#                              fixed layout used by deploy + harvest)
+#                              ($DEPLOY_PATH + 'projektemacher.org/services/webmentions',
+#                              the fixed layout used by deploy + harvest)
 #
 # See 'services/webmentions/README.md' for the full process.
 
@@ -36,7 +37,7 @@ set -e -o pipefail
 
 # The service directory on the host is a fixed subdirectory of
 # DEPLOY_PATH - the subpath carries its own leading slash.
-SERVICE_SUBPATH='/services/webmentions'
+SERVICE_SUBPATH='/projektemacher.org/services/webmentions'
 
 for VAR in DEPLOY_SERVER DEPLOY_USER DEPLOY_PATH ; do
   if [ -z "${!VAR:-}" ] ; then
