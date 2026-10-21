@@ -18,7 +18,7 @@
       {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
     {{- end -}}
     {{- if $debug -}}
-      {{- warnf "[_default/_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
+      {{- warnf "[_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
     {{- end -}}
     {{- with try (resources.GetRemote $queryURL $queryOpts) -}}
       {{- with .Err -}}

@@ -20,7 +20,7 @@
               {{- if templates.Exists "article.html" -}}
                 {{- partial "article.html" . -}}
               {{- else -}}
-                {{- warnf "[_default/html-body.html] Couln't find file article.html!" -}}
+                {{- warnf "[html-body.html] Couln't find file article.html!" -}}
               {{- end -}}
             </section>
         </div>
