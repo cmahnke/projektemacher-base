@@ -16,7 +16,80 @@ guide.
 | Custom site parameters outside `params` | audit corrected: root `description` (kraehenbeisser, diapraesentation), language-level `description`/`decription` typo (christianmahnke), `lanbel`/`lable` typos (flugzeugbesteck, ric-unknownartist) — see ["Move custom site parameters into the `params` namespace"](#move-custom-site-parameters-into-the-params-namespace) | medium |
 | Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | consumers: 14 converted, 4 need no conversion, 7 pending (2026-10); old structure keeps working — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
+| Deprecated `.Site.Data` template access | **mandatory**: Hugo deprecated `.Site.Data` (0.156.0, "Use `hugo.Data` instead") and will remove it — the theme's templates now use `hugo.Data`, sites with own `site.Data`/`.Site.Data` code must follow — see ["Replace deprecated `.Site.Data` access with `hugo.Data`"](#replace-deprecated-sitedata-access-with-hugodata) | high |
+| Webmention workflows: single deployment connection | collectors copied from this repository must adopt the one-connection layout (variables `DEPLOY_SERVER`/`DEPLOY_USER`/`DEPLOY_PATH`/`DEPLOY_PASS`, `scripts/webmention/host.sh`, combined deploy + harvest workflow; the collected data is committed as `data/webmentions/mentions.json` to the site's own `main` branch — direct Hugo data, the old `fetch.sh` branch flow is gone) — see [services/webmentions/README.md](services/webmentions/README.md) | low |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
+
+# Replace deprecated `.Site.Data` access with `hugo.Data`
+
+**Mandatory** — Hugo deprecated `.Site.Data` in v0.156.0 ("Use
+`hugo.Data` instead") and will remove it in a future Hugo release,
+which breaks every template still using it. All site data access must
+go through the `hugo.Data` namespace.
+
+The deprecation showed up as a build warning in the theme's test
+builds (and a related data loading bug was found along the way — see
+"Related" below). The theme's templates and the exampleSite were
+migrated in the same change that introduced the webmention
+integration (October 2026):
+
+| File | Change |
+|---|---|
+| `layouts/_partials/html/head/webmention.html` | new (webmention head advertisement), uses `hugo.Data` |
+| `layouts/_partials/webmentions/list.html` | new (webmention list), uses `hugo.Data` |
+| `layouts/_partials/html/head/stats.html` | already used `hugo.Data` — no change |
+| `layouts/tag-list.json` | already used `hugo.Data` — no change |
+| `exampleSite/layouts/_shortcodes/i18n-strings.html` | `.Site.Data.i18n` → `hugo.Data.i18n` |
+| `exampleSite/content/i18n/index.md` | documentation text updated |
+
+## What sites need to do
+
+Find deprecated data access in the site's own templates and replace
+every occurrence with the `hugo.Data` equivalent — the semantics are
+identical, only the namespace changes:
+
+```bash
+grep -rn "site\.Data\|\.Site\.Data" layouts/ themes/*/layouts/
+```
+
+```text
+{{ $data := .Site.Data.i18n }}          →    {{ $data := hugo.Data.i18n }}
+{{ index site.Data "webmentions" }}     →    {{ index hugo.Data "webmentions" }}
+```
+
+Verify with a clean build — the deprecation warning must be gone:
+
+```bash
+hugo 2>&1 | grep -i "Site.Data was deprecated"
+```
+
+> [!WARNING]
+> This also applies to new theme features like the [webmention
+> integration](services/webmentions/README.md): their data is consumed
+> through `hugo.Data.webmentions…` — site-local template overrides
+> written before the switch must use the same namespace.
+
+## Related: explicit `[module.mounts]` drop the implicit data mount
+
+Found while migrating the exampleSite: once a site configures **any**
+`[[module.mounts]]` entries, Hugo stops applying the implicit default
+mounts — including the mount of the site's own `data/` directory. The
+exampleSite (which mounts the theme's `i18n` directory as data for its
+'i18n strings' page) lost its own `data/webmentions/` that way; it is
+restored with an explicit mount, and sites with custom mounts should
+check for the same:
+
+```toml
+[module]
+  [[module.mounts]]
+    source = '../i18n'
+    target = 'data/i18n'
+  # Explicit mounts replace the implicit defaults - keep the site's
+  # own data directory mounted:
+  [[module.mounts]]
+    source = 'data'
+    target = 'data'
+```
 
 # Run the JS runtime check against the example site
 

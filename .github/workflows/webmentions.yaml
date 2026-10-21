@@ -1,0 +1,113 @@
+name: Deploy and harvest webmentions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/webmentions/**'
+      - 'scripts/webmention/**'
+      - '.github/workflows/webmentions.yaml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+# Where the merged mention data is committed in this repository - the
+# site's own data directory, which Hugo reads directly as build data
+# ('hugo.Data.webmentions.mentions'), no fetch step needed. The theme
+# repository itself collects nothing: copy this workflow into the site
+# repository and keep the default ('data/webmentions' at the site
+# root); adjust only if the site lives in a subdirectory.
+# The single connection to the deployment host - deploy and harvest
+# share it, defined once here (see 'scripts/webmention/host.sh').
+env:
+  WEBMENTIONS_DATA_DIR: data/webmentions
+  DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+  DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Check the deployment connection
+        run: |
+          ./scripts/webmention/host.sh exec true
+
+      - name: Sanity check PHP sources
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-cli php-curl
+          for FILE in services/webmentions/endpoint.php services/webmentions/config.php services/webmentions/lib/*.php ; do
+            php -l "$FILE"
+          done
+
+      - name: Run endpoint test suite
+        run: |
+          ./scripts/webmention/test-endpoint.sh
+
+      - name: Deploy endpoint
+        run: |
+          ./scripts/webmention/deploy.sh
+
+      - name: Post-deploy sanity check
+        run: |
+          SERVICE_PATH="$(./scripts/webmention/host.sh path)"
+          ./scripts/webmention/host.sh exec "test -f '$SERVICE_PATH/endpoint.php' && test -d '$SERVICE_PATH/data'"
+
+  collect:
+    needs: deploy
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Harvest collected mentions
+        run: |
+          ./scripts/webmention/collect.sh "$RUNNER_TEMP/webmentions-raw"
+
+      - name: Lint and merge mentions
+        run: |
+          python3 scripts/webmention/lint.py \
+            "$RUNNER_TEMP/webmentions-raw" \
+            "$RUNNER_TEMP/mentions.json"
+
+      - name: Commit to the main data directory
+        run: |
+          mkdir -p "$WEBMENTIONS_DATA_DIR"
+          cp "$RUNNER_TEMP/mentions.json" "$WEBMENTIONS_DATA_DIR/mentions.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No mention changes, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Webmention update $(date -u '+%Y-%m-%dT%H:%M:%SZ') [skip ci]"
+          for ATTEMPT in 1 2 3 ; do
+            if git push origin main; then
+              exit 0
+            fi
+            # main moved since the checkout - replay the data commit on
+            # top of it ('-X theirs' keeps the fresh harvest on a
+            # racing data file change).
+            if ! git rebase --quiet -X theirs origin/main; then
+              echo "Rebase onto moved main failed" >&2
+              exit 1
+            fi
+          done
+          echo "Could not push the mention update" >&2
+          exit 1

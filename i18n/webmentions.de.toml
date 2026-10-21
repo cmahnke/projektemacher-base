@@ -1,0 +1,20 @@
+[webmentionsTitle]
+other = "Erwähnungen"
+
+[webmentionsTypeMention]
+other = "Erwähnung"
+
+[webmentionsTypeReply]
+other = "Antwort"
+
+[webmentionsTypeLike]
+other = "Gefällt mir"
+
+[webmentionsTypeRepost]
+other = "Geteilt"
+
+[webmentionsTypeBookmark]
+other = "Lesezeichen"
+
+[webmentionsTypePingback]
+other = "Pingback"

@@ -42,6 +42,9 @@
 /* Section table of contents sidebar (theme's partials/toc.html) */
 @use "section-toc";
 
+/* Webmentions list (theme's partials/webmentions/list.html) */
+@use "webmentions";
+
 /*
  * Adapter: the theme's baseof.html wraps the site header in
  * header#site-header and the site's header.html renders the coder

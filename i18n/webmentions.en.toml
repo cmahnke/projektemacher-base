@@ -1,0 +1,20 @@
+[webmentionsTitle]
+other = "Mentions"
+
+[webmentionsTypeMention]
+other = "Mention"
+
+[webmentionsTypeReply]
+other = "Reply"
+
+[webmentionsTypeLike]
+other = "Like"
+
+[webmentionsTypeRepost]
+other = "Repost"
+
+[webmentionsTypeBookmark]
+other = "Bookmark"
+
+[webmentionsTypePingback]
+other = "Pingback"

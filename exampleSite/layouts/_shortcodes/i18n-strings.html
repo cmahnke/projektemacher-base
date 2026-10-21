@@ -10,7 +10,7 @@
   - '<id>.<lang>.toml'       — i18n fragment (merged into '<lang>.toml' by
                                scripts/init/i18n.sh at build time)
 */}}
-{{- $data := .Site.Data.i18n -}}
+{{- $data := hugo.Data.i18n -}}
 {{- if not $data -}}
   {{- errorf "[shortcodes/i18n-strings.html] No i18n data found — is the module mount 'i18n' -> 'data/i18n' configured?" -}}
 {{- end -}}

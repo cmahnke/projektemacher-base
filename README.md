@@ -67,6 +67,34 @@ Without an index the search page renders, but the search bundle finds
 nothing — see "Run the JS runtime check against the example site" in
 `Upgrade.md`.
 
+## Webmentions / Pingback
+
+The theme ships a self-contained PHP collector for
+[webmentions](https://www.w3.org/TR/webmention/) and classic pingbacks
+(`services/webmentions/`, no database, no read API). Deployment and
+data collection share a single connection to the web host
+(`DEPLOY_SERVER`/`DEPLOY_USER`/`DEPLOY_PATH`/`DEPLOY_PASS`, defined
+once in `scripts/webmention/host.sh`): `scripts/webmention/deploy.sh`
+deploys the service, the same workflow harvests the flat files over
+that connection and `scripts/webmention/lint.py` merges them, then the
+merged `data/webmentions/mentions.json` is committed to the site
+repository's `main` branch (`[skip ci]`) — Hugo reads it directly as
+build data, no HTTP during the build.
+
+```toml
+[params.webmentions]
+  endpoint = 'https://example.org/webmentions/endpoint.php'
+  advertisePingback = true
+```
+
+With `endpoint` set the document head advertises the endpoints
+(`<link rel="webmention">` plus an optional `pingback` link) and
+received mentions render below the page content
+(`layouts/_partials/webmentions/list.html`, also available as the
+`{{< webmentions >}}` shortcode). See
+[services/webmentions/README.md](services/webmentions/README.md) for
+the complete process, deployment and operations guide.
+
 # Scripts
 
 ## Fonts

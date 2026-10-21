@@ -1,0 +1,53 @@
+/*
+ * Styles for the webmentions list (partials/webmentions/list.html).
+ * Sites include it from their base stylesheet with: @use "webmentions";
+ */
+
+.webmentions {
+    margin-block: 2em;
+
+    .webmentions-title {
+        margin-block-end: 0.5em;
+    }
+
+    .webmentions-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .webmention {
+        border: 1px solid rgb(128 128 128 / 0.3);
+        border-radius: 0.25em;
+        margin-block-end: 0.75em;
+        padding: 0.75em;
+
+        .webmention-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em 1em;
+            align-items: baseline;
+            font-size: 0.9em;
+        }
+
+        .webmention-type {
+            font-size: 0.85em;
+            border: 1px solid rgb(128 128 128 / 0.3);
+            border-radius: 0.25em;
+            padding: 0.05em 0.5em;
+        }
+
+        .webmention-date {
+            opacity: 0.7;
+        }
+
+        .webmention-title {
+            font-weight: bold;
+            margin-block-start: 0.25em;
+        }
+
+        .webmention-content {
+            margin-block-start: 0.25em;
+        }
+    }
+}

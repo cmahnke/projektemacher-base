@@ -1,0 +1,11 @@
+{{/*
+  Renders the webmentions received for the current page - convenience
+  wrapper around 'partials/webmentions/list.html' so consumers can
+  place the list anywhere in their content:
+
+      {{< webmentions >}}
+
+  The data comes from the site's 'data/webmentions/mentions.json'
+  (see the theme's 'services/webmentions/README.md').
+*/}}
+{{- partial "webmentions/list.html" .Page -}}

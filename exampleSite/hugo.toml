@@ -23,6 +23,14 @@ disablePathToLower = true
   name = 'Christian Mahnke'
   uri = 'http://www.wikidata.org/entity/Q137668638'
 
+[params.webmentions]
+  # Webmention/pingback collector endpoint (see the theme's
+  # 'services/webmentions/README.md'). Enabled only when 'endpoint' is
+  # set; the mention data itself lives at 'data/webmentions/mentions.json'
+  # (site repository, committed by the collection workflow).
+  # endpoint = 'https://webmentions.example.org/endpoint.php'
+  advertisePingback = true
+
 [markup.goldmark.renderer]
   unsafe = true
 
@@ -69,6 +77,12 @@ disablePathToLower = true
   [[module.mounts]]
     source = '../i18n'
     target = 'data/i18n'
+  # Defining mounts replaces the implicit defaults - keep the site's
+  # own data directory mounted for the webmentions JSON (see
+  # content/posts/webmentions)
+  [[module.mounts]]
+    source = 'data'
+    target = 'data'
 
 [security]
   # Allow HTML files in content bundles, needed by the html-body template

@@ -25,6 +25,7 @@
 @use "textures/wood";
 @use "3d/3d-model" as threed-model;
 @use "services/cookie-consent";
+@use "webmentions";
 @use "shortcodes/code";
 @use "coder/site-shared";
 @use "coder/base";

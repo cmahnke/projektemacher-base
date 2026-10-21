@@ -1,0 +1,45 @@
+{{/*
+  Advertises the webmention (and optional pingback) endpoint in the
+  document head. Requires site.Params.webmentions:
+
+      [params.webmentions]
+        endpoint = 'https://example.org/webmentions/endpoint.php'
+        advertisePingback = true
+
+  Before advertising, the endpoint URL is verified once per build
+  (this partial is cached): the collector answers GET requests with
+  405, so any HTTP status proves the endpoint is reachable, while
+  DNS/connection errors lead to a build warning and the endpoints are
+  not advertised in this build. Note that Hugo's security policy can
+  deny the URL before any request leaves the build - see
+  'services/webmentions/README.md' for the configuration and the
+  required 'security.http.urls' whitelist.
+*/}}
+{{- $webmentions := site.Params.webmentions -}}
+{{- if and $webmentions $webmentions.endpoint -}}
+  {{- $endpoint := $webmentions.endpoint -}}
+  {{- $response := try (resources.GetRemote $endpoint) -}}
+  {{- $reachable := false -}}
+  {{- $message := "" -}}
+  {{- with $response.Err -}}
+    {{- $message = printf "%v" . -}}
+  {{- else -}}
+    {{- $reachable = true -}}
+  {{- end -}}
+  {{- if findRE "failed to fetch remote resource from" $message -}}
+    {{- /* A status code came back (405 for the collector's GET
+           response) - the endpoint is there, it just rejects GET. */}}
+    {{- $message = "" -}}
+    {{- $reachable = true -}}
+  {{- end -}}
+  {{- if $reachable -}}
+    <link href="{{ $endpoint }}" rel="webmention" />
+    {{- if $webmentions.advertisePingback -}}
+      <link href="{{ $endpoint }}" rel="pingback" />
+    {{- end -}}
+  {{- else if findRE "is not whitelisted in policy" $message -}}
+    {{- warnf "[partials/html/head/webmention.html] Webmention endpoint %s cannot be verified: Hugo's security policy denies the URL. Add the endpoint's host to 'security.http.urls' - see 'services/webmentions/README.md'. Not advertising the endpoints in this build." $endpoint -}}
+  {{- else -}}
+    {{- warnf "[partials/html/head/webmention.html] Webmention endpoint %s is not reachable (%s). Not advertising the endpoints in the document head of this build." $endpoint $message -}}
+  {{- end -}}
+{{- end -}}

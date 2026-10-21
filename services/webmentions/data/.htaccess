@@ -1,0 +1,12 @@
+# Deny direct HTTP access to the stored mention data. The data is
+# consumed exclusively through rsync/ssh - see
+# 'services/webmentions/README.md'. nginx ignores this file: point
+# WEBMENTION_DATA_DIR outside of the document root or add a 'deny all;'
+# location there instead.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

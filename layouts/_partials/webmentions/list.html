@@ -1,0 +1,85 @@
+{{/*
+  Renders the webmentions received for the current page.
+
+  The mention data is pulled from the site's data directory
+  ('data/webmentions/mentions.json' - committed to the site
+  repository's main branch by the collection workflow; see the
+  theme's 'services/webmentions/README.md'),
+  so the list only changes when the site is rebuilt. Hugo nests data
+  by path ('webmentions' directory and 'mentions' file name), so the
+  lookup map lives at
+  'hugo.Data.webmentions.mentions.mentions'. The section is
+  only rendered when entries exist for this page's permalink; the
+  lookup matches the normalized key variants written by
+  'scripts/webmention/lint.py' (lowercase host, with/without trailing
+  slash).
+
+  Consumers render it from their layouts or via the 'webmentions'
+  shortcode.
+*/}}
+{{- $webmentionsData := index hugo.Data "webmentions" -}}
+{{- if $webmentionsData -}}
+  {{- $dataDoc := default dict (index $webmentionsData "mentions") -}}
+  {{- $all := default dict (index $dataDoc "mentions") -}}
+  {{- $permalink := .Permalink -}}
+  {{- $keys := slice $permalink (printf "%s/" $permalink) (strings.TrimSuffix "/" $permalink) -}}
+  {{- $found := slice -}}
+  {{- range $key := $keys -}}
+    {{- $entries := index $all $key -}}
+    {{- if and $entries (not $found) -}}
+      {{- $found = $entries -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if gt (len $found) 0 -}}
+    {{- $typeLabels := dict
+        "mention" (i18n "webmentionsTypeMention")
+        "reply" (i18n "webmentionsTypeReply")
+        "like" (i18n "webmentionsTypeLike")
+        "repost" (i18n "webmentionsTypeRepost")
+        "bookmark" (i18n "webmentionsTypeBookmark")
+        "pingback" (i18n "webmentionsTypePingback")
+    -}}
+    <section class="webmentions" id="webmentions">
+      <h2 class="webmentions-title">{{ i18n "webmentionsTitle" }}</h2>
+      <ul class="webmentions-list">
+        {{- range $found -}}
+          {{- $type := .type | default "mention" -}}
+          {{- $authorName := "" -}}
+          {{- with .author -}}
+            {{- $authorName = .name | default "" -}}
+          {{- end -}}
+          {{- $label := "" -}}
+          {{- if $authorName -}}
+            {{- $label = $authorName -}}
+          {{- else -}}
+            {{- $label = .title | default "" -}}
+          {{- end -}}
+          {{- if not $label -}}
+            {{- with .source -}}
+              {{- $label = . -}}
+            {{- end -}}
+          {{- end -}}
+          <li class="webmention webmention-{{ $type }}">
+            <div class="webmention-meta">
+              {{- with .source -}}
+                <a class="webmention-source" href="{{ . }}" rel="noopener nofollow">{{ $label }}</a>
+              {{- end -}}
+              {{- with index $typeLabels $type -}}
+                <span class="webmention-type">{{ . }}</span>
+              {{- end -}}
+              {{- with .received -}}
+                <time class="webmention-date" datetime="{{ . }}">{{ dateFormat "2006-01-02" . }}</time>
+              {{- end -}}
+            </div>
+            {{- with .title -}}
+              <div class="webmention-title">{{ . }}</div>
+            {{- end -}}
+            {{- with .content -}}
+              <div class="webmention-content">{{ . }}</div>
+            {{- end -}}
+          </li>
+        {{- end -}}
+      </ul>
+    </section>
+  {{- end -}}
+{{- end -}}

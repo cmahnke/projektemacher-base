@@ -1,0 +1,35 @@
+{
+  "generated": "2026-10-21T12:00:00Z",
+  "mentions": {
+    "https://cmahnke.github.io/projektemacher-base/posts/webmentions": [
+      {
+        "source": "https://example.org/notes/a-reply-to-projektemacher",
+        "target": "https://cmahnke.github.io/projektemacher-base/posts/webmentions/",
+        "received": "2026-10-20T09:15:00Z",
+        "type": "reply",
+        "title": "A reply to the projektemacher base theme",
+        "content": "This demo shows how received mentions are rendered by the theme. Content is plain text, sanitized by the collector.",
+        "author": {
+          "name": "Anna Example",
+          "url": "https://example.org/"
+        }
+      },
+      {
+        "source": "https://example.org/likes/projektemacher-base",
+        "target": "https://cmahnke.github.io/projektemacher-base/posts/webmentions/",
+        "received": "2026-10-20T10:30:00Z",
+        "type": "like",
+        "author": {
+          "name": "Bob Example"
+        }
+      },
+      {
+        "source": "https://example.org/linkdump/2026-10",
+        "target": "https://cmahnke.github.io/projektemacher-base/posts/webmentions/",
+        "received": "2026-10-21T08:00:00Z",
+        "type": "mention",
+        "title": "Linkdump 10/2026"
+      }
+    ]
+  }
+}
