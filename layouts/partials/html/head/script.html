@@ -22,6 +22,11 @@ Example usage:
 
  partial "html/head/script.html" (dict "context" . "splitBundles" true)
 
+  * The 'js' param takes asset paths (strings) or resources: strings are
+    build entry points (TypeScript works, the built output is published
+    under a .js targetPath, e.g. the IIIF viewers from 'iiif-js.html');
+    resources are appended unbuilt.
+
 */}}
 
 {{- $defaultScriptEntrypoint := "js/main.js" -}}
@@ -86,8 +91,23 @@ Example usage:
         {{- end -}}
         {{- range $file := $js -}}
             {{- if eq (printf "%T" $file) "string" -}}
-                {{- if ne (resources.Get $file) nil -}}
-                    {{- $jsResources = $jsResources | append (resources.Get $file) -}}
+                {{/* String entries are build entry points, not raw assets: esbuild
+                    compiles TypeScript sources, but the built output must be
+                    published with a .js targetPath - otherwise unbuilt .ts sources
+                    leak into the page (served as video/mp2t, rejected as modules) */}}
+                {{- $jsTargetPath := replaceRE "\\.ts$" ".js" $file -}}
+                {{- $jsOpts := dict "targetPath" $jsTargetPath
+                                    "externals" $externals
+                                    "defines" $defines
+                                    "minify" (cond hugo.IsDevelopment false true)
+                                    "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+                                    "format" $format
+                -}}
+                {{- $jsOpts = merge $jsOpts $additionalOpts -}}
+                {{- $scriptRes := resources.Get $file -}}
+                {{- if ne $scriptRes nil -}}
+                    {{- $builtScript := $scriptRes | js.Build $jsOpts -}}
+                    {{- $jsResources = $jsResources | append $builtScript -}}
                 {{- else -}}
                     {{- warnf "[partials/html/head/script.html] Can't read file %s maybe you've forgot to add a module mount?" $file -}}
                 {{- end -}}

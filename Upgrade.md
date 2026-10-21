@@ -257,6 +257,16 @@ instead of the `defer` variant — modules are deferred implicitly, so the
 timing stays the same. One opts pass covers all bundles built within the
 call (main bundle, IIIF viewers, page scripts).
 
+Since 2026-10 `script.html` also builds the `js` call parameter
+centrally: string entries (asset paths, e.g. the IIIF viewers returned
+by `iiif-js.html` after its script-handling refactor) are build entry
+points — `js.Build` with the same opts as page scripts, including the
+`.ts` → `.js` targetPath rename, so built output never leaks a `.ts`
+extension (which servers deliver as `video/mp2t`, rejected for module
+scripts). Resources passed via `js` are appended unbuilt. The former
+`minify = false` exception for IIIF viewer builds is gone — viewer
+bundles minify like every other bundle.
+
 Since 2026-10 the partial **never concatenates ESM bundles**: every
 bundle is fingerprinted individually and ships as its own
 `<script type="module" … crossorigin="anonymous">` tag. Separately
