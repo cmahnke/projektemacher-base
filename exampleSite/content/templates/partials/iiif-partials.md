@@ -13,7 +13,7 @@ The `iiif/` partials render IIIF content and build the JSON documents for the [I
 These partials render viewer markup for a page's `resources`. They are called by the [IIIF shortcodes](/shortcodes/iiif/iiif/) and by consuming sites directly:
 
 | Partial | Purpose |
-|---|---|
+| --- | --- |
 | `iiif/iiif-image.html` | [Image API](https://iiif.io/api/image/3.0/) viewer (OpenLayers). Called with a dict of `context` (resource), `contextPath`, `pageURL`, `pageContext` and `site` |
 | `iiif/_iiif-image.html` | Internal markup used by the image viewer |
 | `iiif/iiif-presentation.html` | [Presentation API](https://iiif.io/api/presentation/3.0/) viewer (TIFY) for a page's manifest (`iiifManifest` front matter parameter) |
@@ -25,7 +25,7 @@ These partials render viewer markup for a page's `resources`. They are called by
 ### Site parameters
 
 | Parameter | Used by | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `productionIIIFURLPrefix` | `iiif-presentation.html` | URL prefix for manifests in production builds (parts are commented out, currently unused) |
 | `pdfDownload` | `iiif-presentation-pdf.html` | PDF download link |
 | `minimalUI` | viewer partials | Minimal viewer UI |

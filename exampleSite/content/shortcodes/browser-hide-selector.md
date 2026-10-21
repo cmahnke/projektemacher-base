@@ -11,7 +11,7 @@ Emits an inline script calling `browserDisableSelector(selector, browsers)`: any
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `selector` | string | no | `""` | CSS selector of the elements to hide |
 | `browser` | string | no | — | Comma-separated list of browser names |
 

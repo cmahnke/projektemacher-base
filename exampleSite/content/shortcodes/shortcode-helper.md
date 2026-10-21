@@ -31,7 +31,7 @@ Paths starting with `http` are treated as external resources, everything else is
 ## Parameters
 
 | Level | Key | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | Site | `skipShortcodeAssets` | Intended to disable shortcode asset processing. Note: the current guard in `shortcode-helper.html` evaluates to true in every case, so the setting has no effect yet |
 | Page | `ignoreincludes` | Drops page level js/scss/css includes from `html/head/script.html` / `html/head/style.html` |
 

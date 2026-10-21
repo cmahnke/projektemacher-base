@@ -16,7 +16,7 @@ This theme generates [IIIF](https://iiif.io/) resources at three levels:
 ## Presentation API versions
 
 | Version | Status | Context |
-|---|---|---|
+| --- | --- | --- |
 | 3 | Default, stable | `http://iiif.io/api/presentation/3/context.json` |
 | 4 | Draft (4.0.0-draft) | `http://iiif.io/api/presentation/4/context.json` |
 

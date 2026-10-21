@@ -15,7 +15,7 @@ This is a test of the footnote shortcode{{< footnote 1 "This is the footnote tex
 Positional arguments:
 
 | Position | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 0 | string | yes | Footnote ID |
 | 1 | string | yes | Footnote text (markdownified) |
 

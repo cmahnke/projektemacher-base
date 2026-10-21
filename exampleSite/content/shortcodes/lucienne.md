@@ -11,7 +11,7 @@ Embeds the [Lucienne](https://github.com/projektemacher/lucienne) IIIF playgroun
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | Initial IIIF source URL (`errorf` when missing) |
 | `class` | string | no | — | Currently read but not emitted |
 | `urlinput` / `urlInput` | bool | no | `false` | Show the URL input field |

@@ -37,7 +37,7 @@ Pages come from section `post` and exclude pages with `displayinlist: false`. Th
 ## Site parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `params.activitypub.author` | string | — | Username used to build the `actor` URL (`<baseURL><author>`) |
 | `params.activitypub.outbox` | string | — | Outbox filename appended to the base URL |
 | `params.Description` | string | — | Rendered as collection `summary` if set |

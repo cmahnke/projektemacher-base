@@ -11,7 +11,7 @@ Renders a `ul.tagged-posts` list of pages from a section carrying the given tag(
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `tag` | string | no | — | Single tag to match |
 | `tags` | string | no | — | Comma-separated tag list, overrides `tag` |
 | `section` | string | no | `post` | Section to search |

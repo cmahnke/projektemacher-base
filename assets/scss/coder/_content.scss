@@ -1,147 +1,169 @@
 @use "./variables";
 
 .content {
-  flex: 1;
-  display: flex;
-  margin-top: 1.6rem;
-  margin-bottom: 3.2rem;
-  article {
-    details {
-      summary {
-        cursor: pointer;
-      }
+    flex: 1;
+    display: flex;
+    margin-top: 1.6rem;
+    margin-bottom: 3.2rem;
+
+    article {
+        details {
+            summary {
+                cursor: pointer;
+            }
+        }
+
+        header {
+            margin-top: 6.4rem;
+            margin-bottom: 3.2rem;
+
+            h1 {
+                font-size: 4.2rem;
+                line-height: 4.6rem;
+                margin: 0;
+                @media only screen and (max-width: 768px) {
+                    font-size: 4rem;
+                    line-height: 4.4rem;
+                }
+            }
+        }
+
+        footer {
+            margin-top: 4rem;
+
+            .see-also {
+                margin: 3.2rem 0;
+
+                h3 {
+                    margin: 3.2rem 0;
+                }
+            }
+        }
+
+        p {
+            text-align: justify;
+            text-justify: auto;
+            hyphens: auto;
+        }
     }
-    header {
-      margin-top: 6.4rem;
-      margin-bottom: 3.2rem;
-      h1 {
-        font-size: 4.2rem;
-        line-height: 4.6rem;
+
+    .post {
+        .post-title {
+            margin-bottom: 0.75em;
+        }
+
+        .post-meta {
+            i {
+                text-align: center;
+                width: 1.6rem;
+                margin-left: 0;
+                margin-right: 0.5rem;
+            }
+
+            .date {
+                .posted-on {
+                    margin-left: 0;
+                    margin-right: 1.5rem;
+                }
+            }
+        }
+    }
+
+    figure {
         margin: 0;
-        @media only screen and (max-width : 768px) {
-          font-size: 4.0rem;
-          line-height: 4.4rem;
-        }
-      }
+        padding: 0;
     }
-    footer {
-      margin-top: 4.0rem;
-      .see-also {
-        margin: 3.2rem 0;
-        h3 {
-          margin: 3.2rem 0;
-        }
-      }
-    }
-    p {
-      text-align: justify;
-      text-justify: auto;
-      hyphens: auto;
-    }
-  }
-  .post {
-    .post-title {
-      margin-bottom: .75em;
-    }
-    .post-meta {
-      i {
+
+    figcaption p {
         text-align: center;
-        width: 1.6rem;
-        margin-left: 0;
-        margin-right: 0.5rem;
-      }
-      .date {
-        .posted-on {
-          margin-left: 0;
-          margin-right: 1.5rem;
-        }
-      }
+        font-style: italic;
+        font-size: 1.6rem;
+        margin: 0;
     }
-  }
-  figure {
-    margin: 0;
-    padding: 0;
-  }
-  figcaption p {
-    text-align: center;
-    font-style: italic;
-    font-size: 1.6rem;
-    margin: 0;
-  }
 }
 
-.avatar img{
-  width: 20rem;
-  height: auto;
-  border-radius: 50%;
-  @media only screen and (max-width : 768px) {
-    width: 10rem;
-  }
+.avatar img {
+    width: 20rem;
+    height: auto;
+    border-radius: 50%;
+    @media only screen and (max-width: 768px) {
+        width: 10rem;
+    }
 }
 
 .centered {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .about {
-    text-align: center;
-    h1 {
-      margin-top: 2.0rem;
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      margin-top: 1.0rem;
-      margin-bottom: 0.5rem;
-      font-size: 2.4rem;
-      @media only screen and (max-width : 768px) {
-        font-size: 2.0rem;
-      }
-    }
-    ul {
-      list-style: none;
-      margin: 3.0rem 0 1.0rem 0;
-      padding: 0;
-      li {
-        display: inline-block;
-        position: relative;
-        a {
-          color: variables.$fg-color;
-          text-transform: uppercase;
-          margin-left: 1.0rem;
-          margin-right: 1.0rem;
-          font-size: 1.6rem;
-          &:hover,
-          &:focus {
-            color: variables.$link-color;
-          }
-          @media only screen and (max-width : 768px) {
-            font-size: 1.4rem;
-          }
-          i {
-            font-size: 3.2rem;
-          }
-        }
-      }
-    }
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  .error {
-    text-align: center;
-    h1 {
-      margin-top: 2.0rem;
-      margin-bottom: 0.5rem;
-      font-size: 4.6rem;
-      @media only screen and (max-width : 768px) {
-        font-size: 3.2rem;
-      }
+    .about {
+        text-align: center;
+
+        h1 {
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 2.4rem;
+            @media only screen and (max-width: 768px) {
+                font-size: 2rem;
+            }
+        }
+
+        ul {
+            list-style: none;
+            margin: 3rem 0 1rem;
+            padding: 0;
+
+            li {
+                display: inline-block;
+                position: relative;
+
+                a {
+                    color: variables.$fg-color;
+                    text-transform: uppercase;
+                    margin-left: 1rem;
+                    margin-right: 1rem;
+                    font-size: 1.6rem;
+
+                    &:hover,
+                    &:focus {
+                        color: variables.$link-color;
+                    }
+                    @media only screen and (max-width: 768px) {
+                        font-size: 1.4rem;
+                    }
+
+                    i {
+                        font-size: 3.2rem;
+                    }
+                }
+            }
+        }
     }
-    h2 {
-      margin-top: 2.0rem;
-      margin-bottom: 3.2rem;
-      font-size: 3.2rem;
-      @media only screen and (max-width : 768px) {
-        font-size: 2.8rem;
-      }
+
+    .error {
+        text-align: center;
+
+        h1 {
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            font-size: 4.6rem;
+            @media only screen and (max-width: 768px) {
+                font-size: 3.2rem;
+            }
+        }
+
+        h2 {
+            margin-top: 2rem;
+            margin-bottom: 3.2rem;
+            font-size: 3.2rem;
+            @media only screen and (max-width: 768px) {
+                font-size: 2.8rem;
+            }
+        }
     }
-  }
 }

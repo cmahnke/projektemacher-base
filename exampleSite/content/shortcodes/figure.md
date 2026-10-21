@@ -15,7 +15,7 @@ Handles three `src` modes: full URLs (`http(s)…` or `//`), site-absolute paths
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | Image URL or path |
 | `link` | string | no | — | Wrap the image in `<a href>` |
 | `target`, `rel` | string | no | — | Attributes for the wrapping `<a>` (with `link`) |

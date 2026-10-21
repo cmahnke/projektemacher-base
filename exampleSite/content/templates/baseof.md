@@ -13,7 +13,7 @@ The base template `_default/baseof.html` defines the common page skeleton: `<hea
 Custom templates override the following blocks:
 
 | Block | Purpose |
-|---|---|
+| --- | --- |
 | `title` | `<title>` content, defaults to the page title (plus the `slogan` on the home page) — the `html/head/title.html` partial renders it |
 | `body` | Attributes and content at the start of `<body>` |
 | `main` | Content before the `content` block inside `<main>` |

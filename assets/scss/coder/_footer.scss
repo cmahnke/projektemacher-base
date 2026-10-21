@@ -1,12 +1,13 @@
 @use "./variables";
 
 .footer {
-  width: 100%;
-  text-align: center;
-  font-family: variables.$heading-font-family;
-  line-height: 2.0rem;
-  margin-bottom:1.0rem;
-  a {
-    color: variables.$link-color;
-  }
+    width: 100%;
+    text-align: center;
+    font-family: variables.$heading-font-family;
+    line-height: 2rem;
+    margin-bottom: 1rem;
+
+    a {
+        color: variables.$link-color;
+    }
 }

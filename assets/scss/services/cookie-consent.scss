@@ -15,133 +15,132 @@ $decline-background: #b3261e;
 $button-background: #595959;
 
 #cookie-notice {
-  font-size: medium;
-  padding: 2rem 3rem;
-  display: none;
-  text-align: center;
-  position: fixed;
-  bottom: 0;
-  min-height: 15vh;
-  max-height: 40vh;
-  background: rgb(70, 70, 70);
-  z-index: 999;
-
-  .close {
-    height: 2.4em;
-    width: 2.4em;
-    content: url($close-light);
-    display: inline-block;
-    vertical-align: bottom;
-    top: 1.4em;
-    right: 1.4em;
-    position: absolute;
-    cursor: pointer;
-  }
-
-  .cookie-notice-text {
-    margin-bottom: 2rem;
-    font-size: 1.2em;
-    color: white;
-    line-height: 1.6;
-  }
-
-  a {
-    font-weight: 600;
-    display: inline-flex;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    z-index: 999;
-  }
-
-  .button {
-    background-color: $button-background;
-    border: none;
-    color: white;
-    padding: 1em;
+    font-size: medium;
+    padding: 2rem 3rem;
+    display: none;
     text-align: center;
-    font-size: 1em;
-    line-height: 1;
-    vertical-align: middle;
-    margin: .6em;
-    display: inline-block;
-    text-decoration: none;
-    cursor: pointer;
+    position: fixed;
+    bottom: 0;
+    min-height: 15vh;
+    max-height: 40vh;
+    background: rgb(70 70 70);
+    z-index: 999;
 
-    span {
-      vertical-align: sub;
+    .close {
+        height: 2.4em;
+        width: 2.4em;
+        content: url($close-light);
+        display: inline-block;
+        vertical-align: bottom;
+        top: 1.4em;
+        right: 1.4em;
+        position: absolute;
+        cursor: pointer;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition: 0.3s;
-    }
-
-    &:hover {
-      box-shadow:
-                  -4px -4px color.adjust($button-background, $lightness: 30%);
-    }
-
-    &:active {
-      box-shadow: -2px -2px color.adjust($button-background, $lightness: 15%);
-      transform: translate(-2px, -2px);
-    }
-
-    &.cookie-notice-accept {
-      background-color: $accept-background;
-    }
-
-    &.cookie-notice-deny {
-      background-color: $decline-background;
-    }
-
-    &.cookie-notice-more {
-      color: white;
-    }
-
-    &:focus-visible {
-      outline: 2px solid white;
-      outline-offset: 2px;
-    }
-
-  }
-
-  .close:focus-visible {
-    outline: 2px solid white;
-    outline-offset: 2px;
-  }
-
-  &.hidden {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: hide 500ms forwards;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      display: none;
-    }
-  }
-
-  @keyframes hide {
-    to {
-      opacity: 0;
-      display: none;
-    }
-  }
-}
-
-@media (max-width: 767px) {
-  #cookie-notice {
-    left: 0px;
-
-    span {
-      display: block;
-      padding-top: 3px;
-      margin-bottom: 1rem;
+    .cookie-notice-text {
+        margin-bottom: 2rem;
+        font-size: 1.2em;
+        color: white;
+        line-height: 1.6;
     }
 
     a {
-      position: relative;
-      bottom: 4px;
-      z-index: 999;
+        font-weight: 600;
+        display: inline-flex;
+        cursor: pointer;
+        margin-left: 0.5rem;
+        z-index: 999;
     }
 
-  }
+    .button {
+        background-color: $button-background;
+        border: none;
+        color: white;
+        padding: 1em;
+        text-align: center;
+        font-size: 1em;
+        line-height: 1;
+        vertical-align: middle;
+        margin: 0.6em;
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+
+        span {
+            vertical-align: sub;
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            transition: 0.3s;
+        }
+
+        &:hover {
+            box-shadow: -4px -4px
+                color.adjust($button-background, $lightness: 30%);
+        }
+
+        &:active {
+            box-shadow: -2px -2px
+                color.adjust($button-background, $lightness: 15%);
+            transform: translate(-2px, -2px);
+        }
+
+        &.cookie-notice-accept {
+            background-color: $accept-background;
+        }
+
+        &.cookie-notice-deny {
+            background-color: $decline-background;
+        }
+
+        &.cookie-notice-more {
+            color: white;
+        }
+
+        &:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+    }
+
+    .close:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
+    }
+
+    &.hidden {
+        @media (prefers-reduced-motion: no-preference) {
+            animation: hide 500ms forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            display: none;
+        }
+    }
+
+    @keyframes hide {
+        to {
+            opacity: 0;
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    #cookie-notice {
+        left: 0;
+
+        span {
+            display: block;
+            padding-top: 3px;
+            margin-bottom: 1rem;
+        }
+
+        a {
+            position: relative;
+            bottom: 4px;
+            z-index: 999;
+        }
+    }
 }

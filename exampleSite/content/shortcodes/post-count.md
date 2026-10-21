@@ -11,7 +11,7 @@ Outputs the number of pages in a section, optionally filtered by the front matte
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `section` | string | yes | — | Section name |
 | `type` | string | no | — | Filter on the pages' `type` front matter |
 

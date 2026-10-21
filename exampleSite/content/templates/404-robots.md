@@ -16,7 +16,7 @@ The `404.html` template fills the `content` block of the [base template](baseof/
 ### Site parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `errorimg` | bool | `false` | Show the error image |
 | `logo` | string | — | Image URL used for the error image |
 
@@ -31,7 +31,7 @@ The `robots.txt` template is enabled with `enableRobotsTXT = true` in the site c
 ### Front matter parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `robotsdisallow` | bool | `false` | Adds `Disallow: <RelPermalink>` |
 | `sitemap_exclude` | bool | `false` | Adds `Disallow: <RelPermalink>` as well |
 
@@ -48,7 +48,7 @@ If the site provides an `assets/llms.go.txt` resource and the site parameter `ro
 The custom sitemap template skips tag pages and pages with `news: false` or `archive: false`, honors Hugo's built in `Sitemap.Disable`, `Sitemap.ChangeFreq` and `Sitemap.Priority` settings, and adds `xhtml:link` hreflang alternates for translated pages.
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `news` | bool | `true` | Set to `false` to remove the page from the sitemap |
 | `archive` | bool | `true` | Set to `false` to remove the page from the sitemap |
 

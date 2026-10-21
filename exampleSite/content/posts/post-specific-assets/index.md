@@ -6,7 +6,7 @@ metaPage: true
 
 Make sure the `assets` directory is mounted (in `hugo.toml` or `config.toml`)
 
-```
+```toml
 [module]
   [[module.mounts]]
       source = "assets/scss"
@@ -21,9 +21,9 @@ Make sure the `assets` directory is mounted (in `hugo.toml` or `config.toml`)
       target = "assets/ts"
 ```
 
-
 Add a reference to the front matter
-```
+
+```yaml
 scss: scss/tag-ring/tag-ring.scss
 js:
   - ts/tag-ring/tag-ring.ts

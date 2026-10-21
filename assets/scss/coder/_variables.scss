@@ -1,12 +1,16 @@
 // Fonts
-$text-font-family: Lora Variable, Georgia, serif !default;
-$heading-font-family: Lato, Helvetica, sans-serif !default;
-$code-font-family: 'Source Code Pro Variable', 'Lucida Console', monospace !default;
+$text-font-family:
+    lora variable,
+    georgia,
+    serif !default;
+$heading-font-family: lato, helvetica, sans-serif !default;
+$code-font-family:
+    "Source Code Pro Variable", "Lucida Console", monospace !default;
 
 // Colors
-$bg-color: #FAFAFA !default;
+$bg-color: #fafafa !default;
 $fg-color: #212121 !default;
-$alt-bg-color: #E0E0E0 !default;
+$alt-bg-color: #e0e0e0 !default;
 $alt-fg-color: #000 !default;
 $link-color: #1565c0 !default;
 

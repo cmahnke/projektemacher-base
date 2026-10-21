@@ -11,7 +11,7 @@ Renders a before/after image comparison slider based on the [`img-comparison-sli
 ## Parameters
 
 | Parameter | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `image1` | string | yes | Page resource path of the first (before) image |
 | `image2` | string | yes | Page resource path of the second (after) image |
 | `caption1` | string | no | Caption and alt text for the first image |

@@ -3,14 +3,34 @@
 @import "tify";
 
 .tify {
-  background: unset;
+    background: unset;
 
-  .tify-header {
-    border-bottom-width: 1px !important;
-  }
+    .tify-header {
+        border-bottom-width: 1px !important;
+    }
 
-  .tify-media {
-    border-bottom: 1px solid var(--tify-border-color, light-dark(oklch(from var(--tify-base-color, #06b) calc(l / 2) calc(c * 0.1) h / 15%), oklch(from var(--tify-base-color-dark, oklch(from var(--tify-base-color, #06b) calc(l * 1.5) c h)) calc(l * 2) calc(c * 0.1) h / 15%)));
-    border-bottom-width: 1px !important;
-  }
+    .tify-media {
+        border-bottom: 1px solid
+            var(
+                --tify-border-color,
+                light-dark(
+                    oklch(
+                        from var(--tify-base-color, #06b) calc(l / 2)
+                            calc(c * 0.1) h / 0.15
+                    ),
+                    oklch(
+                        from
+                            var(
+                                --tify-base-color-dark,
+                                oklch(
+                                    from var(--tify-base-color, #06b)
+                                        calc(l * 1.5) c h
+                                )
+                            )
+                            calc(l * 2) calc(c * 0.1) h / 0.15
+                    )
+                )
+            );
+        border-bottom-width: 1px !important;
+    }
 }

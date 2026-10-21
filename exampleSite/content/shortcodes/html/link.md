@@ -11,7 +11,7 @@ Renders a download link (`div.download-link` with `a.<class>`, `target="_blank"`
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `file` | string | yes | — | Path relative to the page |
 | `content` | string | no | the `file` value | Link text |
 | `class` | string | no | `link` | Class on the `<a>` |

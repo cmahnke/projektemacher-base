@@ -14,17 +14,16 @@
  */
 
 @use "functions/color" as *;
+@use "coder/site-shared" as shared;
 
 /*
- * Partial @use migration: all module based partials are loaded via
- * @use — the rules emit in the order given here, which matches the
- * previous @import order (normalize first, then the coder chrome).
- * coder/site-shared stays @import'ed: it is a deliberate global-leak
- * module whose variables the adapter rules below use directly.
+ * Fully module-based entry (no @import). The @use order reproduces
+ * the previous @import order (normalize first, then the coder
+ * chrome). coder/site-shared provides the variables the adapter
+ * rules below use, via the "shared" namespace.
  */
 @use "normalize";
-/* Base fonts — loaded exactly once here (not via site-shared, which
-   is still @import'ed below) */
+/* Base fonts — loaded exactly once here */
 @use "npm-fonts/lato";
 @use "npm-fonts/lora";
 @use "coder/base";
@@ -42,9 +41,6 @@
 
 /* Section table of contents sidebar (theme's partials/toc.html) */
 @use "section-toc";
-
-/* Shared skin foundation: variables, base fonts, burger icon */
-@import "coder/site-shared";
 
 /*
  * Adapter: the theme's baseof.html wraps the site header in
@@ -83,7 +79,7 @@ nav.navigation {
         }
 
         .menu-button .menu-icon {
-            content: url("data:image/svg+xml, #{$bars}");
+            content: url("data:image/svg+xml, #{shared.$bars}");
             display: inline-block;
             width: 1em;
         }
@@ -126,7 +122,7 @@ main.main {
             .title:focus,
             a:visited {
                 text-decoration: none;
-                color: $fg-color;
+                color: shared.$fg-color;
             }
 
             a:active,
@@ -196,14 +192,14 @@ main.main {
 .pagination {
     margin-top: 6rem;
     text-align: center;
-    font-family: $heading-font-family;
+    font-family: shared.$heading-font-family;
 
     .nav-links a {
         margin: 0 1rem;
         font-weight: 700;
 
         &.current {
-            color: $fg-color;
+            color: shared.$fg-color;
             text-decoration: none;
         }
     }

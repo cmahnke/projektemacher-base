@@ -11,7 +11,7 @@ Cross-reference for the print edition: renders `<a class="page-ref" href="#_-<se
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `slug` | string | yes | — | Slug of the target page below `section` |
 | `section` | string | no | `post` | Section of the target page |
 | `title` | bool/string | no | — | `true` uses the target's title/description; a string is used verbatim; omitted → only the page abbreviation |

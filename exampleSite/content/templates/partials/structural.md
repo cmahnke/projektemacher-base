@@ -53,7 +53,7 @@ Placeholder container above the header, empty by default — a site can override
 `footer.html` renders the main menu as footer navigation plus the footer content. `footer-content.html` renders the copyright block:
 
 | Site parameter (default site) | Purpose |
-|---|---|
+| --- | --- |
 | `copyright` | Custom copyright text |
 | `copyrightYears` | Custom year range, prepends `©` |
 | `copyright: "false"` | Renders an empty copyright |
@@ -63,7 +63,7 @@ Placeholder container above the header, empty by default — a site can override
 
 `footer-content.html` is called with a `dict` of `page` (the current page) and `footer` — an HTML string that is appended after the copyright block. The theme itself passes an empty string; a site overriding `footer.html` supplies its own footer content:
 
-```
+```html
 {{- partial "footer-content.html" (dict "page" . "footer" $footerStr) -}}
 ```
 
@@ -92,7 +92,7 @@ Renders a table of contents for a section page — a list of the section's child
 ```
 
 | Parameter | Purpose |
-|---|---|
+| --- | --- |
 | `entries` | A section page — its children are rendered; a page slice is rendered as a flat list without grouping |
 | `maxLevels` | Number of levels to render, counting the top level (default `2`; `3` also renders the children of nested sections, child sections are always rendered without their children once the level is exhausted) |
 | `title` | Heading above the list (defaults to the `inThisSection` i18n string) |
@@ -104,6 +104,7 @@ Pages with the front matter parameter `tocExclude: true` are skipped. Pages stor
 Renders the consent overlay for embedded iframes: notice text (i18n), an optional `preview` and the consent toggle. The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced to a `<button role="switch" aria-checked>` (see the [`html/iframe-consent` shortcode](/shortcodes/html/iframe-consent/)).
 
 ## `html/html-body.html` {#html-body}
+
 Renders the body of a standalone HTML page, used by the [`html-body` template](../single-list/#html-body) and the [`html/include` shortcode](/shortcodes/html/include/).
 
 ## `meta/tags.html` and `meta/i18n-tags.html` {#tags}

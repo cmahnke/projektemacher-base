@@ -19,7 +19,7 @@ Images with `.hdr.` in their filename link to the HDR image on the default langu
 ## Body (JSON array)
 
 | Property | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | Page resource path of the image |
 | `alt` | string | no | `""` | Image alt text and lightbox caption (also used for `aria-label`) |
 | `scalePreview` | bool | no | `true` | Generate a resized WebP preview |

@@ -11,7 +11,7 @@ Generates a QR code image at build time (Hugo's `images.QR`) and renders it as a
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `text` | string | yes* | — | QR payload (if no inner content is given) |
 | `scale` | int | no | `4` | Pixel scale of the generated image |
 | `alt` | string | no | `""` | Alt text |

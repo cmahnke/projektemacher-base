@@ -13,7 +13,7 @@ Renders an audio player placeholder (`div.audioplayer` with a play button) initi
 ## Parameters
 
 | Parameter | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `src` | string | yes | Audio file URL, passed to the JS player |
 | `autoplay` | bool | no | Read but currently unused by the template |
 

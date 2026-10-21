@@ -11,7 +11,7 @@ Utility partials — most of them return a value and are used like functions. Th
 ## Functions (`functions/`)
 
 | Partial | Purpose |
-|---|---|
+| --- | --- |
 | `functions/arrays/filter-nil.html` | Removes `nil` entries from a slice (input: `slice`) |
 | `functions/arrays/join.html` | Joins a string slice (input: `slice`, optional `separator`) |
 | `functions/arrays/reverse-slice.html` | Reverses a slice |

@@ -29,6 +29,6 @@ Via the shortcode helper: TS `ts/shortcodes/hdr-model.ts` and SCSS `scss/shortco
 ## Dependencies
 
 | Package | Required mount |
-|---|---|
+| --- | --- |
 | `three` | – |
 | `@projektemacher/hdr-canvas` | – |

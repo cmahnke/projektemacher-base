@@ -18,7 +18,7 @@ The [`tags/cloud` shortcode](/shortcodes/tags/cloud/) and [`meta/tags.html`](str
 Shipped variants (all receive the tag as input, via the `tag2str` normalizer which accepts strings, terms and taxonomy entries):
 
 | Partial | Rendering |
-|---|---|
+| --- | --- |
 | `tagcloud/tag.html` | Raw tag string |
 | `tagcloud/tag-humanize.html` | Humanized (`my-tag` → `My tag`) |
 | `tagcloud/tag-i18n.html` | Translated via the i18n files |

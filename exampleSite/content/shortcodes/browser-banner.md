@@ -11,7 +11,7 @@ Renders a hidden banner that the `browserBanner()` JS function shows only when t
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `browser` | string | no | — | Comma-separated list of browser names (also used as CSS classes) |
 | `class` | string | no | — | Additional classes |
 | `style` | string | no | — | Additional inline styles |

@@ -11,7 +11,7 @@ Embeds an [A-Frame](https://aframe.io/) `<a-scene>` (WebXR enabled) that loads a
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | URL of the glTF/GLB model |
 | `class` | string | no | `aframe-3d-model` | Custom class on the wrapper |
 | `style` | string | no | — | Inline CSS for the wrapper |

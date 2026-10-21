@@ -17,7 +17,7 @@ Not covered here:
 ## Base and page templates
 
 | Template | Purpose |
-|---|---|
+| --- | --- |
 | [`_default/baseof.html`](baseof/) | Base template with header, navigation and footer, defines the `title`, `body`, `main` and `content` blocks |
 | `_default/baseof.print.html` | Base template for the print output, pulls in `print.scss`/`print.js` |
 | [`_default/single.html`](single-list/) | Regular pages, delegates to the `page.html` partial |
@@ -31,7 +31,7 @@ Not covered here:
 These templates are selected via the `outputs` front matter or the site `outputs` configuration:
 
 | Output format | Template | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | HTML (default) | `single.html`, `list.html`, … | Regular pages |
 | [`qrcode`](qrcode/) | `single.qrcode.json`, `section.qrcode.json` | QR code generation data |
 | [`iiif-manifest`](iiif-templates/) | `single.iiif-manifest.json`, `section.iiif-manifest.json` | IIIF Presentation manifests |
@@ -60,7 +60,7 @@ The theme generates additional data files for client side search and indexing:
 The templates rely on the following page parameters. Most of them control in- or exclusion from listings, so they default to including a page:
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `metaPage` | bool | `false` | Marks documentation/meta pages: hides date and tags, adds the `meta` CSS class and excludes the page from lists, RSS and `post-list.json` |
 | `displayinlist` | bool | `true` | Set to `false` to exclude a page from list pagination, `post-list.json`, `tag-list.json`, `wikidata-list.json`, RSS, schema.org output and IIIF collections |
 | `type` | string | — | CSS class for the page wrapper (`page.html`); on the section used with the `schemaorg` output format it sets the blog `@type` |

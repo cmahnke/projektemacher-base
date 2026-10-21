@@ -13,7 +13,7 @@ Embeds a [GitHub Gist](https://gist.github.com/) via its embed script.
 Positional arguments:
 
 | Position | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 0 | string | yes | GitHub user name |
 | 1 | string | yes | Gist ID |
 | 2 | string | no | File name within the gist (`?file=`) |

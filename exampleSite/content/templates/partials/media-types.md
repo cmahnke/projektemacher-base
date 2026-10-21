@@ -17,7 +17,7 @@ The `media/` partials render description blocks for digitized media items (the o
 All media partials render a description block with a translated heading (`aboutTheNeu` + the item type) and the description body:
 
 | Front matter parameter | Purpose |
-|---|---|
+| --- | --- |
 | `itemDescription` | Item description, preferred |
 | `description` | Fallback description |
 

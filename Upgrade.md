@@ -9,11 +9,11 @@ step-by-step instructions for past migrations are in the rest of this
 guide.
 
 | Item | State | Priority |
-|---|---|---|
+| --- | --- | --- |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0) — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
-| Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | new template system layout since Hugo 0.146.0; the old structure keeps working (optional) — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
+| Hugo layouts (`_default/`, `partials/`, `shortcodes/`) | consumers: 14 converted, 4 need no conversion, 7 pending (2026-10); old structure keeps working — see ["Migrate to the new Hugo template system (v0.146.0)"](#migrate-to-the-new-hugo-template-system-v01460) | low |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only — see ["Upgrading fonts to the npm (Fontsource) based system"](#upgrading-fonts-to-the-npm-fontsource-based-system) | keep (exceptions stay) |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
 
@@ -129,7 +129,7 @@ sites need no PostCSS configuration of their own.
 > Browserslist walk up the directory tree reading `package.json` and config
 > candidates (`browserslist` file) and hit a denied path:
 >
-> ```
+> ```text
 > POSTCSS: failed to transform "/css/….css" (text/css): Error: Access to this
 > API has been restricted. Use --allow-fs-read to manage permissions.
 > ```
@@ -157,29 +157,29 @@ Nothing, if the site was set up with the theme's init scripts
 
 Otherwise install them once in the site root:
 
-```
+```bash
 npm install --save-dev postcss postcss-cli postcss-discard-duplicates
 ```
 
 ## Behaviour and opt-out
 
-* The step only runs for production builds — `hugo server` is unaffected.
-* Disable it with:
+- The step only runs for production builds — `hugo server` is unaffected.
+- Disable it with:
 
 ```toml
 [params.css]
   dedupe = false
 ```
 
-* Without `postcss-cli` the build fails with Hugo's "You need to install
+- Without `postcss-cli` the build fails with Hugo's "You need to install
   PostCSS" error. If only the `postcss-discard-duplicates` package is
   missing, the build degrades gracefully and the CSS passes through
   unprocessed.
-* A site's own `assets/_jsconfig/postcss.config.js` overrides the theme's.
+- A site's own `assets/_jsconfig/postcss.config.js` overrides the theme's.
   Note that Hugo resolves the configuration from `assets/_jsconfig/` first,
   so a `postcss.config.js` in the site root is no longer used for this
   pipeline.
-* The exampleSite resolves its dependencies via the new
+- The exampleSite resolves its dependencies via the new
   `exampleSite/node_modules -> ../node_modules` symlink, since the build
   runs from `exampleSite/` with `--themesDir ../..`.
 
@@ -197,6 +197,7 @@ Complete — all known consumer content uses the `label`/`page`/`items`
 shorthand; the legacy `type:`/hand-written-id guard was removed in the
 2026-10 cleanup. The shorthand is documented in
 `exampleSite/content/iiif/page-metadata.md`.
+
 # Upgrading fonts to the npm (Fontsource) based system
 
 Complete — all known consumers import the generated `npm-fonts/<family>`
@@ -221,7 +222,6 @@ class is gone and no consumer repo carries its own copy.
 
 Complete — Mirador is gone; TIFY (`ts/iiif/tify.ts`) is the only
 presentation viewer and no consumer references Mirador anymore.
-
 
 # Housekeeping
 
@@ -264,7 +264,7 @@ picks one (Path B subsumes Path A's module semantics, see Risks below).
 
 `html/head/script.html` already supports it:
 
-```
+```html
 partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
 ```
 
@@ -560,7 +560,7 @@ in mixed setups:
 Inventory for this theme, when the switch happens (theme side and
 consumer copies apply the same moves):
 
-* `layouts/_default/*` → up to `layouts/`: `baseof.html`,
+- `layouts/_default/*` → up to `layouts/`: `baseof.html`,
   `baseof.print.html` (names unchanged), `list.html`, `single.html`,
   `search.html` and `html-body.html` (custom layout identifiers),
   `sitemap.xml`, the render hooks (`_default/_markup/` → `_markup/`,
@@ -571,15 +571,15 @@ consumer copies apply the same moves):
   `section.qrcode.json`, `section.geojson`, `post-list.json`,
   `tag-list.json`, `wikidata-list.json`, `linked-art-collection.json`,
   `schema-org.json` — which keep their names and just move up.
-* `index.rss.xml` → `home.rss.xml` (the only `index.`-named template —
+- `index.rss.xml` → `home.rss.xml` (the only `index.`-named template —
   home templates are `home.` in the new system).
-* `layouts/partials/` → `layouts/_partials/`, `layouts/shortcodes/` →
+- `layouts/partials/` → `layouts/_partials/`, `layouts/shortcodes/` →
   `layouts/_shortcodes/`.
-* `layouts/redirect/` and the already-root-level `404.html`,
+- `layouts/redirect/` and the already-root-level `404.html`,
   `robots.txt` stay where they are — non-underscore directories are
   page paths in both eras, and the special template types live at the
   root.
-* `layouts/redirect/single.html` calls *and* redefines
+- `layouts/redirect/single.html` calls *and* redefines
   `{{ template "_internal/alias.html" … }}` on purpose (see the
   exceptions section below). The call keeps working in compatibility
   mode (`_internal` removal is deferred to a future release) — when
@@ -587,20 +587,53 @@ consumer copies apply the same moves):
   resolves to Hugo's embedded template or the local redefine before
   switching.
 
+### Consumer migration status (2026-10)
+
+The same moves were applied to the consumer sites (each repo staged
+separately, submodule pointers bumped to the current theme tip in the
+same commit):
+
+- **Converted, committed:** `kraehenbeisser`, `yaapb`, `briefsteller`,
+  `schatten`, `plastikwarenfabrik`, `xn--h-zfa.xyz`.
+- **Converted, staged (commit pending):** `blaufusstoelpel`,
+  `haesslicheplastiktiereundzeugs`, `kinderbuecher`, `vintagereality`,
+  `vorsatzpapier`, `labs.projektemacher.org`,
+  `backsteinexpressionismus`, `never-built`.
+- **Nothing to convert** (no site layouts at all): `flugzeugbesteck`,
+  `flohmarktfunde`, `diapraesentation`, `ric-unknownartist`.
+- **Still on the old structure** (same recipe, pending):
+  `merch.projektemacher`, `schriftmuster`, `kleiderbuegel`,
+  `projektemacher`, `christianmahnke`, `wilmabraeuner` (has the
+  `_default/terms.html` → `term.html` rename case) and
+  `wilmabraeuner-complete` (5 `partial "partials/…` prefixed calls to
+  rewrite first).
+
+Findings from that run, matching the risk notes below: not one
+converted site carried a `partials/`-prefixed call; the only consumer
+`_internal` user is `schatten` (its `baseof.html` keeps
+`{{ template "_internal/opengraph.html" }}` in compatibility mode
+until a verified switch to `{{ partial "opengraph.html" }}`); the
+`index.html` → `home.html` rename was needed in `blaufusstoelpel`,
+`haesslicheplastiktiereundzeugs` and `kinderbuecher`; no site mounts
+`layouts/`, so no mount adjustments were needed. The build comparison
+below is still owed per converted site — the moves were staged without
+a build.
+
 ### Risks
 
-* **The mapping is best-effort, not a guarantee** — Hugo's own advice
+- **The mapping is best-effort, not a guarantee** — Hugo's own advice
   is to test; the build comparison below is the theme's translation of
   that advice.
-* **Block redefinition breakage** (see above) — same check for the
+- **Block redefinition breakage** (see above) — same check for the
   theme's own `baseof.html` consumers.
-* **`_internal` templates are deprecated** — `redirect/single.html` is
+- **`_internal` templates are deprecated** — `redirect/single.html` is
   the theme's only user; pin the replacement behaviour before Hugo
   removes them.
-* **Partials called with a `partials/` prefix** are no longer resolved
+- **Partials called with a `partials/` prefix** are no longer resolved
   (previously `partial "partials/foo.html"` and `partial "foo.html"`
   were equivalent). The theme calls partials without the prefix
-  (verified 2026-10); consumer copies often don't — results in a
+  (verified 2026-10); among consumers only `wilmabraeuner-complete`
+  still uses the prefix (5 calls, 2026-10 survey) — it results in a
   "no such template" error, so this one fails loudly.
 
 ### Verification
@@ -757,12 +790,12 @@ grep -rn 'browser-banner\|browser-hide-selector' content/ layouts/
 
 Remove:
 
-* vendor prefixes and fallback rules for engines that no longer need them —
+- vendor prefixes and fallback rules for engines that no longer need them —
   every removal must be justified by the new browser floor, not done blindly
-* `@supports` guards that only paper over pre-2024 browsers (guards
+- `@supports` guards that only paper over pre-2024 browsers (guards
   enabling *new* features stay)
-* UA sniffing blocks and IE guards (`documentMode`, conditional comments)
-* `browser-banner` / `browser-hide-selector` calls configured for browsers
+- UA sniffing blocks and IE guards (`documentMode`, conditional comments)
+- `browser-banner` / `browser-hide-selector` calls configured for browsers
   that are gone — both shortcodes match browsers by name via
   `detect-browser` (see `assets/ts/browser-banner.ts`)
 
@@ -814,8 +847,8 @@ still succeeds" is not enough. Verify the migration by direct comparison:
 
 Typical pitfalls:
 
-* `@use`/`@forward` statements must come before any other rules in a file.
-* **Never `@use … as *` a module that exports variables from inside a
+- `@use`/`@forward` statements must come before any other rules in a file.
+- **Never `@use … as *` a module that exports variables from inside a
   partial** — files loaded via `@import` (consumer entry points, copied
   templates) dump those members into the *global* scope, where they
   collide with the consumer's own pre-declarations (`This module and
@@ -825,19 +858,19 @@ Typical pitfalls:
   only. This bit `media-info.scss`/`services/cookie-consent.scss`
   (both `as *`-ing `icons`) and broke `backsteinexpressionismus`'s
   build via its `$color-light` pre-declaration.
-* Variables overridden *before* an `@import` become module configuration —
+- Variables overridden *before* an `@import` become module configuration —
   e.g. `@use "theme" with ($font-body-font: …)`. A module can be configured
   only once per compilation, so configure it in the entry point.
-* Members no longer leak between modules: every file must `@use` its own
+- Members no longer leak between modules: every file must `@use` its own
   dependencies (`menu.scss` and `audioplayer.scss` each import
   `functions/color` themselves).
-* Plain-CSS imports stay plain CSS statements — `@import "lucienne.css"`
+- Plain-CSS imports stay plain CSS statements — `@import "lucienne.css"`
   and the `ol` include (see the comment in `assets/scss/openlayers.scss`)
   are deliberately kept as plain CSS imports by dart-sass. `@use` with the
   same load paths (configured via `includePaths` in `style.html`) resolves
   modules instead — decide per case and let the comparison confirm the
   effect.
-* Keep `assets/scss/lint_dummy.scss` importing every component, so
+- Keep `assets/scss/lint_dummy.scss` importing every component, so
   `npm run lint-scss` still covers the whole tree.
 
 Verify afterwards: `npm run lint` passes and a visual smoke check of the
@@ -845,16 +878,16 @@ affected pages shows no styling changes.
 
 Still open (2026-10):
 
-* The theme keeps three deliberate plain-CSS imports (`lucienne.css`,
+- The theme keeps three deliberate plain-CSS imports (`lucienne.css`,
   `tify`, `ol` — dart-sass warns on them, but inlining would change
   output semantics).
-* `services/cookie-consent.scss` still `as *`-imports `icons` (pending
+- `services/cookie-consent.scss` still `as *`-imports `icons` (pending
   conversion — schatten's pre-declared `$close-*`/`$color-*` would
   collide with it on the next submodule raise).
-* **Deferred** consumers: never-built (largest site; its duplicate
+- **Deferred** consumers: never-built (largest site; its duplicate
   `maps/projektemacher`/`link` loads must be deduped first),
   merch.projektemacher + projektemacher (coder leakage architecture).
-* **Kept by decision**: yaapb's `_bootstrap-subset.scss` shim and
+- **Kept by decision**: yaapb's `_bootstrap-subset.scss` shim and
   wilmabraeuner's `@import "bootstrap"` (isolated vendor code pending
   Bootstrap 6 module support).
 
@@ -1101,7 +1134,7 @@ it should be modernized — the theme's own templates follow the right-hand
 column (the exceptions are listed below), and newer Hugo features expect it:
 
 | Outdated | Replacement |
-|---|---|
+| --- | --- |
 | `.Site.Params.…`, `$.Site.Title`, … | Global `site.` function: `site.Params.…`, `site.Title`, … |
 | `paginate = …` site config key | `pagination.pagerSize = …` (the `paginate` key was deprecated in Hugo 0.128.0) |
 | `Pager.PageSize` method | `Pager.PagerSize` (renamed in Hugo 0.128.0) |
@@ -1126,29 +1159,29 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 
 Deliberate exceptions in the theme's own templates — not outdated code:
 
-* `layouts/partials/preview/prerendered.html` compares
+- `layouts/partials/preview/prerendered.html` compares
   `hugo.Sites.Default` against `.context.Site` — a site *identity* check
   (multilingual awareness) that the `site.` global cannot express.
-* `layouts/partials/html/head/iiif-js.html` reads the page Scratch key
+- `layouts/partials/html/head/iiif-js.html` reads the page Scratch key
   `iiifPrefix`. Nothing in the theme sets it — it is a consumer-facing
   extension point, so it cannot become a plain variable. (The former
   `footer` Scratch key was retired: `footer.html` now passes the
   footer string as a partial argument.) Local `newScratch` objects
   (e.g. in `kenburns.html`) are fine as-is; the rule targets
   page/`$`-Scratch state.
-* `layouts/partials/pagination.html` still reads `$.Paginator` — as the
+- `layouts/partials/pagination.html` still reads `$.Paginator` — as the
   *fallback* branch when the partial is called with a page context; the
   preferred input is the pager object returned by `.Paginate`.
-* `layouts/redirect/single.html` calls *and* redefines
+- `layouts/redirect/single.html` calls *and* redefines
   `_internal/alias.html` on purpose: the local alias page carries
   additional meta tags (`noindex`, canonical, charset).
 
 Minor cleanups for the same pass:
 
-* Canonical camelCase for configuration keys: `canonifyURLs`, not
+- Canonical camelCase for configuration keys: `canonifyURLs`, not
   `canonifyurls` — Hugo matches keys case-insensitively, but the
   documentation and tooling use the camelCase form.
-* ~~Nondeterministic element IDs~~ — deliberately **not** pursued:
+- ~~Nondeterministic element IDs~~ — deliberately **not** pursued:
   replacing random inputs (like `md5 (printf "%s-%s" $src now.UnixNano)`
   or `shuffle (seq 1 9)` name components) with deterministic
   discriminators breaks more things than it fixes; the theme's
@@ -1213,7 +1246,7 @@ Reference: the theme's current user-facing stack (see the `assets/ts/`
 imports and `package.json`) is:
 
 | Library | Used for |
-|---|---|
+| --- | --- |
 | tify | IIIF presentation viewer |
 | OpenLayers, ol-mapbox-style | Maps and the IIIF image viewer |
 | @projektemacher/hdr-canvas | HDR rendering in the IIIF image viewer |

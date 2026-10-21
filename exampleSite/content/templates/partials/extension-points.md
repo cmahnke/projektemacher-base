@@ -44,7 +44,7 @@ The theme ships `schema.org/home.html` and `schema.org/post.html`, a site can ov
 ## Optional partials (checked with `templates.Exists`)
 
 | Partial | Called by | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `preview/image.html` | [preview rendering](helpers/#preview) | Site specific preview image resolution |
 | `html/head/og-image-background.html` | `html/head/og-image.html` | Site specific OpenGraph background image |
 

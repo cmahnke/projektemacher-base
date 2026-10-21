@@ -40,7 +40,7 @@ The container gets the classes `container include <section>`, where `<section>` 
 ## Front matter parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `type` | string | — | Extra CSS class on the page wrapper |
 | `metaPage` | bool | `false` | Hides the date/tags footer and excludes the page from lists |
 

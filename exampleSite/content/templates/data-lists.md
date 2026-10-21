@@ -13,7 +13,7 @@ The theme generates several JSON files used for client side search, tag relation
 An index of all pages of the current language, used by client side search. Each entry contains:
 
 | Field | Source |
-|---|---|
+| --- | --- |
 | `url` | HTML output permalink |
 | `title` | Page title |
 | `section` | Paths of all ancestor sections |
@@ -31,7 +31,7 @@ Pages with `metaPage: true` are excluded.
 A dictionary of all tags used on pages, keyed by tag name. Each entry contains:
 
 | Field | Source |
-|---|---|
+| --- | --- |
 | `url` | Term page URL |
 | `posts` | Rel permalinks of all pages with the tag |
 | `count` | Number of pages |

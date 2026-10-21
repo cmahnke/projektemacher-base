@@ -15,7 +15,7 @@ Template: `_default/schema-org.json`, typically applied to the home page or a se
 ### Parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `section` | string | `post` | Section the blog posts are taken from |
 | `type` | string | `Blog` | `@type` of the blog node |
 

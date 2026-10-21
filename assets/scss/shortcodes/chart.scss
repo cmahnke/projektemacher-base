@@ -1,20 +1,19 @@
 pre.chart-data {
-  display: none;
+    display: none;
 }
 
-.chart-figure  {
-  width: 40%;
-  margin-block-start: unset;
-  margin-block-end: unset;
-  margin-inline-start: unset;
-  margin-inline-end: unset;
+.chart-figure {
+    width: 40%;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
 
-  .chart-container {
-    aspect-ratio: 1.5 / 1;
-    width: 100%;
-  }
+    .chart-container {
+        aspect-ratio: 1.5 / 1;
+        width: 100%;
+    }
 
-  .chart-caption {
-
-  }
+    .chart-caption {
+    }
 }

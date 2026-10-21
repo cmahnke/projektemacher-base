@@ -11,7 +11,7 @@ Renders the first image from another post's front matter `resources` array as a 
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `post` | string | yes | — | Path of the post (relative to `section` if given) |
 | `section` | string | no | — | Section to look up the post in |
 | `width` | string | no | — | Resize the image to the given width |

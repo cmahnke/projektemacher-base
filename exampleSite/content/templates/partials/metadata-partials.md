@@ -11,7 +11,7 @@ The `metadata/` partials build the JSON-LD documents for the [metadata output fo
 ## schema.org
 
 | Partial | Purpose |
-|---|---|
+| --- | --- |
 | `metadata/schema.org/schema.org.html` | Dispatcher — selects the site provided template, see [extension points](extension-points/#schemaorghash-html-per-type-metadata) |
 | `schema.org/home.html` | Home page metadata (shipped, overridable) |
 | `schema.org/post.html` | Blog post metadata (shipped, overridable) |

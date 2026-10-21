@@ -11,7 +11,7 @@ Renders an OpenStreetMap container for OpenLayers: `div.map-wrapper.script` with
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | URL/path of the GeoJSON source |
 | `cluster` | any | no | `false` | Enable point clustering |
 | `marker` | any | no | `false` | Marker configuration, passed through to the OpenLayers icon style |

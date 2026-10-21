@@ -13,7 +13,7 @@ Renders a `div.quote` with a `<blockquote class="quote-body">` and an optional `
 ## Parameters
 
 | Parameter | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `quote` | string | no | Quote text (markdownified, overridden by inner content) |
 | `from` | string | no | Attribution line (markdownified) |
 | `file` | string | no | File whose content becomes the quote (overridden by inner content) |

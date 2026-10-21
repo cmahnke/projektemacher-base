@@ -11,7 +11,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 ## General and metadata
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `description` | — | Site description, used for the `<meta name="description">` and OpenGraph tags |
 | `keywords` | — | Comma separated keywords, rendered as `dc.subject` meta tags |
 | `slogan` | — | Appended to the `<title>` on the home page |
@@ -27,7 +27,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 ## Header and footer
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `headerimage` | `/images/header.svg` | Logo image in the header; set to `false` to disable the image |
 | `footer.privacy` | `false` | Show a privacy policy link (`footer.privacyUrl` overrides the default `/privacy` target) |
 | `copyright` | — | Copyright line, rendered in the footer (set to `false` to hide) |
@@ -37,7 +37,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 ## Assets and styles
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `css.includeDirs` | built in set | Additional include paths (Sass `includePaths`) for the SCSS pipeline, see the [shortcode helper](/shortcodes/shortcode-helper/) |
 | `skipShortcodeAssets` | `false` | Disable automatic loading of shortcode specific JS/CSS |
 | `favicon_16` / `favicon_32` | — | Favicon PNGs |
@@ -52,7 +52,7 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 All IIIF viewer settings live in `[params.iiif]` — see the [IIIF configuration](/iiif/configuration/) page for details:
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `iiif.presentationViewer` | `ts/iiif/tify.ts` | Presentation API viewer script (TIFY) |
 | `iiif.imageViewer` | — | Image API viewer script (OpenLayers based) |
 | `minimalUI` | `false` | Minimal viewer UI |
@@ -67,7 +67,7 @@ is a silent no-op (Hugo ignores unknown params).
 ## Previews
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `preview.source` | — | Site wide preview image source (OpenGraph/social cards) |
 | `preview.size.width` / `preview.size.height` | — | Preview image dimensions |
 | `preview.outputPrefix` / `preview.outputSuffix` | — | Output file naming for generated previews |
@@ -79,7 +79,7 @@ A site can further customize preview resolution via the `preview/image.html` par
 ## Metadata integrations
 
 | Parameter | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `wikidata` | `false` | Enable Wikidata metadata handling |
 | `wikidatasparqlendpoint` | — | SPARQL endpoint for Wikidata queries |
 | `schemaPerson` | — | URL to a JSON-LD person document for schema.org metadata |

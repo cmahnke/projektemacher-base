@@ -32,7 +32,7 @@ If the page has no `cite: true` front matter, the file only contains:
 ## Front matter parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `cite` | bool | yes | — | Set to `true` to enable the export, otherwise only the error comment is rendered |
 | `bibtex_key` | string | yes | — | Citation key after `@<type>{` |
 | `authors` | list of maps | no | site `author.name` | Maps with `first` and `last`, joined with ` and ` |

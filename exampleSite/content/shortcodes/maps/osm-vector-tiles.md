@@ -15,7 +15,7 @@ inline script calling `window.projektemacherMap(...)`. The logic lives in
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `src` | string | yes | — | URL/path of the GeoJSON source |
 | `style` | string | yes | — | Mapbox style — either an asset path (resolved via `resources.Get`, inlined) or a URL (loaded client side) |
 | `source` | string | no | from style | Tile URL overriding the style's source, e.g. `https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}` |

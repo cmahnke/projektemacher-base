@@ -11,7 +11,7 @@ Renders a stacked bar chart from a CSV file (a page resource), grouped by month.
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `csv` | string | yes | — | Path of the CSV page resource |
 | `opts` | string | no | — | JSON object with [ECharts options](https://echarts.apache.org/en/option.html) overrides |
 

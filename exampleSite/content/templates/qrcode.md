@@ -25,7 +25,7 @@ The `qrcode` output format generates a small JSON file per page describing the d
 ## Front matter parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `aliases` | string list | no | — | Additional URLs to encode |
 | `qr-color` | string | no | — | QR code color |
 | `qr-icon` | string | no | — | Icon (image) overlaid on the code |

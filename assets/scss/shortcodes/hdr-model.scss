@@ -1,9 +1,8 @@
 .renderer-canvas {
-  min-height: 512px;
+    min-height: 512px;
 
-  canvas {
-    background: black;
-    border-radius: .4rem;
-  }
-
+    canvas {
+        background: black;
+        border-radius: 0.4rem;
+    }
 }

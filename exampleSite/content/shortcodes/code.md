@@ -13,7 +13,7 @@ Renders a syntax highlighted code block (Hugo's `transform.Highlight`/Chroma) in
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `lang` | string | no | — | Chroma highlighting language, disables syntax guessing |
 | `title` | string | no | — | Header title of the container |
 | `class` | string | no | — | Custom class name |

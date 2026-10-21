@@ -13,7 +13,7 @@ The optional first line of the body can start with `#` followed by a JSON object
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `class` | string | no | — | Extra class on the `<figure>` |
 | `caption` | string | no | — | Caption below the chart |
 

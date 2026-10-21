@@ -8,13 +8,13 @@ metaPage: true
 
 To use the example site locally you need to set up the language files:
 
-```
+```bash
 ./scripts/setup.sh
 ```
 
 # Running the example site
 
-```
+```bash
 hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates
 ```
 
@@ -24,6 +24,6 @@ Afterwards the example site can be generated or `serve`'d.
 
 Before commiting changes one can clean up the language files:
 
-```
+```bash
 ./scripts/cleanup.sh
 ```

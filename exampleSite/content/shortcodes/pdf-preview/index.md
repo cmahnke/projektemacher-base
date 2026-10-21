@@ -11,7 +11,7 @@ Embeds an inline PDF preview via [PDFObject](https://pdfobject.com/) (`PDFObject
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `pdf` | string | yes | — | PDF path relative to the page (nothing rendered when empty) |
 | `page` | int | no | `1` | Initial page |
 | `class` | string | no | `pdf-preview` | Class on the container |

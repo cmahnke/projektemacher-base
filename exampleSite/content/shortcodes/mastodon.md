@@ -26,7 +26,7 @@ Positional arguments:
 
 Embeds a [public post](https://openbiblio.social/@cmahnke/116855467937850503) from [@cmahnke@openbiblio.social](https://openbiblio.social/@cmahnke):
 
-{{< mastodon "https://openbiblio.social/@cmahnke/116855467937850503" >}}
+{{< mastodon "<https://openbiblio.social/@cmahnke/116855467937850503>" >}}
 
 ## Errors
 

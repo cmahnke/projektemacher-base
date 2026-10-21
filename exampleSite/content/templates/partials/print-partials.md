@@ -13,7 +13,7 @@ The `print/` partials are building blocks for print editions (books, brochures).
 The main assembler: renders all pages of the site (via `hugo/site/AllPages`) in weight order as print pages. Requires a dict parameter:
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `context` | page | — | Current page context |
 | `pages` | page list | all pages | Pages to render |
 | `op` | string | `lt` | Weight comparison operator |

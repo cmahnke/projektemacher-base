@@ -5,7 +5,7 @@ displayinlist: false
 metaPage: true
 ---
 
-```
+```toml
 [params.iiif]
   presentationViewer = "ts/iiif/tify.ts"
 

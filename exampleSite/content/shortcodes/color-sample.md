@@ -13,7 +13,7 @@ Renders an inline color swatch (`div.color-sample`), optionally showing the colo
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `color` | string | yes | — | Any CSS color for the background |
 | `text` | string | no | `&nbsp;` | Label inside the swatch (markdownified) |
 | `print` | any | no | — | If set, appends `span.color-sample-code` with the raw color value |

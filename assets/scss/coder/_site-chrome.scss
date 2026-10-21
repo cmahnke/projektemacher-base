@@ -43,19 +43,19 @@ $calendar: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3
     font-weight: unset;
 }
 @media only screen and (max-width: 768px) {
-    .fa-bars:before {
+    .fa-bars::before {
         content: url("data:image/svg+xml, #{shared.$bars}");
         display: inline-block;
         width: 1em;
     }
 
-    .fa-clock:before {
+    .fa-clock::before {
         content: url("data:image/svg+xml, #{$clock}");
         display: inline-block;
         width: 1em;
     }
 
-    .fa-calendar:before {
+    .fa-calendar::before {
         content: url("data:image/svg+xml, #{$calendar}");
         display: inline-block;
         width: 1em;
@@ -71,13 +71,13 @@ nav {
     .container {
         a,
         span {
-            color: #FAFAFA;
+            color: #fafafa;
         }
 
         a:active,
         a:hover {
             text-decoration: none;
-            color: #FAFAFA;
+            color: #fafafa;
         }
 
         @media only screen and (max-width: 840px) {
@@ -223,6 +223,63 @@ nav {
     }
 }
 
+/*
+ * Base list styles from coder's content partial. Kept here (instead
+ * of in the vendored coder/content) so the exampleSite's div-based
+ * list markup is unaffected — the selectors only match ul/li lists.
+ * Must stay before the list card rules below (same order as when it
+ * lived in coder's content styles).
+ */
+.list {
+    ul {
+        margin: 3.2rem 0 3.2rem 0;
+        list-style: none;
+        padding: 0;
+
+        li {
+            font-size: 1.8rem;
+
+            @media only screen and (max-width: 768px) {
+                margin: 1.6rem 0 1.6rem 0;
+            }
+
+            .date {
+                display: inline-block;
+                flex: 1;
+                width: 20.0rem;
+                text-align: right;
+                margin-right: 3.0rem;
+
+                @media only screen and (max-width: 768px) {
+                    display: block;
+                    text-align: left;
+                }
+            }
+
+            .title {
+                font-size: 1.8rem;
+                flex: 2;
+                color: shared.$fg-color;
+                font-family: shared.$heading-font-family;
+                font-weight: 700;
+
+                &:hover,
+                &:focus {
+                    color: shared.$link-color;
+                }
+            }
+        }
+    }
+
+    ul:not(.pagination) {
+        li {
+            @media only screen and (min-width: 768.1px) {
+                display: flex;
+            }
+        }
+    }
+}
+
 .list .post ul {
     padding-top: 1em;
 }
@@ -259,7 +316,9 @@ nav {
                 margin-top: 2rem;
                 background-color: #fff;
                 border-radius: 0.5rem;
-                box-shadow: 0 0.5rem 1rem 0 rgba(0,0,0,.19), 0 0.3rem 0.3rem -0.1rem rgba(0,0,0,.23);
+                box-shadow:
+                    0 0.5rem 1rem 0 rgb(0 0 0 / 0.19),
+                    0 0.3rem 0.3rem -0.1rem rgb(0 0 0 / 0.23);
                 padding: 0.6em;
 
                 h1 {
@@ -353,7 +412,7 @@ nav {
 }
 
 body {
-    //background-position: 97% 97%;
+    // background-position: 97% 97%;
     background-position: 97% 5em;
     background-image: url("/images/cm.svg");
     background-repeat: no-repeat;
@@ -372,7 +431,7 @@ body {
     }
 
     body {
-        //background-position: 97% 97%;
+        // background-position: 97% 97%;
         background-position: 97% 7em;
         background-image: url("/images/cm.svg");
         background-repeat: no-repeat;

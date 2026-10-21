@@ -13,7 +13,7 @@ See [html/link](../link/) for the variant without the existence check.
 ## Parameters
 
 | Parameter | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `file` | string | yes | Path relative to the page |
 | `content` | string | no | Link text, defaults to the `file` value |
 

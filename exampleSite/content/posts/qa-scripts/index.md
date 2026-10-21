@@ -15,7 +15,7 @@ The theme ships a set of quality assurance scripts, used by the [example site](.
 - a request for a local resource that fails (network error)
 
 | Exit code | Meaning |
-|---|---|
+| --- | --- |
 | 122 | Browser console message matched a configured `messages` entry |
 | 123 | Uncaught page error |
 | 124 | Failed request (network error) for a local resource |
@@ -26,7 +26,7 @@ The theme ships a set of quality assurance scripts, used by the [example site](.
 Entries in `test-urls.json` can additionally contain `click` sequences and CSS `selector`/`property`/`value` (optionally with `pseudo`) checks, resolved with `getComputedStyle` — the run fails when the element is found and its computed value equals `value` (see exit code 125).
 
 | Flag | Meaning |
-|---|---|
+| --- | --- |
 | `-f`, `--force` | Exit instead of skipping URLs whose file doesn't exist in `docs` |
 | `-g`, `--gpu` | Enable 3D APIs (SwiftShader/ANGLE emulation), required by WebGL/WebGPU pages |
 | `-e`, `--experimental` | Enable experimental web platform features |
@@ -45,7 +45,7 @@ With `-i`/`--iiif` the check understands IIIF documents among the test URLs. A U
 The check only requests assets served by the internal web server, never external hosts, and only actual file references:
 
 | Collected | Skipped |
-|---|---|
+| --- | --- |
 | `thumbnail`, `rendering`, `logo`, `seeAlso` and annotation `body` ids | Structural identifiers that merely look like URLs: Canvases, Annotations, Ranges, the document's own `id` |
 | | `@context`, `homepage`, `provider`, `partOf`, `services`, `profile` |
 
@@ -53,7 +53,7 @@ For `manifest.json` and `collection.json` every referenced asset (deduplicated) 
 
 Failures are collected across all test URLs and reported at the end of the run:
 
-```
+```text
 IIIF check: 3 files, 42 URLs, 2 failures
 ```
 
@@ -64,7 +64,7 @@ Any failure exits with code 127.
 `scripts/check-a11y.mjs` runs [axe-core](https://github.com/dequelabs/axe-core) in headless Chrome against one or more URLs and reports accessibility violations.
 
 | Flag | Meaning |
-|---|---|
+| --- | --- |
 | `-u`, `--url` | URL to check (defaults to the `baseURL` from the Hugo configuration) |
 | `-f`, `--urls-file` | JSON file with a `urls` array (e.g. `test-urls.json`), checked in addition to `--url` |
 | `-o`, `--output` | Additionally write the report as Markdown to this file |
@@ -77,7 +77,7 @@ Any failure exits with code 127.
 `scripts/check-lighthouse.mjs` runs [Lighthouse](https://github.com/GoogleChrome/lighthouse) against one or more URLs and reports the category scores.
 
 | Flag | Meaning |
-|---|---|
+| --- | --- |
 | `-u`, `--url` | URL to check |
 | `-f`, `--urls-file` | JSON file with a `urls` array, checked in addition to `--url` |
 | `-o`, `--output` | Additionally write the report as Markdown to this file |

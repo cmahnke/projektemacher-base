@@ -22,7 +22,7 @@ Pages without an explicit `outputs` entry are collected into collections only if
 ## Manifest properties (`iiif.` namespace)
 
 | Key | Type | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `iiif.presentationVersion` | int | `3` (default) or `4` (draft), see [Presentation 4](presentation-4/) |
 | `iiif.behavior` | string | Manifest `behavior`, e.g. `paged` (default), `continuous`, `individuals` |
 | `iiif.metadata` | list | Descriptive `metadata` labels/values as JSON list |

@@ -9,7 +9,7 @@ metaPage: true
 The IIIF related output formats generate [IIIF Presentation API](https://iiif.io/api/presentation/3.0/) resources. All details about configuration and front matter are documented in the [IIIF section](/iiif/), this page lists the templates involved.
 
 | Template | Output format | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `_default/home.iiif-collection.json` | `iiif-collection` | Collection of all manifests, merging pages of all languages |
 | `_default/term.iiif-collection.json` | `iiif-collection` | Collection for a term or section page |
 | `_default/single.iiif-manifest.json` | `iiif-manifest` | Manifest for a single page |

@@ -27,7 +27,7 @@ Depending on the `[params.activitypub]` configuration, `id`/`preferredUsername`,
 ## Site parameters
 
 | Parameter | Type | Default | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `params.activitypub.author` | string | — | Username used for `id` (`<baseURL>@<author>`) and `preferredUsername` |
 | `params.activitypub.outbox` | string | — | Outbox filename appended to the base URL, e.g. `outbox.json` |
 | `params.activitypub.icon` | string | — | Asset path resolved with `resources.Get` for the `icon` image |

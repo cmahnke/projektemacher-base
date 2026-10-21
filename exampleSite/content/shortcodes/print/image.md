@@ -11,7 +11,7 @@ Renders a `<figure><img src="…"></figure>` for the print edition, optionally w
 ## Parameters
 
 | Parameter | Type | Required | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `src` | string | yes | Image path relative to the page |
 | `alt` | string | no | Alt text |
 | `class` | string | no | Class on the `<figure>` |
