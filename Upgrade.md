@@ -249,29 +249,40 @@ picks one (Path B subsumes Path A's module semantics, see Risks below).
 `html/head/script.html` already supports it:
 
 ```html
-partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
+partial "html/head/script.html" (dict "context" . "opts" (dict "format" "esm"))
 ```
 
 With `format` set to `esm` the partial emits `<script type="module">`
 instead of the `defer` variant — modules are deferred implicitly, so the
 timing stays the same. One opts pass covers all bundles built within the
-call (main bundle, IIIF viewers, page scripts). Steps:
+call (main bundle, IIIF viewers, page scripts).
+
+Since 2026-10 the partial **never concatenates ESM bundles**: every
+bundle is fingerprinted individually and ships as its own
+`<script type="module" … crossorigin="anonymous">` tag. Separately
+minified bundles reuse the same mangled top level identifiers, so
+concatenating them produced `SyntaxError: Identifier 'Pe' has already
+been declared` on vintagereality's `/map/` page (main bundle +
+`osm-map.ts`). Per-tag emission gives every bundle its own module scope,
+making such collisions — and import-hoisting/ordering hazards of
+concatenated modules — impossible. `splitBundles` only affects classic
+(iife) bundles. Module tags execute in document order, so the main
+bundle still runs before page scripts. Steps:
 
 1. Pass `"opts" (dict "format" "esm")` to the `script.html` call in the
    site's `baseof.html` (or default the format in a site-side override
    of the partial).
-2. Empty the `externals` list. The partial hardcodes `slice "domain"` —
-   under esm an external dependency is emitted as an `import` statement
-   and the bundle fails to load. Nothing imports `domain` today (checked
-   2026-10), it is a leftover; drop it when switching.
-3. Keep the concatenated bundles free of top-level `import`/`export`
-   statements (see risks below) — re-check after every theme raise.
-4. `menu.js` and `print.js` can be switched one at a time by adding
+2. `menu.js` and `print.js` can be switched one at a time by adding
    `"format" "esm"` to their `js.Build` options and changing their script
    tags to `type="module"` (drop `defer`, it is redundant on modules).
    Switch both branches of `baseof.print.html` (the development branch
    emits the tag without `defer` today). The `"target" "es2018"` of
    `print.js` is unrelated to the output format and can stay.
+
+The former steps about `externals` (the partial hardcoded
+`slice "domain"`) and about keeping concatenated bundles free of
+top-level `import`/`export` statements are obsolete: the hardcoded
+external was removed and ESM bundles are no longer concatenated.
 
 ### Path B — switch the bundle pipeline to `js.Batch`
 
@@ -331,14 +342,18 @@ Common to both paths (module semantics):
 
 Path A specific:
 
-- **Concatenation is the fragile spot.** `script.html` concatenates
-  independently built bundles (`resources.Concat`: main + IIIF viewers +
-  page scripts). That is safe only while every part is self-contained:
-  the moment one part emits top-level `import`/`export` statements,
-  imports hoist above the concatenated code (execution order changes)
-  and relative specifiers resolve against the concatenated file's URL,
-  not the original bundle's. Guard: keep `externals` empty and no
-  re-exports.
+- **Concatenation hazard (closed 2026-10).** `script.html` used to
+  concatenate independently built bundles (`resources.Concat`: main +
+  IIIF viewers + page scripts). For ESM that broke in two ways: top-level
+  `import`/`export` statements hoist above the concatenated code
+  (execution order changes, relative specifiers resolve against the
+  concatenated file's URL), and separately minified bundles reuse the
+  same mangled top level identifiers — the concatenation of
+  vintagereality's main bundle and its OpenLayers page bundle declared
+  `Pe` twice and failed to parse at all. ESM bundles are now emitted as
+  one `type="module"` tag each (see Path A above), so neither can occur;
+  the iife concatenation remains and stays safe because every part is
+  wrapped in its own IIFE scope.
 
 Path B specific:
 

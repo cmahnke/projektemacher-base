@@ -5,9 +5,10 @@
 
 {{/*
 Example usage:
-  * ESM Format and spliting
+  * ESM Format (bundles are never concatenated under esm - each bundle ships
+    as its own '<script type="module">' tag, so splitBundles is irrelevant):
 
- partial "html/head/script.html" (dict "context" . "splitBundles" true "opts" (dict "format" "esm"))
+ partial "html/head/script.html" (dict "context" . "opts" (dict "format" "esm"))
 
   * ESM via site config (per-call opts still win):
 
@@ -15,6 +16,11 @@ Example usage:
    format = "esm"
 
  … or the string shorthand: [params] js = 'esm'
+
+  * splitBundles separates the main bundle from page/shortcode bundles
+    (classic iife output only):
+
+ partial "html/head/script.html" (dict "context" . "splitBundles" true)
 
 */}}
 
@@ -30,7 +36,11 @@ Example usage:
     {{- end -}}
 {{- end -}}
 
-{{- $externals := slice "domain" -}}
+{{/* No hardcoded externals: under esm an external dependency is emitted as an
+     import statement into the bundle, which breaks concatenated (and relocates)
+     bundles. Nothing imports 'domain' (checked 2026-10), sites can still pass
+     externals via 'opts'. */}}
+{{- $externals := slice -}}
 {{- $jsResources := slice -}}
 {{- $js := slice -}}
 {{- $additionalOpts := dict -}}
@@ -179,17 +189,30 @@ Example usage:
   {{- $scriptType = "module" -}}
 {{- end -}}
 
-{{- if $splitBundles -}}
+{{- if eq $scriptType "module" -}}
+  {{/* ESM bundles are never concatenated: every bundle was minified on its own,
+      so mangled top level identifiers (e.g. 'Pe') can collide when two bundles
+      share one module scope ("Identifier 'Pe' has already been declared").
+      Each bundle is fingerprinted and shipped as its own module tag - separate
+      module scopes make collisions impossible. Module tags execute in document
+      order, so the main bundle still runs before page scripts. splitBundles
+      only affects classic (iife) bundles. */}}
+  {{- range $jsResources -}}
+    {{- $fingerprinted := . | fingerprint -}}
+    <script src="{{ $fingerprinted.RelPermalink }}" integrity="{{ $fingerprinted.Data.Integrity | html }}" crossorigin="anonymous" type="module"></script>
+  {{- end -}}
+  {{- range $pageJsResources -}}
+    {{- $fingerprinted := . | fingerprint -}}
+    <script src="{{ $fingerprinted.RelPermalink }}" integrity="{{ $fingerprinted.Data.Integrity | html }}" crossorigin="anonymous" type="module"></script>
+  {{- end -}}
+
+{{- else if $splitBundles -}}
   {{- $mainFileName := "" -}}
   {{- range $file := $jsResources -}}
     {{- $mainFileName = printf "%s%s" $mainFileName $file.Name -}}
   {{- end -}}
   {{- $mainJs := $jsResources | resources.Concat (printf "js/%s.js" (md5 $mainFileName)) | fingerprint -}}
-  {{- if eq $scriptType "module" -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
-  {{- else -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
-  {{- end -}}
+  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
 
   {{- if gt (len $pageJsResources) 0 -}}
     {{- $pageFileName := "" -}}
@@ -197,11 +220,7 @@ Example usage:
       {{- $pageFileName = printf "%s%s" $pageFileName $file.Name -}}
     {{- end -}}
     {{- $pageJs := $pageJsResources | resources.Concat (printf "js/%s.js" (md5 $pageFileName)) | fingerprint -}}
-    {{- if eq $scriptType "module" -}}
-      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" type="module"></script>
-    {{- else -}}
-      <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" defer></script>
-    {{- end -}}
+    <script src="{{ $pageJs.RelPermalink }}" integrity="{{ $pageJs.Data.Integrity | html }}" defer></script>
   {{- end -}}
 
 {{- else -}}
@@ -217,10 +236,6 @@ Example usage:
     {{- $fileName = printf "%s%s" $fileName $file.Name -}}
   {{- end -}}
   {{- $mainJs := $allResources | resources.Concat (printf "js/%s.js" (md5 $fileName)) | fingerprint -}}
-  {{- if eq $scriptType "module" -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" type="module"></script>
-  {{- else -}}
-    <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
-  {{- end -}}
+  <script src="{{ $mainJs.RelPermalink }}" integrity="{{ $mainJs.Data.Integrity | html }}" defer></script>
 
 {{- end -}}
