@@ -144,3 +144,27 @@ $reddit-dark: "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640'%3
 $npm-light: "%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='540px' height='210px' viewBox='0 0 18 7'%3E%3Cpath fill='#{encodecolor($color-dark)}' d='M0,0h18v6H9v1H5V6H0V0z M1,5h2V2h1v3h1V1H1V5z M6,1v5h2V5h2V1H6z M8,2h1v2H8V2z M11,1v4h2V2h1v3h1V2h1v3h1V1H11z'/%3E%3Cpolygon fill='%23FFFFFF' points='1,5 3,5 3,2 4,2 4,5 5,5 5,1 1,1 '/%3E%3Cpath fill='%23FFFFFF' d='M6,1v5h2V5h2V1H6z M9,4H8V2h1V4z'/%3E%3Cpolygon fill='%23FFFFFF' points='11,1 11,5 13,5 13,2 14,2 14,5 15,5 15,2 16,2 16,5 17,5 17,1 '/%3E%3C/svg%3E";
 
 $npm-light: "%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='540px' height='210px' viewBox='0 0 18 7'%3E%3Cpath fill='#{encodecolor($color-light)}' d='M0,0h18v6H9v1H5V6H0V0z M1,5h2V2h1v3h1V1H1V5z M6,1v5h2V5h2V1H6z M8,2h1v2H8V2z M11,1v4h2V2h1v3h1V2h1v3h1V1H11z'/%3E%3Cpolygon fill='%23FFFFFF' points='1,5 3,5 3,2 4,2 4,5 5,5 5,1 1,1 '/%3E%3Cpath fill='%23FFFFFF' d='M6,1v5h2V5h2V1H6z M9,4H8V2h1V4z'/%3E%3Cpolygon fill='%23FFFFFF' points='11,1 11,5 13,5 13,2 14,2 14,5 15,5 15,2 16,2 16,5 17,5 17,1 '/%3E%3C/svg%3E";
+
+/* Comment - FA name: comment */
+$comment-dark: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='#{encodecolor($color-dark)}' d='M512 240c0 114.9-114.6 208-256 208-37.1 0-72.3-6.4-104.1-17.9-11.9 8.7-31.3 20.6-54.3 30.6C73.6 471.1 44.7 480 16 480c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.8 3.4-17.4l.3-.3c.3-.3.7-.7 1.3-1.4 1.1-1.2 2.8-3.1 4.9-5.7 4.1-5 9.6-12.4 15.2-21.6 10-16.6 19.5-38.4 21.4-62.9C17.7 326.8 0 285.1 0 240 0 125.1 114.6 32 256 32s256 93.1 256 208z'/%3E%3C/svg%3E";
+
+$comment-light: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='#{encodecolor($color-light)}' d='M512 240c0 114.9-114.6 208-256 208-37.1 0-72.3-6.4-104.1-17.9-11.9 8.7-31.3 20.6-54.3 30.6C73.6 471.1 44.7 480 16 480c-6.5 0-12.3-3.9-14.8-9.9s-1.1-12.8 3.4-17.4l.3-.3c.3-.3.7-.7 1.3-1.4 1.1-1.2 2.8-3.1 4.9-5.7 4.1-5 9.6-12.4 15.2-21.6 10-16.6 19.5-38.4 21.4-62.9C17.7 326.8 0 285.1 0 240 0 125.1 114.6 32 256 32s256 93.1 256 208z'/%3E%3C/svg%3E";
+
+/* Parameterized icons - site-specific fill colors via icon() */
+@function str-replace($string, $search, $replace) {
+  $index: str-index($string, $search);
+  @if $index {
+    $head: str-slice($string, 1, $index - 1);
+    $tail: str-slice($string, $index + str-length($search));
+    @return "#{$head}#{$replace}#{str-replace($tail, $search, $replace)}";
+  }
+  @return $string;
+}
+
+@function icon($name, $color: $color-dark) {
+  $template: if($name == "link", "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='FILLCOLOR' d='M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z'/%3E%3C/svg%3E", if($name == "picture", "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='FILLCOLOR' d='M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z'/%3E%3C/svg%3E", null));
+  @if not $template {
+    @error "icon(): unknown icon '#{$name}'";
+  }
+  @return str-replace($template, "FILLCOLOR", encodecolor($color));
+}
