@@ -100,19 +100,26 @@
       {{- end -}} 
       {{- $authors = $authors | append $a -}} 
     {{- end -}} 
-    {{- $datePublished := (index $cff "date-released") | default "" -}}
     {{- $codemeta = dict
       "@context" "https://w3id.org/codemeta/3.1"
       "@type" "SoftwareSourceCode"
       "name" $cff.title
-      "softwareVersion" $cff.version
       "description" ($cff.abstract | default "")
       "author" $authors
-      "datePublished" $datePublished
       "license" (printf "https://spdx.org/licenses/%s" $cff.license)
       "codeRepository" (index $cff "repository-code" | default "")
       "runtimePlatform" (index $cff "repository" | default "")
-    -}} 
+    -}}
+    {{- with $cff.version -}}
+      {{- $codemeta = merge $codemeta (dict "softwareVersion" .) -}}
+    {{- end -}}
+    {{- with index $cff "date-released" -}}
+      {{- $datePublished := . -}}
+      {{- if eq (printf "%T" .) "time.Time" -}}
+        {{- $datePublished = dateFormat "2006-01-02" . -}}
+      {{- end -}}
+      {{- $codemeta = merge $codemeta (dict "datePublished" $datePublished) -}}
+    {{- end -}}
     {{- with $cff.keywords -}}
       {{- $codemeta = merge $codemeta (dict "keywords" .) -}}
     {{- end -}} 
