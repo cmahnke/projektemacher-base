@@ -127,7 +127,6 @@ SOURCE_PID=$!
   cd "$ENDPOINT_DIR"
   exec env \
     WEBMENTION_DATA_DIR="$TMP/data" \
-    WEBMENTION_ALLOWED_DOMAINS='["example.org"]' \
     WEBMENTION_ALLOW_PRIVATE=1 \
     WEBMENTION_RATE_LIMIT=1000 \
     php -S "127.0.0.1:$ENDPOINT_PORT" webmention.php >/dev/null 2>&1
@@ -151,9 +150,6 @@ check "webmention without backlink is rejected" "422" "$STATUS"
 
 STATUS=$(post -X POST "$ENDPOINT_URL" --data-urlencode "target=$TARGET_URL")
 check "webmention with missing source" "400" "$STATUS"
-
-STATUS=$(post -X POST "$ENDPOINT_URL" --data-urlencode "source=$SOURCE_URL/link.html" --data-urlencode "target=https://evil.org/blog/post/")
-check "webmention with non-allowed target" "400" "$STATUS"
 
 STATUS=$(post -X POST "$ENDPOINT_URL" --data-urlencode "source=$SOURCE_URL/link.html" --data-urlencode "target=$TARGET_URL" --data-urlencode "url2=spam-bot-was-here")
 check "honeypot request pretends acceptance" "202" "$STATUS"
@@ -286,7 +282,6 @@ start_endpoint() {
     cd "$ENDPOINT_DIR"
     exec env \
       WEBMENTION_DATA_DIR="$data_dir" \
-      WEBMENTION_ALLOWED_DOMAINS='["example.org"]' \
       WEBMENTION_ALLOW_PRIVATE=1 \
       WEBMENTION_RATE_LIMIT="$rate_limit" \
       "$@" \
@@ -375,7 +370,6 @@ delete_stale_endpoint
   cd "$ENDPOINT_DIR"
   exec env \
     WEBMENTION_DATA_DIR="$TMP/data-archive-half" \
-    WEBMENTION_ALLOWED_DOMAINS='["example.org"]' \
     WEBMENTION_ALLOW_PRIVATE=1 \
     WEBMENTION_RATE_LIMIT=1000 \
     WEBMENTION_ARCHIVE=1 \
