@@ -54,6 +54,13 @@ fi
 
 "$SCRIPT_DIR/host.sh" rsync "${RSYNC_ARGS[@]}" "$SOURCE/" "$TARGET/"
 
+# The PHP process usually runs under a different user than the SSH
+# deployment user - without this, every mention fails with
+# 'Storage failure' (and the rate limiter silently fails open, see
+# 'lib/store.php'). rsync re-applies the local directory mode, so the
+# chmod has to run after it.
+"$SCRIPT_DIR/host.sh" exec "chmod 777 '$SERVICE_PATH/data'"
+
 echo "Deployed webmention endpoint to $DEPLOY_SERVER:$SERVICE_PATH"
 echo "Hint: the theme's default 'hugo.toml' points at static.projektemacher.org;"
 echo "sites can override with:"
