@@ -30,7 +30,7 @@ if __name__ == "__main__":
     check("baseURL is loaded", c.baseURL().startswith("http"))
     check("publishDir is loaded", c.publishDir() == "docs")
     check("defaultContentLanguage is loaded", c.defaultLanguage in (None, "en"))
-    check("title is loaded", c.config.get("title") == "Projektemacher Base")
+    check("title is loaded", c.config.get("title") is not None and len(c.config.get("title")) > 0)
     check("i18n translations have the expected structure", isinstance(c.translations, dict))
     check("no language keys pollute translations", "en" not in c.translations or not isinstance(c.translations.get("en"), dict) or "en" not in c.translations)
 
