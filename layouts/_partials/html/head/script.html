@@ -161,6 +161,39 @@ Example usage:
   {{- $scripts = union $pageScripts $includes -}}
 {{- end -}}
 
+{{- $webmcpEnabled := false -}}
+{{- $webmcpBundlePath := "" -}}
+{{- if reflect.IsMap site.Params.webMcpSearch -}}
+    {{- if ne site.Params.webMcpSearch.enabled nil -}}
+        {{- $webmcpEnabled = site.Params.webMcpSearch.enabled -}}
+    {{- end -}}
+    {{- if ne site.Params.webMcpSearch.bundlePath nil -}}
+        {{- $webmcpBundlePath = site.Params.webMcpSearch.bundlePath -}}
+    {{- end -}}
+{{- end -}}
+{{- if ne $context nil -}}
+    {{- if reflect.IsMap $context.Params.webMcpSearch -}}
+        {{- if ne $context.Params.webMcpSearch.enabled nil -}}
+            {{- $webmcpEnabled = $context.Params.webMcpSearch.enabled -}}
+        {{- end -}}
+        {{- if ne $context.Params.webMcpSearch.bundlePath nil -}}
+            {{- $webmcpBundlePath = $context.Params.webMcpSearch.bundlePath -}}
+        {{- end -}}
+    {{- else -}}
+        {{- with $context.Params.webMcpSearch -}}
+            {{- $webmcpEnabled = $context.Params.webMcpSearch -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- if $webmcpEnabled -}}
+    {{- if eq $webmcpBundlePath "" -}}
+        {{- $webmcpBundlePath = absURL "index/" -}}
+    {{- end -}}
+    <meta name="webmcp-search-bundle-path" content="{{ $webmcpBundlePath }}">
+    <meta name="webmcp-search-title" content="{{ i18n "Search" }}">
+    {{- $scripts = union $scripts (slice "ts/webmcp-search.ts") -}}
+{{- end -}}
+
 {{- if and $debug (ne $scripts nil) (len $scripts) -}}
   {{- warnf "[partials/html/head/script.html] All collected JS script(s) %#v for %s" $scripts $context.File.Dir -}}
 {{- end -}}

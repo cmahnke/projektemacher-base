@@ -42,6 +42,16 @@ disablePathToLower = true
   # endpoint = 'https://webmentions.example.org/endpoint.php'
   advertisePingback = true
 
+[params.webMcpSearch]
+  # Expose the theme's Pagefind search to AI agents as a WebMCP tool on
+  # every page (see 'content/templates/search.md'). Opt-in: sites must
+  # enable it explicitly. The search bundle path defaults to
+  # 'site.BaseURL + index/' (webMcpSearch.bundlePath overrides it);
+  # individual pages can opt in/out or override the path via the same
+  # params in their front matter.
+  enabled = true
+  # bundlePath = '/index/'
+
 [markup.goldmark.renderer]
   unsafe = true
 

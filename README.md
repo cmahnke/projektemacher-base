@@ -67,6 +67,11 @@ Without an index the search page renders, but the search bundle finds
 nothing — see "Run the JS runtime check against the example site" in
 `Upgrade.md`.
 
+When the site sets `[params.webMcpSearch] enabled = true`, the search is
+additionally exposed to AI agents as a WebMCP tool on every page
+(opt-in, see the [search page documentation](exampleSite/content/templates/search.md)
+under "WebMCP / AI agents").
+
 ## Webmentions / Pingback
 
 The theme ships a self-contained PHP collector for
