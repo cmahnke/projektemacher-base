@@ -6,8 +6,6 @@
  * keeps deployments identical across hosts and makes local testing
  * possible without editing this file:
  *
- *   WEBMENTION_ALLOWED_DOMAINS  JSON array of hostnames accepted as
- *                               mention targets (default: example.org)
  *   WEBMENTION_DATA_DIR         storage directory (default: ./data)
  *   WEBMENTION_RATE_LIMIT       max requests per IP per window (default: 20)
  *   WEBMENTION_RATE_WINDOW      rate limit window in seconds (default: 3600)
@@ -51,10 +49,6 @@ function webmentionConfigValue(string $envVar, mixed $default): mixed
 }
 
 return [
-    // Hostnames whose URLs are accepted as mention targets. Requests for
-    // targets outside this list are rejected (HTTP 400).
-    'allowedDomains' => webmentionConfigValue('WEBMENTION_ALLOWED_DOMAINS', ['example.org']),
-
     // Directory for the per-target JSON documents, created on demand.
     // For nginx hosts (no .htaccess support) point this outside of the
     // document root.

@@ -99,10 +99,6 @@ function wmHandleMention(array $config, string $source, string $target, string $
     if (!wmUrlIsPublic($source, $config)) {
         throw new wmVerificationException(16, 'Invalid source URL');
     }
-    $host = strtolower((string) parse_url($target, PHP_URL_HOST));
-    if (!in_array($host, array_map('strtolower', $config['allowedDomains']), true)) {
-        throw new wmVerificationException(32, 'Target not allowed');
-    }
     $sourceDocument = wmFetchUrl($source, $config);
     if ($sourceDocument === null) {
         throw new wmVerificationException(16, 'Could not fetch source URL');

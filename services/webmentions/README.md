@@ -51,10 +51,10 @@ committed with `[skip ci]`).
 Behaviour:
 
 - Only POST is accepted, GET returns 405. There is **no read API**.
-- Every mention is verified before storing: the target must belong to
-  the configured domains and the source document must link back to it.
+- Every mention is verified before storing: the source document must
+  link back to the target.
 - Mentions are published automatically - no moderation queue. Incoming
-  spam is handled with: domain allowlist, per-IP rate limit, a
+  spam is handled with: per-IP rate limit, a
   honeypot form field (`url2` - bots filling it get an invisible 202
   but nothing is stored), strict timeout/size limits and text
   sanitization (tags stripped, lengths capped).
@@ -88,7 +88,6 @@ complete - the storage cannot "break".
 
 | Variable                     | Default        | Meaning                                     |
 |------------------------------|----------------|---------------------------------------------|
-| `WEBMENTION_ALLOWED_DOMAINS` | `["example.org"]` | JSON array of hostnames accepted as targets |
 | `WEBMENTION_DATA_DIR`        | `./data`       | Storage directory (see nginx note below)    |
 | `WEBMENTION_RATE_LIMIT`      | `20`           | Requests per IP per window                  |
 | `WEBMENTION_RATE_WINDOW`     | `3600`         | Window length in seconds                    |
@@ -133,7 +132,7 @@ a warning and keeps using the anonymous fallback.
 ## Local testing
 
 The easy way is the bundled integration test, which starts two PHP
-built-in servers (source site and endpoint) and runs 25 checks
+built-in servers (source site and endpoint) and runs 24 checks
 (acceptance, rejection, backlink verification, reachability gate,
 honeypot, archiving modes, rate limit, XML-RPC fault codes, stored
 content):
@@ -356,6 +355,6 @@ without further configuration.
 
 | Script                                     | Covers                        |
 |--------------------------------------------|-------------------------------|
-| `scripts/webmention/test-endpoint.sh`       | Endpoint behaviour, storage, reachability gate, archiving, rate limit (25 checks) |
+| `scripts/webmention/test-endpoint.sh`       | Endpoint behaviour, storage, reachability gate, archiving, rate limit (24 checks) |
 | `scripts/webmention/test-lint.sh`           | lint.py: dropping broken data, dedup, grouping, key variants |
 | `hugo --themesDir ../.. --environment tests` (in `exampleSite/`) | Head advertisement and list rendering with demo data |

@@ -145,6 +145,10 @@ function wmStoreAtomicWrite(string $path, string $contents): bool
         @unlink($tmp);
         return false;
     }
+    // tempnam() creates files with 0600, but the data is harvested by
+    // rsync running as a different user - make files group/other
+    // readable so the collection can read them.
+    @chmod($path, 0644);
     return true;
 }
 
