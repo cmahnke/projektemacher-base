@@ -6,6 +6,10 @@
     scroll-snap-type: y mandatory;
 }
 
+.timeline.timeline-horizontal {
+    min-height: 32em;
+}
+
 .timeline-item {
     display: flex;
     flex-direction: row;

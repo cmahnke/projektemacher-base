@@ -1,27 +1,72 @@
 {{- $entries := .entries -}}
+{{- /* Front matter param holding the year, sites can override (kinderbuecher: issueYear).
+       Year values may be plain numbers or range strings like '1922-1924', '1929-31'
+       or '1921–1923' (en dash), ranges become timeline items with a start/end date. */ -}}
+{{- $yearKey := $.yearKey | default "year" -}}
 <div id="timeline" class="timeline timeline-horizontal">
 </div>
+{{- $items := slice -}}
+{{- range $entries -}}
+    {{- $yearRaw := index .Params $yearKey -}}
+    {{- if and (ne $yearRaw nil) (findRE "^\\s*\\d{4}" (printf "%v" $yearRaw)) -}}
+        {{- $yearStr := printf "%v" $yearRaw -}}
+        {{- $year := int (replaceRE "\\s" "" (index (findRE "^\\s*\\d{4}" $yearStr) 0)) -}}
+        {{- $yearEnd := $year -}}
+        {{- $rangeMatch := findRE "[-–—]\\s*\\d{2,4}\\s*$" $yearStr -}}
+        {{- if gt (len $rangeMatch) 0 -}}
+            {{- $suffix := replaceRE "[^\\d]" "" (index $rangeMatch 0) -}}
+            {{- if ge (len $suffix) 3 -}}
+                {{- $yearEnd = int $suffix -}}
+            {{- else -}}
+                {{- $expanded := add (mul (div $year 100) 100) (int $suffix) -}}
+                {{- if lt $expanded $year -}}
+                    {{- $expanded = add $expanded 100 -}}
+                {{- end -}}
+                {{- if gt $expanded $year -}}
+                    {{- $yearEnd = $expanded -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- $items = $items | append (dict "year" $year "yearEnd" $yearEnd "entry" .) -}}
+    {{- end -}}
+{{- end -}}
 <script type="text/javascript">
     var issues = [
-        {{- range $entries -}}
-                {{- /* Front matter param holding the year, sites can override (kinderbuecher: issueYear) */ -}}
-                {{- $yearKey := $.yearKey | default "year" -}}
-                {{- $year := index .Params $yearKey -}}
+        {{- range $items -}}
+                {{- $entry := .entry -}}
                 {{- $month := 1 -}}
-                {{- if isset .Params "month" -}}
-                    {{- $month = .Params.month -}}
+                {{- if isset $entry.Params "month" -}}
+                    {{- $month = $entry.Params.month -}}
                 {{- end -}}
-                {{- $content := printf "<a href=\"%s\">%s</a>" .RelPermalink .Title -}}
-                {"content": "{{ $content }}", "start": new Date({{- $year -}}, {{- $month -}}, 1), "url": {{ .RelPermalink | jsonify }}},
+                {{- $content := printf "<a href=\"%s\">%s</a>" $entry.RelPermalink $entry.Title -}}
+                {"content": "{{ $content }}", "start": new Date({{- .year -}}, {{- $month -}}, 1){{- if gt .yearEnd .year -}}, "end": new Date({{- .yearEnd -}}, 11, 31){{- end -}}, "url": {{ $entry.RelPermalink | jsonify }}},
 
         {{- end -}}
     ];
+    issues.sort(function(a, b) {
+        return a.start - b.start;
+    });
     var options = {};
 
     document.addEventListener("DOMContentLoaded", function() {
         var timeline = addTimeline('timeline', issues, options);
         if (window.innerWidth < 1024 && window.showTab) {
             window.showTab('vertical-tab')
+        }
+        /* Tab panes hide the content of inactive tabs via display:none, in that
+           case the timeline gets rendered with zero width and must be redrawn
+           once it becomes visible. */
+        var container = document.getElementById('timeline');
+        var pane = null;
+        if (container !== null && typeof container.closest === "function") {
+            pane = container.closest('.panel, .tab-pane');
+        }
+        if (pane !== null && 'MutationObserver' in window) {
+            new MutationObserver(function() {
+                if (pane.classList.contains('show')) {
+                    timeline.redraw();
+                }
+            }).observe(pane, { attributes: true, attributeFilter: ['class'] });
         }
     });
 </script>
