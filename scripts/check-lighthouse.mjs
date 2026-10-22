@@ -93,7 +93,11 @@ if (argv.urlsFile) {
     process.exit(1);
   }
   for (const u of urls) {
-    const s = String(u);
+    const s = typeof u === 'string' ? u : (u && typeof u === 'object' && typeof u.url === 'string' ? u.url : null);
+    if (!s) {
+      console.error('Invalid URL entry %j in %s, exiting!', u, argv.urlsFile);
+      process.exit(1);
+    }
     pages.push(/^https?:\/\//i.test(s) ? s : baseURL + s.replace(/^\/+/, ''));
   }
 }
@@ -125,6 +129,12 @@ for (const pageUrl of pages) {
       entry.error = 'Lighthouse returned no result';
     } else {
       entry.lhr = result.lhr;
+      const runtimeError = result.lhr.runtimeError;
+      if (runtimeError && runtimeError.code && runtimeError.code !== 'NO_ERROR') {
+        entry.error = runtimeError.message || runtimeError.code;
+      } else if (categories.every((c) => !result.lhr.categories[c] || result.lhr.categories[c].score === null || result.lhr.categories[c].score === undefined)) {
+        entry.error = 'Page did not load, all category scores are null';
+      }
     }
   } catch (e) {
     entry.error = e.message;
