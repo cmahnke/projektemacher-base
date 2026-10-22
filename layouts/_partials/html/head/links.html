@@ -17,3 +17,14 @@
 
 {{/* Webmention/pingback endpoint advertisement - see 'services/webmentions/README.md' */}}
 {{- partialCached "html/head/webmention.html" . "webmentions" -}}
+
+{{/* Linkset advertisement (https://www.w3.org/TR/linkset/) - the format's
+   rel value ('linkset') comes from the theme's output format definition;
+   the link is emitted whenever the 'linkset' output format is enabled for
+   this page. Rendering the file itself (template + content) is up to the
+   site - see 'exampleSite/content/templates/linkset.md'. */}}
+{{- range .AlternativeOutputFormats -}}
+  {{- if eq .Name "linkset" -}}
+      <link href="{{ .Permalink }}" rel="{{ .Rel }}" type="{{ .MediaType.Type }}" />
+  {{- end -}}
+{{- end -}}

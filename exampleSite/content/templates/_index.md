@@ -46,6 +46,7 @@ These templates are selected via the `outputs` front matter or the site `outputs
 | [`activity-pub-actor`](activity-pub-actor/) | `single.activity-pub-actor.json` (reference site only) | ActivityStreams actor |
 | [`activity-pub-outbox`](activity-pub-outbox/) | `home.activity-pub-outbox.json` (reference site only) | ActivityStreams outbox collection |
 | [`llms`](llms/) | no page template — see `llms.txt` note | Placeholder plain-text format |
+| [`linkset`](linkset/) | no page template — the site provides one (e.g. `layouts/home.linkset.json`) | W3C linkset (`application/linkset+json`) advertised via the format's `rel = "linkset"` |
 | [`redirect`](redirect/) | `redirect/single.html` | Meta refresh redirects |
 
 ## Data templates

@@ -8,3 +8,23 @@
   # the pingback endpoint are advertised in the document head; explicit
   # 'advertisePingback = false' opts out of the pingback link.
   endpoint = 'https://static.projektemacher.org/services/webmentions/webmention.php'
+
+[mediaTypes."application/linkset+json"]
+  # W3C linkset (https://www.w3.org/TR/linkset/) - the theme registers the
+  # format only; the site enables it via 'outputs' and provides the page
+  # template (e.g. 'layouts/home.linkset.json'). Advertisement happens via
+  # '.AlternativeOutputFormats' (the format's rel value is 'linkset') - see
+  # 'layouts/_partials/html/head/links.html' and
+  # 'exampleSite/content/templates/linkset.md'.
+  suffixes = ["json"]
+
+[outputFormats]
+  # Note: when the format is enabled but no template exists, Hugo warns
+  # ("found no layout file") and skips rendering, while the head still
+  # advertises the link - provide a template when enabling.
+  [outputFormats.linkset]
+    mediaType = "application/linkset+json"
+    baseName = "linkset"
+    isPlainText = true
+    isHTML = false
+    rel = "linkset"
