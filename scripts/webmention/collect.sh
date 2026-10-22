@@ -23,8 +23,14 @@ SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 mkdir -p "$DEST"
 # The service directory on the host - DEPLOY_PATH +
 # 'projektemacher.org/services/webmentions' (single place: 'host.sh path').
+# Only the mention documents are wanted: the '.ratelimit' counters are
+# rewritten on every request (they would break the transfer with
+# 'Permission denied' - they belong to the PHP user) and the '.htaccess'
+# deny rules are useless off-host.
 SERVICE_PATH="$("$SCRIPT_DIR/host.sh" path)"
 "$SCRIPT_DIR/host.sh" rsync -a --delete \
+  --exclude='.ratelimit/' \
+  --exclude='.htaccess' \
   "$DEPLOY_USER@$DEPLOY_SERVER:$SERVICE_PATH/data/" \
   "$DEST/"
 echo "Harvested webmention data into $DEST"
