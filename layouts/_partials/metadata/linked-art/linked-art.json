@@ -13,10 +13,12 @@
     {{- $links := slice -}}
     {{- with site.GetPage $tagUrl -}}
       {{- if .Params.wikidata -}}
-        {{- if not (reflect.IsSlice .Params.wikidata) -}}
-          {{- $tagsWikidata = $tagsWikidata | append (slice .Params.wikidata) -}}
-        {{- else -}}
-          {{- $tagsWikidata = $tagsWikidata | append .Params.wikidata -}}
+        {{- $wikidataURIs := .Params.wikidata -}}
+        {{- if not (reflect.IsSlice $wikidataURIs) -}}
+          {{- $wikidataURIs = slice $wikidataURIs -}}
+        {{- end -}}
+        {{- range $uri := $wikidataURIs -}}
+          {{- $tagsWikidata = $tagsWikidata | append $uri -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
