@@ -24,6 +24,7 @@ exclude = [
     "archive.org",
     "www.worldcat.org",
     "www.wikidata.org",
+    "validator.w3.org",
 ]
 ignore_extensions = [".webp", ".bib", ".png", ".jpg", ".jpeg"]
 # Maximal age in days
