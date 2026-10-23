@@ -244,10 +244,16 @@ def filter_links(links):
 
 def extract_links(file):
     urls = []
-    with open(file, "r", encoding="utf-8") as handle:
-        soup = BeautifulSoup(handle.read(), "html.parser")
-        for link in soup.find_all("a"):
-            urls.append(link.get("href"))
+    with open(file, "rb") as handle:
+        data = handle.read()
+    try:
+        html = data.decode("utf-8")
+    except UnicodeDecodeError as e:
+        cprint(f"Invalid UTF-8 in {file}: {e}. Replacing bad bytes.", "yellow")
+        html = data.decode("utf-8", errors="replace")
+    soup = BeautifulSoup(html, "html.parser")
+    for link in soup.find_all("a"):
+        urls.append(link.get("href"))
     return urls
 
 
