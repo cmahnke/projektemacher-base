@@ -155,7 +155,7 @@ Rules:
 - `page` references a resource of the page bundle, resolved by the resource's `name`, its `params.iiif` directory or its `src` basename (without extension) — the same chain used for canvas naming
 - `end` (optional) spans the range over all canvases from `page` to `end`, inclusive
 - `items` nests entries with the same shape; an entry without `page` is a grouping node
-- Entries with nested `items` are emitted as a full canvas span: their first and last `items` entry are Canvas references (wrapping the inline child ranges), so viewers that derive a range's page span from the first and last item (e.g. Tify's table of contents) cover the whole section — grouping nodes without `page` get both a leading and a trailing canvas reference
+- Entries with nested `items` contain ONLY their sub-ranges (IIIF Cookbook recipe 0024); the result is wrapped in a single root range labeled via the `iiifTableOfContents` i18n key, and leaf ranges list all canvases of their span. No first/last canvas markers are emitted — with Tify ≤ 0.36.2 the previous/next-section pagination and the Info view's current-chapter display stay inactive until Tify implements descending span detection (the "dig deeper" TODO in its store)
 - An entry must resolve to at least one canvas or group nested items, otherwise the build fails
 - Hand-written `id`s or legacy IIIF Range entries abort the build
 - `iiif.structure` is only expanded on pages; sections keep the raw value (leaflet mode computes its own ranges and ignores the key, see above)

@@ -19,3 +19,6 @@ other = "Download as PDF"
 
 [InlinePDFNotSupported]
 other = "Inline PDF display is not supported"
+
+[iiifTableOfContents]
+other = "Table of Contents"

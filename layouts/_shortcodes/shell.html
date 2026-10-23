@@ -1,0 +1,79 @@
+{{- $lang := "" -}}
+{{- $class := "" -}}
+{{- $guessSyntax := true -}}
+{{- $title := "Terminal" -}}
+{{- $lineNumbers := true -}}
+{{- $lineNumbersIDPrefix := "" -}}
+{{- $collapsed := false -}}
+
+{{- with .Get "lang" -}}
+  {{- $lang = . -}}
+  {{- $guessSyntax = false -}}
+{{- end -}}
+{{- with .Get "title" -}}
+  {{- $title = . -}}
+{{- end -}}
+{{- with .Get "class" -}}
+  {{- $class = . -}}
+{{- end -}}
+{{- with .Get "lineNumbersIDPrefix" -}}
+  {{- $lineNumbersIDPrefix = . -}}
+{{- end -}}
+
+{{- if and (ne (.Get "lineNumbers") nil) (ne (.Get "lineNumbers") "") -}}
+  {{- $lineNumbers = .Get "lineNumbers" -}}
+{{- end -}}
+
+{{- if and (ne (.Get "collapsed") nil) (ne (.Get "collapsed") "") (ne (.Get "collapsed") false) (ne (.Get "collapsed") "false") -}}
+  {{- $collapsed = .Get "collapsed" -}}
+{{- end -}}
+
+{{- $input := "" -}}
+{{- if len .Inner -}}
+  {{- $input = strings.Substr .Inner 1 -}}
+{{- end -}}
+
+{{- $id := md5 (printf "%s-%d" $input .Ordinal) -}}
+
+{{- $opts := dict "guessSyntax" $guessSyntax -}}
+
+{{- if $lineNumbers -}}
+  {{- $lineNumbersOpts := dict "lineNos" "inline" "anchorLineNos" "true" -}}
+
+  {{- if ne $lineNumbersIDPrefix "" -}}
+    {{- $lineNumbersOpts = merge $lineNumbersOpts (dict "lineAnchors" $lineNumbersIDPrefix)  -}}
+  {{- end -}}
+
+  {{- $opts = merge $opts $lineNumbersOpts -}}
+{{- end -}}
+
+<div class="shell-window{{ with $class }} {{ . }}{{ end }}" id="shell_container_{{ $id }}">
+  <div class="shell-head">
+    <span class="traffic-lights">
+      <label class="dot close" for="shell_collapse_{{ $id }}" aria-label="{{ i18n "collapseCode" }}"></label>
+      <i class="dot copy" id="shell_button_{{ $id }}" role="button" tabindex="0" aria-label="{{ i18n "copyToClipboard" }}"></i>
+      <label class="dot zoom" for="shell_collapse_{{ $id }}" aria-label="{{ i18n "collapseCode" }}"></label>
+    </span>
+    <span class="shell-title">{{ $title }}</span>
+  </div>
+  <input type="checkbox" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);border:0;opacity:0;" name="shell_collapse_{{ $id }}" id="shell_collapse_{{ $id }}" aria-label="{{ i18n "collapseCode" }}"{{ if $collapsed }} checked{{ end }}>
+  {{- transform.Highlight $input $lang $opts -}}
+  <textarea id="shell_content_{{ $id }}" style="display:none;">{{ $input }}</textarea>
+  <script type="text/javascript">
+      var button = document.getElementById('shell_button_{{ $id }}');
+      var content = document.getElementById('shell_content_{{ $id }}');
+      document.addEventListener('DOMContentLoaded', function() {
+        addCopyToClipboard(button, content);
+      });
+      button.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          button.click();
+        }
+      });
+  </script>
+</div>
+
+{{- define "_partials/shortcodes/shell-metadata.html" -}}
+  {{- (dict "css" slice "js" (slice "ts/shortcodes/code.ts") "scss" (slice "scss/shortcodes/shell.scss")) | jsonify -}}
+{{- end -}}
