@@ -10,7 +10,7 @@ import TileLayer from 'ol/layer/Tile.js';
 import { TileDebug } from 'ol/source.js';
 import { Cluster } from 'ol/source.js';
 import MVT from 'ol/format/MVT';
-import { boundingExtent, getCenter, Extent, createEmpty, extend, getWidth, getHeight, isValid } from 'ol/extent';
+import { boundingExtent, getCenter, Extent, createEmpty, extend, getWidth, getHeight, isEmpty } from 'ol/extent';
 import { fromLonLat } from 'ol/proj';
 import { apply, applyStyle } from 'ol-mapbox-style';
 import { debugStyle, setupDefaultStyle } from './projektemacher-default-map-style';
@@ -502,7 +502,7 @@ export async function projektemacherMap(
 
     if (geojsonObj.features.length) {
       const extent = geojsonLayer.getSource()?.getExtent() as Extent;
-      if (extent !== undefined && isValid(extent)) {
+      if (extent !== undefined && !isEmpty(extent)) {
         map.getView().fit(extent, { size: map.getSize(), padding: defaultPadding });
       } else {
         console.warn('Skipping view.fit, empty or invalid extent', extent);
