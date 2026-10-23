@@ -340,6 +340,9 @@ other = "Agentic coding"
 [InteriorDesign]
 other = "Interior design"
 
+[OCR]
+other = "OCR"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
