@@ -12,7 +12,14 @@
   <meta name="author" content="{{ $author }}">
   <meta name="dc.creator" content="{{ $author }}">
 {{- end -}}
-{{ with site.Params.orcid }}
+{{- $orcid := "" -}}
+{{- if reflect.IsMap site.Params.author -}}
+  {{- $orcid = site.Params.author.orcid | default "" -}}
+{{- end -}}
+{{- if not $orcid -}}
+  {{- $orcid = site.Params.orcid | default "" -}}
+{{- end -}}
+{{ with $orcid }}
   <link rel="me" href="https://orcid.org/{{ . }}">
 {{ end }}
 {{/*

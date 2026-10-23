@@ -40,6 +40,8 @@ The `robots.txt` template is enabled with `enableRobotsTXT = true` in the site c
 
 If the site provides an `assets/llms.go.txt` resource and the site parameter `robots.llmsTXT` is set, the resource is rendered as a template to `llms.txt` and referenced with an `llms-txt:` line — this follows the proposal for [LLMS crawler hints](https://discourse.gohugo.io/t/support-for-llms-txt-standard-for-ai-crawlers/53782/3).
 
+The rendered `llms.txt` also contains an Author section: the site author from `author` (string, or `author.name` for the map form) and, when configured, the ORCID iD from `author.orcid` (site parameter `orcid` as a fallback), e.g. `Christian Mahnke — ORCID: https://orcid.org/0009-0003-1361-4159`.
+
 | Parameter | Type | Default | Purpose |
 |---|---|---|---|
 | `robots.llmsTXT` | bool | `false` | Enable the `llms-txt:` line |

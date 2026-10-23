@@ -15,10 +15,10 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 | `description` | — | Site description, used for the `<meta name="description">` and OpenGraph tags |
 | `keywords` | — | Comma separated keywords, rendered as `dc.subject` meta tags |
 | `slogan` | — | Appended to the `<title>` on the home page |
-| `author.name` / `author.email` / `author.uri` | — | Site author, used for metadata (schema.org, codemeta, RSS) |
+| `author.name` / `author.email` / `author.uri` / `author.orcid` | — | Site author, used for metadata (schema.org, codemeta, RSS) |
 | `publisher` | — | Publisher name for Linked Art / schema.org metadata |
 | `useragent` | — | User agent string reported to external services (e.g. Wikidata SPARQL) |
-| `robots.llmsTXT` | `false` | Generate a `llms.txt` file listing the site's content (see `robots.txt`) |
+| `robots.llmsTXT` | `false` | Generate a `llms.txt` file listing the site's content and author (see `robots.txt`) |
 | `debug` | `false` | Enable the theme's debug warnings (extra build time output) |
 | `env` | — | Environment name (e.g. `production`), used e.g. by the cookie consent service |
 | `stylesheets` | — | List of external stylesheets to include in `<head>` |
@@ -84,7 +84,7 @@ A site can further customize preview resolution via the `preview/image.html` par
 | `wikidata` | `false` | Enable Wikidata metadata handling |
 | `wikidatasparqlendpoint` | — | SPARQL endpoint for Wikidata queries |
 | `schemaPerson` | — | URL to a JSON-LD person document for schema.org metadata |
-| `orcid` | — | Author ORCID, used in metadata output |
+| `orcid` | — | Author ORCID, used for the `rel="me"` link and metadata output; alternatively set as `author.orcid` |
 | `logo` | — | Logo URL, also used for the error page image (`errorimg`) |
 
 The `linkedart` parameter is a page level (front matter) switch that adds a
