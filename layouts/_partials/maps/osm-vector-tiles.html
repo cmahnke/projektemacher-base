@@ -24,7 +24,7 @@
     {{- $styleJS = .Content -}}
   {{- else -}}
     {{/* Not an asset, pass as URL for client side loading */}}
-    {{- $styleJS = printf "'%s'" $style -}}
+    {{- $styleJS = printf "'%s'" ($style | absURL) -}}
   {{- end -}}
 {{- end -}}
 

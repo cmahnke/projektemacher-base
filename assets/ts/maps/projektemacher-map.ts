@@ -155,7 +155,7 @@ export async function projektemacherMap(
 
   const lang = getLang();
   const langKey = (lang in toolTips ? lang : 'en') as Lang;
-  source = absUrl(source as string);
+  source = source !== undefined && source !== '' ? absUrl(source) : '';
 
   if (bbox !== undefined) {
     const rawBbox = (await loadOrParse(bbox as string)) as number[] | number[][];
@@ -240,20 +240,27 @@ export async function projektemacherMap(
 
   if (style !== undefined) {
     styleObj = await loadOrParse(style as string);
-    styleObj = updateStyle(
-      styleObj,
-      source,
-      initialZoom,
-      undefined,
-      undefined,
-      bboxObj,
-      centerObj as [number, number],
-      background,
-      absUrl(defaultSprites),
-      defaultFonts,
-      font,
-      attribution
-    );
+    if (styleObj === undefined || styleObj === null || styleObj.sources === undefined) {
+      console.warn(
+        `Could not load style '${style}' or it contains no sources, falling back to the default style`
+      );
+      styleObj = setupDefaultStyle(source, initialZoom, minZoom, maxZoom, bboxObj, centerObj, background);
+    } else {
+      styleObj = updateStyle(
+        styleObj,
+        source,
+        initialZoom,
+        undefined,
+        undefined,
+        bboxObj,
+        centerObj as [number, number],
+        background,
+        absUrl(defaultSprites),
+        defaultFonts,
+        font,
+        attribution
+      );
+    }
   } else {
     styleObj = setupDefaultStyle(source, initialZoom, minZoom, maxZoom, bboxObj, centerObj, background);
   }
