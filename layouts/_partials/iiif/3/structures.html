@@ -1,6 +1,7 @@
 {{- /*
   Expands the strict front-matter structure shorthand (`.Params.iiif.structure`)
-  into IIIF Presentation `structures`. Called from `iiif/3/common.json`.
+  into IIIF Presentation `structures`. Called from `iiif/3/common.json` and
+  `iiif/existing-manifest.html`.
 
   Contract (per entry):
     label: {de: ["Titel"]}   required, IIIF label object, coerced to strings
@@ -14,19 +15,29 @@
     items:                   optional nested entries with the same shape;
                              an entry without `page` acts as a grouping node
 
-  Entries with nested `items` always span the full canvas range covered by
-  themselves and their descendants: the first item is a Canvas reference and
-  the last item is a Canvas reference wrapping the inline child ranges
-  (grouping nodes without `page` get both). This keeps the hierarchy
-  spec-valid while remaining compatible with Tify's table of contents
-  heuristic, which derives a range's page span from the first and last
-  `items` entry and requires both to be canvases.
+  The output follows the IIIF Cookbook recipe 0024 "Table of Contents for
+  Book Chapters" (https://iiif.io/api/cookbook/recipe/0024-book-4-toc/):
+  a single root range labeled via the `iiifTableOfContents` i18n key (no
+  `behavior`) whose `items` hold the top-level entries. Ranges with
+  sub-ranges contain ONLY those sub-ranges; leaf ranges contain ALL canvases
+  of their span. Unlike earlier emissions there are no first/last canvas
+  markers: that pattern is not part of the recipe and Tify <= 0.36.2 renders
+  the extra canvas references as unexpected table-of-contents rows between
+  the sub-chapters.
+
+  Accepted viewer consequences on Tify <= 0.36.2 (its span heuristic derives
+  firstPage/lastPage from the first and last `items` entry without descending
+  into sub-ranges, store.js TODO "dig deeper"): the previous/next-section
+  pagination buttons stay hidden and the Info view shows no current chapter
+  for range-only branches. The root is always emitted because a top-level
+  forest of range-only containers would be merged into the first container by
+  Tify's span-containment heuristic and dropped from the top level.
 
   Range and Canvas identifiers are generated at build time (hierarchical,
-  depth first: range/0, range/0-1, ...) using the same deployment prefix
-  computation as `iiif/3/manifest.json`, so they always match the manifest's
-  own canvas identifiers in every environment. Hand-written `id`s or legacy
-  IIIF Range entries abort the build.
+  depth first: range/toc, range/0, range/0-1, ...) using the same deployment
+  prefix computation as `iiif/3/manifest.json`, so they always match the
+  manifest's own canvas identifiers in every environment. Hand-written `id`s
+  or legacy IIIF Range entries abort the build.
 
   Only page bundles are expanded; sections keep their raw value (leaflet
   mode computes its own ranges and warns, see `manifest-leaflet.json`).
@@ -41,6 +52,10 @@
 {{- $canvasNames := .canvasNames | default slice -}}
 {{- $refIndex := .refIndex | default dict -}}
 {{- $prefix := .prefix | default "" -}}
+{{- $isRoot := true -}}
+{{- if isset . "root" -}}
+  {{- $isRoot = .root -}}
+{{- end -}}
 
 {{- $out := slice -}}
 {{- if ne $page.Kind "page" -}}
@@ -113,69 +128,82 @@
       {{- errorf "[iiif/3/structures.html] structure entry #%d has no label object (%s)" $i $page.RelPermalink -}}
     {{- end -}}
     {{- $label = partial "functions/iiif/coerce-language-map.html" $label -}}
-    {{- $items := slice -}}
+    {{- /* Own page validation: containers validate their declared page/end
+          but only leaves emit canvases from it; containers hold only their
+          sub-ranges, like cookbook recipe 0024 */ -}}
+    {{- $ownStart := -1 -}}
+    {{- $ownEnd := -1 -}}
     {{- $ref := printf "%v" ($entry.page | default "") -}}
-    {{- $hasPage := ne $ref "" -}}
-    {{- $hasChildren := false -}}
-    {{- with index $entry "items" -}}
-      {{- $hasChildren = true -}}
-    {{- end -}}
-    {{- $ownEndIdx := -1 -}}
-    {{- if $hasPage -}}
+    {{- if ne $ref "" -}}
       {{- if not (isset $refIndex $ref) -}}
         {{- errorf "[iiif/3/structures.html] structure entry #%d references unknown page '%v' (%s)" $i $ref $page.RelPermalink -}}
       {{- end -}}
-      {{- $startIdx := index $refIndex $ref -}}
-      {{- $endIdx := $startIdx -}}
-      {{- $ownEndIdx = $startIdx -}}
+      {{- $ownStart = index $refIndex $ref -}}
+      {{- $ownEnd = $ownStart -}}
       {{- $endRef := printf "%v" ($entry.end | default "") -}}
       {{- if ne $endRef "" -}}
         {{- if not (isset $refIndex $endRef) -}}
           {{- errorf "[iiif/3/structures.html] structure entry #%d references unknown end page '%v' (%s)" $i $endRef $page.RelPermalink -}}
         {{- end -}}
-        {{- $endIdx = index $refIndex $endRef -}}
-        {{- if lt $endIdx $startIdx -}}
+        {{- $ownEnd = index $refIndex $endRef -}}
+        {{- if lt $ownEnd $ownStart -}}
           {{- errorf "[iiif/3/structures.html] structure entry #%d has end page '%v' before start page '%v' (%s)" $i $endRef $ref $page.RelPermalink -}}
-        {{- end -}}
-        {{- $ownEndIdx = $endIdx -}}
-      {{- end -}}
-      {{- range $j := seq $startIdx $endIdx -}}
-        {{- $canvas := index $canvasNames $j -}}
-        {{- if ne $canvas "" -}}
-          {{- $items = $items | append (dict "id" (printf "%scanvas/%s" $urlBase $canvas) "type" "Canvas") -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- /* Full canvas span of the entry and its descendants, see helper contract */ -}}
-    {{- $span := dict "start" -1 "end" -1 -}}
-    {{- if $hasChildren -}}
-      {{- $span = partial "functions/iiif/structure-span.html" (dict "entry" $entry "refIndex" $refIndex "fallback" -1) -}}
-      {{- if not $hasPage -}}
-        {{- /* Grouping nodes start at their first descendant's canvas */ -}}
-        {{- $spanStart := index $span "start" -}}
-        {{- if and (ge $spanStart 0) (ne (index $canvasNames $spanStart) "") -}}
-          {{- $startCanvas := index $canvasNames $spanStart -}}
-          {{- $items = $items | append (dict "id" (printf "%scanvas/%s" $urlBase $startCanvas) "type" "Canvas") -}}
+
+    {{- $items := slice -}}
+    {{- $hasChildren := false -}}
+    {{- with index $entry "items" -}}
+      {{- $hasChildren = true -}}
+    {{- end -}}
+    {{- if not $hasChildren -}}
+      {{- /* Leaf: all canvases of the own span */ -}}
+      {{- if ge $ownStart 0 -}}
+        {{- range $j := seq $ownStart $ownEnd -}}
+          {{- $canvas := index $canvasNames $j -}}
+          {{- if ne $canvas "" -}}
+            {{- $items = $items | append (dict "id" (printf "%scanvas/%s" $urlBase $canvas) "type" "Canvas") -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- /* Container: ranges only. Warn when the declared own span reaches
+            beyond the children's coverage - those canvases would be
+            unreachable through this range */ -}}
+      {{- $childSpan := partial "functions/iiif/structure-span.html" (dict "entry" (dict "items" (index $entry "items")) "refIndex" $refIndex "fallback" -1) -}}
+      {{- if ge $ownStart 0 -}}
+        {{- $childStart := index $childSpan "start" -}}
+        {{- $childEnd := index $childSpan "end" -}}
+        {{- if or (lt $childStart 0) (gt $childStart $ownStart) (lt $childEnd $ownEnd) -}}
+          {{- warnf "[iiif/3/structures.html] structure entry #%d declares page '%v' beyond its children's coverage; uncovered pages are unreachable through the range (%s)" $i $ref $page.RelPermalink -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
     {{- with index $entry "items" -}}
-      {{- range $sub := (partial "iiif/3/structures.html" (dict "page" $page "entries" . "urlBase" $urlBase "canvasNames" $canvasNames "refIndex" $refIndex "prefix" (printf "%s%d-" $prefix $i))) -}}
+      {{- range $sub := (partial "iiif/3/structures.html" (dict "page" $page "entries" . "urlBase" $urlBase "canvasNames" $canvasNames "refIndex" $refIndex "prefix" (printf "%s%d-" $prefix $i) "root" false)) -}}
         {{- $items = $items | append $sub -}}
       {{- end -}}
     {{- end -}}
-    {{- if $hasChildren -}}
-      {{- /* Close with the last canvas of the span: Tify's TOC heuristic derives the range's page span from the first and last items entry */ -}}
-      {{- $spanEnd := index $span "end" -}}
-      {{- if and (ge $spanEnd 0) (gt $spanEnd $ownEndIdx) (ne (index $canvasNames $spanEnd) "") -}}
-        {{- $endCanvas := index $canvasNames $spanEnd -}}
-        {{- $items = $items | append (dict "id" (printf "%scanvas/%s" $urlBase $endCanvas) "type" "Canvas") -}}
-      {{- end -}}
-    {{- end -}}
+
     {{- if eq (len $items) 0 -}}
       {{- errorf "[iiif/3/structures.html] structure entry #%d has neither a resolvable page nor nested items (%s)" $i $page.RelPermalink -}}
     {{- end -}}
     {{- $out = $out | append (dict "id" (printf "%srange/%s%d" $urlBase $prefix $i) "type" "Range" "label" $label "items" $items) -}}
+  {{- end -}}
+
+  {{- /* Cookbook 0024 root: one wrapper range holding the structure tree,
+        localized label, no behavior. Recursions (root=false) skip this. */ -}}
+  {{- if and $isRoot (gt (len $out) 0) -}}
+    {{- $wrapperLabel := i18n "iiifTableOfContents" -}}
+    {{- if not $wrapperLabel -}}
+      {{- $wrapperLabel = "Table of Contents" -}}
+    {{- end -}}
+    {{- $out = slice (dict
+      "id" (printf "%srange/toc" $urlBase)
+      "type" "Range"
+      "label" (dict ($page.Language.Lang | printf "%v") (slice $wrapperLabel))
+      "items" $out) -}}
   {{- end -}}
 {{- end -}}
 

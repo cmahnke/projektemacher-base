@@ -19,3 +19,6 @@ other = "Als PDF herunterladen"
 
 [InlinePDFNotSupported]
 other = "Inline-Darstellung von PDFs wird nicht unterstützt"
+
+[iiifTableOfContents]
+other = "Inhaltsverzeichnis"
