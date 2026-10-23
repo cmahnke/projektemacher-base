@@ -20,8 +20,8 @@ inline script calling `window.projektemacherMap(...)`. The logic lives in
 | `src` | string | yes | — | URL/path of the GeoJSON source |
 | `style` | string | yes | — | Mapbox style — either an asset path (resolved via `resources.Get`, inlined) or a URL (loaded client side) |
 | `source` | string | no | from style | Tile URL overriding the style's source, e.g. `https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}` |
-| `marker` | string | no | `undefined` | OpenLayers icon options as JavaScript object literal, e.g. `{src: '/images/map-marker.svg', scale: 0.1}` |
-| `cluster` | any | no | `false` | Cluster point features; clicking a cluster either zooms in or shows a merged popup |
+| `marker` | string | no | `undefined` | OpenLayers icon options as JavaScript object literal, e.g. `{src: '/images/map-marker.svg', scale: 0.1, anchor: [0.5, 1], anchorXUnits: 'fraction', anchorYUnits: 'fraction'}`. SVG sources are supported and recommended for markers that scale with the cluster size |
+| `cluster` | any | no | `false` | Cluster point features; clicking a cluster either zooms in or shows a merged popup. With a `marker` set, icon size grows with the number of members: `scale × (1 + clusterScaleFactor·log₂(n))`, capped at `clusterScaleMax × scale`; the size badge scales along. Optional marker keys `clusterScaleFactor` (default `0.25`) and `clusterScaleMax` (default `3`) tune this |
 | `bbox` | string | no | `undefined` | Bounding box `[minLon, minLat, maxLon, maxLat]` |
 | `center` | string | no | `undefined` | Map center `[lon, lat]`, defaults to the GeoJSON center |
 
