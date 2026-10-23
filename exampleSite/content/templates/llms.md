@@ -30,6 +30,7 @@ The theme generates an `llms.txt` hint from the `robots.txt` template instead:
 
 - Source: `assets/llms.go.txt` rendered with `resources.ExecuteAsTemplate "llms.txt"`.
 - It lists the home page, sections and sub-sections (honoring `sitemap_exclude` and `Sitemap.Disable`) with titles, permalinks and descriptions.
+- It starts with an Author section: the site author from `author` (string, or `author.name` for the map form) and, when the ORCID iD is set, `— ORCID: https://orcid.org/<id>` appended to the name. The ORCID iD comes from `author.orcid`, with the site parameter `orcid` as a fallback; with an ORCID but no author name, the section shows `ORCID: https://orcid.org/<id>` only.
 - It is referenced with an `llms-txt:` line in `robots.txt` when the site parameter `robots.llmsTXT` is set:
 
 ```toml

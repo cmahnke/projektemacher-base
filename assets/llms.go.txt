@@ -4,6 +4,36 @@
 
 {{ with .Site.Params.Description -}}
 > {{ . }}
+{{- end -}}
+{{/* Author: name from params.author (string or map name) plus ORCID from author.orcid or params.orcid */}}{{- $name := "" -}}
+{{- $orcid := "" -}}
+{{- with site.Params.author -}}
+    {{- if reflect.IsMap . -}}
+        {{- $name = .name | default "" -}}
+        {{- $orcid = .orcid | default "" -}}
+    {{- else -}}
+        {{- $name = . -}}
+    {{- end -}}
+{{- end -}}
+{{- if not $orcid -}}
+    {{- $orcid = site.Params.orcid | default "" -}}
+{{- end -}}
+{{- $orcidURL := "" -}}
+{{- with $orcid -}}
+    {{- if hasPrefix (printf "%v" .) "http" -}}
+        {{- $orcidURL = . -}}
+    {{- else -}}
+        {{- $orcidURL = printf "https://orcid.org/%v" $orcid -}}
+    {{- end -}}
+{{- end -}}
+{{- if $name -}}
+    {{- if $orcidURL -}}
+        {{- printf "\n\n## Author\n\n%s — ORCID: %s\n" $name $orcidURL -}}
+    {{- else -}}
+        {{- printf "\n\n## Author\n\n%s\n" $name -}}
+    {{- end -}}
+{{- else if $orcidURL -}}
+    {{- printf "\n\n## Author\n\nORCID: %s\n" $orcidURL -}}
 {{- end }}
 
 {{- $pages := where (sort ((.Site.GetPage "/").Pages) "Weight" "asc" "Date" "desc" "Lastmod" "desc") "Params.sitemap_exclude" "ne" true -}}
