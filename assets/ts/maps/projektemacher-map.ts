@@ -10,7 +10,7 @@ import TileLayer from 'ol/layer/Tile.js';
 import { TileDebug } from 'ol/source.js';
 import { Cluster } from 'ol/source.js';
 import MVT from 'ol/format/MVT';
-import { boundingExtent, getCenter, Extent, createEmpty, extend, getWidth, getHeight } from 'ol/extent';
+import { boundingExtent, getCenter, Extent, createEmpty, extend, getWidth, getHeight, isValid } from 'ol/extent';
 import { fromLonLat } from 'ol/proj';
 import { apply, applyStyle } from 'ol-mapbox-style';
 import { debugStyle, setupDefaultStyle } from './projektemacher-default-map-style';
@@ -90,7 +90,12 @@ export async function getMapMetadata(url: string): Promise<MapMetadata> {
     url += metadataFile;
   }
   url = absUrl(url);
-  return loadOrParse(url) as Promise<MapMetadata>;
+  try {
+    return (await loadOrParse(url)) as MapMetadata;
+  } catch (err) {
+    console.warn(`Could not load map metadata from ${url}:`, err);
+    return {} as MapMetadata;
+  }
 }
 
 interface MapboxStyleLike {
@@ -425,13 +430,20 @@ export async function projektemacherMap(
     ['.ol-full-screen button', toolTips[langKey]['fullscreen']],
   ]);
 
-  const mapMetadata = await getMapMetadata(source);
-
   let vectorTileLayer: VectorTileLayer | undefined;
   if (styleObj !== undefined) {
     apply(map, styleObj);
   } else {
-    const bounds = bboxExtent(mapMetadata.bounds as BBoxInput);
+    // Metadata is only needed for the no-style fallback below
+    const mapMetadata = await getMapMetadata(source);
+    const rawBounds =
+      mapMetadata?.bounds !== undefined
+        ? (mapMetadata.bounds as BBoxInput)
+        : ([
+            [-180, -85.051129],
+            [180, 85.051129],
+          ] as BBoxInput);
+    const bounds = bboxExtent(rawBounds);
     vectorTileLayer = new VectorTileLayer({
       // NOTE: "extend" is not a valid VectorTileLayer option (likely meant "extent"); preserved from original.
       extend: bounds,
@@ -489,7 +501,11 @@ export async function projektemacherMap(
 
     if (geojsonObj.features.length) {
       const extent = geojsonLayer.getSource()?.getExtent() as Extent;
-      map.getView().fit(extent, { size: map.getSize(), padding: defaultPadding });
+      if (extent !== undefined && isValid(extent)) {
+        map.getView().fit(extent, { size: map.getSize(), padding: defaultPadding });
+      } else {
+        console.warn('Skipping view.fit, empty or invalid extent', extent);
+      }
     }
   }
 
