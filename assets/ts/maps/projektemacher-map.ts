@@ -1,4 +1,4 @@
-import { Map, View } from 'ol';
+import { Map as OlMap, View } from 'ol';
 import { ViewOptions } from 'ol/View';
 import Attribution from 'ol/control/Attribution.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -141,7 +141,7 @@ export async function projektemacherMap(
   marker?: string | object | StyleLike,
   font?: string,
   attribution?: string
-): Promise<Map> {
+): Promise<OlMap> {
   const geojsonObj = (await loadOrParse(geojson as string)) as GeoJSONFeatureCollection;
   let styleObj: any;
   let bboxObj: number[][] | undefined;
@@ -325,7 +325,8 @@ export async function projektemacherMap(
       if (markerOptions === undefined) {
         return undefined;
       }
-      const baseScale = markerOptions.scale ?? 1;
+      const scaleOption = markerOptions.scale ?? 1;
+      const baseScale = typeof scaleOption === 'number' ? scaleOption : 1;
       const growthFactor =
         size > 1 ? Math.min(1 + clusterScaleFactor * Math.log2(size), clusterScaleMax) : 1;
       const scale = baseScale * growthFactor;
@@ -413,7 +414,7 @@ export async function projektemacherMap(
   }
   layers.push(geojsonLayer);
 
-  const map = new Map({
+  const map = new OlMap({
     //layers: layers,
     target: elem,
     view: view,
