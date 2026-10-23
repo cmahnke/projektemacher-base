@@ -60,10 +60,12 @@ window.projektemacherMap = async function (
     font = defaultMapFont;
   }
   let markerObj: IconOptions | undefined;
-  if (!(typeof marker === 'object')) {
+  if (typeof marker === 'string' && marker.trim() !== '' && marker.trim() !== 'undefined') {
     markerObj = JSON.parse(marker as string) as IconOptions;
+  } else if (typeof marker === 'boolean') {
+    markerObj = undefined;
   } else {
-    markerObj = marker;
+    markerObj = marker as IconOptions;
   }
 
   function createStyleFunction(marker: IconOptions | undefined): StyleFunction {
@@ -93,6 +95,8 @@ window.projektemacherMap = async function (
     ? window.getComputedStyle(bgElem).getPropertyValue('--page-background')
     : background;
 
+  const mapMarker = cluster ? (markerObj as any) : (createStyleFunction(markerObj) as any);
+
   const map = await projektemacherMap(
     elem,
     geojson as string | GeoJSONFeatureCollection | undefined,
@@ -108,7 +112,7 @@ window.projektemacherMap = async function (
     popup,
     background,
     debug,
-    createStyleFunction(markerObj) as any,
+    mapMarker,
     font
   );
 
