@@ -84,9 +84,11 @@ export function updateStyle(
   const sourceKey = Object.keys(style.sources)[0];
   const source = style.sources[sourceKey];
 
-  source.tiles = [url];
-  if ("url" in source) {
-    delete source.url;
+  if (url !== undefined && url !== '') {
+    source.tiles = [url];
+    if ("url" in source) {
+      delete source.url;
+    }
   }
 
   if (minzoom !== undefined) source.minzoom = minzoom;
