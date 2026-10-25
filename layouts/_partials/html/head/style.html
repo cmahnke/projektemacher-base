@@ -180,6 +180,28 @@
 
 {{- $concat := $scssResources | resources.Concat (printf "css/%s.css" $fileName) -}}
 
+{{/*
+Rewrite absolute font URLs in the compiled CSS to stylesheet-relative ones
+('url(/fonts/…' → 'url(../fonts/…'). The stylesheet is published one level
+below the site root ('css/<hash>.css'), so relative URLs resolve to
+'<baseURL>fonts/…' under both root and subpath (e.g. GitHub Pages)
+deployments - root-relative URLs in CSS ignore the baseURL path and 404 on
+subpath deployments, since Hugo's 'canonifyURLs' only rewrites URLs in HTML,
+never inside CSS resources. Resolved URLs are unchanged for deployments at a
+domain root. Only '/fonts/' is rewritten, other root-relative URLs (e.g.
+custom font base paths or CDN URLs) are left untouched. Can be disabled
+with 'params.css.fontURLRewrite = false'.
+*/}}
+{{- $fontURLRewrite := true -}}
+{{- with site.Params.css -}}
+  {{- if isset . "fonturlrewrite" -}}
+    {{- $fontURLRewrite = index . "fonturlrewrite" -}}
+  {{- end -}}
+{{- end -}}
+{{- if $fontURLRewrite -}}
+  {{- $concat = $concat.Content | replaceRE `url\((['"]?)\/fonts/` `url(${1}../fonts/` | resources.FromString (printf "css/%s.css" $fileName) -}}
+{{- end -}}
+
 {{/* Remove duplicated CSS rules (e.g. from rules shared by multiple concatenated resources). Configured via 'assets/_jsconfig/postcss.config.js', can be turned of with 'params.css.dedupe = false'. Runs PostCSS via Node.js, so it's skipped for the dev server. */}}
 {{- $dedupe := true -}}
 {{- with site.Params.css -}}
@@ -221,9 +243,12 @@ Only woff2 is preloaded - the woff/otf fallbacks would only ever be fetched
 by pre-2024 browsers. The crossorigin attribute is required even for
 same-origin fonts: without it the preloaded response is discarded and the
 font gets fetched again by the CSS Font Loading API.
-Only absolute path and absolute URL sources are preloaded - relative
-@font-face URLs resolve against the stylesheet URL, not the page URL, so
-they can't be preloaded reliably from here.
+Only absolute path, absolute URL and stylesheet-relative sources are
+preloaded. Relative '../fonts/…' sources (as emitted by the rewrite above)
+are resolved against the stylesheet's directory, root-relative '/fonts/…'
+sources are joined with the site's protocol and host - mirroring
+'canonifyURLs' - since preload hrefs resolve against the page URL, not the
+stylesheet. Absolute URLs are passed through unchanged.
 Fontsource emits one @font-face per subset (e.g. lato-latin-400-normal.woff2),
 so 'params.css.fontPreloadPattern' can restrict the preloads with a regular
 expression - it must be a valid Go regexp:
@@ -234,9 +259,22 @@ expression - it must be a valid Go regexp:
 */}}
 {{- $fontURLs := slice -}}
 {{- if $fontPreload -}}
-  {{- range findRE `(?:https?:)?//[^()"'\s]+\.woff2|/[^()"'\s]+\.woff2` $style.Content -}}
+  {{- range findRE `(?:https?:)?//[^()"'[:space:]]+\.woff2|/[^()"'[:space:]]+\.woff2|\.\./[^()"'[:space:]]+\.woff2` $style.Content -}}
+    {{- $href := . -}}
+    {{- if strings.HasPrefix . ".." -}}
+      {{/* Stylesheet-relative: resolve against the stylesheet's URL path, the way the browser does */}}
+      {{- $styleURL := urls.Parse $style.Permalink -}}
+      {{- $href = printf "%s://%s%s" $styleURL.Scheme $styleURL.Host (path.Join (path.Dir $styleURL.Path) .) -}}
+    {{- else if and (strings.HasPrefix . "/") (not (strings.HasPrefix . "//")) -}}
+      {{/* Root-relative path: join with scheme and host, like canonifyURLs does for HTML hrefs */}}
+      {{- $baseURL := urls.Parse site.BaseURL -}}
+      {{- $href = printf "%s://%s%s" $baseURL.Scheme $baseURL.Host . -}}
+      {{- if $debug -}}
+        {{- warnf "[partials/html/head/style.html] Preloading root-relative font URL '%s' for %s - consider stylesheet-relative or absolute URLs, since 'canonifyURLs' doesn't rewrite CSS" . $context.RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
     {{- if or (eq $fontPreloadPattern "") (findRE $fontPreloadPattern .) -}}
-      {{- $fontURLs = $fontURLs | append . -}}
+      {{- $fontURLs = $fontURLs | append $href -}}
     {{- end -}}
   {{- end -}}
   {{- $fontURLs = uniq $fontURLs -}}

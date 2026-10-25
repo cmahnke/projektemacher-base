@@ -61,7 +61,18 @@ SCSS would be preloaded. Restrict the preloads with a regular expression:
 [params.css]
   fontPreload = true            # default, set to false to disable
   fontPreloadPattern = "latin"  # optional include filter (Go regexp)
+  fontURLRewrite = true         # default, set to false to disable
 ```
+
+Absolute font URLs in the compiled CSS (`url(/fonts/…)`) are rewritten to
+stylesheet-relative ones (`url(../fonts/…)`) before publishing. The
+stylesheet lives one level below the site root (`css/<hash>.css`), so the
+relative URLs resolve to `<baseURL>fonts/…` under both domain-root and
+subpath (e.g. GitHub Pages project pages) deployments. Root-relative URLs
+in CSS are not touched by Hugo's `canonifyURLs`, so they would 404 on
+subpath deployments. The preload hrefs are derived from the rewritten URLs,
+so the browser actually consumes the preloaded responses instead of
+warning about unused preloads.
 
 ## IIIF manifests
 

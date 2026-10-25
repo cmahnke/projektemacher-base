@@ -21,4 +21,8 @@ params:
   # every Fontsource subset referenced by the page's SCSS gets preloaded.
   fontPreload = true
   fontPreloadPattern = "latin"
+  # Absolute font URLs in the compiled CSS are rewritten to stylesheet-
+  # relative ones ('url(/fonts/…' → 'url(../fonts/…'), so fonts also load
+  # on subpath deployments (e.g. GitHub Pages). Set to false to disable.
+  fontURLRewrite = true
 ```
