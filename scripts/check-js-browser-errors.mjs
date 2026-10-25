@@ -63,6 +63,14 @@ const argv = yargs(hideBin(process.argv))
     description: 'Enable IIIF awareness: manifest/info/collection JSON URLs are checked for referenced assets instead of being opened in the browser',
     type: 'boolean'
   })
+  .option('css-fail', {
+    description: 'Fail the build (exit 128) when undefined CSS classes are found instead of warning only',
+    type: 'boolean'
+  })
+  .option('css-ignore', {
+    description: 'Comma separated class names to exclude from the undefined CSS class check',
+    type: 'string'
+  })
   .help()
   .alias('help', 'h')
   .parse();
@@ -167,6 +175,80 @@ let iiifUrlsChecked = 0;
 const iiifAssetExtensions = /\.(jpg|jpeg|png|webp|gif|avif|tif|tiff|jp2|pdf|mp3|mp4|webm)$/i;
 const iiifImageRequestPattern = /\/full\/[^/]+\/[^/]+\/[^/]+\.(jpg|jpeg|png|webp|gif|avif|tif|tiff|jp2)$/i;
 const localOrigin = new URL(remotePrefix).origin;
+
+/* Undefined CSS class checking
+ *
+ * Warns about classes used in the rendered DOM but missing from every loaded
+ * stylesheet (e.g. purgecss over-purging or template classes without styles).
+ * Runs per page after the settle wait, so dynamically injected markup and
+ * JS-toggled classes are included. Warn-only unless --css-fail is given.
+ */
+const cssIgnoreDefault = [
+    // Progressive enhancement / JS state hooks that may be unstyled by design
+    'no-js', 'js', 'active', 'show', 'hide', 'fail', 'success', 'search-filter-single'
+];
+const cssIgnore = new Set(cssIgnoreDefault);
+if (argv.cssIgnore) {
+    for (const name of argv.cssIgnore.split(',')) {
+        const trimmed = name.trim();
+        if (trimmed) {
+            cssIgnore.add(trimmed);
+        }
+    }
+}
+const cssFailures = [];
+let cssPagesChecked = 0;
+
+// Runs inside the page: classes defined in any loaded stylesheet vs. classes
+// used on elements. Recurses into nested grouping rules (media/supports/
+// layer/container); cross-origin sheets without cssRules access are skipped.
+function cssClassScan(ignoreList) {
+    const defined = new Set();
+    const re = /\.([A-Za-z_][A-Za-z0-9_-]*)/g;
+    const visitRule = (rule) => {
+        if (rule.cssRules) {
+            for (const child of rule.cssRules) {
+                visitRule(child);
+            }
+        }
+        if (rule.selectorText) {
+            re.lastIndex = 0;
+            let match;
+            while ((match = re.exec(rule.selectorText)) !== null) {
+                defined.add(match[1]);
+            }
+        }
+    };
+    for (const sheet of document.styleSheets) {
+        let rules;
+        try {
+            rules = sheet.cssRules;
+        } catch {
+            continue;
+        }
+        if (!rules) {
+            continue;
+        }
+        for (const rule of rules) {
+            visitRule(rule);
+        }
+    }
+    const used = new Set();
+    for (const element of document.querySelectorAll('[class]')) {
+        for (const name of element.classList) {
+            if (name) {
+                used.add(name);
+            }
+        }
+    }
+    const missing = [];
+    for (const name of used) {
+        if (!defined.has(name) && !ignoreList.includes(name)) {
+            missing.push(name);
+        }
+    }
+    return missing.sort();
+}
 
 function mapToLocal(url) {
     if (url.startsWith(baseURL)) {
@@ -651,6 +733,31 @@ console.log('Wrote preference file to %s', prefFile);
         }
 
         await new Promise(r => setTimeout(r, 6000));
+
+        // Undefined CSS class check: runs last on the page, after the settle
+        // wait, so most JS has loaded and dynamically added classes exist.
+        // readyState 'complete' is a safety net for pages that reach
+        // networkidle0 before all deferred init has finished.
+        try {
+            await page.waitForFunction(() => document.readyState === 'complete', { timeout: waitMs });
+        } catch {
+            console.log('[CSS] readyState never reached \'complete\' on %s, checking anyway', checkURL);
+        }
+        let undefinedClasses = [];
+        try {
+            undefinedClasses = await page.evaluate(cssClassScan, [...cssIgnore]);
+        } catch (error) {
+            console.log('[CSS] Class scan failed for %s: %s', checkURL, error.message);
+        }
+        cssPagesChecked++;
+        if (undefinedClasses.length) {
+            const source = testItem.url || testItem;
+            cssFailures.push({ url: source, classes: undefinedClasses });
+            console.log('[CSS] %d undefined class(es) on %s: %s', undefinedClasses.length, source, undefinedClasses.join(', '));
+        } else {
+            console.log('[CSS] No undefined classes on %s', testItem.url || testItem);
+        }
+
         checkedUrls.push(testItem.url || testItem);
     }
 
@@ -663,6 +770,19 @@ console.log('Wrote preference file to %s', prefFile);
             await browser.close();
             process.exit(127);
         }
+    }
+
+    console.log('CSS check: %d page(s) checked, %d page(s) with undefined classes', cssPagesChecked, cssFailures.length);
+    for (const failure of cssFailures) {
+        console.log('[CSS] %s: %s', failure.url, failure.classes.join(', '));
+    }
+    if (cssFailures.length > 0) {
+        if (argv.cssFail) {
+            console.log('Undefined CSS classes found and --css-fail given, exiting with code 128');
+            await browser.close();
+            process.exit(128);
+        }
+        console.log('Warning only: rerun with --css-fail to fail the build, or exclude classes with --css-ignore');
     }
 
     console.log(`Test loop finished, awaiting browser and server to stop, checked ${checkedUrls.join(', ')}`);
