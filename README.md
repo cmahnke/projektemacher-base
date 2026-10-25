@@ -41,6 +41,28 @@ Notes:
   `assets/_jsconfig/postcss.config.js` of the site — it takes precedence
   over the theme's file.
 
+## Font preloading
+
+The stylesheet partial (`layouts/partials/html/head/style.html`) extracts the
+`@font-face` source URLs from the compiled page CSS and emits
+`<link rel="preload" as="font" type="font/woff2" crossorigin>` tags for them
+before the stylesheet link — theme fonts and Fontsource npm fonts alike, no
+manual font list needed. Every font the page's SCSS/CSS actually references is
+discovered dynamically. Only woff2 files are preloaded (the woff/otf fallbacks
+are only fetched by pre-2024 browsers), and the `crossorigin` attribute is
+required even for same-origin fonts — without it the browser discards the
+preloaded response and fetches the font again.
+
+Because Fontsource emits one `@font-face` per subset (`lato-latin-400-normal.woff2`,
+`lato-cyrillic-400-normal.woff2`, …), every subset referenced by the page's
+SCSS would be preloaded. Restrict the preloads with a regular expression:
+
+```toml
+[params.css]
+  fontPreload = true            # default, set to false to disable
+  fontPreloadPattern = "latin"  # optional include filter (Go regexp)
+```
+
 ## IIIF manifests
 
 To generate IIIF JSON manifests you need to add the `JSON` output format to the site `config.toml`.

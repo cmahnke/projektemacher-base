@@ -185,6 +185,36 @@ npm install --save-dev postcss postcss-cli postcss-discard-duplicates
   `exampleSite/node_modules -> ../node_modules` symlink, since the build
   runs from `exampleSite/` with `--themesDir ../..`.
 
+# Dynamic font preloading
+
+`html/head/style.html` now extracts the `@font-face` source URLs from the
+compiled page CSS and emits `<link rel="preload" as="font"
+type="font/woff2" crossorigin>` tags before the stylesheet link — the same
+partial that compiles the SCSS discovers the fonts dynamically, no manual
+font list. Only woff2 is preloaded; `crossorigin` is required even for
+same-origin fonts (without it the preloaded response is discarded and the
+font fetched again).
+
+Sites that don't want the tags can turn the feature off, the optional
+pattern restricts the Fontsource subset files (e.g. `latin` also matches
+`latin-ext`):
+
+```toml
+[params.css]
+  fontPreload = false
+  # fontPreloadPattern = "latin"
+```
+
+Behavioural notes:
+
+- Only absolute path (`/fonts/…`) and absolute URL sources are preloaded —
+  relative `@font-face` URLs resolve against the stylesheet URL and cannot
+  be preloaded reliably from the page head.
+- The preloads reflect the page's own stylesheet mix (page SCSS, shortcode
+  CSS, …) — pages using `map.scss` preload EB Garamond, plain pages don't.
+- No behaviour change beyond the added `<link>` tags; consumers overriding
+  `style.html` keep their current head output until they adopt the change.
+
 # Housekeeping
 
 The changes in this section are **optional**: no consuming site has to apply

@@ -30,6 +30,7 @@ The pages of this section are listed in the table of contents.
 | `favicon`, `favicon_16`, `favicon_32`, `favicon_svg` | html/head/favicon.html | Favicons |
 | `stylesheets` | html/head/links.html | External stylesheets |
 | `css` | html/head/style.html | Additional stylesheet |
+| `css.fontPreload`, `css.fontPreloadPattern` | html/head/style.html | Preload the woff2 fonts found in the compiled CSS (pattern restricts the matches, e.g. `latin`) |
 | `logo` | [404-content.html](structural/#404) | Error image |
 | `errorimg` | [404-content.html](structural/#404) | Enable the error image |
 | `preview` | [preview partials](helpers/#preview) | Prerendered preview images (`outputPrefix`, `outputSuffix`) |

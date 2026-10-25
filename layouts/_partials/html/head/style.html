@@ -202,4 +202,50 @@
   {{- $style = $concat | fingerprint -}}
 {{- end -}}
 
+{{- $fontPreload := true -}}
+{{- $fontPreloadPattern := "" -}}
+{{- with site.Params.css -}}
+  {{- if isset . "fontpreload" -}}
+    {{- $fontPreload = index . "fontpreload" -}}
+  {{- end -}}
+  {{- if isset . "fontpreloadpattern" -}}
+    {{- $fontPreloadPattern = index . "fontpreloadpattern" -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Preload fonts referenced by the compiled stylesheet: the @font-face sources
+are extracted from the final CSS resource, so every font the page actually
+uses (theme fonts and Fontsource npm fonts alike) is discovered dynamically.
+Only woff2 is preloaded - the woff/otf fallbacks would only ever be fetched
+by pre-2024 browsers. The crossorigin attribute is required even for
+same-origin fonts: without it the preloaded response is discarded and the
+font gets fetched again by the CSS Font Loading API.
+Only absolute path and absolute URL sources are preloaded - relative
+@font-face URLs resolve against the stylesheet URL, not the page URL, so
+they can't be preloaded reliably from here.
+Fontsource emits one @font-face per subset (e.g. lato-latin-400-normal.woff2),
+so 'params.css.fontPreloadPattern' can restrict the preloads with a regular
+expression - it must be a valid Go regexp:
+
+[params.css]
+  fontPreload = true
+  fontPreloadPattern = "latin"
+*/}}
+{{- $fontURLs := slice -}}
+{{- if $fontPreload -}}
+  {{- range findRE `(?:https?:)?//[^()"'\s]+\.woff2|/[^()"'\s]+\.woff2` $style.Content -}}
+    {{- if or (eq $fontPreloadPattern "") (findRE $fontPreloadPattern .) -}}
+      {{- $fontURLs = $fontURLs | append . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $fontURLs = uniq $fontURLs -}}
+  {{- if and $debug $fontURLs -}}
+    {{- warnf "[partials/html/head/style.html] Preloading %d woff2 font(s) for %s: %s" (len $fontURLs) $context.RelPermalink (delimit $fontURLs ", ") -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $fontURLs -}}
+    <link rel="preload" href="{{ . }}" as="font" type="font/woff2" crossorigin>
+{{- end -}}
 <link href="{{ $style.RelPermalink }}" rel="stylesheet" integrity="{{ $style.Data.Integrity }}">
