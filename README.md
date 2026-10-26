@@ -74,6 +74,43 @@ subpath deployments. The preload hrefs are derived from the rewritten URLs,
 so the browser actually consumes the preloaded responses instead of
 warning about unused preloads.
 
+## Image output formats
+
+The theme's image outputting shortcodes (`figure`, `gallery`,
+`image-compare`, `post-image`) can emit images in a different format (e.g.
+WebP). By default nothing changes — each shortcode keeps its historical
+output (`gallery` generates WebP, the others keep the image's source
+format). A format can be set per shortcode invocation (`format="webp"`),
+globally or per shortcode:
+
+```toml
+[params.images]
+  # format = 'webp' # global default for all image shortcodes
+
+  [params.images.formats]
+    gallery = 'webp'
+    image-compare = 'webp'
+    post-image = 'webp'
+    figure = 'webp'
+```
+
+The global format can also be set as a string shorthand via
+`[params] images = 'webp'`; the special value `original` (and an empty
+value) keeps the source format. Resolution order: shortcode `format`
+parameter → `images.formats.<shortcode name>` → `images.format` → the
+shortcode's historical default. Accepted values are Hugo's output formats
+(`webp`, `avif`, `bmp`, `gif`, `jpeg`, `png`, `tiff`, see
+[image processing](https://gohugo.io/content-management/image-processing/)).
+
+Images Hugo can't process (e.g. SVG, JXL or HEIC sources) are passed
+through unchanged; `figure` can only convert page bundle resources —
+external URLs and static files keep their original format.
+
+The generated OpenGraph preview image has its own setting,
+`preview.og.format` (`jpeg` by default, `webp` supported) — when
+explicitly configured it is also applied to prerendered preview images and
+`ogpreview` resources, the implicit default leaves those untouched.
+
 ## IIIF manifests
 
 To generate IIIF JSON manifests you need to add the `JSON` output format to the site `config.toml`.

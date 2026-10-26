@@ -1,0 +1,55 @@
+{{/*
+Resolves the output format for image outputting shortcodes, see
+https://gohugo.io/content-management/image-processing/
+
+Expects a dict with:
+* name    - The shortcode's name (e.g. 'gallery'), used for shortcode specific configuration
+* params  - Optional, the shortcode's parameters (dict), checked for a 'format' key
+* format  - Optional, an explicitly given format, takes precedence over 'params'
+* default - The shortcode's default format, '' keeps the source format
+
+Resolution order (highest priority first):
+1. The 'format' key of this dict, or the shortcode's 'format' parameter via 'params'
+2. site.Params.images.formats.<name> - shortcode specific configuration
+3. site.Params.images.format - global configuration
+4. The given 'default' - keeps the shortcode's historical behavior
+
+As a shorthand the global format can also be set as a plain string via
+[params] images = 'webp'. The special value 'original' (and '') keeps the
+source format.
+
+Returns the format string, '' means keep the source format.
+*/}}
+{{- $name := .name -}}
+{{- $result := .default | default "" -}}
+{{- if isset site.Params "images" -}}
+  {{- $images := site.Params.images -}}
+  {{- if reflect.IsMap $images -}}
+    {{- if isset $images "format" -}}
+      {{- $result = index $images "format" -}}
+    {{- end -}}
+    {{- if isset $images "formats" -}}
+      {{- $formats := index $images "formats" -}}
+      {{- if and (ne $formats nil) (reflect.IsMap $formats) (isset $formats $name) -}}
+        {{- $result = index $formats $name -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- /* String shorthand: [params] images = 'webp' */ -}}
+    {{- $result = $images -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset . "params" -}}
+  {{- with .params -}}
+    {{- if isset . "format" -}}
+      {{- $result = .format -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset . "format" -}}
+  {{- $result = .format -}}
+{{- end -}}
+{{- if eq (string $result) "original" -}}
+  {{- $result = "" -}}
+{{- end -}}
+{{- return (string $result) -}}

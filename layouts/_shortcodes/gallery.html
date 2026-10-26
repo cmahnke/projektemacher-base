@@ -3,6 +3,8 @@
 {{- $json := .Inner -}}
 {{- $image := unmarshal $json -}}
 {{- $previewWidth := "320" -}}
+{{- $origin := printf "shortcodes/gallery %s" .Page.RelPermalink -}}
+{{- $format := partial "functions/images/format.html" (dict "name" "gallery" "params" .Params "default" "webp") -}}
 
 <div id="{{ $id }}" class="gallery {{ with .Get "class" }}{{ . }}{{ end }}">
   {{- range $image := $image -}}
@@ -14,15 +16,28 @@
       {{- $scalePreview = $image.scalePreview -}}
     {{- end -}}
     {{- with $imgRes -}}
+      {{- /* The Width/Height methods are only available for processable images (e.g. not for SVG), see https://gohugo.io/functions/reflect/isimageresourceprocessable/ */ -}}
+      {{- $pswpWidth := "" -}}
+      {{- $pswpHeight := "" -}}
       {{- $full := . -}}
-      {{- if lt .Width 6144 -}}
-        {{- $full = .Process "webp" -}}
+      {{- if reflect.IsImageResourceProcessable . -}}
+        {{- $pswpWidth = .Width -}}
+        {{- $pswpHeight = .Height -}}
+        {{- if ne $format "" -}}
+          {{- if lt .Width 6144 -}}
+            {{- $full = partial "functions/images/process.html" (dict "image" . "spec" $format "origin" $origin) -}}
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
 
-      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $imgRes.Width }}" data-pswp-height="{{ $imgRes.Height }}" target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
-        {{- $preview := $imgRes.Resize (printf "%sx webp picture" $previewWidth) -}}
-        {{- if (not $scalePreview) -}}
-          {{- $preview = $imgRes -}}
+      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}"{{ with $pswpWidth }} data-pswp-width="{{ . }}"{{ end }}{{ with $pswpHeight }} data-pswp-height="{{ . }}"{{ end }} target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
+        {{- $preview := $imgRes -}}
+        {{- if and $scalePreview (reflect.IsImageResourceProcessable $imgRes) -}}
+          {{- $spec := printf "resize %sx" $previewWidth -}}
+          {{- if ne $format "" -}}
+            {{- $spec = printf "resize %sx %s" $previewWidth $format -}}
+          {{- end -}}
+          {{- $preview = partial "functions/images/process.html" (dict "image" $imgRes "spec" $spec "origin" $origin) -}}
         {{- end -}}
           {{- $imageLink := $preview.RelPermalink -}}
           {{- if strings.Contains $image.src ".hdr." -}}

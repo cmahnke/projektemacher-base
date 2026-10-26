@@ -16,6 +16,7 @@ Images with `.hdr.` in their filename link to the HDR image on the default langu
 | Parameter | Type | Required | Default | Purpose |
 |---|---|---|---|---|
 | `class` | string | no | — | Extra class on the gallery `<div>` |
+| `format` | string | no | `webp` | Output format of the full image and the previews (e.g. `webp`, `avif`, `jpeg`), `original` keeps the source format. Can also be configured site wide, see [image parameters](/config/params/#images) |
 
 ## Body (JSON array)
 
