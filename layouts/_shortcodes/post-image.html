@@ -24,10 +24,10 @@
         {{- $alt := $caption | default $page.Title -}}
         <figure class="{{ $class }}">
             {{- if $width -}}
-             {{- $spec := printf "resize %sx %s" $width ($format | default "jpg") -}}
+             {{- $spec := printf "resize %sx autoorient %s" $width ($format | default "jpg") -}}
              {{- $image = partial "functions/images/process.html" (dict "image" $image "spec" $spec "origin" $origin) -}}
             {{- else if ne $format "" -}}
-             {{- $image = partial "functions/images/process.html" (dict "image" $image "spec" $format "origin" $origin) -}}
+             {{- $image = partial "functions/images/process.html" (dict "image" $image "spec" (printf "autoorient %s" $format) "origin" $origin) -}}
             {{- end -}}
             {{- if $link -}}<a href="{{ $link }}">{{- end -}}
             <img src="{{ $image.RelPermalink }}" alt="{{ $alt }}">
