@@ -16,11 +16,11 @@
     {{- with $imgRes -}}
       {{- $full := . -}}
       {{- if lt .Width 6144 -}}
-        {{- $full = .Process "webp" -}}
+        {{- $full = .Filter (images.AutoOrient) (images.Process "webp") -}}
       {{- end -}}
 
-      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $imgRes.Width }}" data-pswp-height="{{ $imgRes.Height }}" target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
-        {{- $preview := $imgRes.Resize (printf "%sx webp picture" $previewWidth) -}}
+      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}" data-pswp-width="{{ $full.Width }}" data-pswp-height="{{ $full.Height }}" target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
+        {{- $preview := $imgRes.Filter (images.AutoOrient) (images.Process (printf "%sx webp picture" $previewWidth)) -}}
         {{- if (not $scalePreview) -}}
           {{- $preview = $imgRes -}}
         {{- end -}}
