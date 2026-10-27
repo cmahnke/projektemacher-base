@@ -27,6 +27,7 @@ Handles three `src` modes: full URLs (`http(s)…` or `//`), site-absolute paths
 | `class` | string | no | — | Class on the `<figure>` |
 | `attr` | string | no | — | Attribution (markdownified) |
 | `attrlink` | string | no | — | Wraps the attribution in `<a href>` |
+| `format` | string | no | source format | Convert page bundle resources into this format (e.g. `webp`); external URLs and static files can't be converted. Can also be configured site wide, see [image parameters](/config/params/#images) |
 
 ## Example
 

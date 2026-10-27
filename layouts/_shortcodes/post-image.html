@@ -5,12 +5,15 @@
 {{- $class := .Get "class" -}}
 {{- $link := .Get "link" -}}
 {{- $caption := .Get "caption" -}}
+{{- $origin := printf "shortcodes/post-image %s" .Page.RelPermalink -}}
+{{- $format := partial "functions/images/format.html" (dict "name" "post-image" "params" .Params "default" "") -}}
 
 {{- $page := "" -}}
 {{- if and $section $post -}}
     {{- $page = site.GetPage $section $post -}}
 {{- else -}}
-    {{- $page = .GetPage $post -}}
+    {{- /* '.GetPage' isn't available on the shortcode context, use the page's method */ -}}
+    {{- $page = .Page.GetPage $post -}}
 {{- end -}}
 
 {{- if and $page $page.Params.resources -}}
@@ -21,7 +24,10 @@
         {{- $alt := $caption | default $page.Title -}}
         <figure class="{{ $class }}">
             {{- if $width -}}
-             {{- $image = $image.Resize (printf "%sx %s" $width "jpg") -}}
+             {{- $spec := printf "resize %sx %s" $width ($format | default "jpg") -}}
+             {{- $image = partial "functions/images/process.html" (dict "image" $image "spec" $spec "origin" $origin) -}}
+            {{- else if ne $format "" -}}
+             {{- $image = partial "functions/images/process.html" (dict "image" $image "spec" $format "origin" $origin) -}}
             {{- end -}}
             {{- if $link -}}<a href="{{ $link }}">{{- end -}}
             <img src="{{ $image.RelPermalink }}" alt="{{ $alt }}">

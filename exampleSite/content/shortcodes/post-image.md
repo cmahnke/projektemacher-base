@@ -16,6 +16,7 @@ Renders the first image from another post's front matter `resources` array as a 
 | `post` | string | yes | — | Path of the post (relative to `section` if given) |
 | `section` | string | no | — | Section to look up the post in |
 | `width` | string | no | — | Resize the image to the given width |
+| `format` | string | no | `jpg` (with `width`), source format | Output format of the image (e.g. `webp`), also applies without `width`. Can also be configured site wide, see [image parameters](/config/params/#images) |
 | `link` | string | no | — | Wrap the image in `<a href>` |
 | `caption` | string | no | — | Figure caption, also used as image `alt` (falls back to the post title) |
 | `class` | string | no | — | Class on the `<figure>` |

@@ -10,6 +10,22 @@
   {{- $format = . -}}
 {{- end -}}
 
+{{- /* Whether the site explicitly configured 'preview.og.format' - the implicit 'jpeg' default must not trigger a conversion, see https://gohugo.io/functions/reflect/isimageresourceprocessable/ */ -}}
+{{- $formatConfigured := false -}}
+{{- if isset site.Params "preview" -}}
+  {{- if reflect.IsMap site.Params.preview -}}
+    {{- with index site.Params.preview "og" -}}
+      {{- if reflect.IsMap . -}}
+        {{- if isset . "format" -}}
+          {{- $formatConfigured = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Remember the clean format name for media type comparisons below ('webp picture' is only a valid processing specification) */ -}}
+{{- $targetFormat := replaceRE "^jpg$" "jpeg" $format -}}
 {{- if eq $format "webp" -}}
   {{- $format = "webp picture" -}}
 {{- end -}}
@@ -64,8 +80,12 @@
       {{- if $debug -}}
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as preview for post %s" $previewFile $filePath -}}
       {{- end -}}
-      {{ $filter := images.Process $format }}
-      {{- $previewImg = . | images.Filter $filter -}}
+      {{- if reflect.IsImageResourceProcessable . -}}
+        {{ $filter := images.Process $format }}
+        {{- $previewImg = . | images.Filter $filter -}}
+      {{- else if $debug -}}
+        {{- warnf "[partials/html/head/og-image.html] Can't process preview image (%s) for %s, the image format isn't processable" $previewFile $filePath -}}
+      {{- end -}}
     {{- end -}}
   {{- else if and (ne site.Params.preview.source "") (eq site.Params.preview.source "overlay") -}}
     {{- $overlayFile := printf "%s%s" site.Params.preview.outputPrefix site.Params.preview.outputSuffix -}}
@@ -74,7 +94,7 @@
         {{- warnf "[partials/html/head/og-image.html] Using image (%s) as overlay for %s (post %s)" $overlayFile $previewImg $filePath -}}
       {{- end -}}
       {{- $filter := images.Overlay . 0 0 -}}
-      {{- if eq (printf "%T" $previewImg) "*resources.resourceAdapter" -}}
+      {{- if and (eq (printf "%T" $previewImg) "*resources.resourceAdapter") (reflect.IsImageResourceProcessable $previewImg) -}}
         {{/*
         {{- $previewImg = $previewImg.Resize (printf "%dx %s" $ogWidth $format) -}}
         {{- $previewImg = $previewImg.Crop (printf  "%dx%d top q85 lanczos" $ogWidth $ogHeight) -}}
@@ -124,11 +144,28 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* When the site explicitly configured 'preview.og.format', apply it to previews that weren't already processed by the 'preview.source' branches above - the implicit 'jpeg' default keeps the original behavior */ -}}
+{{- if $formatConfigured -}}
+  {{- if and (ne $previewImg nil) (ne $previewImg "") -}}
+    {{- if reflect.IsImageResourceProcessable $previewImg -}}
+      {{- /* Skip the conversion when the resource already has the target format */ -}}
+      {{- if ne (string $previewImg.MediaType) (printf "image/%s" $targetFormat) -}}
+        {{- $previewImg = $previewImg.Process $format -}}
+      {{- end -}}
+    {{- else if $debug -}}
+      {{- warnf "[partials/html/head/og-image.html] Can't convert the preview image for %s into %q, the image format isn't processable" $filePath $format -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- if not (or (eq $previewImg nil) (eq $previewImg "")) -}}
   <meta property="og:image" content="{{ $previewImg.Permalink }}" />
   <meta property="og:image:type" content="{{ $previewImg.MediaType }}" />
-  <meta property="og:image:width" content="{{ $previewImg.Width }}" />
-  <meta property="og:image:height" content="{{ $previewImg.Height }}" />
+  {{- /* The Width/Height methods are only available for processable images (e.g. not for SVG), see https://gohugo.io/functions/reflect/isimageresourceprocessable/ */ -}}
+  {{- if reflect.IsImageResourceProcessable $previewImg -}}
+    <meta property="og:image:width" content="{{ $previewImg.Width }}" />
+    <meta property="og:image:height" content="{{ $previewImg.Height }}" />
+  {{- end -}}
 {{- else -}}
 {{/*
     {{- warnf "[partials/html/head/og-image.html] Can't generate preview for %s" $filePath }}

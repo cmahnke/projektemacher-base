@@ -42,6 +42,20 @@ disablePathToLower = true
   # endpoint = 'https://webmentions.example.org/endpoint.php'
   advertisePingback = true
 
+[params.images]
+  # Output format for the theme's image outputting shortcodes ('figure',
+  # 'gallery', 'image-compare', 'post-image'). An empty string (or
+  # 'original') keeps each image's source format - which is also the
+  # default, so nothing changes unless this is configured. Set a global
+  # format for all of the shortcodes:
+  # format = 'webp'
+  # Or configure them individually (shortcode name as key):
+  [params.images.formats]
+    # gallery = 'webp'
+    # image-compare = 'webp'
+    # post-image = 'webp'
+    # figure = 'webp'
+
 [params.webMcpSearch]
   # Expose the theme's Pagefind search to AI agents as a WebMCP tool on
   # every page (see 'content/templates/search.md'). Opt-in: sites must

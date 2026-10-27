@@ -17,6 +17,7 @@ guide.
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | Webmention workflows: single deployment connection | collectors copied from this repository must adopt the one-connection layout (variables `DEPLOY_SERVER`/`DEPLOY_USER`/`DEPLOY_PATH`/`DEPLOY_PASS`, `scripts/webmention/host.sh`, split deploy + harvest workflows - deploy runs on commits only, the reusable harvest workflow chains onto it and also runs on the hourly cron; the collected data is committed as `data/webmentions/mentions.json` to the site's own `main` branch — direct Hugo data, the old `fetch.sh` branch flow is gone) — see [services/webmentions/README.md](services/webmentions/README.md) | low |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
+| Image shortcodes: configurable output format (`format` parameter / `[params.images]`) | opt-in; defaults keep the historical output, non-processable images (SVG, JXL, …) now pass through unchanged instead of failing the build — see ["Image shortcodes: configurable output formats"](#image-shortcodes-configurable-output-formats) | informational |
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
 
 # Run the JS runtime check against the example site
@@ -214,6 +215,43 @@ Behavioural notes:
   CSS, …) — pages using `map.scss` preload EB Garamond, plain pages don't.
 - No behaviour change beyond the added `<link>` tags; consumers overriding
   `style.html` keep their current head output until they adopt the change.
+
+# Image shortcodes: configurable output formats
+
+The image outputting shortcodes (`figure`, `gallery`, `image-compare`,
+`post-image`) now accept a `format` parameter and can be configured site
+wide via `[params.images]` (global `format`, per-shortcode
+`[params.images.formats]`, string shorthand `[params] images = 'webp'`).
+Defaults are unchanged: `gallery` keeps generating WebP, the other
+shortcodes keep the image's source format. See the
+[image parameters documentation](exampleSite/content/config/params/index.md)
+for the resolution order and accepted values.
+
+Behavioural notes:
+
+- Non-processable image resources (SVG, JXL, HEIC, … — see
+  [`reflect.IsImageResourceProcessable`](https://gohugo.io/functions/reflect/isimageresourceprocessable/))
+  are passed through unchanged. Previously the shortcodes called
+  `.Process`/`.Resize` unconditionally, so such resources failed the build.
+- The gallery's processing specifications dropped Hugo's undocumented
+  trailing `picture` token (`320x webp picture` → `320x webp`): the
+  generated files are identical, but the option hash in their URLs changes.
+- The OpenGraph preview (`preview.og.format`) is now also applied to
+  prerendered preview images and `ogpreview` resources — but only when the
+  site explicitly configures it; the implicit `jpeg` default never
+  triggers a conversion.
+- `post-image` without a `section` parameter crashed the build (it called
+  `.GetPage` on the shortcode context, which doesn't exist) — it now uses
+  the page's `.Page.GetPage`.
+
+## What sites need to do
+
+Nothing. Sites wanting WebP output add the configuration, e.g.:
+
+```toml
+[params.images]
+  format = 'webp'
+```
 
 # Housekeeping
 

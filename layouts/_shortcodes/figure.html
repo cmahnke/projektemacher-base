@@ -2,6 +2,18 @@
 <!-- https://github.com/gohugoio/hugo/issues/4406 -->
 <!-- https://github.com/gohugoio/hugo/issues/4562 -->
 {{ $image := .Get "src" }}
+{{- $format := partial "functions/images/format.html" (dict "name" "figure" "params" .Params "default" "") -}}
+{{- /* Only page bundle resources can be processed into another format - external URLs and site-absolute paths (usually in static/) can't */ -}}
+{{- $processedImage := "" -}}
+{{- if ne $format "" -}}
+  {{- if not (or (findRE "(^|:)//" $image) (findRE "^/" $image)) -}}
+    {{- with .Page.Resources.Get $image -}}
+      {{- if reflect.IsImageResourceProcessable . -}}
+        {{- $processedImage = .Process $format -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
 <figure{{ with .Get "class" }} class="{{ . }}"{{ end }}>
     {{ if .Get "link"}}<a href="{{ .Get "link" }}"{{ with .Get "target" }} target="{{ . }}"{{ end }}{{ with .Get "rel" }} rel="{{ . }}"{{ end }}>{{ end }}
@@ -12,6 +24,10 @@
             {{- $baseurl_no_trailing_slash := site.BaseURL | replaceRE "/$" "" -}}
             <img src="{{ (printf "%s%s" $baseurl_no_trailing_slash $image) }}"
         {{- else -}}
+            {{- if ne $processedImage "" -}}
+              {{- /* The src resolved to a processable page resource and was converted into the configured format */ -}}
+              <img src="{{ $processedImage.RelPermalink }}"
+            {{- else -}}
             {{- /* Below variable will always have a trailing slash, even with uglyURLs enabled. */ -}}
             {{- $permalink_pretty := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
             {{- if $.Page.IsTranslated -}}
@@ -22,6 +38,7 @@
               {{- end -}}
             {{- end -}}
             <img src="{{ (printf "%s%s" $permalink_pretty $image) }}"
+            {{- end -}}
         {{- end -}}
             {{- $alt := "" -}}
             {{- with .Get "alt" -}}

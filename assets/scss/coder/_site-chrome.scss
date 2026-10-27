@@ -381,6 +381,27 @@ nav {
 }
 
 /*
+ * Minimal Bootstrap collapse styles: the site markup uses Bootstrap's
+ * Collapse JS (data-bs-toggle="collapse") but Bootstrap's own CSS is
+ * not loaded, so the classes the JS toggles need to be provided here.
+ */
+.collapse:not(.show) {
+    display: none;
+}
+
+.collapsing {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collapsing {
+        transition: none;
+    }
+}
+
+/*
  * Flags from https://github.com/lipis/flag-icon-css
  * Flags encoded by https://www.base64encode.org/
  */

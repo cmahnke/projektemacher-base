@@ -48,6 +48,48 @@ All options are set in the site's `hugo.toml` under `[params]` (or `[params.<gro
 | `custom_css` | — | List of stylesheet URLs to include in `<head>` |
 | `custom_scss` | — | List of SCSS assets (below `assets/`) compiled to CSS |
 
+## Images
+
+The theme's image outputting shortcodes (`figure`, `gallery`,
+`image-compare` and `post-image`) can emit images in a different format,
+e.g. WebP. Each shortcode accepts a `format` parameter, sites can also
+configure the output format globally or per shortcode:
+
+```toml
+[params.images]
+  # format = 'webp' # global default for all image shortcodes
+
+  [params.images.formats]
+    gallery = 'webp'
+    image-compare = 'webp'
+    post-image = 'webp'
+    figure = 'webp'
+```
+
+The global format can also be set as a string shorthand via
+`[params] images = 'webp'`.
+
+Resolution order (highest priority first):
+
+1. The shortcode's `format` parameter
+2. `images.formats.<shortcode name>`
+3. `images.format` (global)
+4. The shortcode's historical default (`gallery` keeps generating WebP, the others keep the image's source format)
+
+The special value `original` (and an empty value) keeps the source format —
+also per shortcode when a global format is configured. Accepted values are
+Hugo's output formats `webp`, `avif`, `bmp`, `gif`, `jpeg`, `png` and
+`tiff` (see [image processing](https://gohugo.io/content-management/image-processing/)).
+
+Notes:
+
+- Images Hugo can't process (e.g. SVG, JXL or HEIC sources) are passed
+  through unchanged.
+- `figure` can only convert page bundle resources — external URLs and
+  static files keep their original format.
+- Without `width`, `post-image` emits the unprocessed source resource; a
+  configured format converts it even then.
+
 ## IIIF and viewers
 
 All IIIF viewer settings live in `[params.iiif]` — see the [IIIF configuration](/iiif/configuration/) page for details:
@@ -73,7 +115,7 @@ is a silent no-op (Hugo ignores unknown params).
 | `preview.size.width` / `preview.size.height` | — | Preview image dimensions |
 | `preview.outputPrefix` / `preview.outputSuffix` | — | Output file naming for generated previews |
 | `preview.background` | — | Background color for generated previews |
-| `preview.og.format` | `jpeg` | Output format of the generated OpenGraph image (`webp` supported) |
+| `preview.og.format` | `jpeg` | Output format of the generated OpenGraph image (`webp` supported). When explicitly configured it is also applied to prerendered preview images and `ogpreview` resources — the implicit `jpeg` default leaves those untouched. Images Hugo can't process (e.g. SVG or JXL) pass through unchanged |
 
 A site can further customize preview resolution via the `preview/image.html` partial, see [extension points](/templates/partials/extension-points/).
 

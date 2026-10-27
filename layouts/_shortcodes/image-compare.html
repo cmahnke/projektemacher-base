@@ -9,6 +9,8 @@ TODO: Add options for caption position and visibility
 {{- $loader := .Page.Resources -}}
 {{- $id := printf "image-compare-%s" (md5 (printf "%s-%s" $src now.UnixNano)) -}}
 {{- $defaultWidth := 1280 -}}
+{{- $origin := printf "shortcodes/image-compare %s" .Page.RelPermalink -}}
+{{- $format := partial "functions/images/format.html" (dict "name" "image-compare" "params" .Params "default" "") -}}
 
 
 {{- $image1 := "" -}}
@@ -16,13 +18,18 @@ TODO: Add options for caption position and visibility
 {{- $caption1 := "" -}}
 {{- $caption2 := "" -}}
 
+{{- $spec := printf "resize %dx" $defaultWidth -}}
+{{- if ne $format "" -}}
+  {{- $spec = printf "resize %dx %s" $defaultWidth $format -}}
+{{- end -}}
+
 {{- with .Get "image1" -}}
   {{- $image1 = $loader.Get . -}}
-  {{- $image1 = $image1.Process (printf "resize %dx" $defaultWidth) -}}
+  {{- $image1 = partial "functions/images/process.html" (dict "image" $image1 "spec" $spec "origin" $origin) -}}
 {{- end -}}
 {{- with .Get "image2" -}}
   {{- $image2 = $loader.Get . -}}
-  {{- $image2 = $image2.Process (printf "resize %dx" $defaultWidth) -}}
+  {{- $image2 = partial "functions/images/process.html" (dict "image" $image2 "spec" $spec "origin" $origin) -}}
 {{- end -}}
 
 {{- with .Get "caption1" -}}

@@ -17,6 +17,7 @@ Renders a before/after image comparison slider based on the [`img-comparison-sli
 | `image2` | string | yes | Page resource path of the second (after) image |
 | `caption1` | string | no | Caption and alt text for the first image |
 | `caption2` | string | no | Caption and alt text for the second image |
+| `format` | string | no | Output format of both images (e.g. `webp`), the source format is kept by default. Can also be configured site wide, see [image parameters](/config/params/#images) |
 
 ## Assets
 

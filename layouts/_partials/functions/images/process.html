@@ -1,0 +1,34 @@
+{{/*
+Processes an image resource, but only when the processing spec is set and
+Hugo can actually process the resource, see
+https://gohugo.io/functions/reflect/isimageresourceprocessable/
+
+Expects a dict with:
+* image  - The image resource (may be nil)
+* spec   - The processing specification (e.g. 'webp' or 'resize 320x webp'), '' or nil keeps the image as is
+* origin - Optional, used in debug messages (e.g. shortcode name and page path)
+
+Returns the processed image resource, or the original one when the spec is
+empty or the resource's format isn't processable by Hugo (e.g. SVG, HEIC
+or JXL images).
+*/}}
+{{- $image := .image -}}
+{{- $spec := "" -}}
+{{- if isset . "spec" -}}
+  {{- $spec = string .spec -}}
+{{- end -}}
+{{- if and (ne $image nil) (ne $spec "") -}}
+  {{- if reflect.IsImageResourceProcessable $image -}}
+    {{- $image = $image.Process $spec -}}
+  {{- else -}}
+    {{- $origin := .origin | default "" -}}
+    {{- $debug := false -}}
+    {{- if ne $origin "" -}}
+      {{- $debug = partialCached "functions/debug/enabled.html" $origin -}}
+    {{- end -}}
+    {{- if $debug -}}
+      {{- warnf "[functions/images/process.html] Skipping processing %q of %s, the image format isn't processable" $spec $origin -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $image -}}
