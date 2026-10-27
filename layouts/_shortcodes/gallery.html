@@ -19,20 +19,12 @@
       {{- /* The Width/Height methods are only available for processable images (e.g. not for SVG), see https://gohugo.io/functions/reflect/isimageresourceprocessable/ */ -}}
       {{- $pswpWidth := "" -}}
       {{- $pswpHeight := "" -}}
-      {{- $full := . -}}
       {{- if reflect.IsImageResourceProcessable . -}}
-        {{- if lt .Width 6144 -}}
-          {{- $spec := "autoorient" -}}
-          {{- if ne $format "" -}}
-            {{- $spec = printf "autoorient %s" $format -}}
-          {{- end -}}
-          {{- $full = partial "functions/images/process.html" (dict "image" . "spec" $spec "origin" $origin) -}}
-        {{- end -}}
-        {{- $pswpWidth = $full.Width -}}
-        {{- $pswpHeight = $full.Height -}}
+        {{- $pswpWidth = .Width -}}
+        {{- $pswpHeight = .Height -}}
       {{- end -}}
 
-      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $full.RelPermalink }}"{{ with $pswpWidth }} data-pswp-width="{{ . }}"{{ end }}{{ with $pswpHeight }} data-pswp-height="{{ . }}"{{ end }} target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
+      <a class="gallery-image {{ if ne $alt "" }}caption{{ end }}" href="{{ $imgRes.RelPermalink }}"{{ with $pswpWidth }} data-pswp-width="{{ . }}"{{ end }}{{ with $pswpHeight }} data-pswp-height="{{ . }}"{{ end }} target="_blank" rel="noopener"{{ if eq $alt "" }} aria-label="{{ i18n "enlargeImage" }} {{ path.BaseName $image.src }}"{{ end }}>
         {{- $preview := $imgRes -}}
         {{- if and $scalePreview (reflect.IsImageResourceProcessable $imgRes) -}}
           {{- $spec := printf "resize %sx autoorient" $previewWidth -}}

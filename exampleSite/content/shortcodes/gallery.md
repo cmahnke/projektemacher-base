@@ -7,7 +7,7 @@ params:
 
 # gallery
 
-Renders an image gallery with a [PhotoSwipe](https://photoswipe.com/) lightbox. The shortcode body is a JSON array of image definitions; images are loaded as page resources. A small WebP preview is generated (`scalePreview` can turn this off), captions are hidden visually and shown in the lightbox.
+Renders an image gallery with a [PhotoSwipe](https://photoswipe.com/) lightbox. The shortcode body is a JSON array of image definitions; images are loaded as page resources. The lightbox always shows the original resource without resizing or conversion, a small WebP preview is generated (`scalePreview` can turn this off), captions are hidden visually and shown in the lightbox.
 
 Images with `.hdr.` in their filename link to the HDR image on the default language's page instead of opening the lightbox.
 
@@ -16,7 +16,7 @@ Images with `.hdr.` in their filename link to the HDR image on the default langu
 | Parameter | Type | Required | Default | Purpose |
 |---|---|---|---|---|
 | `class` | string | no | — | Extra class on the gallery `<div>` |
-| `format` | string | no | `webp` | Output format of the full image and the previews (e.g. `webp`, `avif`, `jpeg`), `original` keeps the source format. Can also be configured site wide, see [image parameters](/config/params/#images) |
+| `format` | string | no | `webp` | Output format of the previews (e.g. `webp`, `avif`, `jpeg`), `original` keeps the source format. Can also be configured site wide, see [image parameters](/config/params/#images). The full view always uses the original |
 
 ## Body (JSON array)
 
