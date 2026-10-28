@@ -29,7 +29,7 @@ Utility partials — most of them return a value and are used like functions. Th
 
 ## Data lookups {#wikidata}
 
-- `data/wikidata.html` — renders a "Wikidata entries" summary block for a page: reads the `wikidata` front matter (string, list or map with relations), resolves the entity labels through `data/functions/wikidata-label.html` and links them. The label lookup queries the SPARQL endpoint configured with the site parameter `wikidatasparqlendpoint`
+- `data/wikidata.html` — renders a "Wikidata entries" summary block for a page: reads the `wikidata` front matter (string, list or map with relations), resolves the entity labels through `data/functions/wikidata-label.html` and links them. The label lookup uses the Wikidata EntityData JSON API, not SPARQL
 
 ## Services {#services}
 

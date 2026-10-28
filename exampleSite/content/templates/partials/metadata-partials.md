@@ -37,7 +37,6 @@ The parsing itself lives in `metadata/codemeta/parse-cff.html` and can be called
 The `metadata/linked-art/` partials build [Linked Art](https://linked.art/) JSON-LD documents — `linked-art.json` (entry point), `actor.json`, `collection.json`, `description.json`, `referenced_by.json`, `style.json` and label lookups:
 
 - `wikidata-label.json` / `getty-label.json` resolve entity labels from [Wikidata](https://www.wikidata.org/) and the Getty thesaurus
-- The SPARQL endpoint can be configured with the site parameter `wikidatasparqlendpoint`
 - The site parameter `linkedart` carries Linked Art specific configuration
 
 See also the [`linkedart` output format](../metadata-formats/#linkedart) and the [Wikidata helpers](helpers/#wikidata).

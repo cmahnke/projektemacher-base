@@ -123,7 +123,7 @@ disablePathToLower = true
   # Allow HTML files in content bundles, needed by the html-body template
   allowContent = ['^text/html$', '^text/markdown$']
   [security.http]
-    mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
+    mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
   # The theme's asset pipeline imports packages (howler, mermaid, ol, pdfobject,
   # tify, …) from the node_modules directory of the theme repository one level up
   [security.node]
