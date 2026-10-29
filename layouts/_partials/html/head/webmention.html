@@ -22,7 +22,13 @@
 {{- $webmentions := site.Params.webmentions -}}
 {{- if and $webmentions $webmentions.endpoint -}}
   {{- $endpoint := $webmentions.endpoint -}}
-  {{- $response := try (resources.GetRemote $endpoint) -}}
+  {{- /* Wikimedia-like endpoints may reject requests without a proper
+         User-Agent, so always send one if the site provides it. */}}
+  {{- $headers := dict -}}
+  {{- with site.Params.useragent -}}
+    {{- $headers = merge $headers (dict "User-Agent" .) -}}
+  {{- end -}}
+  {{- $response := try (resources.GetRemote $endpoint (dict "headers" $headers)) -}}
   {{- $reachable := false -}}
   {{- $message := "" -}}
   {{- with $response.Err -}}
