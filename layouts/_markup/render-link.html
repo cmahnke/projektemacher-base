@@ -16,11 +16,15 @@
   {{- if findRE `(?m)https://(.{2})\.wikipedia.org/wiki/(.[^#]*)` $target -}}
     {{- $queryURL := replaceRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` "https://$1.wikipedia.org/w/api.php?action=query&prop=pageprops&titles=$2&format=json" $target -}}
 
+    {{- /* Note: the User-Agent must go into the 'headers' dict - a top level
+          entry is ignored by resources.GetRemote, leaving requests without a
+          User-Agent which Wikimedia rejects with 403. */ -}}
     {{- $queryOpts := dict
       "method" "get"
+      "headers" (dict)
     -}}
     {{- with site.Params.useragent -}}
-      {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
+      {{- $queryOpts = merge $queryOpts (dict "headers" (dict "User-Agent" .)) -}}
     {{- end -}}
     {{- if $debug -}}
       {{- warnf "[_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
@@ -47,7 +51,7 @@
       "headers" (dict "Accept" "application/sparql-results+json")
     -}}
     {{- with site.Params.useragent -}}
-      {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
+      {{- $queryOpts = merge $queryOpts (dict "headers" (merge (index $queryOpts "headers") (dict "User-Agent" .))) -}}
     {{- end -}}
     {{- if $debug -}}
       {{- warnf "[_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}

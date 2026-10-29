@@ -28,10 +28,14 @@
 {{- $page := . -}}
 
 {{- $classification := slice -}}
-{{- range $wikidataURL := $tagsWikidata -}}
+  {{- range $wikidataURL := $tagsWikidata -}}
   {{- $wikidataID := replaceRE `^.*/([^/]+)$` "$1" $wikidataURL -}}
   {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $wikidataID -}}
-  {{- with resources.GetRemote $url -}}
+  {{- $headers := dict "Accept" "application/json" -}}
+  {{- with site.Params.useragent -}}
+    {{- $headers = merge $headers (dict "User-Agent" .) -}}
+  {{- end -}}
+  {{- with resources.GetRemote $url (dict "headers" $headers) -}}
     {{- with .Content | transform.Unmarshal -}}
       {{- $entity := index .entities $wikidataID -}}
       {{/* P1014 : Getty AAT-ID Property */}}
