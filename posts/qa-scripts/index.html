@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Quality assurance scripts </title><meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive"><meta name="author" content="Christian Mahnke">
+  <meta name="dc.creator" content="Christian Mahnke">
+
+<meta http-equiv="Content-Language" content="en">
+<meta name="dc.type" content="Text">
+<meta name="description" content="Demo and documentation site for the Projektemacher Base theme">
+<meta property="og:type" content="article" /><meta property="og:url" content="https://cmahnke.github.io/projektemacher-base/posts/qa-scripts/" /><meta property="og:title" content="Quality assurance scripts" />
+
+  
+  
+    
+  
+
+
+
+<meta name="keywords" content="hugo, theme, IIIF, documentation"><meta name="dc.subject" content="hugo"><meta name="dc.subject" content="theme"><meta name="dc.subject" content="IIIF"><meta name="dc.subject" content="documentation">
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="projektemacher.org:build-date" content="2026-10-29 14:14:38.938194678 &#43;0000 UTC m=&#43;0.196114927">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-16.png" sizes="16x16"><link rel="icon" type="image/svg+xml" href="images/cm.svg">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+
+
+
+
+
+<link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="webmention" /><link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="pingback" /><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.184a08289617fbad5aa63f344c8c0961f72b6676de29f0f2ef24b0ca9f03cf68.css" rel="stylesheet" integrity="sha256-GEoIKJYX&#43;61apj80TIwJYfcrZnbeKfDy7ySwyp8Dz2g=">
+<meta name="webmcp-search-bundle-path" content="https://cmahnke.github.io/projektemacher-base/index/">
+    <meta name="webmcp-search-title" content="Search"><script src="https://cmahnke.github.io/projektemacher-base/js/994958c3d5ca3b43338669c53d858e76.d9e8109e9c6c2efc831b963e7ac037e5e6e4a57160f90a2547c9267dd707d2ba.js" integrity="sha256-2egQnpxsLvyDG5Y+esA35ebkpXFg+QolR8kmfdcH0ro=" defer></script></head>
+
+    <body class="home blog  meta">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/">Projektemacher Theme</a><nav class="top top-menu" aria-label="Main navigation" data-menu-open-label="Open main navigation" data-menu-close-label="Close main navigation">
+    
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul id="main-navigation-list" class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts" aria-current="page">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-search"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/search/" title="Search">Search<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav><script defer src="https://cmahnke.github.io/projektemacher-base/js/menu.f3e70178adb3aa01ab9834de82162c31cc2ece1d9735c1e26ff1b199c08a683d.js" integrity="sha256-8+cBeK2zqgGrmDTeghYsMcwuzh2XNcHib/GxmcCKaD0="></script></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="0001-01-01T00:00:00Z">Monday, January 1, 1</time>
+        </div>
+        <header>
+          <h1 class="header">Quality assurance scripts</h1>
+        </header>
+        <p>The theme ships a set of quality assurance scripts, used by the <a href="../development/">example site</a> and by sites built on this theme in their CI workflows.</p>
+<h1 id="browser-check">Browser check</h1>
+<p><code>scripts/github/check-js-errors.sh</code> wraps <code>scripts/check-js-browser-errors.mjs</code> and is the form used in GitHub Actions. The Node script serves the built site from the <code>docs</code> directory on an internal web server (<code>http://localhost:3000/</code>), loads every page from <code>test-urls.json</code> (or one URL per line from <code>test-urls.txt</code>) in headless Chrome and fails the run if a page emits errors:</p>
+<ul>
+<li>a browser console message matching one of the <code>messages</code> entries of <code>test-urls.json</code></li>
+<li>an uncaught page error (<code>pageerror</code>)</li>
+<li>a request for a local resource that fails (network error)</li>
+</ul>
+<table>
+	<thead>
+			<tr>
+					<th>Exit code</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>122</td>
+					<td>Browser console message matched a configured <code>messages</code> entry</td>
+			</tr>
+			<tr>
+					<td>123</td>
+					<td>Uncaught page error</td>
+			</tr>
+			<tr>
+					<td>124</td>
+					<td>Failed request (network error) for a local resource</td>
+			</tr>
+			<tr>
+					<td>125</td>
+					<td>CSS selector found and the property value matched the given <code>value</code> (a check for unwanted styles)</td>
+			</tr>
+			<tr>
+					<td>126</td>
+					<td>CSS selector not found</td>
+			</tr>
+			<tr>
+					<td>127</td>
+					<td>Missing IIIF asset (see below)</td>
+			</tr>
+	</tbody>
+</table>
+<p>Entries in <code>test-urls.json</code> can additionally contain <code>click</code> sequences and CSS <code>selector</code>/<code>property</code>/<code>value</code> (optionally with <code>pseudo</code>) checks, resolved with <code>getComputedStyle</code> — the run fails when the element is found and its computed value equals <code>value</code> (see exit code 125).</p>
+<table>
+	<thead>
+			<tr>
+					<th>Flag</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>-f</code>, <code>--force</code></td>
+					<td>Exit instead of skipping URLs whose file doesn&rsquo;t exist in <code>docs</code></td>
+			</tr>
+			<tr>
+					<td><code>-g</code>, <code>--gpu</code></td>
+					<td>Enable 3D APIs (SwiftShader/ANGLE emulation), required by WebGL/WebGPU pages</td>
+			</tr>
+			<tr>
+					<td><code>-e</code>, <code>--experimental</code></td>
+					<td>Enable experimental web platform features</td>
+			</tr>
+			<tr>
+					<td><code>-c</code>, <code>--config</code></td>
+					<td>Path to the test configuration (JSON), defaults to <code>test-urls.json</code></td>
+			</tr>
+			<tr>
+					<td><code>-l</code>, <code>--log-server</code></td>
+					<td>Log which files the internal web server served</td>
+			</tr>
+			<tr>
+					<td><code>-i</code>, <code>--iiif</code></td>
+					<td>Enable <a href="#iiif-awareness">IIIF awareness</a></td>
+			</tr>
+	</tbody>
+</table>
+<p><code>scripts/github/puppeteer-chrome.sh</code> installs the Chrome build used by the check (<code>npx @puppeteer/browsers install chrome@stable</code>).</p>
+<p><code>scripts/github/check-js-errors-example.sh</code> runs the check against the example site itself. Pages whose JavaScript requires WebGL or WebGPU are deliberately not listed in <code>test-urls.json</code>, since the 3D APIs are disabled unless <code>-g</code> is passed.</p>
+<h1 id="iiif-awareness">IIIF awareness</h1>
+<p>With <code>-i</code>/<code>--iiif</code> the check understands IIIF documents among the test URLs. A URL ending in <code>manifest.json</code>, <code>info.json</code> or <code>collection.json</code> is fetched from the internal web server and parsed; if the content is a valid IIIF document (Presentation <code>Manifest</code> or <code>Collection</code>, or Image API <code>info.json</code>), it is checked for referenced assets instead of being opened in the browser. Anything else is checked in the browser as usual.</p>
+<p>The check only requests assets served by the internal web server, never external hosts, and only actual file references:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Collected</th>
+					<th>Skipped</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>thumbnail</code>, <code>rendering</code>, <code>logo</code>, <code>seeAlso</code> and annotation <code>body</code> ids</td>
+					<td>Structural identifiers that merely look like URLs: Canvases, Annotations, Ranges, the document&rsquo;s own <code>id</code></td>
+			</tr>
+			<tr>
+					<td></td>
+					<td><code>@context</code>, <code>homepage</code>, <code>provider</code>, <code>partOf</code>, <code>services</code>, <code>profile</code></td>
+			</tr>
+	</tbody>
+</table>
+<p>For <code>manifest.json</code> and <code>collection.json</code> every referenced asset (deduplicated) is requested once. For <code>info.json</code> the check verifies the advertised derivatives: the canonical full image (<code>/full/max/0/default.jpg</code>, Image API 2 uses <code>/full/full/</code>), one request per advertised <code>sizes</code> entry and one representative tile per <code>tiles</code> entry and scale factor.</p>
+<p>Failures are collected across all test URLs and reported at the end of the run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>IIIF check: 3 files, 42 URLs, 2 failures
+</span></span></code></pre></div><p>Any failure exits with code 127.</p>
+<h1 id="accessibility">Accessibility</h1>
+<p><code>scripts/check-a11y.mjs</code> runs <a href="https://github.com/dequelabs/axe-core" target="_blank" rel="noopener noreferrer">axe-core</a> in headless Chrome against one or more URLs and reports accessibility violations.</p>
+<table>
+	<thead>
+			<tr>
+					<th>Flag</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>-u</code>, <code>--url</code></td>
+					<td>URL to check (defaults to the <code>baseURL</code> from the Hugo configuration)</td>
+			</tr>
+			<tr>
+					<td><code>-f</code>, <code>--urls-file</code></td>
+					<td>JSON file with a <code>urls</code> array (e.g. <code>test-urls.json</code>), checked in addition to <code>--url</code></td>
+			</tr>
+			<tr>
+					<td><code>-o</code>, <code>--output</code></td>
+					<td>Additionally write the report as Markdown to this file</td>
+			</tr>
+			<tr>
+					<td><code>-c</code>, <code>--config</code></td>
+					<td>Hugo configuration (TOML) to read the <code>baseURL</code> from</td>
+			</tr>
+			<tr>
+					<td><code>-w</code>, <code>--wait</code></td>
+					<td>Milliseconds to wait for the page to settle after load</td>
+			</tr>
+			<tr>
+					<td><code>-i</code>, <code>--include-meta-viewport</code></td>
+					<td>Include the <code>meta-viewport</code> rule</td>
+			</tr>
+	</tbody>
+</table>
+<h1 id="lighthouse">Lighthouse</h1>
+<p><code>scripts/check-lighthouse.mjs</code> runs <a href="https://github.com/GoogleChrome/lighthouse" target="_blank" rel="noopener noreferrer">Lighthouse</a> against one or more URLs and reports the category scores.</p>
+<table>
+	<thead>
+			<tr>
+					<th>Flag</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>-u</code>, <code>--url</code></td>
+					<td>URL to check</td>
+			</tr>
+			<tr>
+					<td><code>-f</code>, <code>--urls-file</code></td>
+					<td>JSON file with a <code>urls</code> array, checked in addition to <code>--url</code></td>
+			</tr>
+			<tr>
+					<td><code>-o</code>, <code>--output</code></td>
+					<td>Additionally write the report as Markdown to this file</td>
+			</tr>
+			<tr>
+					<td><code>-c</code>, <code>--config</code></td>
+					<td>Hugo configuration (TOML) to read the <code>baseURL</code> from</td>
+			</tr>
+			<tr>
+					<td><code>-k</code>, <code>--categories</code></td>
+					<td>Categories to run, from <code>performance</code>, <code>accessibility</code>, <code>best-practices</code>, <code>seo</code></td>
+			</tr>
+	</tbody>
+</table>
+</article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Theme is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>

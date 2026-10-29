@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Site parameters </title><meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive"><meta name="author" content="Christian Mahnke">
+  <meta name="dc.creator" content="Christian Mahnke">
+
+<meta http-equiv="Content-Language" content="en">
+<meta name="dc.type" content="Text">
+<meta name="description" content="Reference of all site wide configuration options ([params]) understood by the theme&#39;s templates">
+<meta property="og:type" content="article" /><meta property="og:url" content="https://cmahnke.github.io/projektemacher-base/config/params/" /><meta property="og:title" content="Site parameters" />
+
+  
+  
+    
+  
+
+
+
+<meta name="keywords" content="hugo, theme, IIIF, documentation"><meta name="dc.subject" content="hugo"><meta name="dc.subject" content="theme"><meta name="dc.subject" content="IIIF"><meta name="dc.subject" content="documentation">
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="projektemacher.org:build-date" content="2026-10-29 14:14:38.938194678 &#43;0000 UTC m=&#43;0.196114927">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-16.png" sizes="16x16"><link rel="icon" type="image/svg+xml" href="images/cm.svg">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+
+
+
+
+
+<link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="webmention" /><link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="pingback" /><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.184a08289617fbad5aa63f344c8c0961f72b6676de29f0f2ef24b0ca9f03cf68.css" rel="stylesheet" integrity="sha256-GEoIKJYX&#43;61apj80TIwJYfcrZnbeKfDy7ySwyp8Dz2g=">
+<meta name="webmcp-search-bundle-path" content="https://cmahnke.github.io/projektemacher-base/index/">
+    <meta name="webmcp-search-title" content="Search"><script src="https://cmahnke.github.io/projektemacher-base/js/994958c3d5ca3b43338669c53d858e76.d9e8109e9c6c2efc831b963e7ac037e5e6e4a57160f90a2547c9267dd707d2ba.js" integrity="sha256-2egQnpxsLvyDG5Y+esA35ebkpXFg+QolR8kmfdcH0ro=" defer></script></head>
+
+    <body class="home blog ">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/">Projektemacher Theme</a><nav class="top top-menu" aria-label="Main navigation" data-menu-open-label="Open main navigation" data-menu-close-label="Close main navigation">
+    
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul id="main-navigation-list" class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config" aria-current="page">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-search"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/search/" title="Search">Search<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav><script defer src="https://cmahnke.github.io/projektemacher-base/js/menu.f3e70178adb3aa01ab9834de82162c31cc2ece1d9735c1e26ff1b199c08a683d.js" integrity="sha256-8+cBeK2zqgGrmDTeghYsMcwuzh2XNcHib/GxmcCKaD0="></script></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="2026-10-17T00:00:00Z">Saturday, October 17, 2026</time>
+        </div>
+        <header>
+          <h1 class="header">Site parameters</h1>
+        </header>
+        <h1 id="site-parameters">Site parameters</h1>
+<p>All options are set in the site&rsquo;s <code>hugo.toml</code> under <code>[params]</code> (or <code>[params.&lt;group&gt;]</code> for grouped settings). Defaults are shown where the templates define one.</p>
+<h2 id="general-and-metadata">General and metadata</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>description</code></td>
+					<td>—</td>
+					<td>Site description, used for the <code>&lt;meta name=&quot;description&quot;&gt;</code> and OpenGraph tags</td>
+			</tr>
+			<tr>
+					<td><code>keywords</code></td>
+					<td>—</td>
+					<td>Comma separated keywords, rendered as <code>dc.subject</code> meta tags</td>
+			</tr>
+			<tr>
+					<td><code>slogan</code></td>
+					<td>—</td>
+					<td>Appended to the <code>&lt;title&gt;</code> on the home page</td>
+			</tr>
+			<tr>
+					<td><code>author.name</code> / <code>author.email</code> / <code>author.uri</code> / <code>author.orcid</code></td>
+					<td>—</td>
+					<td>Site author, used for metadata (schema.org, codemeta, RSS)</td>
+			</tr>
+			<tr>
+					<td><code>publisher</code></td>
+					<td>—</td>
+					<td>Publisher name for Linked Art / schema.org metadata</td>
+			</tr>
+			<tr>
+					<td><code>useragent</code></td>
+					<td>—</td>
+					<td>User agent string reported to external services (e.g. Wikidata SPARQL)</td>
+			</tr>
+			<tr>
+					<td><code>robots.llmsTXT</code></td>
+					<td><code>false</code></td>
+					<td>Generate a <code>llms.txt</code> file listing the site&rsquo;s content and author (see <code>robots.txt</code>)</td>
+			</tr>
+			<tr>
+					<td><code>debug</code></td>
+					<td><code>false</code></td>
+					<td>Enable the theme&rsquo;s debug warnings (extra build time output)</td>
+			</tr>
+			<tr>
+					<td><code>env</code></td>
+					<td>—</td>
+					<td>Environment name (e.g. <code>production</code>), used e.g. by the cookie consent service</td>
+			</tr>
+			<tr>
+					<td><code>stylesheets</code></td>
+					<td>—</td>
+					<td>List of external stylesheets to include in <code>&lt;head&gt;</code></td>
+			</tr>
+			<tr>
+					<td><code>disableOpenGraph</code></td>
+					<td><code>false</code></td>
+					<td>Set to <code>true</code> to skip the OpenGraph meta tags in <code>&lt;head&gt;</code></td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="header-and-footer">Header and footer</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>headerimage</code></td>
+					<td><code>/images/header.svg</code></td>
+					<td>Logo image in the header; set to <code>false</code> to disable the image</td>
+			</tr>
+			<tr>
+					<td><code>footer.privacy</code></td>
+					<td><code>false</code></td>
+					<td>Show a privacy policy link (<code>footer.privacyUrl</code> overrides the default <code>/privacy</code> target)</td>
+			</tr>
+			<tr>
+					<td><code>copyright</code></td>
+					<td>—</td>
+					<td>Copyright line, rendered in the footer (set to <code>false</code> to hide)</td>
+			</tr>
+			<tr>
+					<td><code>copyrightYears</code></td>
+					<td>—</td>
+					<td>Year range prefixed to the copyright line</td>
+			</tr>
+			<tr>
+					<td><code>cc</code></td>
+					<td><code>false</code></td>
+					<td>Add a Creative Commons note to the footer</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="assets-and-styles">Assets and styles</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>js.format</code></td>
+					<td><code>iife</code></td>
+					<td>Bundle format for all script bundles: <code>esm</code> ships each bundle as its own fingerprinted <code>&lt;script type=&quot;module&quot; crossorigin=&quot;anonymous&quot;&gt;</code> tag (never concatenated), <code>iife</code> builds classic scripts and ships them concatenated with <code>defer</code>. Set via <code>[params.js]</code> or the string shorthand <code>[params] js = 'esm'</code></td>
+			</tr>
+			<tr>
+					<td><code>css.includeDirs</code></td>
+					<td>built in set</td>
+					<td>Additional include paths (Sass <code>includePaths</code>) for the SCSS pipeline, see the <a href="https://cmahnke.github.io/projektemacher-base/shortcodes/shortcode-helper/">shortcode helper</a></td>
+			</tr>
+			<tr>
+					<td><code>skipShortcodeAssets</code></td>
+					<td><code>false</code></td>
+					<td>Disable automatic loading of shortcode specific JS/CSS</td>
+			</tr>
+			<tr>
+					<td><code>favicon_16</code> / <code>favicon_32</code></td>
+					<td>—</td>
+					<td>Favicon PNGs</td>
+			</tr>
+			<tr>
+					<td><code>favicon_svg</code></td>
+					<td>—</td>
+					<td>Favicon SVG (modern browsers prefer it over the PNGs)</td>
+			</tr>
+			<tr>
+					<td><code>favicon</code></td>
+					<td>—</td>
+					<td>Fallback favicon (a single URL or a list of <code>rel</code>/<code>sizes</code>/<code>href</code> maps), only used when <code>favicon_16</code>/<code>favicon_32</code> are unset</td>
+			</tr>
+			<tr>
+					<td><code>colorscheme</code></td>
+					<td>—</td>
+					<td><code>auto</code> or <code>dark</code> enables the theme&rsquo;s dark stylesheet</td>
+			</tr>
+			<tr>
+					<td><code>custom_css</code></td>
+					<td>—</td>
+					<td>List of stylesheet URLs to include in <code>&lt;head&gt;</code></td>
+			</tr>
+			<tr>
+					<td><code>custom_scss</code></td>
+					<td>—</td>
+					<td>List of SCSS assets (below <code>assets/</code>) compiled to CSS</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="images">Images</h2>
+<p>The theme&rsquo;s image outputting shortcodes (<code>figure</code>, <code>gallery</code>,
+<code>image-compare</code> and <code>post-image</code>) can emit images in a different format,
+e.g. WebP. Each shortcode accepts a <code>format</code> parameter, sites can also
+configure the output format globally or per shortcode:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span>[<span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">images</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># format = &#39;webp&#39; # global default for all image shortcodes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  [<span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">images</span>.<span style="color:#a6e22e">formats</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">gallery</span> = <span style="color:#e6db74">&#39;webp&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">image-compare</span> = <span style="color:#e6db74">&#39;webp&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">post-image</span> = <span style="color:#e6db74">&#39;webp&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">figure</span> = <span style="color:#e6db74">&#39;webp&#39;</span>
+</span></span></code></pre></div><p>The global format can also be set as a string shorthand via
+<code>[params] images = 'webp'</code>.</p>
+<p>Resolution order (highest priority first):</p>
+<ol>
+<li>The shortcode&rsquo;s <code>format</code> parameter</li>
+<li><code>images.formats.&lt;shortcode name&gt;</code></li>
+<li><code>images.format</code> (global)</li>
+<li>The shortcode&rsquo;s historical default (<code>gallery</code> keeps generating WebP, the others keep the image&rsquo;s source format)</li>
+</ol>
+<p>The special value <code>original</code> (and an empty value) keeps the source format —
+also per shortcode when a global format is configured. Accepted values are
+Hugo&rsquo;s output formats <code>webp</code>, <code>avif</code>, <code>bmp</code>, <code>gif</code>, <code>jpeg</code>, <code>png</code> and
+<code>tiff</code> (see <a href="https://gohugo.io/content-management/image-processing/" target="_blank" rel="noopener noreferrer">image processing</a>).</p>
+<p>Notes:</p>
+<ul>
+<li>Images Hugo can&rsquo;t process (e.g. SVG, JXL or HEIC sources) are passed
+through unchanged.</li>
+<li><code>figure</code> can only convert page bundle resources — external URLs and
+static files keep their original format.</li>
+<li>Without <code>width</code>, <code>post-image</code> emits the unprocessed source resource; a
+configured format converts it even then.</li>
+</ul>
+<h2 id="iiif-and-viewers">IIIF and viewers</h2>
+<p>All IIIF viewer settings live in <code>[params.iiif]</code> — see the <a href="https://cmahnke.github.io/projektemacher-base/iiif/configuration/">IIIF configuration</a> page for details:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>iiif.presentationViewer</code></td>
+					<td><code>ts/iiif/tify.ts</code></td>
+					<td>Presentation API viewer script (TIFY)</td>
+			</tr>
+			<tr>
+					<td><code>iiif.imageViewer</code></td>
+					<td>—</td>
+					<td>Image API viewer script (OpenLayers based)</td>
+			</tr>
+			<tr>
+					<td><code>minimalUI</code></td>
+					<td><code>false</code></td>
+					<td>Minimal viewer UI</td>
+			</tr>
+			<tr>
+					<td><code>pdfDownload</code></td>
+					<td><code>false</code></td>
+					<td>Add a PDF download link to the presentation viewer</td>
+			</tr>
+			<tr>
+					<td><code>productionIIIFURLPrefix</code></td>
+					<td>—</td>
+					<td>URL prefix for IIIF images in production builds</td>
+			</tr>
+	</tbody>
+</table>
+<p>The former <code>disableScale</code> parameter has been removed and has no effect:
+pinch zoom-in must stay allowed for accessibility (WCAG 2.5.5), only
+zoom-out is blocked via the viewport&rsquo;s <code>minimum-scale=1.0</code>. Setting it
+is a silent no-op (Hugo ignores unknown params).</p>
+<h2 id="previews">Previews</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>preview.source</code></td>
+					<td>—</td>
+					<td>Site wide preview image source (OpenGraph/social cards)</td>
+			</tr>
+			<tr>
+					<td><code>preview.size.width</code> / <code>preview.size.height</code></td>
+					<td>—</td>
+					<td>Preview image dimensions</td>
+			</tr>
+			<tr>
+					<td><code>preview.outputPrefix</code> / <code>preview.outputSuffix</code></td>
+					<td>—</td>
+					<td>Output file naming for generated previews</td>
+			</tr>
+			<tr>
+					<td><code>preview.background</code></td>
+					<td>—</td>
+					<td>Background color for generated previews</td>
+			</tr>
+			<tr>
+					<td><code>preview.og.format</code></td>
+					<td><code>jpeg</code></td>
+					<td>Output format of the generated OpenGraph image (<code>webp</code> supported). When explicitly configured it is also applied to prerendered preview images and <code>ogpreview</code> resources — the implicit <code>jpeg</code> default leaves those untouched. Images Hugo can&rsquo;t process (e.g. SVG or JXL) pass through unchanged</td>
+			</tr>
+	</tbody>
+</table>
+<p>A site can further customize preview resolution via the <code>preview/image.html</code> partial, see <a href="https://cmahnke.github.io/projektemacher-base/templates/partials/extension-points/">extension points</a>.</p>
+<h2 id="metadata-integrations">Metadata integrations</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>wikidata</code></td>
+					<td><code>false</code></td>
+					<td>Enable Wikidata metadata handling</td>
+			</tr>
+			<tr>
+					<td><code>wikidatasparqlbackend</code></td>
+					<td><code>wdqs</code></td>
+					<td>SPARQL backend for URL → Wikidata lookups in the <a href="https://cmahnke.github.io/projektemacher-base/wikidata/">link render hook</a>: <code>wdqs</code> (query.wikidata.org) or <code>qlever</code> (qlever.dev)</td>
+			</tr>
+			<tr>
+					<td><code>wikidatasparqlendpoint</code></td>
+					<td>—</td>
+					<td>SPARQL endpoint override; the query dialect is still chosen by <code>wikidatasparqlbackend</code></td>
+			</tr>
+			<tr>
+					<td><code>schemaPerson</code></td>
+					<td>—</td>
+					<td>URL to a JSON-LD person document for schema.org metadata</td>
+			</tr>
+			<tr>
+					<td><code>orcid</code></td>
+					<td>—</td>
+					<td>Author ORCID, used for the <code>rel=&quot;me&quot;</code> link and metadata output; alternatively set as <code>author.orcid</code></td>
+			</tr>
+			<tr>
+					<td><code>logo</code></td>
+					<td>—</td>
+					<td>Logo URL, also used for the error page image (<code>errorimg</code>)</td>
+			</tr>
+	</tbody>
+</table>
+<p>The <code>linkedart</code> parameter is a page level (front matter) switch that adds a
+Linked Art output format to a page, see the <a href="https://cmahnke.github.io/projektemacher-base/templates/metadata-formats/">metadata formats</a> documentation.</p>
+<h2 id="print">Print</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Default</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>print.relative</code></td>
+					<td><code>false</code></td>
+					<td>Use relative links in print editions</td>
+			</tr>
+	</tbody>
+</table>
+</article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Theme is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Structural partials </title><meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive"><meta name="author" content="Christian Mahnke">
+  <meta name="dc.creator" content="Christian Mahnke">
+
+<meta http-equiv="Content-Language" content="en">
+<meta name="dc.type" content="Text">
+<meta name="description" content="Demo and documentation site for the Projektemacher Base theme">
+<meta property="og:type" content="article" /><meta property="og:url" content="https://cmahnke.github.io/projektemacher-base/templates/partials/structural/" /><meta property="og:title" content="Structural partials" />
+
+  
+  
+    
+  
+
+
+
+<meta name="keywords" content="hugo, theme, IIIF, documentation"><meta name="dc.subject" content="hugo"><meta name="dc.subject" content="theme"><meta name="dc.subject" content="IIIF"><meta name="dc.subject" content="documentation">
+<meta name="generator" content="Hugo 0.168.0">
+<meta name="projektemacher.org:build-date" content="2026-10-29 14:14:38.938194678 &#43;0000 UTC m=&#43;0.196114927">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+<link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="https://cmahnke.github.io/projektemacher-base/images/favicon-16.png" sizes="16x16"><link rel="icon" type="image/svg+xml" href="images/cm.svg">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+
+
+
+
+
+<link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="webmention" /><link href="https://static.projektemacher.org/services/webmentions/webmention.php" rel="pingback" /><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-100-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lato-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-math-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-symbols-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-vietnamese-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://cmahnke.github.io/projektemacher-base/fonts/lora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link href="https://cmahnke.github.io/projektemacher-base/css/de98a9243dac78c60665e2bf5939c8f8.min.184a08289617fbad5aa63f344c8c0961f72b6676de29f0f2ef24b0ca9f03cf68.css" rel="stylesheet" integrity="sha256-GEoIKJYX&#43;61apj80TIwJYfcrZnbeKfDy7ySwyp8Dz2g=">
+<meta name="webmcp-search-bundle-path" content="https://cmahnke.github.io/projektemacher-base/index/">
+    <meta name="webmcp-search-title" content="Search"><script src="https://cmahnke.github.io/projektemacher-base/js/994958c3d5ca3b43338669c53d858e76.d9e8109e9c6c2efc831b963e7ac037e5e6e4a57160f90a2547c9267dd707d2ba.js" integrity="sha256-2egQnpxsLvyDG5Y+esA35ebkpXFg+QolR8kmfdcH0ro=" defer></script></head>
+
+    <body class="home blog  meta">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+
+    <header id="site-header" class="site-header">
+      <div class='top-navigation'>
+        
+      </div>
+
+      <div class="container">
+        <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://cmahnke.github.io/projektemacher-base/">Projektemacher Theme</a><nav class="top top-menu" aria-label="Main navigation" data-menu-open-label="Open main navigation" data-menu-close-label="Close main navigation">
+    
+    <input type="checkbox" id="menu-toggle" aria-label="Main navigation" />
+    <label class="menu-button float-right" for="menu-toggle"><i class="menu-icon" aria-hidden="true"></i></label>
+    <ul id="main-navigation-list" class="navigation-list"><li class="navigation-item navto-iiif"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/iiif/" title="IIIF">IIIF<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-shortcodes"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/shortcodes/" title="Shortcodes">Shortcodes<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-posts"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/posts/" title="Posts">Posts<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-wikidata"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/wikidata/" title="Wikidata">Wikidata<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-git"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/git/" title="Git">Git<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-config"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/config/" title="Config">Config<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-search"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/search/" title="Search">Search<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item current navto-templates"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/templates/" title="Templates" aria-current="page">Templates<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item navto-i18n"><a class="navigation-link" href="https://cmahnke.github.io/projektemacher-base/i18n/" title="i18n">i18n<i class="link-icon" aria-hidden="true"></i></a></li><li class="navigation-item lang">
+              <a href="https://cmahnke.github.io/projektemacher-base/de/" title="Deutsch" hreflang="de" lang="de">Deutsch</a>
+            </li></ul>
+  </nav><script defer src="https://cmahnke.github.io/projektemacher-base/js/menu.f3e70178adb3aa01ab9834de82162c31cc2ece1d9735c1e26ff1b199c08a683d.js" integrity="sha256-8+cBeK2zqgGrmDTeghYsMcwuzh2XNcHib/GxmcCKaD0="></script></section>
+</nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+
+      
+      
+      
+  <div class="content page">
+    <section class="container page ">
+      <article class="content-container">
+        <div class="date" style="display: none;">
+          <time class="post-date" datetime="0001-01-01T00:00:00Z">Monday, January 1, 1</time>
+        </div>
+        <header>
+          <h1 class="header">Structural partials</h1>
+        </header>
+        <h1 id="structural-partials">Structural partials</h1>
+<p>These partials render the common page chrome. They are used by the theme&rsquo;s templates and can be called (or overridden) by sites — the consuming sites <code>projektemacher.org</code> and <code>labs.projektemacher.org</code> call most of them from their own layouts.</p>
+<h2 id="head"><del><code>head.html</code></del></h2>
+<p>The legacy <code>head.html</code> partial has been removed. It rendered only meta tags, favicons and <code>&lt;link&gt;</code> alternates — everything it did is now covered by the <code>html/head/meta.html</code> and <code>html/head/links.html</code> partials (see below), which <code>baseof.html</code> calls directly. Sites that still keep a copy of <code>head.html</code> are unaffected (their copy shadows the theme), but should migrate to the <code>html/head/*</code> partials.</p>
+<h2 id="html-head-title"><code>html/head/title.html</code></h2>
+<p>Renders the <code>&lt;title&gt;</code> element: the page title, appended with the <a href="../#site-parameters-used-by-partials"><code>slogan</code></a> on the home page. The <code>title</code> block inside can be overridden by site templates (see <a href="../../baseof/#blocks">base template</a>) — <code>single.html</code>, <code>list.html</code> and <code>search.html</code> use this to render <code>Title · site.Title</code>. Pages without a title render no <code>&lt;title&gt;</code> element.</p>
+<h2 id="html-head-links"><code>html/head/links.html</code></h2>
+<p>Emits the <code>&lt;head&gt;</code> link tags that are not meta data: external <code>stylesheets</code>, the font CSS (see <a href="https://cmahnke.github.io/projektemacher-base/posts/">fonts</a>), and the <code>&lt;link&gt;</code> alternates for the RSS and <code>iiif-collection</code> output formats. Called by <code>baseof.html</code> after <code>html/head/meta.html</code>.</p>
+<p>The <code>&lt;title&gt;</code> (with the <code>slogan</code> site parameter appended on the home page) is emitted by the <a href="#html-head-title"><code>html/head/title.html</code></a> partial.</p>
+<h2 id="html-head-viewport"><code>html/head/viewport.html</code></h2>
+<p>Emits the <code>&lt;meta name=&quot;viewport&quot;&gt;</code> tag: <code>width=device-width, initial-scale=1.0, minimum-scale=1.0</code> — pinch zoom-in stays allowed (accessibility), only zoom-out is blocked. The <code>minimalUI</code> site parameter appends <code>minimal-ui</code>.</p>
+<h2 id="html-head-script"><code>html/head/script.html</code></h2>
+<p>Builds and links the site&rsquo;s JavaScript. The entry point is the page parameter <code>defaultScriptEntrypoint</code> if set; otherwise a <code>ts/main.ts</code> resource is used when present, falling back to the legacy <code>js/main.js</code> name. If neither exists the build fails with an <code>errorf</code> — create the file in the site&rsquo;s assets directory, an empty file will do (the example site ships an empty <code>assets/ts/main.ts</code>). Additional per page scripts come from the page&rsquo;s <code>js:</code> front matter and from the shortcode helper metadata; they are bundled separately from the main bundle.</p>
+<p>The bundle format follows the site configuration: <code>[params.js] format = &quot;esm&quot;</code> (or the string shorthand <code>[params] js = 'esm'</code>) builds every bundle as ESM and ships it as its own fingerprinted <code>&lt;script type=&quot;module&quot; … crossorigin=&quot;anonymous&quot;&gt;</code> tag — ESM bundles are never concatenated, so per-bundle emission is what makes the format switch safe. Without it the bundles build as classic IIFE scripts and ship concatenated with <code>defer</code>; <code>splitBundles</code> only affects that classic path.</p>
+<h2 id="header"><code>header.html</code></h2>
+<p>Renders the site header: the <a href="#menu">menu</a>, the header image and the page title (with the <code>subtitle</code> page parameter as <code>h2</code>).</p>
+<table>
+	<thead>
+			<tr>
+					<th>Site parameter</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>headerimage</code></td>
+					<td>Header image path, defaults to <code>/images/header.svg</code>, <code>false</code> disables the image</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="menu"><code>menu.html</code></h2>
+<p>Renders the main navigation: all <code>.Site.Menus.main</code> entries (with <code>draft</code> menu params honored, HTML menu entries via <code>params.html = true</code>, see <a href="https://cmahnke.github.io/projektemacher-base/config/menu/">menu configuration</a>) plus the language switcher for multilingual sites (<code>label</code> from the language configuration). Entries pointing to the current section get a <code>current</code> CSS class; the current page link carries <code>aria-current=&quot;page&quot;</code>.</p>
+<p>The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced by <code>ts/menu.ts</code> (loaded by the partial): once the script runs, the toggle is a real <code>&lt;button&gt;</code> with <code>aria-expanded</code>/<code>aria-controls</code>, the closed list is <code>inert</code>, and the menu closes on Escape, outside clicks or focus leaving it. The <code>menu.js</code> bundle format follows <code>[params.js] format</code> — ESM builds ship it as a <code>type=&quot;module&quot;</code> tag, classic builds as a <code>defer</code> script.</p>
+<h2 id="topnavigation"><code>topnavigation.html</code></h2>
+<p>Placeholder container above the header, empty by default — a site can override it.</p>
+<h2 id="footer"><code>footer.html</code> and <code>footer-content.html</code></h2>
+<p><code>footer.html</code> renders the main menu as footer navigation plus the footer content. <code>footer-content.html</code> renders the copyright block:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Site parameter (default site)</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>copyright</code></td>
+					<td>Custom copyright text</td>
+			</tr>
+			<tr>
+					<td><code>copyrightYears</code></td>
+					<td>Custom year range, prepends <code>©</code></td>
+			</tr>
+			<tr>
+					<td><code>copyright: &quot;false&quot;</code></td>
+					<td>Renders an empty copyright</td>
+			</tr>
+			<tr>
+					<td><code>cc: true</code></td>
+					<td>Adds the Creative Commons note</td>
+			</tr>
+			<tr>
+					<td><code>footer.privacy: true</code></td>
+					<td>Adds a privacy policy link</td>
+			</tr>
+			<tr>
+					<td><code>footer.privacyUrl</code></td>
+					<td>Alternative privacy URL (default <code>/privacy</code>)</td>
+			</tr>
+	</tbody>
+</table>
+<p><code>footer-content.html</code> is called with a <code>dict</code> of <code>page</code> (the current page) and <code>footer</code> — an HTML string that is appended after the copyright block. The theme itself passes an empty string; a site overriding <code>footer.html</code> supplies its own footer content:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>{{- partial &#34;footer-content.html&#34; (dict &#34;page&#34; . &#34;footer&#34; $footerStr) -}}
+</span></span></code></pre></div><h2 id="404"><code>404.html</code> and <code>404-content.html</code></h2>
+<p><code>404.html</code> wraps the base template, <code>404-content.html</code> renders the error text and — with the site parameters <code>errorimg: true</code> and <code>logo</code> — an error image.</p>
+<h2 id="list"><code>list.html</code> and <code>home.html</code></h2>
+<p><code>list.html</code> renders a paginated page list: filters <code>metaPage</code> pages, keeps pages with <code>displayinlist != false</code>, renders each with the site&rsquo;s <a href="extension-points/#lihtml-required-for-list-pages"><code>li.html</code></a> partial, then previous/next pagination links if there is more than one page. <code>home.html</code> is a thin wrapper feeding <code>.Site.RegularPages</code> into the same markup.</p>
+<h2 id="pagination"><code>pagination.html</code></h2>
+<p>Renders the numbered pagination: previous/next links with i18n labels plus the page number list — the current page carries <code>aria-current=&quot;page&quot;</code>, every page number link gets a visually hidden &ldquo;page N&rdquo; label.</p>
+<h2 id="page"><code>page.html</code></h2>
+<p>Renders a single page: title, content and — unless <code>metaPage: true</code> — the date and <a href="#tags">tags</a> footer. The <code>type</code> front matter parameter becomes an additional CSS class.</p>
+<h2 id="toc"><code>toc.html</code></h2>
+<p>Renders a table of contents for a section page — a list of the section&rsquo;s child pages. The example site places it as a sticky sidebar next to the section content (via its <code>list.html</code> override), but it can be called from any layout:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go-html-template" data-lang="go-html-template"><span style="display:flex;"><span><span style="color:#75715e">{{</span> <span style="color:#a6e22e">partial</span> <span style="color:#e6db74">&#34;toc.html&#34;</span> <span style="color:#f92672">(</span><span style="color:#a6e22e">dict</span> <span style="color:#e6db74">&#34;entries&#34;</span> <span style="color:#a6e22e">.</span> <span style="color:#e6db74">&#34;maxLevels&#34;</span> <span style="color:#a6e22e">2</span><span style="color:#f92672">)</span> <span style="color:#75715e">}}</span>
+</span></span></code></pre></div><table>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>entries</code></td>
+					<td>A section page — its children are rendered; a page slice is rendered as a flat list without grouping</td>
+			</tr>
+			<tr>
+					<td><code>maxLevels</code></td>
+					<td>Number of levels to render, counting the top level (default <code>2</code>; <code>3</code> also renders the children of nested sections, child sections are always rendered without their children once the level is exhausted)</td>
+			</tr>
+			<tr>
+					<td><code>title</code></td>
+					<td>Heading above the list (defaults to the <code>inThisSection</code> i18n string)</td>
+			</tr>
+	</tbody>
+</table>
+<p>Pages with the front matter parameter <code>tocExclude: true</code> are skipped. Pages stored directly in the section root and child sections are top level entries; pages in subdirectories without their own <code>_index.md</code> are grouped under the directory name — e.g. the <code>shortcodes/html/</code> pages become an <code>html</code> group on the <code>/shortcodes/</code> section. A subdirectory holding only one page is promoted to a top level entry. The partial emits an <code>&lt;aside class=&quot;section-toc&quot;&gt;</code> with a <code>&lt;nav class=&quot;toc&quot;&gt;</code> inside; it renders nothing when no entries remain after filtering. A site can ship its own version through <code>layouts/partials/toc.html</code>.</p>
+<h2 id="html-iframe-consent"><code>html/iframe-consent.html</code></h2>
+<p>Renders the consent overlay for embedded iframes: notice text (i18n), an optional <code>preview</code> and the consent toggle. The toggle ships as a keyboard-operable checkbox-hack fallback and is progressively enhanced to a <code>&lt;button role=&quot;switch&quot; aria-checked&gt;</code> (see the <a href="https://cmahnke.github.io/projektemacher-base/shortcodes/html/iframe-consent/"><code>html/iframe-consent</code> shortcode</a>).</p>
+<h2 id="html-body"><code>html/html-body.html</code></h2>
+<p>Renders the body of a standalone HTML page, used by the <a href="../single-list/#html-body"><code>html-body</code> template</a> and the <a href="https://cmahnke.github.io/projektemacher-base/shortcodes/html/include/"><code>html/include</code> shortcode</a>.</p>
+<h2 id="tags"><code>meta/tags.html</code> and <code>meta/i18n-tags.html</code></h2>
+<p>Both render the tag list of a page as links to the <code>tags/</code> terms:</p>
+<ul>
+<li><code>meta/tags.html</code> renders each tag through the <a href="../plugin-dispatch/#tag-cloud">tag cloud plug-ins</a> — the page parameter <code>render</code> selects the variant (default <code>tag</code>)</li>
+<li><code>meta/i18n-tags.html</code> renders the tags through <code>i18n</code> translations instead</li>
+</ul>
+<h2 id="post-relations"><code>post-relations.html</code></h2>
+<p>Renders contextual navigation for a page: on section pages a list of the section&rsquo;s pages, on regular pages a link to the parent section. Skipped for <code>metaPage</code> pages.</p>
+</article>
+    </section>
+</div>
+
+
+    </main>
+
+    <footer class="footer"><div class="footer-container">
+    <p class="projektemacher">
+        Projektemacher Theme is a <a href="https://projektemacher.org/">Projektemacher</a> blog <a title="Christian Mahnke" class="footer-link-cm" href="https://christianmahnke.de/"><img src="https://cmahnke.github.io/projektemacher-base/images/cm.svg" style="height: 16px; margin-left: .5rem;"></a>
+    </p><p class="copyright">&copy; 2022 - 2026 </p>Powered by <div class="footer-powered-by"><a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/cmahnke/projektemacher-base">Projektemacher Base</a>.</div></div>
+</footer>
+
+</body>
+</html>
