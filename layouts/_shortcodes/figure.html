@@ -9,7 +9,7 @@
   {{- if not (or (findRE "(^|:)//" $image) (findRE "^/" $image)) -}}
     {{- with .Page.Resources.Get $image -}}
       {{- if reflect.IsImageResourceProcessable . -}}
-        {{- $processedImage = .Process $format -}}
+        {{- $processedImage = .Process (printf "autoorient %s" $format) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

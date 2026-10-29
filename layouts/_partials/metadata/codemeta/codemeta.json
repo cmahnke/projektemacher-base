@@ -1,9 +1,13 @@
 {{- $page := . -}}
 {{- $codemetaURISuffix := "#codemeta" -}}
 
-{{ $opts := dict
+{{- $opts := dict
   "headers" (dict "Accept" "*/*")
 }}
+
+{{- with site.Params.useragent -}}
+  {{- $opts = merge $opts (dict "headers" (dict "Accept" "*/*" "User-Agent" .)) -}}
+{{- end -}}
 
 {{- $codemetaURL := $page.Params.codemeta | default "" -}}
 {{- $remoteOK := false -}}

@@ -1,0 +1,30 @@
+{{- /*
+Builds the fully encoded SPARQL query URL for resolving a URL to a Wikidata QID.
+Input: dict "target" (URL string).
+Config:
+  site.Params.wikidatasparqlbackend: "wdqs" (default) or "qlever"
+  site.Params.wikidatasparqlendpoint: optional endpoint override
+    (the query dialect is still chosen by the backend setting)
+*/ -}}
+{{- $target := .target -}}
+{{- $backend := "wdqs" -}}
+{{- with site.Params.wikidatasparqlbackend -}}
+  {{- $backend = lower . -}}
+{{- end -}}
+
+{{- $endpoint := "https://query.wikidata.org/sparql" -}}
+{{- if eq $backend "qlever" -}}
+  {{- $endpoint = "https://qlever.dev/api/wikidata" -}}
+{{- end -}}
+{{- with site.Params.wikidatasparqlendpoint -}}
+  {{- $endpoint = . -}}
+{{- end -}}
+
+{{- $query := "" -}}
+{{- if eq $backend "qlever" -}}
+  {{- $query = partial "data/functions/wikidata/sparql-qlever.html" (dict "target" (replace $target `"` "")) -}}
+{{- else -}}
+  {{- $query = partial "data/functions/wikidata/sparql-wdqs.html" (dict "target" (replace $target `"` "")) -}}
+{{- end -}}
+
+{{- return printf "%s?query=%s" $endpoint (replace (urlquery $query) "+" "%20") -}}

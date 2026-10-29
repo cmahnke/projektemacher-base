@@ -124,7 +124,8 @@ A site can further customize preview resolution via the `preview/image.html` par
 | Parameter | Default | Purpose |
 | --- | --- | --- |
 | `wikidata` | `false` | Enable Wikidata metadata handling |
-| `wikidatasparqlendpoint` | — | SPARQL endpoint for Wikidata queries |
+| `wikidatasparqlbackend` | `wdqs` | SPARQL backend for URL → Wikidata lookups in the [link render hook](/wikidata/): `wdqs` (query.wikidata.org) or `qlever` (qlever.dev) |
+| `wikidatasparqlendpoint` | — | SPARQL endpoint override; the query dialect is still chosen by `wikidatasparqlbackend` |
 | `schemaPerson` | — | URL to a JSON-LD person document for schema.org metadata |
 | `orcid` | — | Author ORCID, used for the `rel="me"` link and metadata output; alternatively set as `author.orcid` |
 | `logo` | — | Logo URL, also used for the error page image (`errorimg`) |

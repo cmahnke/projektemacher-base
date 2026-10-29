@@ -6,7 +6,14 @@
 {{- $url := printf "https://www.wikidata.org/wiki/Special:EntityData/%s.json" $id -}}
 {{- $actor := dict "id" (printf "http://www.wikidata.org/entity/%s" $id) -}}
 {{- $type := "Group" -}}
-{{- with resources.GetRemote $url -}}
+{{- /* Note: the User-Agent must go into the 'headers' dict - a top level
+      entry is ignored by resources.GetRemote, leaving requests without a
+      User-Agent which Wikimedia rejects with 403. */ -}}
+{{- $headers := dict "Accept" "application/json" -}}
+{{- with site.Params.useragent -}}
+  {{- $headers = merge $headers (dict "User-Agent" .) -}}
+{{- end -}}
+{{- with resources.GetRemote $url (dict "headers" $headers) -}}
   {{- with .Content | transform.Unmarshal -}}
     {{- $entity := index .entities $id -}}
     {{- $name := partial "metadata/linked-art/wikidata-label.json" (dict "langs" $labelLangs "labels" $entity.labels) -}}

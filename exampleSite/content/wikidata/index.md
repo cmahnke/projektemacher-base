@@ -7,14 +7,30 @@ params:
 
 # Templates
 
-The most important part of the Wikidata integration is the enhanced link handling in `layouts/_default/_markup/render-link.html`
+The most important part of the Wikidata integration is the enhanced link handling in `layouts/_markup/render-link.html`. It resolves external URLs to Wikidata entities via SPARQL and adds a `data-wikidata-entity` attribute to the rendered links. Results are cached per build, so each unique URL is only queried once.
+
+# Backend selection
+
+The SPARQL query dialect and endpoint can be configured with two site parameters:
+
+```toml
+[params]
+  # "wdqs" (default): query.wikidata.org with the Blazegraph-specific
+  # SERVICE wikibase:label clause
+  # "qlever": qlever.dev — no label service, works around the 403 responses
+  # GitHub Actions runners get from query.wikidata.org
+  wikidatasparqlbackend = "wdqs"
+  # Optional endpoint override. The query dialect is still chosen by
+  # wikidatasparqlbackend
+  # wikidatasparqlendpoint = "https://query.wikidata.org/sparql"
+```
 
 # Security
 
 ```toml
 [security]
   [security.http]
-    mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
+    mediaTypes = ['^application/json$', '^application/json;\s?charset=[uU][tT][fF]-8$', '^application/sparql-results\+json$', '^application/sparql-results\+json;\s?charset=[uU][tT][fF]-8$']
 ```
 
 # Example query

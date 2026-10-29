@@ -18,9 +18,9 @@ TODO: Add options for caption position and visibility
 {{- $caption1 := "" -}}
 {{- $caption2 := "" -}}
 
-{{- $spec := printf "resize %dx" $defaultWidth -}}
+{{- $spec := printf "resize %dx autoorient" $defaultWidth -}}
 {{- if ne $format "" -}}
-  {{- $spec = printf "resize %dx %s" $defaultWidth $format -}}
+  {{- $spec = printf "resize %dx autoorient %s" $defaultWidth $format -}}
 {{- end -}}
 
 {{- with .Get "image1" -}}

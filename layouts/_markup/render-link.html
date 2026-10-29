@@ -1,21 +1,30 @@
 {{- $debug := partialCached "functions/debug/enabled.html" .Page -}}
-{{- $wikidataSPARQLEndpoint := "https://query.wikidata.org/sparql" -}}
-{{- with site.Params.wikidatasparqlendpoint -}}
-  {{- $wikidataSPARQLEndpoint = . -}}
-{{- end -}}
 {{- $target := .Destination -}}
 {{- if not site.Params.wikidata -}}
   <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
 {{- else -}}
   {{- $wikidataID := "" -}}
-  {{- if findRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` $target -}}
+
+  {{- $cacheKey := printf "wikidata_qid_%s" $target -}}
+  {{- if hugo.Store.Get $cacheKey -}}
+    {{- $wikidataID = hugo.Store.Get $cacheKey -}}
+    {{- if $debug -}}
+      {{- warnf "[_markup/render-link.html] Cache hit for %s: %s" $target $wikidataID -}}
+    {{- end -}}
+  {{- else -}}
+
+  {{- if findRE `(?m)https://(.{2})\.wikipedia.org/wiki/(.[^#]*)` $target -}}
     {{- $queryURL := replaceRE `(?m)https://(.{2}).wikipedia.org/wiki/(.[^#]*)` "https://$1.wikipedia.org/w/api.php?action=query&prop=pageprops&titles=$2&format=json" $target -}}
 
+    {{- /* Note: the User-Agent must go into the 'headers' dict - a top level
+          entry is ignored by resources.GetRemote, leaving requests without a
+          User-Agent which Wikimedia rejects with 403. */ -}}
     {{- $queryOpts := dict
       "method" "get"
+      "headers" (dict)
     -}}
     {{- with site.Params.useragent -}}
-      {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
+      {{- $queryOpts = merge $queryOpts (dict "headers" (dict "User-Agent" .)) -}}
     {{- end -}}
     {{- if $debug -}}
       {{- warnf "[_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
@@ -36,32 +45,40 @@
       {{- end -}}
     {{- end -}}
   {{- else if hasPrefix $target "http" -}}
-    {{- $queryURL := $wikidataSPARQLEndpoint -}}
+    {{- $queryURL := partialCached "data/functions/wikidata/sparql-query.html" (dict "target" $target) $target -}}
     {{- $queryOpts := dict
       "method" "get"
       "headers" (dict "Accept" "application/sparql-results+json")
     -}}
     {{- with site.Params.useragent -}}
-      {{- $queryOpts = $queryOpts | merge (dict "User-Agent" .) -}}
+      {{- $queryOpts = merge $queryOpts (dict "headers" (merge (index $queryOpts "headers") (dict "User-Agent" .))) -}}
     {{- end -}}
-    {{- $query := printf `PREFIX wikibase: <http://wikiba.se/ontology#> PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX bd: <http://www.bigdata.com/rdf#> SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
-        ?item wdt:P856 <%s> . SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" . }
-        OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
-      }` $target -}}
-    {{- $queryURL = printf "%s?query=%s" $queryURL (urlquery $query) -}}
+    {{- if $debug -}}
+      {{- warnf "[_markup/render-link.html] Getting %s with options %#v" $queryURL $queryOpts -}}
+    {{- end -}}
     {{- with try (resources.GetRemote $queryURL $queryOpts) -}}
       {{- with .Err -}}
-        {{- warnf "[_markup/render-link.html] Unable to get remote resource %s: %s"  $queryURL . -}}
+        {{- warnf "[_markup/render-link.html] HTTP Error: Unable to get remote resource '%s': %s" $queryURL . -}}
       {{- else with .Value -}}
-        {{- $data := .Content | transform.Unmarshal -}}
+        {{- $data := . | transform.Unmarshal (dict "format" "json") -}}
         {{- if and (reflect.IsMap $data.results) (isset $data.results "bindings") (reflect.IsSlice $data.results.bindings) (gt (len $data.results.bindings) 0) -}}
           {{- $result := index $data.results.bindings 0 -}}
-          {{- $wikidataID = replaceRE `(?m)http://www.wikidata.org/entity/(.*)` "$1" $result.item.value -}}
+          {{- $wikidataID = replaceRE `(?m)http://www.wikidata.org/(?:wiki|entity)/(.*)` "$1" $result.item.value -}}
         {{- end -}}
       {{- else -}}
-        {{- warnf "[_markup/render-link.html] Unable to get remote resource %s" $queryURL -}}
+        {{- warnf "[_markup/render-link.html] Unable to get remote resource %s, no .Value" $queryURL -}}
       {{- end -}}
     {{- end -}}
+  {{- end -}}
+
+  {{- /* Cache the QID if one was found */ -}}
+  {{- if ne $wikidataID "" -}}
+    {{- hugo.Store.Set $cacheKey $wikidataID -}}
+    {{- if $debug -}}
+      {{- warnf "[_markup/render-link.html] Cache set for %s: %s" $target $wikidataID -}}
+    {{- end -}}
+  {{- end -}}
+
   {{- end -}}
   {{- if or (hasPrefix $target "https://www.wikidata.org/wiki/Q") (hasPrefix $target "https://www.wikidata.org/entity/") -}}
     {{- $wikidataID = replaceRE `(?m)https://www.wikidata.org/wiki/(.*)` "$1" $target -}}

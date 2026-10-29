@@ -42,7 +42,7 @@ Template: `_default/single.codemeta.json`. Renders [CodeMeta](https://codemeta.g
 
 ## `linkedart`
 
-Templates: `_default/single.linkedart.json` and `_default/linked-art-collection.json`. Render [Linked Art](https://linked.art/) JSON-LD via the `metadata/linked-art/` partials — for single objects (e.g. postcards or works, see the `media/` partials) and for collections. Entity labels are resolved from Wikidata with the `wikidata-label.html` partial, the endpoint can be configured with the site parameter `wikidatasparqlendpoint`.
+Templates: `_default/single.linkedart.json` and `_default/linked-art-collection.json`. Render [Linked Art](https://linked.art/) JSON-LD via the `metadata/linked-art/` partials — for single objects (e.g. postcards or works, see the `media/` partials) and for collections. Entity labels are resolved from Wikidata with the `wikidata-label.html` partial.
 
 ### Enabling
 

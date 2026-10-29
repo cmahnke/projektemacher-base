@@ -41,7 +41,7 @@ The pages of this section are listed in the table of contents.
 | `disableOpenGraph` | html/head/og-meta.html | Disable OpenGraph tags |
 | `schemaPerson`, `publisher`, `orcid`, `author`, `authors` | [metadata partials](metadata-partials/) | Author and publisher data |
 | `linkedart` | [Linked Art](metadata-partials/) | Linked Art configuration |
-| `wikidatasparqlendpoint` | [data/wikidata.html](helpers/#wikidata) | SPARQL endpoint for label lookups |
+| `wikidatasparqlbackend`, `wikidatasparqlendpoint` | [link render hook](/wikidata/) | SPARQL backend and endpoint for URL → Wikidata QID lookups |
 | `debug` | [debug helpers](helpers/#debug) | Enable build warnings (`debug.enabled`) |
 | `env` | [cookie-consent.html](helpers/#services) | Environment setting (`production`) |
 | `skipShortcodeAssets` | [shortcode helper](helpers/#shortcode-helper) | Skip automatic asset loading |

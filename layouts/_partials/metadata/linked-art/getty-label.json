@@ -11,6 +11,10 @@
 {{ $opts := dict
   "headers" (dict "Accept" "*/*")
 }}
+
+{{- with site.Params.useragent -}}
+  {{- $opts = merge $opts (dict "headers" (dict "Accept" "*/*" "User-Agent" .)) -}}
+{{- end -}}
 {{- $downloadURI := replace $uri "http://vocab.getty.edu/" $gettyVocabServer -}}
 
 {{- $jsonURL := $downloadURI -}}

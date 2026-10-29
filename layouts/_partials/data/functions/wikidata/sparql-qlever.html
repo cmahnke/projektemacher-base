@@ -1,0 +1,12 @@
+{{- /*
+QLever-compatible query for finding the Wikidata item with P856 == target.
+Same as the WDQS variant but without the Blazegraph-only SERVICE wikibase:label
+clause (QLever returns HTTP 404 for it). Only the QID is extracted by the
+render hooks, so the label service is not needed.
+Input: dict "target" (URL string). Returns the raw SPARQL query string.
+*/ -}}
+{{- $query := printf `PREFIX wikibase: <http://wikiba.se/ontology#> PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX bd: <http://www.bigdata.com/rdf#> SELECT ?item ?itemLabel ?officialWebsite ?officialBlog ?onlineDatabaseURL WHERE {
+        ?item wdt:P856 <%s> .
+        OPTIONAL { ?item wdt:P856 ?officialWebsite . } OPTIONAL { ?item wdt:P1581 ?officialBlog . } OPTIONAL { ?item wdt:P1316 ?onlineDatabaseURL . }
+      }` .target -}}
+{{- return $query -}}

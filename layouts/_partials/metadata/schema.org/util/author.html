@@ -40,7 +40,11 @@
     {{- $author = $people -}}
   {{- end -}}
 {{- else if $schemaPerson -}}
-  {{- with try (resources.GetRemote $schemaPerson (dict "headers" (dict "Accept" "application/json"))) -}}
+  {{- $headers := dict "Accept" "application/json" -}}
+  {{- with site.Params.useragent -}}
+    {{- $headers = merge $headers (dict "User-Agent" .) -}}
+  {{- end -}}
+  {{- with try (resources.GetRemote $schemaPerson (dict "headers" $headers)) -}}
     {{- with .Err -}}
       {{- errorf "[metadata/schema.org/util/author.html] Unable to get external person %q: %s" $schemaPerson . -}}
     {{- else with .Value -}}
