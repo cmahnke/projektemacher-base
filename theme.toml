@@ -1,9 +1,9 @@
 name = "Projektemacher Base"
-min_version = "0.165.0"
+min_version = "0.166.0"
 
 [author]
   name = "Christian Mahnke"
-  homepage = "//christianmahnke.de"
+  homepage = "https://christianmahnke.de"
 
 [mediaTypes]
   [mediaTypes."application/geo+json"]
