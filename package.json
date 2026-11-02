@@ -32,7 +32,7 @@
     "pdfobject": "^2.3.1",
     "photoswipe": "^5.4.4",
     "stickybits": "^3.7.11",
-    "three": "^0.186.1",
+    "three": "^0.187.0",
     "tify": "^0.36.2",
     "vis-timeline": "8.5.6",
     "yargs": "^18.2.0"
@@ -75,7 +75,7 @@
     "postcss-import": "^17.0.1",
     "postcss-inline-svg": "^6.0.0",
     "postcss-mixins": "^12.1.2",
-    "postcss-preset-env": "^11.6.1",
+    "postcss-preset-env": "^11.6.2",
     "postcss-utilities": "^0.8.4",
     "prettier": "^3.9.10",
     "puppeteer": "^25.16.0",
