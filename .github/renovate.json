@@ -1,8 +1,10 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "$schema": "https://docs.renovatebot.com/renovate-global-schema.json",
   "extends": [
     "config:recommended"
   ],
+  "gitAuthor": "Projektemacher Bot <renovate@projektemacher.org>",
+  "assignees": ["cmahnke"],
   "platform": "github",
   "autodiscover": true,
   "autodiscoverFilter": [
