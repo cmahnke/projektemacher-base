@@ -6,12 +6,14 @@ its known consumers (the top-level sibling repositories; the
 `projektemacher/blogs/*` mirrors and `wilmabraeuner-complete` are
 tracked separately). All remaining items are optional or low priority;
 step-by-step instructions for past migrations are in the rest of this
-guide.
+guide. Upstream per-version fix notes (bep/myhugofixer, v0.55.0 –
+v0.169.0) are copied in [myhugofixer-fixes.md](myhugofixer-fixes.md).
 
 | Item | State | Priority |
 | --- | --- | --- |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0); consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
+| Reserved front matter `type` field looked up via `.Params` | kept intentionally for now: the theme's `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html` still read `type` through `.Params` (deprecated in Hugo 0.169.0, warns on build); the `description`/`keywords`/`slug` equivalents are already migrated to `.Description`/`.Keywords`/`.Slug` (0.169.0) — future migration reads `.Type` with an explicit-set check via `ne .Type .Section` (identical semantics, since `.Type` defaults to the section/kind type) — see [myhugofixer-fixes.md](myhugofixer-fixes.md) (v0.169.0) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
 | Front matter `alias:` promotion | promoted to the standard `aliases:` in `ric-unknownartist`, `yaapb`, `labs.projektemacher.org`, `kinderbuecher`, `christianmahnke` (2026-10) — Hugo now generates redirect pages for those Tumblr-era IDs/paths (root-level `/<id>/` URLs, per-language scoping); kleiderbuegel's singular `tag:` stays under `params` (live `.Params.tag` term-page title fallback) | informational |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
@@ -834,6 +836,9 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 | `.Site.LanguageCode` method | `.Site.Language.Locale` (deprecated in Hugo 0.158.0) |
 | top-level `imaging.quality` config key | per-format: `imaging.jpeg.quality`, `imaging.webp.quality`, `imaging.avif.quality` (deprecated in Hugo 0.163.0) |
 | top-level `imaging.compression` / `imaging.hint` config keys | format-specific under `[imaging.avif]` / `[imaging.webp]` (deprecated in Hugo 0.163.0) |
+| `.Params.description` front matter lookup on pages | `.Description` (deprecated in Hugo 0.169.0; the theme usages in `html/head/description.html` and the `media/{book,work,postcard,other}.html` partials are migrated) |
+| `.Params.keywords` front matter lookup on pages | `.Keywords` (deprecated in Hugo 0.169.0; `html/head/keywords.html` is migrated) |
+| `.Params.slug` front matter lookup on pages | `.Slug` (deprecated in Hugo 0.169.0; the example site's `_partials/page.html` is migrated) |
 | `$.Scratch.Set` / `.Get` / `.Delete` | Plain variables with reassignment (`$x = …` inside `with` blocks, partial return values) |
 | bare `substr` | `strings.Substr` — same function, namespaced form (`substr` is just its alias) |
 
@@ -842,6 +847,16 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 > documented `Page` method for creating pagers. Only the `paginate`
 > *configuration key* and the `PageSize` *method* were deprecated in
 > Hugo 0.128.0.
+
+> [!NOTE]
+> Hugo 0.169.0 deprecated looking up reserved front matter fields
+> (`title`, `date`, `description`, `draft`, `keywords`, `slug`, `summary`,
+> `type`, `weight`, …) through `.Params`, `where … "Params.…"` and
+> `.Param`. Fields set in the `params` section of front matter are
+> unaffected, and `site.Params.…` (site configuration) lookups stay
+> correct — only page-front-matter shorthand keys need the method
+> forms above. The `type` lookups are deliberately kept for now (see
+> the outstanding-deprecations table at the top).
 
 Deliberate exceptions in the theme's own templates — not outdated code:
 

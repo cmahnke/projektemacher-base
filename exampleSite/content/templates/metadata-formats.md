@@ -11,7 +11,7 @@ The theme can generate machine readable metadata descriptions of a site or page:
 
 ## `schemaorg`
 
-Template: `_default/schema-org.json`, typically applied to the home page or a section. It renders a `WebSite` with a `Blog` (`hasPart`) containing all `BlogPosting` entries of the section's pages.
+Template: `schema-org.json`, typically applied to the home page or a section. It renders a `WebSite` with a `Blog` (`hasPart`) containing all `BlogPosting` entries of the section's pages.
 
 ### Parameters
 
@@ -42,7 +42,7 @@ Template: `_default/single.codemeta.json`. Renders [CodeMeta](https://codemeta.g
 
 ## `linkedart`
 
-Templates: `_default/single.linkedart.json` and `_default/linked-art-collection.json`. Render [Linked Art](https://linked.art/) JSON-LD via the `metadata/linked-art/` partials — for single objects (e.g. postcards or works, see the `media/` partials) and for collections. Entity labels are resolved from Wikidata with the `wikidata-label.html` partial.
+Templates: `single.linkedart.json` and `linked-art-collection.json`. Render [Linked Art](https://linked.art/) JSON-LD via the `metadata/linked-art/` partials — for single objects (e.g. postcards or works, see the `media/` partials) and for collections. Entity labels are resolved from Wikidata with the `wikidata-label.html` partial.
 
 ### Enabling
 

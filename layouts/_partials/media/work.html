@@ -6,8 +6,8 @@
   <div class="description-body">
     {{- if .Params.itemDescription -}}
       {{- .Params.itemDescription | markdownify -}}
-    {{- else if .Params.description -}}
-      {{- .Params.description | markdownify -}}
+    {{- else if .Description -}}
+      {{- .Description | markdownify -}}
     {{- end -}}
   </div>
 </div>

@@ -1,7 +1,7 @@
 {{- $keywords := "" -}}
 {{- $tags := "" -}}
 
-{{- with .Params.keywords -}}
+{{- with .Keywords -}}
   {{- $keywords = . -}}
   {{- if reflect.IsSlice $keywords -}}
     {{- $keywords = delimit $keywords " " -}}

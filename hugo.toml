@@ -28,3 +28,11 @@
     isPlainText = true
     isHTML = false
     rel = "linkset"
+
+[module]
+  # Minimum Hugo version the theme needs (deprecated APIs are only fixed
+  # for Hugo >= 0.166.0); 'theme.toml' 'min_version' carries the same
+  # value for the Themes Gallery. Sites building with a lower version
+  # fail with a clear error (see 'myhugofixer-fixes.md' and 'Upgrade.md').
+  [module.hugoVersion]
+    min = "0.166.0"
