@@ -848,6 +848,8 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 > *configuration key* and the `PageSize` *method* were deprecated in
 > Hugo 0.128.0.
 
+A related, separate change:
+
 > [!NOTE]
 > Hugo 0.169.0 deprecated looking up reserved front matter fields
 > (`title`, `date`, `description`, `draft`, `keywords`, `slug`, `summary`,
