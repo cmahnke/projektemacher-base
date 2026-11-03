@@ -45,6 +45,12 @@ release of [versatiles-org/versatiles-style](https://github.com/versatiles-org/v
 
 - The shortcode declares a `*-metadata` include, so `ts/maps/mapWrapper.ts`
   and `scss/map.scss` are loaded automatically on pages using it
+- Unlike `maps/osm` the OpenLayers base CSS is **not** part of the shortcode
+  metadata: `scss/map.scss` styles only the wrapper and popup markup. When
+  the map uses OpenLayers controls (zoom, attribution, …), the site must
+  include the base CSS itself — either page front matter
+  `scss: ["scss/openlayers.scss"]` or `@use "ol-iiif";` in the site's
+  `base.scss`, see ["SCSS not provided by metadata"](/shortcodes/shortcode-helper/#scss-not-provided-by-metadata)
 - Map labels are rendered with local webfonts (the style's `glyphs` entry is
   removed by the map wrapper), fonts are loaded from
   `/css/fonts/{font-family}.css` — publish them via `partials/fonts/css.html`

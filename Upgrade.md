@@ -21,6 +21,7 @@ v0.169.0) are copied in [myhugofixer-fixes.md](myhugofixer-fixes.md).
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
 | Image shortcodes: configurable output format (`format` parameter / `[params.images]`) | opt-in; defaults keep the historical output, non-processable images (SVG, JXL, …) now pass through unchanged instead of failing the build — see ["Image shortcodes: configurable output formats"](#image-shortcodes-configurable-output-formats) | informational |
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
+| Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | documented as site responsibility in the example site (shortcode helper docs); long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
 
 # Run the JS runtime check against the example site
 
@@ -761,6 +762,54 @@ Still open (2026-10):
 - **Kept by decision**: yaapb's `_bootstrap-subset.scss` shim and
   wilmabraeuner's `@import "bootstrap"` (isolated vendor code pending
   Bootstrap 6 module support).
+
+## Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)
+
+The shortcode helper metadata (`*-metadata` partials — see the example
+site's [shortcode helper documentation](exampleSite/content/shortcodes/shortcode-helper.md))
+only covers the assets a shortcode ships itself. Two shortcodes
+additionally depend on the OpenLayers base CSS, which their metadata does
+not declare:
+
+- `iiif/iiif` declares `scss/iiif.scss` only. The viewer is built on
+  OpenLayers controls (`Zoom`, `FullScreen`, `Rotate`), so `ol/ol.css`
+  must come from the site — the shortcode loads no CSS itself (see the
+  header note in `layouts/_shortcodes/iiif/iiif.html`).
+- `maps/osm-vector-tiles` declares `scss/map.scss` only — unlike
+  `maps/osm`, whose metadata also ships `scss/openlayers.scss`. `map.scss`
+  styles only the wrapper and popup markup, so OpenLayers controls render
+  unstyled unless the site adds the base CSS.
+
+The example site documentation states the requirement and the two include
+patterns (page front matter `scss:` parameter, `@use` in the site's
+`base.scss`) — see the "SCSS not provided by metadata" section of the
+shortcode helper docs and the per-shortcode pages (`iiif/iiif`,
+`maps/osm-vector-tiles`). What remains is cleanup:
+
+- Decide the long term home of the OpenLayers base CSS: either declare
+  `scss/openlayers.scss` (or the icon bundling `scss/ol-iiif.scss`) in the
+  two shortcodes' metadata and drop the site side imports, or keep it a
+  documented site responsibility. With metadata inclusion the PostCSS
+  deduplication (see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added))
+  collapses the duplicated rules during the transition.
+- Consumers currently work around the gap with a global import in their
+  `assets/scss/base.scss`: `@use "ol-iiif";` in blaufusstoelpel,
+  kraehenbeisser, backsteinexpressionismus and kleiderbuegel (`as *`),
+  never-built with a variable override
+  (`@use "ol-iiif" as * with ($icon-fill: #000)`). These become redundant
+  once the metadata carries the styles (the `projektemacher/blogs/*`
+  mirrors are tracked separately).
+- christianmahnke's `assets/scss/base.scss` carries a stale comment ("The
+  IIIF/OpenLayers styles (iiif, ol, ol-iiif, map) are attached per page
+  via the iiif/iiif and maps/osm shortcode metadata") — the metadata of
+  `iiif/iiif` does not include `ol`/`ol-iiif`, so either fix the comment
+  or make it true via the metadata change above.
+- Related open items in the theme: the TODOs in
+  `layouts/_shortcodes/iiif/iiif.html` ("The logic of this is flawed",
+  "Add shortcode metadata to get rid of global IIIF viewer") and the no-op
+  `skipShortcodeAssets` guard in
+  `layouts/_partials/shortcodes/shortcode-helper.html` (documented in the
+  shortcode helper docs).
 
 # Pagination label fixes (open)
 

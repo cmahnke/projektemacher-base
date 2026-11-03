@@ -29,6 +29,43 @@ Paths starting with `http` are treated as external resources, everything else is
    - `partials/html/head/script.html` — bundles the `js` entries (local files via `resources.Get` + `js.Build`, external ones via `resources.GetRemote`) into a single fingerprinted `<script>`
    - `partials/html/head/style.html` — compiles the `scss` entries together with the page's own SCSS (Dart SASS) and appends the `css` entries, producing a single fingerprinted `<link>`
 
+## SCSS not provided by metadata
+
+The metadata only declares what a shortcode ships itself — styles for third
+party libraries a shortcode builds on are not always covered. Known cases:
+
+- [`iiif/iiif`](../iiif/iiif/) needs the OpenLayers base CSS: its metadata
+  declares `scss/iiif.scss` only
+- [`maps/osm-vector-tiles`](../maps/osm-vector-tiles/) declares
+  `scss/map.scss` only — unlike [`maps/osm`](../maps/osm/), whose metadata
+  also ships `scss/openlayers.scss`
+
+In these cases the site provides the stylesheet itself, with one of two
+patterns:
+
+1. **Page front matter** — the page `scss` parameter is merged into the
+   page stylesheet by `html/head/style.html`:
+
+   ```yaml
+   ---
+   scss:
+     - scss/ol-iiif.scss
+   ---
+   ```
+
+2. **Site wide** — import the module from the site's
+   `assets/scss/base.scss`, optionally with a variable override:
+
+   ```scss
+   @use "ol-iiif" as * with (
+     $icon-fill: #000
+   );
+   ```
+
+The long term split between shortcode metadata and site responsibility is
+tracked as cleanup work in the theme's
+[upgrade guide](https://github.com/cmahnke/projektemacher-base/blob/main/Upgrade.md#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup).
+
 ## Parameters
 
 | Level | Key | Purpose |
