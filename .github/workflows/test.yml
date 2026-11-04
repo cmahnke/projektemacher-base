@@ -449,6 +449,11 @@ jobs:
           npx puppeteer browsers install chrome
           npx puppeteer browsers install chrome-headless-shell
 
+      - name: Build PDF.js viewer
+        working-directory: exampleSite
+        run: |
+          ../scripts/pdfjs.sh
+
       - name: Build Hugo site
         working-directory: exampleSite
         run: hugo --themesDir ../.. --printI18nWarnings --printUnusedTemplates

@@ -48,3 +48,8 @@ exampleSite/static/images/apple-touch-icon.png
 # see pagefind-index.yaml and the CI's index steps)
 pagefind/
 exampleSite/pagefind/
+
+# The full pdf.js viewer app is built by scripts/pdfjs.sh (the npm
+# pdfjs-dist package doesn't ship web/viewer.html)
+static/pdfjs/
+exampleSite/static/pdfjs/

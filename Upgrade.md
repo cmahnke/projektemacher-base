@@ -455,6 +455,27 @@ Path B specific:
 - Visual smoke check of the affected pages (the same bundle serves all
   of them — one page per shortcode is enough).
 
+## Build the pdf.js viewer app
+
+The `pdf` shortcode (and the `pdf-viewer` page resource partial) embed
+PDFs through the full pdf.js viewer app served from
+`static/pdfjs/web/viewer.html`. The npm `pdfjs-dist` package doesn't ship
+that app (only the `pdf_viewer.mjs` component), so it has to be built
+from the pdf.js sources first:
+
+```bash
+./themes/projektemacher-base/scripts/pdfjs.sh
+```
+
+The script clones mozilla/pdf.js at the version of the installed
+`pdfjs-dist` dependency (falling back to the `yarn.lock` /
+`package-lock.json` entry) and copies the `generic` build into the
+site's `static/pdfjs/` directory; run it before `hugo`, e.g. from the
+site's setup script. When the viewer app is missing, the `pdf` shortcode
+prints a build warning and the embedded viewers fail with a 404 at
+runtime. The theme's own CI builds the viewer for the `exampleSite`
+before running the JS runtime check.
+
 ## Add accessibility checks
 
 The theme ships no automated accessibility *gate* in CI, but a
