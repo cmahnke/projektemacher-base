@@ -44,7 +44,7 @@ git clone --depth 1 --branch "v$PDFJS_VERSION" https://github.com/mozilla/pdf.js
 
 cd "$TMP_DIR"
 $DEPENDENCY_MANAGER install --ignore-scripts
-$DEPENDENCY_MANAGER run gulp generic
+./node_modules/.bin/gulp generic
 
 cd "$CWD"
 rm -rf static/pdfjs/*
