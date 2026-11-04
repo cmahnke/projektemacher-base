@@ -144,12 +144,20 @@ Example usage:
 {{- end -}}
 
 {{- if and $debug (len $includes) -}}
-  {{- warnf "[partials/html/head/script.html] Got JS script(s) %#v for %s" $includes $context.File.Dir -}}
+  {{- with $context.File -}}
+    {{- warnf "[partials/html/head/script.html] Got JS script(s) %#v for %s" $includes .Dir -}}
+  {{- else -}}
+    {{- warnf "[partials/html/head/script.html] Got JS script(s) %#v for %s (no file)" $includes $context.RelPermalink -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $pageScripts := $context.Params.js -}}
 {{- if and (ne $pageScripts nil) (ne $context.Params.ignoreincludes nil) $context.Params.ignoreincludes -}}
-  {{- warnf "[partials/html/head/script.html] Ignoring page JS includes for %s" $context.File.Dir -}}
+  {{- with $context.File -}}
+    {{- warnf "[partials/html/head/script.html] Ignoring page JS includes for %s" .Dir -}}
+  {{- else -}}
+    {{- warnf "[partials/html/head/script.html] Ignoring page JS includes for %s (no file)" $context.RelPermalink -}}
+  {{- end -}}
   {{- $pageScripts = slice -}}
 {{- end -}}
 {{- if and $pageScripts (not (reflect.IsSlice $pageScripts)) -}}
@@ -195,7 +203,11 @@ Example usage:
 {{- end -}}
 
 {{- if and $debug (ne $scripts nil) (len $scripts) -}}
-  {{- warnf "[partials/html/head/script.html] All collected JS script(s) %#v for %s" $scripts $context.File.Dir -}}
+  {{- with $context.File -}}
+    {{- warnf "[partials/html/head/script.html] All collected JS script(s) %#v for %s" $scripts .Dir -}}
+  {{- else -}}
+    {{- warnf "[partials/html/head/script.html] All collected JS script(s) %#v for %s (no file)" $scripts $context.RelPermalink -}}
+  {{- end -}}
 {{- end -}}
 
 {{/*
