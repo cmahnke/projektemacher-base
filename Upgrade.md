@@ -1,8 +1,6 @@
 # Outstanding deprecations
 
-Everything urgent and all mandatory post-upgrade checks are resolved — the
-mandatory checks at the bottom of this guide passed for all known consumers
-in the 2026-11 audit. What is left is tracked here: deprecated or shimmed
+What is left is tracked here: deprecated or shimmed
 items in this theme and its known consumers (the top-level sibling
 repositories; the `projektemacher/blogs/*` mirrors are tracked separately,
 and so is `wilmabraeuner-complete` — it still pins Hugo 0.124.1 and carries
@@ -18,8 +16,8 @@ skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
 | --- | --- | --- |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use`. Pending consumers: `merch.projektemacher` and `projektemacher` (one `@import` left in each `assets/scss/base.scss` — coder leakage architecture). Kept by decision: `yaapb`'s `_bootstrap-subset.scss` shim and `wilmabraeuner`'s `@import "bootstrap"` (isolated vendor code pending Bootstrap 6 module support). Theme-side open: `assets/scss/services/cookie-consent.scss` still `@use "icons" as *` — schatten's pre-declared `$close-*`/`$color-*` would collide with it on the next submodule raise — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Reserved front matter `type` field looked up via `.Params` | kept intentionally for now: the theme's `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html` still read `type` through `.Params` (deprecated in Hugo 0.169.0, warns on build); the `description`/`keywords`/`slug` equivalents are already migrated to `.Description`/`.Keywords`/`.Slug` (0.169.0) — future migration reads `.Type` with an explicit-set check via `ne .Type .Section` (identical semantics, since `.Type` defaults to the section/kind type) — see [fixes.md](skills/hugo-upgrade/fixes.md) (v0.169.0). No consumer action | low |
-| JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional. Already switched via config: `briefsteller`, `kleiderbuegel`, `never-built`, `kinderbuecher`, `schatten`, `wilmabraeuner`, `schriftmuster`, `labs.projektemacher.org`, `vintagereality`, `blaufusstoelpel`, `backsteinexpressionismus`, `kraehenbeisser` (all set `[params.js] format = "esm"` or the string shorthand; own `menu.html` copies in kleiderbuegel and wilmabraeuner carry the same `format`). Pending: `christianmahnke` (its own `menu.html` already builds ESM, but the site config does not set the param, so main/page bundles stay IIFE), `diapraesentation`, `flohmarktfunde`, `flugzeugbesteck`, `haesslicheplastiktiereundzeugs`, `merch.projektemacher`, `plastikwarenfabrik`, `projektemacher`, `ric-unknownartist`, `vorsatzpapier`, `xn--h-zfa.xyz`, `yaapb` — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
-| Hugo < 0.165 compatibility code | unblocked: all known consumers pin Hugo ≥ 0.166 in their workflows (verified 2026-10; `schatten` re-verified at 0.169.0 in 2026-11). Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in `layouts/baseof.html` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
+| JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional. Pending: `christianmahnke` (its own `menu.html` already builds ESM, but the site config does not set the param, so main/page bundles stay IIFE), `diapraesentation`, `flohmarktfunde`, `flugzeugbesteck`, `haesslicheplastiktiereundzeugs`, `merch.projektemacher`, `plastikwarenfabrik`, `projektemacher`, `ric-unknownartist`, `vorsatzpapier`, `xn--h-zfa.xyz`, `yaapb` — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
+| Hugo < 0.165 compatibility code | Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in `layouts/baseof.html` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | consumers work around the gap with a global `@use "ol-iiif"` in their `assets/scss/base.scss`: `blaufusstoelpel`, `kraehenbeisser`, `backsteinexpressionismus`, `kleiderbuegel` (`as *`) and `never-built` (with a `$icon-fill` variable override); `christianmahnke`'s `base.scss` carries a stale comment claiming the metadata covers it. Documented as site responsibility in the example site; long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
 
 # Housekeeping
@@ -61,7 +59,7 @@ copied `menu.html` builds need the same `"format"` addition in their own
 opts — christianmahnke's copy already carries it; its missing piece is the
 config param for the main/page bundles.
 
-Since 2026-10 `script.html` also builds the `js` call parameter centrally:
+`script.html` also builds the `js` call parameter centrally:
 string entries (asset paths, e.g. the IIIF viewers returned by
 `iiif-js.html` after its script-handling refactor) are build entry points —
 `js.Build` with the same opts as page scripts, including the `.ts` → `.js`
@@ -205,11 +203,8 @@ hard floor. Consuming sites:
    optional; the bump is not required to build against the current theme
    release.
 
-All known consumers pin Hugo ≥ 0.166 in their workflows (verified 2026-10;
-`schatten` re-verified at 0.169.0 in 2026-11; `wilmabraeuner-complete` is
-tracked separately and still pins 0.124.1). Consumer exception:
-`schatten` keeps `{{ template "_internal/opengraph.html" }}` in
-`layouts/baseof.html` in compatibility mode until a verified switch to
+Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}`
+in `layouts/baseof.html` in compatibility mode until a verified switch to
 `{{ partial "opengraph.html" }}`.
 
 Known remaining compatibility code in the theme: three partials keep a
@@ -244,15 +239,6 @@ Delete the identical copies. For drifted ones, check whether the local
 change is still needed — if not, delete the override so the theme's version
 applies again; if yes, re-sync everything else from the theme version to
 minimize the diff.
-
-Still open (2026-11): everything else drifted in the consumer audits is
-deliberate customization (header/footer redesigns, section layouts,
-custom menus) — review opportunistically. The remaining `R` renames to
-the new template structure reported in 2026-10
-(briefsteller/schatten/xn--h-zfa.xyz/yaapb/kraehenbeisser) have been
-completed since — all five sites ship only `layouts/_partials/` now.
-Empty leftover directories can go while at it: flugzeugbesteck's
-`layouts/partials/` and ric-unknownartist's `layouts/partials/schema.org/`.
 
 ## Remove legacy browser support (pre-2024 browsers)
 
@@ -289,7 +275,7 @@ Tighten the browser floor itself while at it: the theme ships a
 that already prunes dead browsers — sites can narrow it further (e.g. add
 `since 2024`), which also shrinks the output of any prefixing tool.
 
-Candidates from the 2026-11 scan (small, scattered `-webkit-` prefixes only —
+Candidates from the scan (small, scattered `-webkit-` prefixes only —
 review each hit: most are still-required prefixed properties like
 `-webkit-scrollbar` or `-webkit-tap-highlight-color`, not pre-2024
 fallbacks): blaufusstoelpel (`assets/site-css/style.css`,
@@ -373,7 +359,7 @@ Typical pitfalls:
 Verify afterwards: `npm run lint` passes and a visual smoke check of the
 affected pages shows no styling changes.
 
-Still open (2026-11):
+Still open:
 
 - The theme keeps three deliberate plain-CSS imports (`lucienne.css`,
   `tify`, `ol` — dart-sass warns on them, but inlining would change
@@ -455,7 +441,7 @@ remain open for sites with drifted `list.html` / `pagination.html` copies
   `assets/scss/theme.scss`), so screen readers announce context, not
   just a bare number.
 
-Open for sites with drifted copies (2026-11):
+Open for sites with drifted copies:
 
 - christianmahnke — `layouts/year/term.html` still swaps the labels
   (`next_page` on the previous-page link).
@@ -528,8 +514,13 @@ A related, separate change:
 > `.Param`. Fields set in the `params` section of front matter are
 > unaffected, and `site.Params.…` (site configuration) lookups stay
 > correct — only page-front-matter shorthand keys need the method
-> forms above. The `type` lookups are deliberately kept for now (see
-> the outstanding-deprecations table at the top).
+> forms above. The deprecation covers **Page** lookups only: page
+> resources (`.Params` populated from `[[resources]]` front matter
+> metadata) and menu entries (`MenuEntry.Params`) are different APIs —
+> not deprecated, with no `.Description`/`.Draft`-style equivalents,
+> so their `.Params.…` reads must stay. The `type` lookups are
+> deliberately kept for now (see the outstanding-deprecations table at
+> the top).
 
 Not deprecated, despite common claims to the contrary: `.Language.Lang`.
 `.Language.Name` is just a plain alias for it (no deprecation call in
@@ -596,23 +587,9 @@ grep -rnE '^\s*language(Code|Name|Direction)\s*=' config*/ hugo.toml config.toml
 grep -rnE '^\s*(quality|compression|hint)\s*=' config*/ hugo.toml config.toml 2>/dev/null
 ```
 
-> [!NOTE]
-> 2026-11 audit: all top-level consumers pass these checks. The last
-> violations were fixed in 2026-11 — plastikwarenfabrik (`.Site.`
-> lookups in `baseof.html`), ric-unknownartist (top-level
-> `imaging.quality`), and the `.Params.description`/`.Params.slug`
-> lookups in backsteinexpressionismus, briefsteller, christianmahnke,
-> kinderbuecher, kraehenbeisser, merch.projektemacher,
-> projektemacher, schriftmuster, vorsatzpapier and wilmabraeuner.
-> `wilmabraeuner-complete` is tracked separately and still carries
-> `.Site.` lookups, `substr`, `Scratch`, `languageCode` and
-> `.Params.description`, pinned to Hugo 0.124.1.
-
 ### Migrate JS sources to TypeScript
 
-The recurring audit below is the check — the 2026-11 audit re-confirmed
-all top-level consumers clean (no plain-JS sources in `assets/js`, no
-`.js` entries in front matter `js:` or layouts).
+The recurring audit below is the check.
 
 Consumer-specific JavaScript sources are TypeScript — plain-JS sources in
 the site's `assets/` and `.js` references in front matter `js:` entries or
@@ -675,8 +652,7 @@ standalone. Three.js, by contrast, is used directly by the `model` /
 the Fontsource npm packages via `scripts/init/get-fonts.sh` — the About
 page should list the families actually imported by the site's SCSS.
 
-2026-11 audit: no stale entries found in the consumers' About/colophon
-pages. The OpenSeadragon mention in christianmahnke's wallpaper-generator
+The OpenSeadragon mention in christianmahnke's wallpaper-generator
 post documents that third-party project, not the site's stack.
 
 Check what a site really bundles against its About page:
