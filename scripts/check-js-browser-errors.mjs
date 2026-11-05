@@ -484,9 +484,11 @@ console.log('Wrote preference file to %s', prefFile);
 
         const headers = request.headers();
 
-        // Skip PDFs and livereload
-        if (url.toLowerCase().endsWith("pdf")) {
-            console.log('Warning: Response would hang Puppeteer, aborting PDF!');
+        // Abort PDFs the browser itself would render/download (they hang
+        // Puppeteer), but let fetch/XHR PDF requests through so the embedded
+        // PDF.js viewer actually loads the document
+        if (url.toLowerCase().endsWith("pdf") && request.resourceType() === 'document') {
+            console.log('Warning: Response would hang Puppeteer, aborting PDF document request!');
             request.abort();
             return;
         }
