@@ -7,13 +7,22 @@ its known consumers (the top-level sibling repositories; the
 tracked separately). All remaining items are optional or low priority;
 step-by-step instructions for past migrations are in the rest of this
 guide. Upstream per-version fix notes (bep/myhugofixer, v0.55.0 –
-v0.169.0) are copied in [myhugofixer-fixes.md](myhugofixer-fixes.md).
+v0.169.0) are shipped as the [`hugo-upgrade` skill](skills/hugo-upgrade/SKILL.md) in
+`skills/hugo-upgrade/` — its [fixes.md](skills/hugo-upgrade/fixes.md) carries the
+per-version notes.
+
+> [!NOTE]
+> The per-version migration notes are also packaged as a coding-agent
+> skill: [`skills/hugo-upgrade/`](skills/hugo-upgrade/SKILL.md), with
+> `SKILL.md` carrying the upgrade workflow and `fixes.md` the
+> per-version notes. Newer Hugo versions are covered by the upstream
+> source, <https://github.com/bep/myhugofixer>.
 
 | Item | State | Priority |
 | --- | --- | --- |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0); consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
-| Reserved front matter `type` field looked up via `.Params` | kept intentionally for now: the theme's `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html` still read `type` through `.Params` (deprecated in Hugo 0.169.0, warns on build); the `description`/`keywords`/`slug` equivalents are already migrated to `.Description`/`.Keywords`/`.Slug` (0.169.0) — future migration reads `.Type` with an explicit-set check via `ne .Type .Section` (identical semantics, since `.Type` defaults to the section/kind type) — see [myhugofixer-fixes.md](myhugofixer-fixes.md) (v0.169.0) | low |
+| Reserved front matter `type` field looked up via `.Params` | kept intentionally for now: the theme's `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html` still read `type` through `.Params` (deprecated in Hugo 0.169.0, warns on build); the `description`/`keywords`/`slug` equivalents are already migrated to `.Description`/`.Keywords`/`.Slug` (0.169.0) — future migration reads `.Type` with an explicit-set check via `ne .Type .Section` (identical semantics, since `.Type` defaults to the section/kind type) — see [fixes.md](skills/hugo-upgrade/fixes.md) (v0.169.0) | low |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
 | Front matter `alias:` promotion | promoted to the standard `aliases:` in `ric-unknownartist`, `yaapb`, `labs.projektemacher.org`, `kinderbuecher`, `christianmahnke` (2026-10) — Hugo now generates redirect pages for those Tumblr-era IDs/paths (root-level `/<id>/` URLs, per-language scoping); kleiderbuegel's singular `tag:` stays under `params` (live `.Params.tag` term-page title fallback) | informational |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |

@@ -1,8 +1,10 @@
 # Hugo migration notes per version (myhugofixer)
 
-Assembled verbatim from <https://github.com/bep/myhugofixer/tree/main/fixes> — fetched 2026-11-02, covering Hugo v0.55.0 to v0.169.0.
+Per-version deprecation and fix notes for Hugo, assembled verbatim from <https://github.com/bep/myhugofixer/tree/main/fixes> — fetched 2026-11-02, covering Hugo v0.55.0 to v0.169.0.
 
-This theme pins Hugo >= 0.166.0 (`theme.toml` / `[module.hugoVersion]` in `hugo.toml`); the notes for v0.158.0 and newer are the relevant fix items here, see also [Upgrade.md](Upgrade.md).
+This file is the reference document of the `hugo-upgrade` skill in this repository (`skills/hugo-upgrade/`, see [SKILL.md](SKILL.md) for the upgrade workflow). For versions newer than v0.169.0 fetch the upstream notes from the myhugofixer repository.
+
+This theme pins Hugo >= 0.166.0 (`theme.toml` / `[module.hugoVersion]` in `hugo.toml`); the notes for v0.158.0 and newer are the relevant fix items here, see also [Upgrade.md](../../Upgrade.md).
 
 ## Contents
 
