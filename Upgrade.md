@@ -110,8 +110,8 @@ page starts using JS functionality.
 > builds the index before the check runs.
 
 The same page set is the input for the accessibility checks (see
-"Add accessibility checks" below) — run those against the production
-site as well.
+"Add accessibility checks" in Housekeeping below) — run those against the
+production site as well.
 
 > [!NOTE]
 > Complete — all known consumers now ship a `test-urls.json` (2026-10:
@@ -660,6 +660,47 @@ shortcode helper docs and the per-shortcode pages (`iiif/iiif`,
   `skipShortcodeAssets` guard in
   `layouts/_partials/shortcodes/shortcode-helper.html` (documented in the
   shortcode helper docs).
+
+## Add accessibility checks
+
+The theme ships no automated accessibility *gate* in CI, but a
+ready-to-run reference implementation ships in this repository
+(`npm run check:a11y` / `npm run check:lighthouse`) — both scripts are
+documented in the example site's [QA scripts
+post](exampleSite/content/posts/qa-scripts/index.md). The underlying
+idea, for sites that want a lightweight setup of their own: run
+[axe-core](https://github.com/dequelabs/axe-core) through the
+already-present `puppeteer` devDependency against the built pages. Sketch:
+
+```js
+import puppeteer from 'puppeteer';
+import axe from 'axe-core'; // npm i -D axe-core
+
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
+await page.goto('http://localhost:1313/some-page/', {waitUntil: 'networkidle0'});
+await page.addScriptTag({content: axe.source});
+const violations = await page.evaluate(() =>
+  axe.run().then((r) => r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)));
+console.log(violations.join('\n'));
+```
+
+Iterate over the built HTML files (or a representative subset) and run the
+script locally — these are suggested static checks of the generated pages
+only; copy and adapt the sketch to the site's own tooling. The reference
+implementation (`scripts/check-a11y.mjs`, `scripts/check-lighthouse.mjs`)
+defaults to the site's `baseURL`, accepts a JSON page list (`--urls-file`,
+e.g. `test-urls.json`) and writes a markdown report with `--output`; the
+a11y script excludes the `meta-viewport` rule by default (opt back in with
+`--include-meta-viewport`).
+
+Run these checks against the **production site** as well, not only against
+local builds: deployment pipelines (minification, fingerprinting, CDN and
+external services, content changes) can introduce violations the local
+build doesn't show. Point the same script at the deployed base URL and
+iterate over the pages from the site's `test-urls.json` (see "Run the JS
+runtime check against the example site" above) — keeping that list current
+for the runtime check also keeps the accessibility scan's page set current.
 
 # Pagination fixes (open)
 
