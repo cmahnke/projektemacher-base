@@ -1,27 +1,30 @@
 # Outstanding deprecations
 
-Everything urgent has been resolved — no 🔴 entries remain. What is
-left is tracked here: deprecated or shimmed items in this theme and
-its known consumers (the top-level sibling repositories; the
-`projektemacher/blogs/*` mirrors and `wilmabraeuner-complete` are
-tracked separately). All remaining items are optional or low priority;
-step-by-step instructions for past migrations are in the rest of this
-guide. Upstream per-version fix notes (bep/myhugofixer, v0.55.0 –
-v0.169.0) are copied in [myhugofixer-fixes.md](myhugofixer-fixes.md).
+What is left is tracked here: deprecated or shimmed
+items in this theme and its known consumers (the top-level sibling
+repositories; the `projektemacher/blogs/*` mirrors are tracked separately,
+and so is `wilmabraeuner-complete` — it still pins Hugo 0.124.1 and carries
+legacy constructs like `.Site.` lookups, `substr`, `Scratch`,
+`languageCode` and `.Params.description`). All remaining items are optional
+or low priority; step-by-step instructions for past migrations are in the
+rest of this guide. Upstream per-version fix notes (bep/myhugofixer,
+v0.55.0 – v0.169.0) are shipped as the [`hugo-upgrade`
+skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
+[fixes.md](skills/hugo-upgrade/fixes.md) carries the per-version notes.
 
 | Item | State | Priority |
 | --- | --- | --- |
-| SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
-| Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0); consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
+| SCSS `@import` usage | deprecated by Dart Sass, must become `@use`. Pending consumers: `merch.projektemacher` and `projektemacher` (one `@import` left in each `assets/scss/base.scss` — coder leakage architecture). Kept by decision: `yaapb`'s `_bootstrap-subset.scss` shim and `wilmabraeuner`'s `@import "bootstrap"` (isolated vendor code pending Bootstrap 6 module support). Theme-side open: `assets/scss/services/cookie-consent.scss` still `@use "icons" as *` — schatten's pre-declared `$close-*`/`$color-*` would collide with it on the next submodule raise — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
+| Hugo < 0.165 compatibility code | Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in `layouts/baseof.html` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
 | Reserved front matter `type` field looked up via `.Params` | theme migrated: the reserved shorthand field was renamed to the custom front matter parameter `itemType` (read via `.Params.itemType` inside the `params` section) in `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html`; consuming sites must rename their front matter keys and any site-side templates that read `type` through `.Params` — see ["Rename the reserved front matter `type` parameter"](#rename-the-reserved-front-matter-type-parameter) | low (consumer adoption) |
-| JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
+| JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional. Pending: `christianmahnke` (its own `menu.html` already builds ESM, but the site config does not set the param, so main/page bundles stay IIFE), `diapraesentation`, `flohmarktfunde`, `flugzeugbesteck`, `haesslicheplastiktiereundzeugs`, `merch.projektemacher`, `plastikwarenfabrik`, `projektemacher`, `ric-unknownartist`, `vorsatzpapier`, `xn--h-zfa.xyz`, `yaapb` — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
 | Front matter `alias:` promotion | promoted to the standard `aliases:` in `ric-unknownartist`, `yaapb`, `labs.projektemacher.org`, `kinderbuecher`, `christianmahnke` (2026-10) — Hugo now generates redirect pages for those Tumblr-era IDs/paths (root-level `/<id>/` URLs, per-language scoping); kleiderbuegel's singular `tag:` stays under `params` (live `.Params.tag` term-page title fallback) | informational |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
 | Webmention workflows: single deployment connection | collectors copied from this repository must adopt the one-connection layout (variables `DEPLOY_SERVER`/`DEPLOY_USER`/`DEPLOY_PATH`/`DEPLOY_PASS`, `scripts/webmention/host.sh`, split deploy + harvest workflows - deploy runs on commits only, the reusable harvest workflow chains onto it and also runs on the hourly cron; the collected data is committed as `data/webmentions/mentions.json` to the site's own `main` branch — direct Hugo data, the old `fetch.sh` branch flow is gone) — see [services/webmentions/README.md](services/webmentions/README.md) | low |
 | PostCSS CSS deduplication | flows from the theme (`assets/_jsconfig/postcss.config.js` + `scripts/init/package.json.sh`) — no consumer-side config needed — see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added) | informational |
 | Image shortcodes: configurable output format (`format` parameter / `[params.images]`) | opt-in; defaults keep the historical output, non-processable images (SVG, JXL, …) now pass through unchanged instead of failing the build — see ["Image shortcodes: configurable output formats"](#image-shortcodes-configurable-output-formats) | informational |
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
-| Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | documented as site responsibility in the example site (shortcode helper docs); long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
+| Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | consumers work around the gap with a global `@use "ol-iiif"` in their `assets/scss/base.scss`: `blaufusstoelpel`, `kraehenbeisser`, `backsteinexpressionismus`, `kleiderbuegel` (`as *`) and `never-built` (with a `$icon-fill` variable override); `christianmahnke`'s `base.scss` carries a stale comment claiming the metadata covers it. Documented as site responsibility in the example site; long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
 
 # Run the JS runtime check against the example site
 
@@ -290,9 +293,21 @@ default). Setting the param makes every `script.html`-delivered bundle —
 main, IIIF viewers and page scripts — build as ESM and ship as
 `type="module"`. The menu script (`menu.html`, `js/menu.js`) follows the
 same param: with the config set its build goes ESM and its tag ships as
-`type="module"` (it stays a `defer` classic script otherwise). Sites
-with copied `menu.html` builds need the same `"format"` addition in
-their own opts (christianmahnke's mixed state is that case).
+`type="module"` (it stays a `defer` classic script otherwise). Sites with
+copied `menu.html` builds need the same `"format"` addition in their own
+opts — christianmahnke's copy already carries it; its missing piece is the
+config param for the main/page bundles.
+
+`script.html` also builds the `js` call parameter centrally:
+string entries (asset paths, e.g. the IIIF viewers returned by
+`iiif-js.html` after its script-handling refactor) are build entry points —
+`js.Build` with the same opts as page scripts, including the `.ts` → `.js`
+targetPath rename, so built output never leaks a `.ts` extension.
+Resources passed via `js` are appended unbuilt. The partial **never
+concatenates ESM bundles**: every bundle is fingerprinted individually and
+ships as its own `<script type="module" … crossorigin="anonymous">` tag.
+Module tags execute in document order, so the main bundle still runs
+before page scripts. `splitBundles` only affects classic (iife) bundles.
 
 There are two ways to switch to ES modules; both are optional — a site
 picks one (Path B subsumes Path A's module semantics, see Risks below).
@@ -310,42 +325,17 @@ instead of the `defer` variant — modules are deferred implicitly, so the
 timing stays the same. One opts pass covers all bundles built within the
 call (main bundle, IIIF viewers, page scripts).
 
-Since 2026-10 `script.html` also builds the `js` call parameter
-centrally: string entries (asset paths, e.g. the IIIF viewers returned
-by `iiif-js.html` after its script-handling refactor) are build entry
-points — `js.Build` with the same opts as page scripts, including the
-`.ts` → `.js` targetPath rename, so built output never leaks a `.ts`
-extension (which servers deliver as `video/mp2t`, rejected for module
-scripts). Resources passed via `js` are appended unbuilt. The former
-`minify = false` exception for IIIF viewer builds is gone — viewer
-bundles minify like every other bundle.
-
-Since 2026-10 the partial **never concatenates ESM bundles**: every
-bundle is fingerprinted individually and ships as its own
-`<script type="module" … crossorigin="anonymous">` tag. Separately
-minified bundles reuse the same mangled top level identifiers, so
-concatenating them produced `SyntaxError: Identifier 'Pe' has already
-been declared` on vintagereality's `/map/` page (main bundle +
-`osm-map.ts`). Per-tag emission gives every bundle its own module scope,
-making such collisions — and import-hoisting/ordering hazards of
-concatenated modules — impossible. `splitBundles` only affects classic
-(iife) bundles. Module tags execute in document order, so the main
-bundle still runs before page scripts. Steps:
+Steps:
 
 1. Pass `"opts" (dict "format" "esm")` to the `script.html` call in the
-   site's `baseof.html` (or default the format in a site-side override
-   of the partial).
+   site's `baseof.html` (or default the format via the site config above,
+   or in a site-side override of the partial).
 2. `menu.js` and `print.js` can be switched one at a time by adding
    `"format" "esm"` to their `js.Build` options and changing their script
    tags to `type="module"` (drop `defer`, it is redundant on modules).
    Switch both branches of `baseof.print.html` (the development branch
    emits the tag without `defer` today). The `"target" "es2018"` of
    `print.js` is unrelated to the output format and can stay.
-
-The former steps about `externals` (the partial hardcoded
-`slice "domain"`) and about keeping concatenated bundles free of
-top-level `import`/`export` statements are obsolete: the hardcoded
-external was removed and ESM bundles are no longer concatenated.
 
 ### Path B — switch the bundle pipeline to `js.Batch`
 
@@ -401,22 +391,7 @@ Common to both paths (module semantics):
   template already has it); classic `defer` + SRI works without it.
 - **Browser floor** — `type="module"` needs 2017+ browsers (IE11 not at
   all); no `nomodule` fallback is shipped. Consistent with the
-  "pre-2024 browsers" housekeeping item above.
-
-Path A specific:
-
-- **Concatenation hazard (closed 2026-10).** `script.html` used to
-  concatenate independently built bundles (`resources.Concat`: main +
-  IIIF viewers + page scripts). For ESM that broke in two ways: top-level
-  `import`/`export` statements hoist above the concatenated code
-  (execution order changes, relative specifiers resolve against the
-  concatenated file's URL), and separately minified bundles reuse the
-  same mangled top level identifiers — the concatenation of
-  vintagereality's main bundle and its OpenLayers page bundle declared
-  `Pe` twice and failed to parse at all. ESM bundles are now emitted as
-  one `type="module"` tag each (see Path A above), so neither can occur;
-  the iife concatenation remains and stays safe because every part is
-  wrapped in its own IIFE scope.
+  "pre-2024 browsers" housekeeping item below.
 
 Path B specific:
 
@@ -455,94 +430,6 @@ Path B specific:
 - Visual smoke check of the affected pages (the same bundle serves all
   of them — one page per shortcode is enough).
 
-## Add accessibility checks
-
-The theme ships no automated accessibility *gate* in CI, but a
-ready-to-run reference implementation ships in this repository
-(`npm run check:a11y` / `npm run check:lighthouse` — see the end of this
-section). The underlying idea, for sites that want a lightweight setup of
-their own: run [axe-core](https://github.com/dequelabs/axe-core)
-through the already-present `puppeteer` devDependency against the built
-pages. Sketch:
-
-```js
-import puppeteer from 'puppeteer';
-import axe from 'axe-core'; // npm i -D axe-core
-
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('http://localhost:1313/some-page/', {waitUntil: 'networkidle0'});
-await page.addScriptTag({content: axe.source});
-const violations = await page.evaluate(() =>
-  axe.run().then((r) => r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)));
-console.log(violations.join('\n'));
-```
-
-Iterate over the built HTML files (or a representative subset) and run the
-script locally. These are suggested static checks of the generated pages
-only — the theme sets up no CI job; copy and adapt the sketch to the
-site's own tooling. A ready-to-run reference implementation of the sketch
-ships in this repository: `scripts/check-a11y.mjs` (axe-core via
-puppeteer, markdown report) plus a Lighthouse counterpart,
-`scripts/check-lighthouse.mjs`. Both default to the site's `baseURL`
-(read from `config.toml`/`hugo.toml`, falling back to
-`http://localhost:1313/`) and accept `--url` to check a different URL,
-`--urls-file` for a JSON page list (e.g. `test-urls.json`) and `--output`
-to write the markdown report to a file; run them via `npm run
-check:a11y` / `npm run check:lighthouse`. Both print agent-actionable
-markdown tables to stdout, and the a11y script excludes the
-`meta-viewport` rule by default (see below).
-
-Run these checks against the **production site** as well, not only against
-local builds: deployment pipelines (minification, fingerprinting, CDN and
-external services, content changes) can introduce violations the local
-build doesn't show. Point the same script at the deployed base URL and
-iterate over the pages from the site's `test-urls.json` (see "Run the JS
-runtime check against the example site" above) — keeping that list current
-for the runtime check also keeps the accessibility scan's page set current.
-
-### Viewport zoom behaviour (`disableScale` removed)
-
-The viewport partial (`layouts/partials/html/head/viewport.html`) no
-longer emits `user-scalable=no`: the `[params] disableScale` option has
-been removed — setting it has no effect (Hugo ignores unknown params),
-no warning is printed. Pinch zoom-in must stay allowed for accessibility
-(WCAG 2.5.5 / Lighthouse `meta-viewport`). Only zoom-out is blocked via
-`minimum-scale=1.0`. Pages
-using the theme's partial therefore no longer trigger the `meta-viewport`
-violation ("Zoom blocked"). The a11y
-script still excludes `meta-viewport` by default (opt back in with
-`--include-meta-viewport`), so scans of older builds remain usable.
-
-## Check IIIF documents with the browser check
-
-The browser check (`scripts/check-js-browser-errors.mjs`, wrapped by
-`scripts/github/check-js-errors.sh`) has an IIIF awareness mode
-(`-i`/`--iiif`): URLs ending in `manifest.json`, `collection.json` or
-`info.json` are fetched and — when they are valid IIIF documents —
-checked for referenced assets instead of being opened in the browser.
-Only assets served by the internal web server are requested (external
-hosts are skipped): `thumbnail`, `rendering`, `logo`, `seeAlso` and
-annotation `body` ids, plus the Image API derivatives advertised by an
-`info.json` (the canonical full image, one request per `sizes` entry
-and one representative tile per `tiles` entry and scale factor). A
-missing asset fails the run with exit code 127. The mode is documented
-in detail in the example site's QA scripts post
-(`exampleSite/content/posts/qa-scripts/index.md`).
-
-What sites should do (optional):
-
-1. Add the IIIF document URLs the site ships (manifests, collections,
-   image `info.json` — at least one per service or template variant)
-   to the site's `test-urls.json`.
-2. Run the check with the flag — `scripts/github/check-js-errors.sh -i`
-   (the wrapper forwards arguments) or add `-i` to the CI invocation.
-3. Without the flag those URLs are only opened in the browser: a
-   manifest whose referenced images 404 passes the check unnoticed.
-
-The exampleSite's own `test-urls.json` lists no IIIF document URLs yet —
-adopt the mode there together with the first manifest URLs.
-
 ## Remove downward compatibility (Hugo < 0.165.0)
 
 The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
@@ -555,14 +442,17 @@ hard floor. Consuming sites:
    optional; the bump is not required to build against the current theme
    release.
 
-Known remaining compatibility code: three partials keep a single top-level
-`return` statement, because Hugo < 0.166 supports only one value-return per
-partial — `layouts/partials/iiif/3/structures.html`,
+Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}`
+in `layouts/baseof.html` in compatibility mode until a verified switch to
+`{{ partial "opengraph.html" }}`.
+
+Known remaining compatibility code in the theme: three partials keep a
+single top-level `return` statement, because Hugo < 0.166 supports only
+one value-return per partial — `layouts/partials/iiif/3/structures.html`,
 `layouts/partials/functions/iiif/coerce-language-map.html` and
-`layouts/partials/functions/iiif/structure-span.html`. All known
-consumers now pin Hugo 0.168.0 in their workflows (verified 2026-10), so
-the natural multi-`return` code is unblocked for restoration; the theme
-keeps shipping the workarounds until its next release drops them.
+`layouts/partials/functions/iiif/structure-span.html`. The natural
+multi-`return` code is unblocked for restoration; the theme keeps
+shipping the workarounds until its next release drops them.
 
 ## Deduplicate shortcodes and templates against the theme
 
@@ -588,57 +478,6 @@ Delete the identical copies. For drifted ones, check whether the local
 change is still needed — if not, delete the override so the theme's version
 applies again; if yes, re-sync everything else from the theme version to
 minimize the diff.
-
-Still open (2026-10): everything else drifted in the consumer audits is
-deliberate customization (header/footer redesigns, section layouts,
-custom menus) — review opportunistically, the remaining `R` renames to
-the new template structure in briefsteller/schatten/xn--h-zfa.xyz/
-yaapb/kraehenbeisser are staged migrations in progress.
-
-## Shorten template fallbacks with the `default` function (optional)
-
-**Done in the theme (2026-10), optional for sites.** Template constructs of
-the shape "initialize with a fallback, then overwrite via `isset`/`with`"
-
-```go
-{{- $share := false -}}
-{{- if isset . "share" -}}
-  {{- $share = .share -}}
-{{- end -}}
-```
-
-were shortened to the equivalent one-liner:
-
-```go
-{{- $share := .share | default false -}}
-```
-
-Applied to the theme's `iiif/_iiif-image.html`, `iiif/iiif-image.html`,
-`html/head/script.html`, `html/head/style.html` and the `lucienne`
-shortcode. Sites that copied these templates can apply the same pattern,
-but mind the semantics: `default` treats `""`, `false` and `nil` as
-unset, while `isset` distinguishes them — only convert when the fallback
-itself is falsy (`""`, `false`, `0`), otherwise an explicitly empty
-value would silently switch to the fallback. Non-falsy fallbacks (e.g.
-`class="iiif iiif-image"`) were intentionally kept on `isset`.
-
-Two bugs surfaced while refactoring and were fixed (relevant if you
-copied the affected templates):
-
-- `schema-org.json` and `metadata/linked-art/collection.json` called
-  `isset "section" .Params` with swapped arguments — always false, so
-  the `section`/`type` page params were never honoured. Arguments are
-  now in the right order; sites setting these params will see the
-  JSON output change accordingly.
-- `iiif/_iiif-image.html` assigned `$baseURL :=` inside its `else`
-  branch (shadowed, so the fallback never took effect). The un-shadowed
-  fallback `path.Dir $infoJson` would mangle absolute info.json URLs
-  (`https://` → `https:/`), so it is guarded: relative info.json paths
-  now fall back to their directory, absolute URLs keep an empty
-  `baseURL` (the previous effective behaviour).
-
-Verification pattern: build before and after and diff the output —
-`diff -r` should be empty apart from embedded build timestamps.
 
 ## Remove legacy browser support (pre-2024 browsers)
 
@@ -674,6 +513,18 @@ Tighten the browser floor itself while at it: the theme ships a
 `browserslist` file (`> 0.5%`, `last 2 versions`, `Firefox ESR`, `not dead`)
 that already prunes dead browsers — sites can narrow it further (e.g. add
 `since 2024`), which also shrinks the output of any prefixing tool.
+
+Candidates from the scan (small, scattered `-webkit-` prefixes only —
+review each hit: most are still-required prefixed properties like
+`-webkit-scrollbar` or `-webkit-tap-highlight-color`, not pre-2024
+fallbacks): blaufusstoelpel (`assets/site-css/style.css`,
+`assets/scss/parsa-style.scss`), christianmahnke
+(`assets/scss/base.scss`, `assets/scss/syntax.scss`,
+`layouts/_shortcodes/insta.html`), kraehenbeisser
+(`assets/scss/aether.scss`), schatten (`assets/scss/main.scss`),
+yaapb (`assets/scss/base.scss`). Vendored files stay as they are:
+kinderbuecher's `assets/scss/_normalize7.scss` (normalize.css) and
+backsteinexpressionismus' `assets/vendor/vis-timeline-graph2d.min.css`.
 
 Verify: `hugo` builds green, the affected pages render unchanged in current
 Chrome, Firefox and Safari, and `npm run lint` passes.
@@ -747,7 +598,7 @@ Typical pitfalls:
 Verify afterwards: `npm run lint` passes and a visual smoke check of the
 affected pages shows no styling changes.
 
-Still open (2026-10):
+Still open:
 
 - The theme keeps three deliberate plain-CSS imports (`lucienne.css`,
   `tify`, `ol` — dart-sass warns on them, but inlining would change
@@ -756,9 +607,7 @@ Still open (2026-10):
   conversion — schatten's pre-declared `$close-*`/`$color-*` would
   collide with it on the next submodule raise).
 - **Deferred** consumers: merch.projektemacher + projektemacher (coder
-  leakage architecture). never-built is cleared (2026-10): its `@import`
-  backlog — including the duplicate `maps/projektemacher`/`link` loads —
-  is gone from the audited files.
+  leakage architecture; one `@import` left in each `base.scss`).
 - **Kept by decision**: yaapb's `_bootstrap-subset.scss` shim and
   wilmabraeuner's `@import "bootstrap"` (isolated vendor code pending
   Bootstrap 6 module support).
@@ -789,9 +638,10 @@ shortcode helper docs and the per-shortcode pages (`iiif/iiif`,
 - Decide the long term home of the OpenLayers base CSS: either declare
   `scss/openlayers.scss` (or the icon bundling `scss/ol-iiif.scss`) in the
   two shortcodes' metadata and drop the site side imports, or keep it a
-  documented site responsibility. With metadata inclusion the PostCSS
-  deduplication (see ["CSS pipeline: PostCSS deduplication added"](#css-pipeline-postcss-deduplication-added))
-  collapses the duplicated rules during the transition.
+  documented site responsibility. With metadata inclusion the duplicated
+  rules collapse in production builds — the theme's PostCSS
+  deduplication step removes rules duplicated across the individually
+  compiled resources during the transition.
 - Consumers currently work around the gap with a global import in their
   `assets/scss/base.scss`: `@use "ol-iiif";` in blaufusstoelpel,
   kraehenbeisser, backsteinexpressionismus and kleiderbuegel (`as *`),
@@ -811,40 +661,33 @@ shortcode helper docs and the per-shortcode pages (`iiif/iiif`,
   `layouts/_partials/shortcodes/shortcode-helper.html` (documented in the
   shortcode helper docs).
 
-# Pagination label fixes (open)
+# Pagination fixes (open)
 
 An accessibility fix that changes shipped markup. The pagination labels
-remain open for sites with drifted `list.html` / `pagination.html`
-copies — christianmahnke (`layouts/year/term.html`, labels swapped),
-yaapb (`layouts/_partials/list.html`, own markup: labels correct but
-no `aria-current` / visually-hidden prefixes) and kleiderbuegel
-(`layouts/_partials/pagination.html`, `aria-label` present, missing
-`aria-current` / page-N prefixes) — see the deduplication guide above:
+remain open for sites with drifted `list.html` / `pagination.html` copies
+— see the deduplication guide above:
 
 - `layouts/partials/list.html` had the pagination labels swapped: the
   "previous page" link was labelled `next_page` and vice versa. The
   labels are fixed, and the `◀`/`▶` arrows are wrapped in
   `<span aria-hidden="true">` so screen readers announce the label
   only. The visible text of list pagination changes accordingly.
+- `layouts/partials/pagination.html` additionally: the `<nav>` is
+  labelled (`aria-label`, new i18n key `paginationNavigation`) and the
+  redundant `role="navigation"` was dropped, the current page link
+  carries `aria-current="page"`, and every page number link gets a
+  visually hidden "page N" prefix (new `.visually-hidden` utility in
+  `assets/scss/theme.scss`), so screen readers announce context, not
+  just a bare number.
 
-## Verification
+Open for sites with drifted copies:
 
-- Check a paginated list: both links point in the direction their
-  labels announce.
-
-# Accessible pagination
-
-`layouts/partials/pagination.html` changes:
-
-- The `<nav>` is labelled (`aria-label`, new i18n key
-  `paginationNavigation`) and the redundant `role="navigation"` was
-  dropped.
-- The current page link carries `aria-current="page"`.
-- Every page number link gets a visually hidden "page N" prefix (new
-  `.visually-hidden` utility in `assets/scss/theme.scss`), so screen
-  readers announce context, not just a bare number.
-
-## Consumer migration
+- christianmahnke — `layouts/year/term.html` still swaps the labels
+  (`next_page` on the previous-page link).
+- yaapb — `layouts/_partials/list.html` carries own markup: labels
+  correct but no `aria-current` / visually-hidden prefixes.
+- kleiderbuegel — `layouts/_partials/pagination.html` has `aria-label`
+  but no `aria-current` / page-N prefixes.
 
 Sites overriding the pagination styles: the links now contain an
 additional `.visually-hidden` span before the number - selector based
@@ -853,6 +696,11 @@ selectors such as `.nav-links a:first-child` or CSS that applies to all
 inline content of a link may now also hit the hidden span. Sites with a
 copied `pagination.html` keep the unlabeled version until they adopt
 the theme's.
+
+## Verification
+
+- Check a paginated list: both links point in the direction their
+  labels announce.
 
 # Rename the reserved front matter `type` parameter
 
@@ -944,7 +792,6 @@ column (the exceptions are listed below), and newer Hugo features expect it:
 | `languages.<lang>.languageDirection` config key | `languages.<lang>.direction` (deprecated in Hugo 0.158.0) |
 | `.Language.LanguageName` method | `.Language.Label` (deprecated in Hugo 0.158.0) |
 | `.Language.LanguageDirection` method | `.Language.Direction` (deprecated in Hugo 0.158.0) |
-| `.Language.Lang` method | `.Language.Name` (deprecated in Hugo 0.158.0) |
 | `.Site.LanguageCode` method | `.Site.Language.Locale` (deprecated in Hugo 0.158.0) |
 | top-level `imaging.quality` config key | per-format: `imaging.jpeg.quality`, `imaging.webp.quality`, `imaging.avif.quality` (deprecated in Hugo 0.163.0) |
 | top-level `imaging.compression` / `imaging.hint` config keys | format-specific under `[imaging.avif]` / `[imaging.webp]` (deprecated in Hugo 0.163.0) |
@@ -969,9 +816,19 @@ A related, separate change:
 > `.Param`. Fields set in the `params` section of front matter are
 > unaffected, and `site.Params.…` (site configuration) lookups stay
 > correct — only page-front-matter shorthand keys need the method
-> forms above. The `type` lookups were migrated to the custom
-> `itemType` parameter inside the `params` section — see
-> ["Rename the reserved front matter `type` parameter"](#rename-the-reserved-front-matter-type-parameter).
+> forms above. The deprecation covers **Page** lookups only: page
+> resources (`.Params` populated from `[[resources]]` front matter
+> metadata) and menu entries (`MenuEntry.Params`) are different APIs —
+> not deprecated, with no `.Description`/`.Draft`-style equivalents,
+> so their `.Params.…` reads must stay. The `type` lookups were
+> migrated to the custom `itemType` parameter inside the `params`
+> section — see ["Rename the reserved front matter `type` parameter"](#rename-the-reserved-front-matter-type-parameter).
+
+Not deprecated, despite common claims to the contrary: `.Language.Lang`.
+`.Language.Name` is just a plain alias for it (no deprecation call in
+Hugo's source, and the theme's own `baseof.html` uses
+`site.Language.Lang`). Only the `LanguageCode`/`LanguageName`/
+`LanguageDirection` method renames in the table above are real.
 
 Deliberate exceptions in the theme's own templates — not outdated code:
 
@@ -997,11 +854,6 @@ Minor cleanups for the same pass:
 - Canonical camelCase for configuration keys: `canonifyURLs`, not
   `canonifyurls` — Hugo matches keys case-insensitively, but the
   documentation and tooling use the camelCase form.
-- ~~Nondeterministic element IDs~~ — deliberately **not** pursued:
-  replacing random inputs (like `md5 (printf "%s-%s" $src now.UnixNano)`
-  or `shuffle (seq 1 9)` name components) with deterministic
-  discriminators breaks more things than it fixes; the theme's
-  shortcodes and partials keep their current ID generation.
 
 Find the candidates from the site root — site-owned layouts first; for
 copied theme files run the deduplication scan under "Housekeeping" first:
@@ -1020,35 +872,26 @@ grep -rn 'Scratch' layouts/
 # 4. bare substr → strings.Substr (exclude JS substring() calls; strings.Substr doesn't match)
 grep -rn 'substr' layouts/ | grep -v 'substring'
 
-# 5. nondeterministic IDs — deliberate exception, no action
-# (the theme keeps its current ID generation, see above)
-# grep -rnE 'UnixNano|shuffle' layouts/
-
-# 6. internal alias template shadowing
+# 5. internal alias template shadowing
 grep -rn '_internal/alias' layouts/
 
-# 7. Language methods (deprecated in 0.158.0):
+# 6. Language methods (deprecated in 0.158.0):
 #    .Language.LanguageCode → .Language.Locale
 #    .Language.LanguageName → .Language.Label
 #    .Language.LanguageDirection → .Language.Direction
 grep -rnE 'Language(Code|Name|Direction)' layouts/
-# the .Language.Lang method (→ .Language.Name): [^u] keeps LanguageX
-# methods out of the matches
-grep -rnE '\.Language\.Lang([^u]|$)' layouts/
 
-# 8. language config keys → locale / label / direction (deprecated in 0.158.0)
+# 7. language config keys → locale / label / direction (deprecated in 0.158.0)
 grep -rnE '^\s*language(Code|Name|Direction)\s*=' config*/ hugo.toml config.toml 2>/dev/null
 
-# 9. top-level imaging quality/compression/hint → per-format sub-tables
+# 8. top-level imaging quality/compression/hint → per-format sub-tables
 #    (deprecated in 0.163.0) — review matches under the [imaging] section
 grep -rnE '^\s*(quality|compression|hint)\s*=' config*/ hugo.toml config.toml 2>/dev/null
 ```
 
 ### Migrate JS sources to TypeScript
 
-The recurring audit below is the check — the 2026-10 audit pass found
-all consumers clean or carrying documented deliberate exceptions
-(theme-contract ESM entry shims, vendored typed libraries).
+The recurring audit below is the check.
 
 Consumer-specific JavaScript sources are TypeScript — plain-JS sources in
 the site's `assets/` and `.js` references in front matter `js:` entries or
@@ -1080,8 +923,8 @@ remove entries for libraries that are no longer in use and add newly
 introduced ones.
 
 Only **user-facing** libraries and fonts belong on such a list — everything
-a visitor can see or hear: viewer frameworks (three.js, OpenSeadragon,
-tify, A-Frame), map libraries (OpenLayers), players (howler, PDFObject),
+a visitor can see or hear: viewer frameworks (three.js, tify, A-Frame),
+map libraries (OpenLayers), players (howler, PDFObject),
 search (Pagefind), diagram/timeline rendering (mermaid, vis-timeline) and
 the font families in use. Build tooling and internal helpers (linters,
 bundlers, consent plumbing) don't belong there.
@@ -1103,14 +946,16 @@ imports and `package.json`) is:
 | @projektemacher/lucienne | Generative art (`lucienne` shortcode) |
 | three.js | 3D models (`model` / `hdr-model` shortcodes) |
 
-Known stale entries to watch for: the theme does not use
-**OpenSeadragon** directly anymore — it ships only as tify's internal
-dependency (and the theme's `package.json` pins a different major version
-than tify requires). Remove it if it is listed standalone. Three.js, by
-contrast, is used directly by the `model` / `hdr-model` shortcodes
-(`assets/ts/shortcodes/model.ts`). Fonts come from the Fontsource npm
-packages via `scripts/init/get-fonts.sh` — the About page should list the
-families actually imported by the site's SCSS.
+The theme does not use **OpenSeadragon** directly anymore — it ships only
+as tify's internal dependency (and the theme's `package.json` pins a
+different major version than tify requires). Remove it if it is listed
+standalone. Three.js, by contrast, is used directly by the `model` /
+`hdr-model` shortcodes (`assets/ts/shortcodes/model.ts`). Fonts come from
+the Fontsource npm packages via `scripts/init/get-fonts.sh` — the About
+page should list the families actually imported by the site's SCSS.
+
+The OpenSeadragon mention in christianmahnke's wallpaper-generator
+post documents that third-party project, not the site's stack.
 
 Check what a site really bundles against its About page:
 
@@ -1134,6 +979,9 @@ grep -rhoE 'src="https?://[^"]+"' layouts/ | sort -u
    `--output` to write the markdown report to a file and `--categories`
    to restrict the scan (`performance`, `accessibility`,
    `best-practices`, `seo`). The companion accessibility scan is
-   `npm run check:a11y` — both are documented in "Add accessibility
-   checks" (Housekeeping above). Run them against the production site as
+   `npm run check:a11y` — both scripts ship in this repository
+   (`scripts/check-a11y.mjs`, `scripts/check-lighthouse.mjs`) and can be
+   copied into a site's own tooling (the a11y script excludes the
+   `meta-viewport` rule by default, opt back in with
+   `--include-meta-viewport`). Run them against the production site as
    well, not only the local build.

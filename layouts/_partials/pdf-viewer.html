@@ -1,4 +1,7 @@
 {{/* Include PDF viewer */}}
+{{- if not (fileExists "static/pdfjs/web/viewer.html") -}}
+  {{- errorf "The pdf.js viewer app is missing (static/pdfjs/web/viewer.html), the embedded viewer will fail to load. Run the theme's scripts/pdfjs.sh before building" -}}
+{{- end -}}
 {{- with .Page.Resources.GetMatch "pdf-viewer" -}}
     {{- $divId := printf "viewer-%s" (delimit (shuffle (seq 1 9)) "") -}}
     <div class="pdf-viewer">

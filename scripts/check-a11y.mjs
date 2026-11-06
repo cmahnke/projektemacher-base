@@ -80,7 +80,11 @@ if (argv.urlsFile) {
     process.exit(1);
   }
   for (const u of urls) {
-    const s = String(u);
+    const s = typeof u === 'string' ? u : (u && typeof u === 'object' && typeof u.url === 'string' ? u.url : null);
+    if (!s) {
+      console.error('Invalid URL entry %j in %s, exiting!', u, argv.urlsFile);
+      process.exit(1);
+    }
     pages.push(/^https?:\/\//i.test(s) ? s : baseURL + s.replace(/^\/+/, ''));
   }
 }
