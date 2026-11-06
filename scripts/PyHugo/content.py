@@ -13,11 +13,126 @@ def _deepMerge(base, overlay):
         else:
             base[key] = value
 
+# Names of the main Hugo config file (without extension), see config.DefaultConfigNames
+SPECIAL_CONFIG_NAMES = ("hugo", "config")
+# Directories a warning was already emitted for (one warning per site and process)
+WARNED_CONFIG_DIRS = set()
+
+
+def _splitFileStem(stem):
+    """Split a config file stem like `params.en` into name and language."""
+    name, dot, lang = stem.rpartition(".")
+    if not dot:
+        return stem, ""
+    return name, lang
+
+
+def _configDirLocations(base_dir, environment=None):
+    """Existing configuration directories in Hugo's load order (least to most specific).
+
+    Without `environment` all environment directories are returned, otherwise
+    only the one matching the given name (plus `config/_default`, if present).
+    """
+    config_root = os.path.join(base_dir, "config")
+    if not os.path.isdir(config_root):
+        return []
+    locations = []
+    default_dir = os.path.join(config_root, "_default")
+    if os.path.isdir(default_dir):
+        locations.append(default_dir)
+    env_dirs = sorted(
+        entry for entry in os.listdir(config_root)
+        if entry != "_default" and os.path.isdir(os.path.join(config_root, entry))
+    )
+    if environment is not None:
+        env_dir = os.path.join(config_root, environment)
+        if os.path.isdir(env_dir):
+            locations.append(env_dir)
+    else:
+        locations.extend(os.path.join(config_root, entry) for entry in env_dirs)
+    return locations
+
+
+def _renameMenuKeys(config):
+    """Migrate the pre 0.53 `menu` key to `menus` (root level and per language)."""
+    if not isinstance(config, dict):
+        return
+    if "menu" in config:
+        config["menus"] = config.pop("menu")
+    languages = config.get("languages")
+    if isinstance(languages, dict):
+        for langConfig in languages.values():
+            if isinstance(langConfig, dict) and "menu" in langConfig:
+                langConfig["menus"] = langConfig.pop("menu")
+
+
+def _mergeConfigFile(config, filename, data):
+    """Merge a single config directory file into `config`, mirroring Hugo's naming rules.
+
+    Files named `hugo.toml`/`config.toml` are merged into the root, other files
+    are merged into the configuration category matching the file name. Files
+    with a language suffix (e.g. `params.en.toml`) are merged into
+    `languages.<lang>`. A file may wrap its content under a single key matching
+    the file name, which is then unwrapped (e.g. `params.toml` containing
+    `[params]`).
+    """
+    stem = filename[: -len(".toml")]
+    if stem in SPECIAL_CONFIG_NAMES:
+        _deepMerge(config, data)
+        return
+    name, lang = _splitFileStem(stem)
+    keyPath = [name]
+    if lang:
+        keyPath = ["languages", lang]
+        if name in ("menu", "menus"):
+            keyPath.append("menus")
+        elif name == "params":
+            keyPath.append("params")
+    itemValue = data
+    if len(data) == 1 and name in data:
+        itemValue = data[name]
+    root = data
+    if keyPath:
+        root = {}
+        target = root
+        for key in keyPath[:-1]:
+            target[key] = {}
+            target = target[key]
+        target[keyPath[-1]] = itemValue
+    _renameMenuKeys(root)
+    _deepMerge(config, root)
+
+
+def _mergeConfigDirInto(config, locations):
+    """Recursively merge all config files from the given directories into `config`."""
+    for location in locations:
+        for root, dirs, files in os.walk(location):
+            dirs.sort()
+            for filename in sorted(files):
+                if not filename.endswith(".toml"):
+                    continue
+                with open(os.path.join(root, filename), "r") as f:
+                    data = toml.load(f)
+                _mergeConfigFile(config, filename, data)
+    return config
+
+
+def _unreadConfigDirFiles(base_dir, primary_file):
+    """Relative paths of TOML files in the config directory that are not loaded."""
+    return sorted(
+        os.path.relpath(os.path.join(root, filename), base_dir)
+        for location in _configDirLocations(base_dir)
+        for root, dirs, files in os.walk(location)
+        for filename in files
+        if filename.endswith(".toml") and os.path.abspath(os.path.join(root, filename)) != os.path.abspath(primary_file)
+    )
+
+
 class Site:
     CONTENT_PATH = "./content/"
     config_files = ["config.toml", "hugo.toml", "config/_default/config.toml", "config/_default/hugo.toml"]
 
-    def __init__(self, base_dir):
+    def __init__(self, base_dir, load_config_dir=False):
         config_file = self.guess_base(base_dir)
         if config_file is None:
             raise ValueError(f"Could't find config file in {base_dir}")
@@ -26,8 +141,32 @@ class Site:
             self.base_dir = os.path.dirname(os.path.dirname(os.path.dirname(config_file)))
         else:
             self.base_dir = os.path.dirname(config_file)
+        self.logger = logging.getLogger(__name__)
+        self.load_config_dir = load_config_dir
         self.config = toml.load(config_file)
+        self._applyConfigDir(config_file)
         self.translations = self.load_i18n()
+
+    def _applyConfigDir(self, config_file):
+        """Merge the configuration directory into `self.config` or warn about unread files.
+
+        `load_config_dir` can be `True` (merge `config/_default` and all
+        environment directories) or the name of a single environment.
+        """
+        if not _configDirLocations(self.base_dir):
+            return
+        if self.load_config_dir:
+            environment = self.load_config_dir if isinstance(self.load_config_dir, str) else None
+            self.config = _mergeConfigDirInto(self.config, _configDirLocations(self.base_dir, environment))
+            return
+        unread = _unreadConfigDirFiles(self.base_dir, config_file)
+        siteKey = os.path.abspath(self.base_dir)
+        if unread and siteKey not in WARNED_CONFIG_DIRS:
+            WARNED_CONFIG_DIRS.add(siteKey)
+            self.logger.warning(
+                f"Configuration directory of {siteKey} exists but is not read: {', '.join(unread)}. "
+                "Pass load_config_dir=True (or an environment name) to merge it."
+            )
 
     def guess_base(self, start_dir, configs = config_files):
         current_dir = os.path.abspath(start_dir)
@@ -83,10 +222,10 @@ class Site:
         return translations
 
 class Config(Site):
-    def __init__(self, base_dir):
+    def __init__(self, base_dir, load_config_dir=True):
         if isinstance(base_dir, Site):
             base_dir = base_dir.base_dir
-        super().__init__(base_dir)
+        super().__init__(base_dir, load_config_dir=load_config_dir)
         self.logger = logging.getLogger(__name__)
         self.base_dir = os.path.abspath(base_dir)
         self.config_file = self.guess_base(self.base_dir)
@@ -101,25 +240,9 @@ class Config(Site):
 
     def load_hugo_config(self):
         self.logger.debug(f"Loading Hugo config from {self.base_dir} ({self.config_file})")
-        config = {}
-        config_dir = os.path.join(self.base_dir, "config", "_default")
-
-        with open(self.config_file, "r") as f:
-            config = toml.load(f)
-        if os.path.exists(config_dir):
-            for filename in os.listdir(config_dir):
-                if filename.endswith(".toml"):
-                    with open(os.path.join(config_dir, filename), "r") as f:
-                        data = toml.load(f)
-                        key = filename.replace(".toml", "")
-                        if key == "hugo" or key == "config":
-                            _deepMerge(config, data)
-                        else:
-                            if key in config and isinstance(config[key], dict) and isinstance(data, dict):
-                                _deepMerge(config[key], data)
-                            else:
-                                config[key] = data
-        return config
+        config = toml.load(self.config_file)
+        environment = self.load_config_dir if isinstance(self.load_config_dir, str) else None
+        return _mergeConfigDirInto(config, _configDirLocations(self.base_dir, environment))
 
     def baseURL(self):
         return self.config.get("baseURL", "http://localhost:1313/")
@@ -445,7 +568,8 @@ class Content:
         self.sub_path = sub_path
         self.sections = sections
         self.config = config
-        self.site = Site(Path(self.path).absolute().parent)
+        # Reuse a passed config (a Site subclass) instead of constructing a redundant Site
+        self.site = config if isinstance(config, Site) else Site(Path(self.path).absolute().parent)
         self.posts = []
         self.iterPos = -1
         postsPaths = self._findPosts()

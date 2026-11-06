@@ -28,6 +28,28 @@ The configuration of `config/_default/*.toml` is merged over the root
 configuration (dict values like `[params]` are merged recursively), matching
 Hugo's behaviour.
 
+### Configuration directory
+
+`Site` reads only the root configuration file by default. If a `config/`
+directory exists, a warning (emitted once per site and process) lists the TOML
+files that are not read. The `load_config_dir` flag controls the behaviour:
+
+```python
+site = Site("./")                                # warns when config/ contains unread files
+site = Site("./", load_config_dir=True)          # merge config/_default and all environments
+site = Site("./", load_config_dir="development") # merge config/_default and config/development
+```
+
+The merge mirrors Hugo's configuration directory rules: files named
+`hugo.toml`/`config.toml` are merged into the root configuration, files named
+after a configuration category (e.g. `params.toml`) are merged into that
+category — unwrapping a single top-level key matching the file name —, files
+with a language suffix (e.g. `params.en.toml`) are merged into
+`languages.<lang>`, and subdirectories are parsed recursively. Only TOML files
+are read. With `load_config_dir=True` all environment directories
+(`config/development`, `config/production`, ...) are merged, which is a
+superset of what Hugo loads for a single environment.
+
 ## API
 
 ### `Config`
@@ -47,6 +69,9 @@ config.translate("key", "en")        # i18n translation (theme + site i18n dirs)
 config.getAuthors()                  # params.author(s) as a list
 ```
 
+`Config` merges the configuration directory by default; it accepts the same
+`load_config_dir` flag as `Site` (see above).
+
 ### `Site`
 
 Base class of `Config`, used to resolve the site structure:
@@ -54,7 +79,7 @@ Base class of `Config`, used to resolve the site structure:
 ```python
 from PyHugo import Site
 
-site = Site("./")
+site = Site("./")                    # warns when config/ contains unread files
 site.contentDir()                    # absolute path of the content directory
 site.translations                    # loaded i18n translations
 ```

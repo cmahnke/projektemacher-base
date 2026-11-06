@@ -9,7 +9,7 @@ class PyHugo:
 
     def __init__(self, base_dir, debug=False):
         self.base_dir = base_dir
-        self.site = Site(base_dir)
+        self.site = Site(base_dir, load_config_dir=True)
         self.config = Config(base_dir)
         self.setDebug(debug)
         self.logger = logging.getLogger(__name__)
