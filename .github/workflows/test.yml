@@ -162,7 +162,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - uses: pnpm/action-setup@v6.1.0
+      - uses: pnpm/action-setup@v6.1.1
         with:
           version: 9
 
@@ -191,7 +191,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - uses: pnpm/action-setup@v6.1.0
+      - uses: pnpm/action-setup@v6.1.1
         with:
           version: 9
 
@@ -273,7 +273,7 @@ jobs:
         uses: actions/setup-node@v7.1.0
         with:
           node-version-file: '.nvmrc'
-      - uses: pnpm/action-setup@v6.1.0
+      - uses: pnpm/action-setup@v6.1.1
         with:
           version: 9
       - name: Install with pnpm
