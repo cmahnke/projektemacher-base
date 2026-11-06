@@ -13,7 +13,7 @@ v0.169.0) are copied in [myhugofixer-fixes.md](myhugofixer-fixes.md).
 | --- | --- | --- |
 | SCSS `@import` usage | deprecated by Dart Sass, must become `@use` — see ["Migrate SCSS from `@import` to `@use`"](#migrate-scss-from-import-to-use) | medium |
 | Hugo < 0.165 compatibility code | unblocked: all known consumers now pin Hugo ≥ 0.166 (0.168.0); consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}` in compatibility mode until a verified switch to `{{ partial "opengraph.html" }}` — see ["Remove downward compatibility (Hugo < 0.165.0)"](#remove-downward-compatibility-hugo--01650) | low |
-| Reserved front matter `type` field looked up via `.Params` | kept intentionally for now: the theme's `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html` still read `type` through `.Params` (deprecated in Hugo 0.169.0, warns on build); the `description`/`keywords`/`slug` equivalents are already migrated to `.Description`/`.Keywords`/`.Slug` (0.169.0) — future migration reads `.Type` with an explicit-set check via `ne .Type .Section` (identical semantics, since `.Type` defaults to the section/kind type) — see [myhugofixer-fixes.md](myhugofixer-fixes.md) (v0.169.0) | low |
+| Reserved front matter `type` field looked up via `.Params` | theme migrated: the reserved shorthand field was renamed to the custom front matter parameter `itemType` (read via `.Params.itemType` inside the `params` section) in `schema-org.json`, `metadata/linked-art/collection.json`, `preview/preview-internal.html`, `_partials/page.html` and `_shortcodes/post-count.html`; consuming sites must rename their front matter keys and any site-side templates that read `type` through `.Params` — see ["Rename the reserved front matter `type` parameter"](#rename-the-reserved-front-matter-type-parameter) | low (consumer adoption) |
 | JS bundle format | bundles are classic IIFE scripts; ESM (`type="module"`) is supported as an opt-in, `js.Batch` as the full switch — both optional — see ["Switch the JS bundles from IIFE to ESM"](#switch-the-js-bundles-from-iife-to-esm) | low |
 | Front matter `alias:` promotion | promoted to the standard `aliases:` in `ric-unknownartist`, `yaapb`, `labs.projektemacher.org`, `kinderbuecher`, `christianmahnke` (2026-10) — Hugo now generates redirect pages for those Tumblr-era IDs/paths (root-level `/<id>/` URLs, per-language scoping); kleiderbuegel's singular `tag:` stays under `params` (live `.Params.tag` term-page title fallback) | informational |
 | Fonts in `static/fonts/` | generated from npm; documented exceptions only | keep (exceptions stay) |
@@ -854,6 +854,69 @@ inline content of a link may now also hit the hidden span. Sites with a
 copied `pagination.html` keep the unlabeled version until they adopt
 the theme's.
 
+# Rename the reserved front matter `type` parameter
+
+Hugo 0.169.0 deprecated looking up reserved front matter fields
+(`title`, `date`, `description`, `draft`, `keywords`, `slug`, `summary`,
+`type`, `weight`, …) through `.Params`, `where … "Params.…"`,
+`isset … "…"` and `.Param` — the build warns for every lookup. The
+theme previously read the page's own `type` shorthand field through
+`.Params.type` (e.g. the CSS class on the page wrapper, the blog
+`@type` for schema.org, the media type dispatch for digitized items).
+
+Instead of switching to the `.Type` method (which defaults to the
+section/kind type and therefore cannot express "unset" for pages in a
+`post` section), the theme now expects the value as a custom parameter
+named `itemType` inside the `params` section of the front matter.
+Hugo stores `params` keys case-insensitively: the front matter may use
+any casing (`itemType:`, `itemtype:`, `ITEMTYPE:`), dot-chained lookups
+(`.Params.itemType`) and `where`-collections (`where site.Pages
+"Params.itemType" "book"`) resolve it regardless of case. Only `isset`
+requires the all-lowercase form: `isset .Params "itemtype"`.
+
+## What changed in the theme
+
+- `layouts/_partials/page.html`: the page wrapper CSS class now reads
+  `.Params.itemType`.
+- `layouts/schema-org.json`: the blog `@type` override now reads
+  `.Params.itemType` (guarded by `isset .Params "itemtype"`).
+- `layouts/_partials/metadata/linked-art/collection.json`: same
+  pattern for the Linked Art `@type`.
+- `layouts/_partials/preview/preview-internal.html`: the "no preview
+  image" heuristics now check `isset … "itemtype"` /
+  `eq .Params.itemType "other"`.
+- `layouts/_shortcodes/post-count.html`: the `type` *shortcode argument*
+  is unchanged, but the pages are now filtered with
+  `where … "Params.itemType"`.
+
+## What sites need to do
+
+1. Rename the front matter key on every page that used it, keeping the
+   value and moving the key into the `params` section if it was set at
+   the top level (`type: book` becomes `params.itemType: book`).
+2. Update site-side templates that read the field through `.Params`
+   (dispatch partials, section templates, print layouts), e.g.:
+
+   ```go-html-template
+   {{ partial (printf "media/%s.html" .Params.itemType) . }}
+   ```
+
+3. Mind the case handling rules: dot access and `where` are
+   case-insensitive, `isset` needs the lowercase key
+   (`isset .Params "itemtype"`).
+
+## Verification
+
+```sh
+# No remaining reserved-field lookups in templates:
+rg -n 'Params\.type|Params "type"|"\bParams\.type\b"' layouts/
+# No remaining top-level `type` keys in front matter:
+rg -n '^\s*type\s*:' content/
+```
+
+A successful build must not log the Hugo 0.169.0 deprecation warning
+about reserved fields anymore.
+
 # Mandatory post-upgrade checks
 
 The checks in this section are **mandatory**: every consuming site should
@@ -906,8 +969,9 @@ A related, separate change:
 > `.Param`. Fields set in the `params` section of front matter are
 > unaffected, and `site.Params.…` (site configuration) lookups stay
 > correct — only page-front-matter shorthand keys need the method
-> forms above. The `type` lookups are deliberately kept for now (see
-> the outstanding-deprecations table at the top).
+> forms above. The `type` lookups were migrated to the custom
+> `itemType` parameter inside the `params` section — see
+> ["Rename the reserved front matter `type` parameter"](#rename-the-reserved-front-matter-type-parameter).
 
 Deliberate exceptions in the theme's own templates — not outdated code:
 

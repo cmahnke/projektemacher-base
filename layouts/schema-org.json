@@ -6,8 +6,8 @@
 {{- if isset .Params "section" -}}
   {{- $section = .Params.section -}}
 {{- end -}}
-{{- if isset .Params "type" -}}
-  {{- $blogType = .Params.type -}}
+{{- if isset .Params "itemtype" -}}
+  {{- $blogType = .Params.itemType -}}
 {{- end -}}
 
 {{- $pages = where $pages "Section" $section -}}

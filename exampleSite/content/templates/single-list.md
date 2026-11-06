@@ -12,7 +12,7 @@ params:
 Renders regular pages. It only fills the `title` and `content` blocks of the [base template](baseof/) and delegates the actual markup to the `page.html` partial, which renders:
 
 - the page title as `h1.post-title`
-- the page content, wrapped in a `div.post` with the `type` front matter parameter as additional CSS class
+- the page content, wrapped in a `div.post` with the `itemType` front matter parameter as additional CSS class
 - date and tags footer — unless the page has `metaPage: true`
 
 ## `_default/list.html`
@@ -42,7 +42,7 @@ The container gets the classes `container include <section>`, where `<section>` 
 
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `type` | string | — | Extra CSS class on the page wrapper |
+| `itemType` | string | — | Extra CSS class on the page wrapper |
 | `metaPage` | bool | `false` | Hides the date/tags footer and excludes the page from lists |
 
 ## Example
@@ -52,7 +52,8 @@ A minimal page that behaves like a documentation page (no date, not listed):
 ```markdown
 ---
 title: About
-type: about
-metaPage: true
+params:
+  itemType: about
+  metaPage: true
 ---
 ```

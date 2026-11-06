@@ -65,7 +65,7 @@ The templates rely on the following page parameters. Most of them control in- or
 | --- | --- | --- | --- |
 | `metaPage` | bool | `false` | Marks documentation/meta pages: hides date and tags, adds the `meta` CSS class and excludes the page from lists, RSS and `post-list.json` |
 | `displayinlist` | bool | `true` | Set to `false` to exclude a page from list pagination, `post-list.json`, `tag-list.json`, `wikidata-list.json`, RSS, schema.org output and IIIF collections |
-| `type` | string | — | CSS class for the page wrapper (`page.html`); on the section used with the `schemaorg` output format it sets the blog `@type` |
+| `itemType` | string | — | CSS class for the page wrapper (`page.html`); on the section used with the `schemaorg` output format it sets the blog `@type` |
 | `robotsdisallow` | bool | `false` | Adds a `Disallow` entry to `robots.txt` |
 | `sitemap_exclude` | bool | `false` | Adds a `Disallow` entry to `robots.txt` |
 | `aliases` | string list | — | Additional URLs (QR codes render them as an array) |

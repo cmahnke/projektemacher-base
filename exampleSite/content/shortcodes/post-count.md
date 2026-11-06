@@ -7,14 +7,14 @@ params:
 
 # post-count
 
-Outputs the number of pages in a section, optionally filtered by the front matter `type` parameter.
+Outputs the number of pages in a section, optionally filtered by the front matter `itemType` parameter.
 
 ## Parameters
 
 | Parameter | Type | Required | Default | Purpose |
 | --- | --- | --- | --- | --- |
 | `section` | string | yes | — | Section name |
-| `type` | string | no | — | Filter on the pages' `type` front matter |
+| `type` | string | no | — | Filter on the pages' `itemType` front matter |
 
 ## Example
 

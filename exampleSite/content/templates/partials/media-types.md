@@ -7,10 +7,10 @@ params:
 
 # Media type partials
 
-The `media/` partials render description blocks for digitized media items (the output of the Projektemacher digitization projects). They are designed to be dispatched by the page's `type` front matter parameter from a site layout, e.g.:
+The `media/` partials render description blocks for digitized media items (the output of the Projektemacher digitization projects). They are designed to be dispatched by the page's `itemType` front matter parameter (inside the `params` section) from a site layout, e.g.:
 
 ```go-html-template
-{{ partial (printf "media/%s.html" .Params.type) . }}
+{{ partial (printf "media/%s.html" .Params.itemType) . }}
 ```
 
 ## Shared behavior

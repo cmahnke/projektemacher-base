@@ -84,7 +84,7 @@ Renders the numbered pagination: previous/next links with i18n labels plus the p
 
 ## `page.html` {#page}
 
-Renders a single page: title, content and — unless `metaPage: true` — the date and [tags](#tags) footer. The `type` front matter parameter becomes an additional CSS class.
+Renders a single page: title, content and — unless `metaPage: true` — the date and [tags](#tags) footer. The `itemType` front matter parameter becomes an additional CSS class.
 
 ## `toc.html` {#toc}
 

@@ -18,7 +18,7 @@ Template: `schema-org.json`, typically applied to the home page or a section. It
 | Parameter | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `section` | string | `post` | Section the blog posts are taken from |
-| `type` | string | `Blog` | `@type` of the blog node |
+| `itemType` | string | `Blog` | `@type` of the blog node |
 
 The author information comes from the `author`/`authors` front matter or site parameters, additional `about` entities are collected from the page metadata partials (`metadata/schema.org/`).
 
