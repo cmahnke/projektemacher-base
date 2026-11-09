@@ -50,6 +50,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/pdfobject": "^2.2.5",
     "@types/three": "^0.187.0",
+    "@stylistic/stylelint-plugin": "^6.0.1",
     "axe-core": "^4.14.0",
     "cesium": "1.146.0",
     "cors": "^2.8.6",
@@ -82,8 +83,8 @@
     "purgecss": "^8.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "stylelint": "^17.16.0",
-    "stylelint-config-standard": "^40.0.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard": "^41.0.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "stylelint-prettier": "^5.0.3",
     "stylelint-scss": "^7.4.0",
@@ -114,7 +115,8 @@
     "validate": "npm run validate-iiif && npm run validate-gjson"
   },
   "overrides": {
-    "canvas": "npm:dry-uninstall"
+    "canvas": "npm:dry-uninstall",
+    "stylelint-config-standard": "^41.0.0"
   },
   "resolutions": {
     "canvas": "npm:empty-npm-package"
