@@ -72,8 +72,8 @@
   },
   "devDependencies": {
     "@fontsource-utils/scss": "^0.2.4",
-    "stylelint": "^17.16.0",
-    "stylelint-config-standard": "^40.0.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard": "^41.0.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "stylelint-prettier": "^5.0.3",
     "stylelint-scss": "^7.4.0"
