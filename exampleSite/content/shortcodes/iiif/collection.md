@@ -7,9 +7,9 @@ params:
 
 # iiif/collection
 
-Browses a [IIIF Collection](https://iiif.io/api/presentation/3.0/#collection) with the framework-free tree navigator [`@mango-iiif/collection-navigator`](https://github.com/Mango-IIIF/collection-navigator): a `div.iiif > div.collection-browser` containing a `mango-collection-tree` and a viewer pane.
+Browses a [IIIF Collection](https://iiif.io/api/presentation/3.0/#collection) entirely with [Mango](https://github.com/Mango-IIIF/Mango): the framework-free tree navigator [`@mango-iiif/collection-navigator`](https://github.com/Mango-IIIF/collection-navigator) and the [`@mango-iiif/iiif-viewer`](https://www.npmjs.com/package/@mango-iiif/iiif-viewer) viewer, connected through Mango's own adapter: a `div.iiif > div.collection-browser` containing a `mango-collection-tree` and a viewer pane.
 
-Selecting a manifest in the tree loads it in the viewer pane using the configured Presentation API viewer (TIFY by default, see [IIIF configuration](/iiif/configuration/)), without reloading the page. Nested collections are expanded lazily, only expanded branches are loaded.
+Selecting a manifest in the tree loads it in the viewer pane without reloading the page. Nested collections are expanded lazily, only expanded branches are loaded.
 
 The first manifest of the collection is displayed initially, provided the collection contains manifests on the first level (optionally within loaded child collections).
 
@@ -48,4 +48,4 @@ The tree strings are translated automatically for German pages; other languages 
 
 ## Assets
 
-Via the shortcode helper: JS `ts/iiif/collection.ts`, SCSS `scss/iiif/collection-mango.scss`.
+JS `ts/iiif/collection.ts` is bundled by the shortcode itself with esbuild code splitting (ESM, lazy renderer chunks); SCSS `scss/iiif/collection-mango.scss` via the shortcode helper.

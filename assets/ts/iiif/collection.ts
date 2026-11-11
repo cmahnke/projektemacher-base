@@ -1,26 +1,13 @@
-import Tify from 'tify';
 import '@mango-iiif/collection-navigator';
+import { collectionSelectEvent, type CollectionSelection } from '@mango-iiif/collection-navigator';
+import { bindCollectionToMango } from '@mango-iiif/collection-navigator/mango';
+import { Mango } from '@mango-iiif/iiif-viewer';
 import type {
-  CollectionSelection,
   CollectionTreeMessages,
   IIIFStructure,
   MangoCollectionTreeElement,
   StructureNode,
 } from '@mango-iiif/collection-navigator';
-
-function addTify(selector: string, uri: string, lang: string = 'en'): unknown {
-  if (document.documentElement.lang !== undefined) {
-    lang = document.documentElement.lang;
-  }
-
-  const tify = new Tify({
-    container: selector,
-    manifestUrl: uri,
-    language: lang,
-    translationsDirUrl: '/tify/translations/',
-  });
-  return tify;
-}
 
 const germanMessages: Partial<CollectionTreeMessages> = {
   viewBy: 'Ansicht',
@@ -42,10 +29,6 @@ const germanMessages: Partial<CollectionTreeMessages> = {
   noNavigableItems: 'Keine navigierbaren Einträge vorhanden',
   navigationLabel: 'Sammlungsnavigation',
 };
-
-interface TifyInstance {
-  destroy(): void;
-}
 
 function findFirstManifestId(structure: IIIFStructure): string | null {
   const queue: StructureNode[] = structure.root?.children ? [...structure.root.children] : [];
@@ -77,49 +60,64 @@ function iiifCollectionBrowser(treeSelector: string, viewerSelector: string, uri
     tree.messages = germanMessages;
   }
 
-  let tify: TifyInstance | null = null;
+  let viewer: Mango | null = null;
 
-  const show = (manifestId: string): void => {
-    if (tify !== null) {
-      tify.destroy();
-      tify = null;
+  const mount = (manifestId: string): Mango => {
+    if (viewer === null) {
+      container.innerHTML = '';
+      viewer = new Mango({
+        target: container as HTMLElement,
+        manifestId,
+        config: {
+          language: lang,
+          showCollection: false,
+        },
+      });
+      bindCollectionToMango(tree, viewer);
     }
-    container.innerHTML = '';
-    tify = addTify(viewerSelector, manifestId, lang) as TifyInstance;
+    return viewer;
   };
 
-  tree.addEventListener(
-    'iiif-collection-select',
-    ((event: CustomEvent<CollectionSelection>) => {
-      const { manifestId } = event.detail;
-      if (manifestId) {
-        show(manifestId);
-      }
-    }) as EventListener,
-  );
+  const navigate = (selection: CollectionSelection): void => {
+    if (!selection.manifestId) {
+      return;
+    }
+    const active = mount(selection.manifestId);
+    if (active.getManifestId() !== selection.manifestId) {
+      active.setManifest(selection.manifestId);
+    }
+  };
+
+  tree.addEventListener(collectionSelectEvent, ((event: CustomEvent<CollectionSelection>) => {
+    navigate(event.detail);
+  }) as EventListener);
 
   const empty = lang === 'de' ? 'Keine Manifeste in dieser Sammlung.' : 'No manifests in this collection.';
   const failed = lang === 'de' ? 'Die Sammlung konnte nicht geladen werden.' : 'The collection could not be loaded.';
+
+  const message = (text: string): void => {
+    container.innerHTML = `<p class="collection-browser-message">${text}</p>`;
+  };
 
   void tree
     .load(uri)
     .then((structure) => {
       const first = findFirstManifestId(structure);
       if (first === null) {
-        container.innerHTML = `<p class="collection-browser-message">${empty}</p>`;
+        message(empty);
         return;
       }
-      show(first);
+      navigate({ node: structure.root, manifestId: first });
     })
     .catch(() => {
-      container.innerHTML = `<p class="collection-browser-message">${failed}</p>`;
+      message(failed);
     });
 
   return {
-    get tify(): TifyInstance | null {
-      return tify;
-    },
     tree,
+    get viewer(): Mango | null {
+      return viewer;
+    },
   };
 }
 

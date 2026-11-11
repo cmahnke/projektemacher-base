@@ -1,8 +1,9 @@
 {{/*
 Hugo Shortcode for browsing IIIF Collections using a tree
 (@mango-iiif/collection-navigator). Selected manifests are displayed with the
-configured Presentation API viewer (TIFY by default), loaded in-place without
-reloading the page.
+Mango viewer (@mango-iiif/iiif-viewer), loaded in-place without reloading the
+page. The Mango bundle is built with esbuild code splitting, keeping the
+lazy-loaded renderers (AV, PDF, 3D) out of the entry chunk.
 
 Parameters:
 * collectionUrl - The url to the collection. Relative urls are resolved
@@ -54,11 +55,16 @@ Parameters:
 
 {{- $id := printf "_iiif-collection-%s" (md5 (printf "%s-%d" $collectionUrl .Ordinal)) -}}
 
+{{- $jsEntry := resources.Get "ts/iiif/collection.ts" -}}
+{{- $jsOpts := dict "format" "esm" "splitting" true "minify" true "target" "es2022" "targetPath" "js/mango-viewer.js" -}}
+{{- $js := $jsEntry | js.Build $jsOpts | fingerprint -}}
+
 <div class="iiif">
   <div class="collection-browser"{{ $height | safeHTMLAttr }}>
     <mango-collection-tree id="{{ $id }}-tree"{{ $sortMode | safeHTMLAttr }}{{ $dateDiscovery | safeHTMLAttr }}></mango-collection-tree>
     <div id="{{ $id }}-viewer" class="viewer collection-viewer"></div>
   </div>
+  <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
   <script type="text/javascript">
     window.addEventListener('DOMContentLoaded', (event) => {
       var browser = iiifCollectionBrowser('#{{ $id | safeJS }}-tree', '#{{ $id | safeJS }}-viewer', '{{ $collectionUrl }}');
@@ -67,5 +73,5 @@ Parameters:
 </div>
 
 {{- define "_partials/shortcodes/iiif/collection-metadata.html" -}}
-  {{- (dict "js" (slice "ts/iiif/collection.ts") "scss" (slice "scss/iiif/collection-mango.scss")) | jsonify -}}
+  {{- (dict "js" (slice) "scss" (slice "scss/iiif/collection-mango.scss")) | jsonify -}}
 {{- end -}}
