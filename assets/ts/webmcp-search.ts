@@ -1,4 +1,5 @@
 interface PagefindSearchApi {
+  options(options: Record<string, unknown>): Promise<void>;
   search(
     query: string,
     options?: { filters?: Record<string, string[]> },
@@ -40,7 +41,13 @@ let pagefindApi: Promise<PagefindSearchApi> | undefined;
 function loadPagefind(bundlePath: string): Promise<PagefindSearchApi> {
   if (pagefindApi === undefined) {
     const bundleUrl = bundlePath + "pagefind.js";
-    pagefindApi = import(bundleUrl) as Promise<PagefindSearchApi>;
+    pagefindApi = import(bundleUrl).then(async (api) => {
+      /* Keep index loading off the web worker under automation: worker
+         requests bypass request interception, so CI would fetch the deployed
+         index from production instead of the local build */
+      await api.options({ noWorker: navigator.webdriver === true });
+      return api;
+    }) as Promise<PagefindSearchApi>;
   }
   return pagefindApi;
 }

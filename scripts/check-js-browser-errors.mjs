@@ -24,6 +24,14 @@ const ignore404Contains = [
   'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com',
   'https://play.google.com/', 'livereload.js'
 ];
+// Pagefind loads its index inside a web worker, whose requests aren't covered
+// by the page's request interception. When the tested page navigates away, the
+// worker is terminated and its in-flight index requests fail with ERR_ABORTED.
+// A missing index file would surface as a 404 response instead, so ignoring
+// aborted requests for these assets loses no coverage.
+const ignoreAbortContains = [
+  'pagefind-entry.json', 'pagefind-worker.js', 'pagefind.js', '.pf_meta', 'wasm.'
+];
 const waitMs = 30000;
 var headless = true;
 let additionalBrowserArgs = [];
@@ -477,8 +485,12 @@ console.log('Wrote preference file to %s', prefFile);
       const url = request.url();
       try {
         if (page.isClosed() || !request.frame()) {
-          //await request.abort('blockedbyclient').catch(() => {});
           console.warn("Request for '%s' was canceled", url);
+          try {
+            request.continue({ url: mapToLocal(url), headers: request.headers() });
+          } catch {
+            // The request was already handled or its target is gone
+          }
           return;
         }
 
@@ -597,6 +609,9 @@ console.log('Wrote preference file to %s', prefFile);
                 console.log('[requestfailed] Ignoring request for %s', request.url());
             } else if (request.url().toLowerCase().endsWith("pdf")) {
                 console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
+            } else if (request.failure()?.errorText === 'net::ERR_ABORTED'
+                       && ignoreAbortContains.some(v => request.url().includes(v))) {
+                console.log('[requestfailed] Ignoring aborted Pagefind asset request for %s (worker teardown during navigation)', request.url());
             } else {
               if (headless) {
                 process.exit(124);
