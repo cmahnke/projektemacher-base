@@ -1,0 +1,21 @@
+{{- /*
+  Maps a Linked Art actor reference to a schema.org Person or Organization node.
+  Expects a Linked Art actor dict (id, type, _label) as input, returns a dict.
+*/ -}}
+
+{{- $type := "Person" -}}
+{{- with index . "type" -}}
+  {{- if eq . "Group" -}}
+    {{- $type = "Organization" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $actor := dict "@type" $type -}}
+{{- with index . "_label" -}}
+  {{- $actor = merge $actor (dict "name" .) -}}
+{{- end -}}
+{{- with index . "id" -}}
+  {{- $actor = merge $actor (dict "@id" .) -}}
+{{- end -}}
+
+{{- return $actor -}}

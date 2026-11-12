@@ -1,0 +1,38 @@
+{{- /*
+  Maps the CodeMeta document of a page to a schema.org SoftwareSourceCode node.
+  Expects a page as input, returns the node as JSON string.
+*/ -}}
+
+{{- $codemetaURISuffix := "#codemeta" -}}
+
+{{/* Sources are a local CITATION.cff, a cfffile or codemeta URL parameter or the codemeta output format */}}
+{{- $hasCodemeta := or (.OutputFormats.Get "codemeta") (.Resources.Get "CITATION.cff") (isset .Params "cfffile") (isset .Params "codemeta") -}}
+{{- if not $hasCodemeta -}}
+  {{- return "" -}}
+{{- end -}}
+
+{{- $codemeta := partial "metadata/codemeta/codemeta.json" . | transform.Unmarshal (dict "format" "json") -}}
+
+{{- $node := dict "@type" "SoftwareSourceCode" -}}
+{{- with .OutputFormats.Get "html" -}}
+  {{- $node = merge $node (dict "@id" (printf "%s%s" .Permalink $codemetaURISuffix)) -}}
+{{- end -}}
+
+{{/* CodeMeta properties are schema.org terms, the context and id are replaced */}}
+{{- range $key, $value := $codemeta -}}
+  {{- if in (slice "@context" "@id" "@type") $key -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $node = merge $node (dict $key $value) -}}
+{{- end -}}
+
+{{/* Reference to the machine readable CodeMeta document */}}
+{{- $subjectOf := slice -}}
+{{- with .OutputFormats.Get "codemeta" -}}
+  {{- $subjectOf = $subjectOf | append (dict "@type" "CreativeWork" "@id" .Permalink "url" .Permalink "encodingFormat" "application/ld+json") -}}
+{{- end -}}
+{{- with $subjectOf -}}
+  {{- $node = merge $node (dict "subjectOf" $subjectOf) -}}
+{{- end -}}
+
+{{- $node | jsonify -}}

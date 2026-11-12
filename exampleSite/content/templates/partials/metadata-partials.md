@@ -19,6 +19,12 @@ The `metadata/` partials build the JSON-LD documents for the [metadata output fo
 | `metadata/schema.org/util/author.html` | Author entity from `author`/`authors` front matter or site parameters |
 | `metadata/schema.org/util/about.html` | `about` entities |
 | `metadata/schema.org/util/iiif.html` | IIIF related entities |
+| `metadata/schema.org/util/visual-artwork.html` | `VisualArtwork` node mapped from the page's Linked Art record, see the [official mapping](https://linked.art/api/1.0/cookbook/mappings/schema/). `subjectOf` references the `linkedart.json` document |
+| `metadata/schema.org/util/software-source-code.html` | `SoftwareSourceCode` node mapped from the page's CodeMeta document (`CITATION.cff`, `cfffile` or `codemeta` parameters, or the `codemeta` output format). `subjectOf` references the `codemeta.json` document |
+| `metadata/schema.org/util/actor.html` | Linked Art actor (`Person`/`Group`) mapped to schema.org `Person`/`Organization` |
+
+Both entity partials expect a page as input and are meant to be combined into a
+`@graph`, for example by a site provided `schema.org/page.html`.
 
 Author related site parameters: `schemaPerson`, `publisher`, `orcid`, `author`, `authors`.
 
