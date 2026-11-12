@@ -141,13 +141,6 @@
   {{- $artwork = merge $artwork (dict "image" .) -}}
 {{- end -}}
 
-{{- with index $linkedArt "current_owner" -}}
-  {{- $holder := partial "metadata/schema.org/util/actor.html" (index . 0) -}}
-  {{- with $holder -}}
-    {{- $artwork = merge $artwork (dict "holdingArchive" $holder) -}}
-  {{- end -}}
-{{- end -}}
-
 {{/* Reference to the machine readable Linked Art document */}}
 {{- $subjectOf := slice -}}
 {{- with .OutputFormats.Get "linkedart" -}}
