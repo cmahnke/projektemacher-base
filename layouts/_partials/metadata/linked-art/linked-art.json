@@ -68,7 +68,8 @@
     {{- $endStr := printf "%04d-12-31T23:59:59Z" $year -}}
     {{- $beginDate := time $beginStr -}}
     {{- $endDate := time $endStr -}}
-    {{- $timespan := dict "type" "TimeSpan" "_label" .
+    {{/* _label needs to be a string, the date is an int */}}
+    {{- $timespan := dict "type" "TimeSpan" "_label" (printf "%d" $year)
         "begin_of_the_begin" ($beginDate.Format "2006-01-02T15:04:05Z")
         "end_of_the_end" ($endDate.Format "2006-01-02T15:04:05Z")
     -}}
@@ -220,11 +221,6 @@
     {{- $linkedArt = $linkedArt | merge (dict "subject_of" (slice $subjectOf)) -}}
   {{- end -}}
 
-  {{- with .references -}}
-    {{- $references := partial "metadata/linked-art/referenced_by.json" $page -}}
-    {{- $linkedArt = $linkedArt | merge (dict "referenced_by" $references) -}}
-  {{- end -}}
-
   {{- with .owner -}}
     {{- $owners := . -}}
     {{- if not (reflect.IsSlice .) -}}
@@ -276,18 +272,42 @@
       {{- $linkedArt = $linkedArt | merge (dict $key $struct) -}}
     {{- end -}}
   {{- end -}}
-  {{- with .rights -}}
-    {{- $rightName := .name -}}
-    {{- $rightURL := .url -}}
-    {{- $rights := dict "type" "Right"  -}}
-    {{- $rights = $rights | merge (dict "classified_as" (slice (dict "id" $rightURL "type" "Type" "_label" $rightName))) -}}
-    {{- $rights = $rights | merge (dict "identified_by" (slice (dict "type" "Name" "content" $rightName))) -}}
-    {{- if isset $linkedArt "subject_to" -}}
-      {{- with $linkedArt.subject_to -}}
-        {{- $rights = $rights | append (slice .) -}}
-      {{- end -}}
+
+  {{- with .references -}}
+    {{/* The Linked Art property is referred_to_by, site level statements might be present already.
+        Note: the piped form '$x | merge $y' keeps the values of $x, so 'merge $x $y' is used to let the new values win */}}
+    {{- $references := partial "metadata/linked-art/referenced_by.json" $page -}}
+    {{- with index $linkedArt "referred_to_by" -}}
+      {{- $references = append . $references -}}
     {{- end -}}
-    {{- $linkedArt = $linkedArt | merge (dict "subject_to" $rights) -}}
+    {{- $linkedArt = merge $linkedArt (dict "referred_to_by" $references) -}}
+  {{- end -}}
+  {{- with .rights -}}
+    {{/* Rights are carried as a LinguisticObject, the license URL is the access point of the digital object carrying it */}}
+    {{- $rightsList := slice -}}
+    {{- if reflect.IsMap . -}}
+      {{- $rightsList = slice . -}}
+    {{- else -}}
+      {{- $rightsList = . -}}
+    {{- end -}}
+    {{- $rights := slice -}}
+    {{- range $rightsList -}}
+      {{- if not (and (isset . "name") (isset . "url")) -}}
+        {{- errorf "[metadata/linked-art/linked-art.json] rights needs to be a dict with name and url: %#v" . -}}
+      {{- end -}}
+      {{- $rights = $rights | append (dict
+          "type" "LinguisticObject"
+          "_label" .name
+          "classified_as" (slice (dict "id" "http://vocab.getty.edu/aat/300435434" "type" "Type" "_label" "Rights Statement"))
+          "identified_by" (slice (dict "type" "Name" "content" .name))
+          "digitally_carried_by" (slice (dict "type" "DigitalObject" "access_point" (slice (dict "id" .url "type" "DigitalObject"))))
+      ) -}}
+    {{- end -}}
+    {{/* The web page statement might be present already, both are kept */}}
+    {{- with index $linkedArt "subject_of" -}}
+      {{- $rights = append . $rights -}}
+    {{- end -}}
+    {{- $linkedArt = merge $linkedArt (dict "subject_of" $rights) -}}
   {{- end -}}
 {{- end -}}
 {{- return $linkedArt -}}
