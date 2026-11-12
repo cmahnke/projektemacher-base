@@ -69,7 +69,7 @@ declare module '@pagefind/modular-ui' {
     [key: string]: unknown;
   }
   export class Instance {
-    constructor(options?: { bundlePath?: string });
+    constructor(options?: { bundlePath?: string; noWorker?: boolean });
     add(component: Input | ResultList | FilterPills): void;
     on(event: 'filters', listener: (data: PagefindFilters) => void): void;
     triggerSearch(query: string): void;

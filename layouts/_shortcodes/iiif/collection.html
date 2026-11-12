@@ -1,0 +1,77 @@
+{{/*
+Hugo Shortcode for browsing IIIF Collections using a tree
+(@mango-iiif/collection-navigator). Selected manifests are displayed with the
+Mango viewer (@mango-iiif/iiif-viewer), loaded in-place without reloading the
+page. The Mango bundle is built with esbuild code splitting, keeping the
+lazy-loaded renderers (AV, PDF, 3D) out of the entry chunk.
+
+Parameters:
+* collectionUrl - The url to the collection. Relative urls are resolved
+                  against the page permalink. Defaults to the collection
+                  generated for the site's home page.
+* height        - Optional CSS height of the browser area, defaults to '80vh'
+* sortMode      - Optional tree ordering: 'volume' (default) or 'date'
+* dateDiscovery - Optional date discovery mode: 'collection-only' (default),
+                  'adaptive', 'on-demand' or 'all'
+*/}}
+
+{{- $collectionUrl := .Get "collectionUrl" -}}
+{{- $urlBase := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
+
+{{- if $collectionUrl -}}
+  {{- if not (or (hasPrefix $collectionUrl "http://") (hasPrefix $collectionUrl "https://")) -}}
+    {{- $collectionUrl = printf "%s%s" $urlBase $collectionUrl -}}
+  {{- end -}}
+{{- else -}}
+  {{- with site.Home.OutputFormats.Get "iiif-collection" -}}
+    {{- $collectionUrl = .Permalink -}}
+  {{- else -}}
+    {{- errorf "The %q shortcode requires a 'collectionUrl' or the site home to generate an 'iiif-collection' output" .Name -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $sortMode := "" -}}
+{{- with .Get "sortMode" -}}
+  {{- if in (slice "volume" "date") . -}}
+    {{- $sortMode = printf " sort-mode=\"%s\"" . -}}
+  {{- else -}}
+    {{- errorf "The %q shortcode parameter 'sortMode' must be one of 'volume' or 'date', got %q" .Name . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $dateDiscovery := "" -}}
+{{- with .Get "dateDiscovery" -}}
+  {{- if in (slice "collection-only" "adaptive" "on-demand" "all") . -}}
+    {{- $dateDiscovery = printf " date-discovery=\"%s\"" . -}}
+  {{- else -}}
+    {{- errorf "The %q shortcode parameter 'dateDiscovery' must be one of 'collection-only', 'adaptive', 'on-demand' or 'all', got %q" .Name . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $height := "" -}}
+{{- with .Get "height" -}}
+  {{- $height = printf " style=\"--collection-browser-height:%s\"" . -}}
+{{- end -}}
+
+{{- $id := printf "_iiif-collection-%s" (md5 (printf "%s-%d" $collectionUrl .Ordinal)) -}}
+
+{{- $jsEntry := resources.Get "ts/iiif/collection.ts" -}}
+{{- $jsOpts := dict "format" "esm" "splitting" true "minify" true "target" "es2022" "targetPath" "js/mango-viewer.js" -}}
+{{- $js := $jsEntry | js.Build $jsOpts | fingerprint -}}
+
+<div class="iiif">
+  <div class="collection-browser"{{ $height | safeHTMLAttr }}>
+    <mango-collection-tree id="{{ $id }}-tree"{{ $sortMode | safeHTMLAttr }}{{ $dateDiscovery | safeHTMLAttr }}></mango-collection-tree>
+    <div id="{{ $id }}-viewer" class="viewer collection-viewer"></div>
+  </div>
+  <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  <script type="text/javascript">
+    window.addEventListener('DOMContentLoaded', (event) => {
+      var browser = iiifCollectionBrowser('#{{ $id | safeJS }}-tree', '#{{ $id | safeJS }}-viewer', '{{ $collectionUrl }}');
+    });
+  </script>
+</div>
+
+{{- define "_partials/shortcodes/iiif/collection-metadata.html" -}}
+  {{- (dict "js" (slice) "scss" (slice "scss/iiif/collection-mango.scss")) | jsonify -}}
+{{- end -}}
