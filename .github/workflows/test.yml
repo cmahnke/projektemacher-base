@@ -281,6 +281,32 @@ jobs:
           pnpm install --ignore-scripts
           ls node_modules
 
+  test_ocr:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips-dev libvips-tools libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev liblzma-dev
+
+      - name: Install pyenv
+        run: |
+          git clone --depth 1 https://github.com/pyenv/pyenv.git "$HOME/.pyenv"
+          echo "$HOME/.pyenv/bin" >> "$GITHUB_PATH"
+          echo "PYENV_ROOT=$HOME/.pyenv" >> "$GITHUB_ENV"
+
+      - name: Setup OCR environment
+        run: |
+          ./scripts/ocr/setup.sh --skip-llama-check --skip-models
+
+      - name: Run OCR tests
+        run: |
+          scripts/ocr/.venv/bin/python scripts/ocr/test-ocr.py
+
   test_python_versions:
     runs-on: ubuntu-26.04
     strategy:

@@ -53,3 +53,8 @@ exampleSite/pagefind/
 # pdfjs-dist package doesn't ship web/viewer.html)
 static/pdfjs/
 exampleSite/static/pdfjs/
+
+# OCR (scripts/ocr): virtual environment and downloaded model files
+scripts/ocr/.venv/
+scripts/ocr/models/
+scripts/ocr/**/__pycache__/
