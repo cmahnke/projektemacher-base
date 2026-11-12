@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e -o pipefail
+
+if test -z "`which sudo`" ; then
+  apt-get update
+  apt-get install -y sudo
+fi
+
+sudo dpkg --remove --force-remove-reinstreq libjxl-tools
+
+# This needs the `software-properties-common` package
+#sudo add-apt-repository -y universe
+#sudo apt-get update
+sudo apt-get install -y libstdc++6 libtcmalloc-minimal4 libgcc-s1 libc6 libhwy-dev libpng16-16 libbrotli1 libjpeg8 libgif7
+
+mkdir -p /tmp/jxl
+cd /tmp/jxl
+
+curl -fsSL -O https://github.com/libjxl/libjxl/releases/download/v0.13.0/jxl-debs-amd64-ubuntu-24.04.tar
+tar xf jxl-debs-amd64-ubuntu-24.04.tar
+
+sudo apt install -y -f ./libjxl_0.13.0*_amd64.deb
+sudo apt install -y -f ./jxl_0.13.0*_amd64.deb
+sudo apt install -y -f ./libjxl-dev_0.13.0*_amd64.deb
+
+sudo apt-get -f install
+
+cd ..
+rm -rf jxl

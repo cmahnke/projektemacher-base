@@ -44,6 +44,7 @@ declare global {
       initialCenter?: number[],
     ): unknown;
     iiifPresentationViewer(selector: string, uri: string): unknown;
+    iiifCollectionBrowser(treeSelector: string, viewerSelector: string, uri: string): unknown;
     lucienne(
       element: string | HTMLElement,
       urlInput: boolean,

@@ -89,7 +89,11 @@ window.addEventListener('DOMContentLoaded', () => {
   })
 
   const instance = new Instance({
-      bundlePath: bundlePath
+      bundlePath: bundlePath,
+      /* Pagefind runs the index in a web worker; worker requests bypass the
+         request interception used by the QA checks, so keep the index loading
+         on the main thread when driven by automation (navigator.webdriver) */
+      noWorker: navigator.webdriver === true
   });
   instance.add(new Input({
       inputElement: searchInputSelector
