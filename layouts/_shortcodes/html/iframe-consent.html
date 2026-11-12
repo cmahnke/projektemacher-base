@@ -7,6 +7,15 @@
     {{- $preview = . -}}
 {{- end -}}
 
+{{/* Rewrite relative src/href values in the preview HTML to the page's resource URLs, so the URLs are language aware, see https://gohugo.io/configuration/markup/#duplicateresourcefiles */}}
+{{- range $match := findRE `[\s'"](src|href)=['"][^'"]*['"]` $preview -}}
+    {{- $value := replaceRE `^[\s'"](?:src|href)=['"]([^'"]*)['"]$` "$1" $match -}}
+    {{- $url := partial "get-page-resource.html" (dict "path" $value "page" $.Page) -}}
+    {{- if $url -}}
+        {{- $preview = strings.Replace $preview $match (strings.Replace $match $value $url 1) 1 -}}
+    {{- end -}}
+{{- end -}}
+
 {{- partial "html/iframe-consent.html" (dict "iframe" $iframe "preview" $preview  ) -}}
 
 {{- define "_partials/shortcodes/html/iframe-consent-metadata.html" -}}

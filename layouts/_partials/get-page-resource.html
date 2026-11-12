@@ -1,0 +1,23 @@
+{{/*
+	Resolves a relative path against a page's resources, mirroring Hugo's embedded
+	render hooks, see https://gohugo.io/configuration/markup/#duplicateresourcefiles
+	This is needed for multilingual sites using `markup.goldmark.duplicateResourceFiles = false`,
+	where shared page resources are only published for the default content language.
+	Expects a dict with "path" (string) and "page" (page object), returns the resource's
+	URL or "" if the path is absolute or couldn't be resolved as a page resource.
+*/}}
+{{- $url := "" -}}
+{{- $u := urls.Parse .path -}}
+{{- if and (not $u.IsAbs) $u.Path -}}
+	{{- $p := strings.TrimPrefix "./" $u.Path -}}
+	{{- with .page.Resources.Get $p -}}
+		{{- $url = .RelPermalink -}}
+		{{- with $u.RawQuery -}}
+			{{- $url = printf "%s?%s" $url . -}}
+		{{- end -}}
+		{{- with $u.Fragment -}}
+			{{- $url = printf "%s#%s" $url . -}}
+		{{- end -}}
+	{{- end -}}
+{{- end -}}
+{{- return $url -}}

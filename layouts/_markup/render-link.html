@@ -1,7 +1,15 @@
 {{- $debug := partialCached "functions/debug/enabled.html" .Page -}}
 {{- $target := .Destination -}}
+{{/* Resolve relative destinations against the page's resources, so the URLs are language aware, see https://gohugo.io/configuration/markup/#duplicateresourcefiles */}}
+{{- with partial "get-page-resource.html" (dict "path" $target "page" .Page) -}}
+  {{- $target = . -}}
+{{- end -}}
+{{- $attributes := "" -}}
+{{- range $key, $value := .Attributes -}}
+  {{- $attributes = printf "%s %s=\"%s\"" $attributes $key ($value | htmlEscape) -}}
+{{- end -}}
 {{- if not site.Params.wikidata -}}
-  <a href="{{ $target | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
+  <a href="{{ $target | safeURL }}"{{ $attributes | safeHTML }}{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
 {{- else -}}
   {{- $wikidataID := "" -}}
 
@@ -82,9 +90,9 @@
   {{- end -}}
   {{- if or (hasPrefix $target "https://www.wikidata.org/wiki/Q") (hasPrefix $target "https://www.wikidata.org/entity/") -}}
     {{- $wikidataID = replaceRE `(?m)https://www.wikidata.org/wiki/(.*)` "$1" $target -}}
-    <a class="wikidata" {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
+    <a class="wikidata" {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ $target | safeURL }}"{{ $attributes | safeHTML }}{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
   {{- else -}}
-    <a {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ .Destination | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
+    <a {{ if ne $wikidataID "" }}data-wikidata-entity="{{ $wikidataID }}" {{ end }}href="{{ $target | safeURL }}"{{ $attributes | safeHTML }}{{ with .Title}} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
   {{- end -}}
 {{- end -}}
 {{- "" -}}

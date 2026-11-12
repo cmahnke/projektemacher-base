@@ -32,6 +32,9 @@ const ignore404Contains = [
 const ignoreAbortContains = [
   'pagefind-entry.json', 'pagefind-worker.js', 'pagefind.js', '.pf_meta', 'wasm.'
 ];
+// HTTP error responses don't fire 'requestfailed' (from the network's point of
+// view the request completed), so they are audited via the 'response' event
+const failedResponses = [];
 const waitMs = 30000;
 var headless = true;
 let additionalBrowserArgs = [];
@@ -77,6 +80,14 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('css-ignore', {
     description: 'Comma separated class names to exclude from the undefined CSS class check',
+    type: 'string'
+  })
+  .option('console-fail', {
+    description: 'Fail the build (exit 130) when the browser logs console error messages instead of warning only',
+    type: 'boolean'
+  })
+  .option('console-ignore', {
+    description: 'Comma separated message substrings to exclude from the console error check',
     type: 'string'
   })
   .help()
@@ -206,6 +217,21 @@ if (argv.cssIgnore) {
 }
 const cssFailures = [];
 let cssPagesChecked = 0;
+
+const consoleIgnoreDefault = [
+    // Known noisy message that doesn't indicate a broken page
+    'GPU stall due to ReadPixels'
+];
+const consoleIgnore = new Set(consoleIgnoreDefault);
+if (argv.consoleIgnore) {
+    for (const entry of argv.consoleIgnore.split(',')) {
+        const trimmed = entry.trim();
+        if (trimmed) {
+            consoleIgnore.add(trimmed);
+        }
+    }
+}
+const consoleFailures = [];
 
 // Runs inside the page: classes defined in any loaded stylesheet vs. classes
 // used on elements. Recurses into nested grouping rules (media/supports/
@@ -553,7 +579,30 @@ console.log('Wrote preference file to %s', prefFile);
     });
 
     page.on('response', response => {
-        console.log('Browser: Got response for %s', response.url());
+        const url = response.url();
+        console.log('Browser: Got response for %s', url);
+        if (response.status() < 400) {
+            return;
+        }
+        let isLocal = false;
+        try {
+            isLocal = new URL(url).origin === localOrigin;
+        } catch {
+            isLocal = false;
+        }
+        if (!isLocal) {
+            return;
+        }
+        const urlPath = url.split('?')[0];
+        const fileName = urlPath.split('/').pop();
+        if (ignore404Exact.includes(fileName) || ignore404Contains.some(v => url.includes(v))) {
+            console.log('[response] Ignoring failed response for %s', url);
+            return;
+        }
+        if (!failedResponses.some(failure => failure.url === url)) {
+            failedResponses.push({ url: url, status: response.status() });
+        }
+        console.log('[response] Got HTTP error status %d for %s', response.status(), url);
     });
 
     // EVENT LISTENERS MOVED OUTSIDE THE LOOP TO PREVENT MEMORY LEAKS & DUPLICATE LOGS
@@ -562,6 +611,27 @@ console.log('Wrote preference file to %s', prefFile);
         if (msg.text().includes('GPU stall due to ReadPixels')) {
           console.log("Got GPU related error message: " + msg.text());
           page.setDefaultTimeout(60*1000);
+        }
+        if (msg.type() === 'error') {
+          const text = msg.text();
+          const ignored = [...consoleIgnore].some(v => text.includes(v)) ||
+            (!argv.gpu && (text.includes('Error creating WebGL context') || text.includes('Unable to create WebGPU adapter')));
+          if (ignored) {
+            console.log('[console] Ignoring browser error message "%s"', text);
+          } else {
+            consoleFailures.push({ url: currentUrl, text: text });
+            console.log('[console] Got browser error message "%s" on %s', text, currentUrl);
+            if (argv.consoleFail) {
+              console.log('[console] --console-fail given, exiting with code 130');
+              if (headless) {
+                process.exit(130);
+              } else {
+                console.log(`Debug mode, waiting ${waitMs}ms before exit`);
+                await new Promise(resolve => setTimeout(resolve, waitMs));
+                process.exit(130);
+              }
+            }
+          }
         }
         if (checkMesages.length) {
           for (const m of checkMesages) {
@@ -625,9 +695,11 @@ console.log('Wrote preference file to %s', prefFile);
     });
 
     const checkedUrls = [];
+    var currentUrl = '';
     // Fixed loop iteration
     for (let i = 0; i < tests.length; i++) {
         const testItem = tests[i];
+        currentUrl = testItem.url || testItem;
         let localFile = testItem.url || testItem;
         let fragment;
 
@@ -787,6 +859,23 @@ console.log('Wrote preference file to %s', prefFile);
             await browser.close();
             process.exit(127);
         }
+    }
+
+    console.log('Response check: %d request(s) answered with an HTTP error status', failedResponses.length);
+    for (const failure of failedResponses) {
+        console.log('[response] %s (HTTP %d)', failure.url, failure.status);
+    }
+    if (failedResponses.length > 0) {
+        await browser.close();
+        process.exit(129);
+    }
+
+    console.log('Console check: %d browser error message(s) found', consoleFailures.length);
+    for (const failure of consoleFailures) {
+        console.log('[console] "%s" on %s', failure.text, failure.url);
+    }
+    if (consoleFailures.length > 0 && !argv.consoleFail) {
+        console.log('Warning only: rerun with --console-fail to fail the build, or exclude messages with --console-ignore');
     }
 
     console.log('CSS check: %d page(s) checked, %d page(s) with undefined classes', cssPagesChecked, cssFailures.length);

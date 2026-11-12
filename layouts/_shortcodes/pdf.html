@@ -1,7 +1,15 @@
 {{- $pdf := .Get "file" -}}
-{{/* Check for relative link (starting with a dot) */}}
-{{- $permalink_prefix := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
-{{- $pdf_permalink := printf "%s%s" $permalink_prefix $pdf -}}
+{{/* Resolve relative paths against the page's resources, the URL is language aware then, see https://gohugo.io/configuration/markup/#duplicateresourcefiles */}}
+{{- $pdf_permalink := partial "get-page-resource.html" (dict "path" $pdf "page" $.Page) -}}
+{{- if not $pdf_permalink -}}
+	{{- $u := urls.Parse $pdf -}}
+	{{- if $u.IsAbs -}}
+		{{- $pdf_permalink = $u.String -}}
+	{{- else -}}
+		{{- $permalink_prefix := $.Page.Permalink | replaceRE "\\.html$" "/" -}}
+		{{- $pdf_permalink = printf "%s%s" $permalink_prefix $pdf -}}
+	{{- end -}}
+{{- end -}}
 
 {{- $download := true -}}
 {{ if (.Get "download") }}
