@@ -284,7 +284,11 @@
       {{- range $annotationPage := (index $canvasItem "items" | default slice) -}}
         {{- /* Generated manifests carry exactly one AnnotationPage per canvas */ -}}
         {{- if not $appended -}}
-          {{- $annotationPage = merge $annotationPage (dict "items" (concat (index $annotationPage "items" | default slice) $canvasAnnotations)) -}}
+          {{- $pageItems := index $annotationPage "items" | default slice -}}
+          {{- range $ann := $canvasAnnotations -}}
+            {{- $pageItems = $pageItems | append $ann -}}
+          {{- end -}}
+          {{- $annotationPage = merge $annotationPage (dict "items" $pageItems) -}}
           {{- $appended = true -}}
         {{- end -}}
         {{- $newPages = $newPages | append $annotationPage -}}
