@@ -76,6 +76,19 @@
   {{- errorf "[iiif/3/manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
 {{- end -}}
 
+{{- /* Front matter annotations (iiif.annotations), expanded per canvas by
+      iiif/3/annotations.html and appended to the painting AnnotationPage
+      of the matching canvas below. Only pages are expanded, see
+      iiif/3/annotations.html for the contract */ -}}
+{{- $fmAnnotations := dict -}}
+{{- with .Params.iiif.annotations -}}
+  {{- if eq $.Kind "page" -}}
+    {{- $fmAnnotations = partial "iiif/3/annotations.html" (dict "page" $ "entries" . "urlBase" $urlBase "version" $version) -}}
+  {{- else -}}
+    {{- warnf "[iiif/3/manifest.json] iiif.annotations is only supported on pages, ignoring the value for %s" $.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $manifestItems := slice -}}
 {{- range $i, $res := $iiifResources -}}
   {{- $imageUrlBase := $urlBase -}}
@@ -254,6 +267,33 @@
 
   {{- $canvas = $canvas | merge (dict "items" (slice $annotationPage)) -}}
   {{- $manifestItems = $manifestItems | append $canvas -}}
+{{- end -}}
+
+{{- /* Append the front matter annotations to the matching canvases' painting
+      AnnotationPage. Canvases are matched by the name part of their id
+      (`.../canvas/{name}`), the same names the annotations partial resolves;
+      P4 Scene items don't carry canvas ids and are skipped */ -}}
+{{- if gt (len $fmAnnotations) 0 -}}
+  {{- $annotatedItems := slice -}}
+  {{- range $canvasItem := $manifestItems -}}
+    {{- $canvasName := replaceRE "^.*/canvas/" "" (printf "%v" (index $canvasItem "id")) -}}
+    {{- $canvasAnnotations := index $fmAnnotations $canvasName -}}
+    {{- if $canvasAnnotations -}}
+      {{- $newPages := slice -}}
+      {{- $appended := false -}}
+      {{- range $annotationPage := (index $canvasItem "items" | default slice) -}}
+        {{- /* Generated manifests carry exactly one AnnotationPage per canvas */ -}}
+        {{- if not $appended -}}
+          {{- $annotationPage = merge $annotationPage (dict "items" (concat (index $annotationPage "items" | default slice) $canvasAnnotations)) -}}
+          {{- $appended = true -}}
+        {{- end -}}
+        {{- $newPages = $newPages | append $annotationPage -}}
+      {{- end -}}
+      {{- $canvasItem = merge $canvasItem (dict "items" $newPages) -}}
+    {{- end -}}
+    {{- $annotatedItems = $annotatedItems | append $canvasItem -}}
+  {{- end -}}
+  {{- $manifestItems = $annotatedItems -}}
 {{- end -}}
 
 {{- $manifest = $manifest | merge (dict "items" $manifestItems) -}}

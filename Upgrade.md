@@ -259,6 +259,50 @@ Nothing. Sites wanting WebP output add the configuration, e.g.:
   format = 'webp'
 ```
 
+# IIIF manifest: front-matter annotations and completed page-metadata documentation
+
+The manifest generator now supports annotations via a new strict front-matter
+shorthand `iiif.annotations` (Presentation 3 and 4): each entry references a
+resource with `page` (same resolution chain as `iiif.structure`), optionally
+targets a canvas region with `xywh`, and carries a `body` — inline
+`TextualBody` (`value`, optionally `format`/`language`, language-map values
+expand to one body per language), an external resource (`id` + `type`) or no
+body at all (`motivation: highlighting` only). Annotation identifiers are
+generated at build time (`annotation/{canvas}/{slug}`), slugs are URL-safe and
+unique per canvas (generated as a running number when omitted), and the
+motivation defaults to `commenting`. Entries are validated strictly: unknown
+page references, hand-written `id`s, unknown motivations and body/slug
+violations abort the build. The key is only expanded on pages — sections warn
+and ignore, leaflet mode ignores it, and pre-made manifests
+(`iiif/existing-manifest.html`) don't inject front-matter annotations.
+
+Supporting changes:
+
+- The canvas reference resolution (resource `name` → `params.iiif` directory
+  → `src` basename, canvas names and ref index) moved from
+  `layouts/partials/iiif/3/structures.html` into the new shared partial
+  `layouts/partials/functions/iiif/canvas-refs.html`, used by both
+  `structures.html` and the new `layouts/partials/iiif/3/annotations.html`.
+  Pure code move — generated structures are unchanged.
+- New fixture page `exampleSite/content/iiif/annotations/` covering every
+  annotation body shape.
+- The [IIIF page metadata documentation](exampleSite/content/iiif/page-metadata.md)
+  is now a complete reference: it gained the `iiif.annotations`,
+  `iiif.attribution` and `iiif.baseURL` key rows, the dual purpose of
+  `iiif.manifest`, the object form of `preview`, the `year` fallback for the
+  automatic year-of-publication metadata, the page `description` → manifest
+  `summary` mapping, an `iiif.metadata` example, and new sections for
+  [Annotations](exampleSite/content/iiif/page-metadata.md) and
+  [pre-made manifests](exampleSite/content/iiif/page-metadata.md) (the
+  `iiif.manifest`/`iiif.baseURL` rewriting contract of
+  `iiif/existing-manifest.html` was previously only documented in the
+  partial's header comment).
+
+## What sites need to do
+
+Nothing. The feature is opt-in per page via `iiif.annotations`; existing
+front matter behaves exactly as before.
+
 # Housekeeping
 
 The changes in this section are **optional**: no consuming site has to apply

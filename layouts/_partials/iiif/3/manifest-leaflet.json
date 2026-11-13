@@ -48,6 +48,10 @@
   {{- warnf "[iiif/3/manifest-leaflet.json] .Params.iiif.structure is ignored in leaflet mode, computed ranges win: %s" $.RelPermalink -}}
 {{- end -}}
 
+{{- with .Params.iiif.annotations -}}
+  {{- warnf "[iiif/3/manifest-leaflet.json] .Params.iiif.annotations is ignored in leaflet mode: %s" $.RelPermalink -}}
+{{- end -}}
+
 {{- $iiifResources := slice -}}
 
 {{- if eq .Kind "page" -}}

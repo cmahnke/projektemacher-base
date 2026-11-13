@@ -1,0 +1,247 @@
+{{- /*
+  Expands the strict front-matter annotation shorthand (`.Params.iiif.annotations`)
+  into IIIF Presentation `Annotation` items, keyed by canvas name. Called from
+  `iiif/3/manifest.json` after `$urlBase` and `$version` are known; the items
+  are appended to the target canvas's painting AnnotationPage.
+
+  Contract (per entry):
+    page:       page012           required, reference to one of the page's
+                                  `resources`, resolved by the resource's
+                                  `name`, the `params.iiif` directory, or the
+                                  `src` basename (without extension) — built
+                                  by `functions/iiif/canvas-refs.html`, the
+                                  same chain `iiif/3/structures.html` uses.
+                                  The canvas NAME is then derived per the
+                                  `iiif/3/manifest.json` rule (name, full
+                                  `params.iiif` directory, or plain-image src
+                                  without extension), so identifiers and
+                                  targets always match the generated canvas
+                                  ids — including nested tile paths without
+                                  a resource `name`, where the basename chain
+                                  would differ
+    xywh:       "x,y,w,h"         optional pixel fragment on the canvas,
+                                  whole canvas when omitted
+    motivation: commenting         optional, default `commenting`, one of the
+                                  W3C Web Annotation motivations used by IIIF
+    label:      {de: ["Titel"]}   optional IIIF label object, coerced to strings
+    slug:       transcription-1   optional URL-safe identifier suffix, becomes
+                                  `annotation/{canvas}/{slug}`; generated as a
+                                  per-canvas running number when omitted.
+                                  Duplicates per canvas (including collisions
+                                  with generated numbers) abort the build
+    body:                         one of
+                                  - {value: "…", format: "text/plain"|"text/html",
+                                     language: "de"} → TextualBody; `value` may
+                                     be a language map ({de: …, en: …}) which
+                                     expands to one TextualBody per language
+                                  - {id: "…", type: "Image"|…, format: "…"} →
+                                    external resource (passed through)
+                                  - omitted: only valid with motivation
+                                    `highlighting`
+
+  Output: dict canvasName → slice of version-aware Annotation dicts, ready to
+  be appended to the canvas's AnnotationPage items.
+
+  Version handling mirrors the painting annotations in `iiif/3/manifest.json`:
+  Presentation 3 uses string motivations and string targets (`canvas/id` or
+  `canvas/id#xywh=…`), Presentation 4 uses motivation arrays and object
+  targets (SpecificResource for fragments, like `iiif/3/manifest-leaflet.json`).
+
+  Only page bundles are expanded: `iiif/3/manifest.json` warns and skips on
+  sections, leaflet mode ignores the key (its canvases are computed), and
+  pre-made manifests (`iiif/existing-manifest.html`) don't inject front-matter
+  annotations.
+
+  Uses a single top-level `return`: Hugo < 0.166 supports only one `return`
+  statement with a value per partial.
+*/ -}}
+
+{{- $page := .page -}}
+{{- $entries := .entries -}}
+{{- $urlBase := .urlBase -}}
+{{- $version := .version -}}
+{{- if not $version -}}
+  {{- $version = partial "functions/iiif/presentation-version.html" $page -}}
+{{- end -}}
+
+{{- $refs := partial "functions/iiif/canvas-refs.html" (dict "page" $page) -}}
+{{- $refIndex := index $refs "refIndex" -}}
+
+{{- /* W3C Web Annotation motivations used by IIIF, painting is reserved for the manifest's own resources */ -}}
+{{- $motivations := slice "assessing" "bookmarking" "classifying" "commenting" "describing" "highlighting" "identifying" "linking" "modifying" "questioning" "replying" "tagging" -}}
+
+{{- $out := dict -}}
+{{- /* Slug suffixes seen per canvas, for duplicate detection (given and generated) */ -}}
+{{- $usedSlugs := dict -}}
+
+{{- range $i, $entry := $entries -}}
+  {{- if not (reflect.IsMap $entry) -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d is not an object (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+  {{- with index $entry "id" -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d has a hand-written id '%v', identifiers are generated — use the slug shorthand (%s)" $i . $page.RelPermalink -}}
+  {{- end -}}
+
+  {{- $ref := printf "%v" (index $entry "page" | default "") -}}
+  {{- if eq $ref "" -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d has no page reference (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+  {{- if not (isset $refIndex $ref) -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d references unknown page '%v' (%s)" $i $ref $page.RelPermalink -}}
+  {{- end -}}
+  {{- $res := index $page.Params.resources (index $refIndex $ref) -}}
+  {{- /* Canvas name per the iiif/3/manifest.json rule: the resource's `name`,
+        its `params.iiif` directory (may be nested, e.g. `tiles/page0001`) or
+        the plain image src without extension — annotation identifiers and
+        targets must match the generated canvas ids exactly, which is why the
+        name is computed here instead of reusing the canvas-refs basename.
+        Audio resources only get a usable canvas with a resource `name`,
+        3D models become Presentation 4 Scenes (not Canvases) and can't be
+        annotation targets */ -}}
+  {{- $mediaMain := "" -}}
+  {{- with $page.Resources.Get (printf "%v" $res.src) -}}
+    {{- $mediaMain = index (split (string .MediaType) "/") 0 -}}
+  {{- end -}}
+  {{- $canvas := printf "%v" ($res.name | default "") -}}
+  {{- if and (eq $canvas "") (ne $mediaMain "audio") -}}
+    {{- with $res.params -}}
+      {{- with index . "iiif" -}}
+        {{- $canvas = path.Dir (printf "%v" .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if eq $canvas "" -}}
+      {{- $canvas = strings.TrimSuffix (path.Ext (printf "%v" $res.src)) (printf "%v" $res.src) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $mediaMain "model" -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d references the 3D model '%v', annotations are only supported on Canvas items, not Presentation 4 Scenes (%s)" $i $ref $page.RelPermalink -}}
+  {{- end -}}
+  {{- if eq $canvas "" -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d: cannot determine a canvas name for page '%v', set a resource 'name' (%s)" $i $ref $page.RelPermalink -}}
+  {{- end -}}
+
+  {{- $motivation := printf "%v" (index $entry "motivation" | default "commenting") -}}
+  {{- if not (in $motivations $motivation) -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d uses unsupported motivation '%v' (%s)" $i $motivation $page.RelPermalink -}}
+  {{- end -}}
+
+  {{- /* Slug: given or generated as a per-canvas running number */ -}}
+  {{- $slug := printf "%v" (index $entry "slug" | default "") -}}
+  {{- $usedForCanvas := index $usedSlugs $canvas -}}
+  {{- if not $usedForCanvas -}}
+    {{- $usedForCanvas = dict -}}
+  {{- end -}}
+  {{- if eq $slug "" -}}
+    {{- $slug = printf "%d" (add (len $usedForCanvas) 1) -}}
+  {{- end -}}
+  {{- if isset $usedForCanvas $slug -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d has duplicate slug '%v' on canvas '%v' (%s)" $i $slug $canvas $page.RelPermalink -}}
+  {{- end -}}
+  {{- if findRE "[^a-zA-Z0-9_-]" $slug -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d has a non URL-safe slug '%v', allowed characters are letters, digits, dash and underscore (%s)" $i $slug $page.RelPermalink -}}
+  {{- end -}}
+  {{- $usedForCanvas = merge $usedForCanvas (dict $slug true) -}}
+  {{- $usedSlugs = merge $usedSlugs (dict $canvas $usedForCanvas) -}}
+
+  {{- /* Optional pixel fragment on the canvas */ -}}
+  {{- $xywh := printf "%v" (index $entry "xywh" | default "") -}}
+  {{- if ne $xywh "" -}}
+    {{- if not (findRE `^\d+,\d+,\d+,\d+$` $xywh) -}}
+      {{- errorf "[iiif/3/annotations.html] annotation entry #%d has an invalid xywh '%v', expected four comma separated integers 'x,y,w,h' (%s)" $i $xywh $page.RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Body: textual (value), external resource (id) or none (highlighting only) */ -}}
+  {{- $hasBody := false -}}
+  {{- $body := dict -}}
+  {{- if isset $entry "body" -}}
+    {{- $bodyEntry := index $entry "body" -}}
+    {{- if not (reflect.IsMap $bodyEntry) -}}
+      {{- errorf "[iiif/3/annotations.html] annotation entry #%d has a non-object body (%s)" $i $page.RelPermalink -}}
+    {{- end -}}
+    {{- $bodyValue := index $bodyEntry "value" -}}
+    {{- $bodyID := printf "%v" (index $bodyEntry "id" | default "") -}}
+    {{- if and (ne $bodyID "") (isset $bodyEntry "value") -}}
+      {{- errorf "[iiif/3/annotations.html] annotation entry #%d has a body with both 'id' and 'value' (%s)" $i $page.RelPermalink -}}
+    {{- end -}}
+    {{- if ne $bodyID "" -}}
+      {{- /* External resource body, passed through */ -}}
+      {{- $bodyType := printf "%v" (index $bodyEntry "type" | default "") -}}
+      {{- if eq $bodyType "" -}}
+        {{- errorf "[iiif/3/annotations.html] annotation entry #%d has an external body without 'type' (%s)" $i $page.RelPermalink -}}
+      {{- end -}}
+      {{- $body = dict "id" $bodyID "type" $bodyType -}}
+      {{- with index $bodyEntry "format" -}}
+        {{- $body = merge $body (dict "format" (printf "%v" .)) -}}
+      {{- end -}}
+      {{- with index $bodyEntry "language" -}}
+        {{- $body = merge $body (dict "language" (printf "%v" .)) -}}
+      {{- end -}}
+      {{- with index $bodyEntry "label" -}}
+        {{- $body = merge $body (dict "label" (partial "functions/iiif/coerce-language-map.html" .)) -}}
+      {{- end -}}
+      {{- $hasBody = true -}}
+    {{- else if isset $bodyEntry "value" -}}
+      {{- /* TextualBody: value is a string or a language map (one body per language) */ -}}
+      {{- $bodyFormat := printf "%v" (index $bodyEntry "format" | default "text/plain") -}}
+      {{- if reflect.IsMap $bodyValue -}}
+        {{- $bodies := slice -}}
+        {{- range $lang, $text := $bodyValue -}}
+          {{- $bodies = $bodies | append (dict "type" "TextualBody" "value" (printf "%v" $text) "format" $bodyFormat "language" $lang) -}}
+        {{- end -}}
+        {{- $body = $bodies -}}
+      {{- else -}}
+        {{- $body = dict "type" "TextualBody" "value" (printf "%v" $bodyValue) "format" $bodyFormat -}}
+        {{- with index $bodyEntry "language" -}}
+          {{- $body = merge $body (dict "language" (printf "%v" .)) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $hasBody = true -}}
+    {{- else -}}
+      {{- errorf "[iiif/3/annotations.html] annotation entry #%d has a body without 'value' or 'id' (%s)" $i $page.RelPermalink -}}
+    {{- end -}}
+  {{- else if ne $motivation "highlighting" -}}
+    {{- errorf "[iiif/3/annotations.html] annotation entry #%d has no body, only the motivation 'highlighting' allows that (%s)" $i $page.RelPermalink -}}
+  {{- end -}}
+
+  {{- $label := "" -}}
+  {{- with index $entry "label" -}}
+    {{- $label = partial "functions/iiif/coerce-language-map.html" . -}}
+    {{- if eq (len $label) 0 -}}
+      {{- errorf "[iiif/3/annotations.html] annotation entry #%d has an empty label object (%s)" $i $page.RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Presentation 3: string motivation and string target, 4: array motivation and object target */ -}}
+  {{- $canvasId := printf "%scanvas/%s" $urlBase $canvas -}}
+  {{- $target := $canvasId -}}
+  {{- if ne $xywh "" -}}
+    {{- $target = printf "%s#xywh=%s" $canvasId $xywh -}}
+  {{- end -}}
+  {{- $motivationOut := $motivation -}}
+  {{- $targetOut := $target -}}
+  {{- if eq $version 4 -}}
+    {{- $motivationOut = slice $motivation -}}
+    {{- $targetOut = dict "id" $canvasId "type" "Canvas" -}}
+    {{- if ne $xywh "" -}}
+      {{- $targetOut = dict "id" $target "type" "SpecificResource" "source" (dict "id" $canvasId "type" "Canvas") -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $annotation := dict "id" (printf "%sannotation/%s/%s" $urlBase $canvas $slug) "type" "Annotation" "motivation" $motivationOut "target" $targetOut -}}
+  {{- if ne $label "" -}}
+    {{- $annotation = merge $annotation (dict "label" $label) -}}
+  {{- end -}}
+  {{- if $hasBody -}}
+    {{- $annotation = merge $annotation (dict "body" $body) -}}
+  {{- end -}}
+
+  {{- $canvasAnnotations := index $out $canvas -}}
+  {{- if not $canvasAnnotations -}}
+    {{- $canvasAnnotations = slice -}}
+  {{- end -}}
+  {{- $canvasAnnotations = $canvasAnnotations | append $annotation -}}
+  {{- $out = merge $out (dict $canvas $canvasAnnotations) -}}
+{{- end -}}
+
+{{- return $out -}}
