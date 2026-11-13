@@ -54,6 +54,20 @@ Templates: `single.linkedart.json` and `linked-art-collection.json`. Render [Lin
     page = ["HTML", "linkedart"]
 ```
 
+## Validation
+
+The theme ships scripts to validate the generated IIIF and Linked Art documents, they are typically run against the build output after `hugo`:
+
+```shell
+./themes/projektemacher-base/scripts/validate-iiif.sh docs
+./themes/projektemacher-base/scripts/validate-linked-art.py docs
+```
+
+- `validate-iiif.sh` uses the [official Presentation API validator](https://github.com/IIIF/presentation-validator) and validates all `manifest.json` and `collection.json` files. The API version is detected from the `@context`, versions 2.0, 2.1, 3.0 and 4.0 (draft) are supported. The validator command can be overridden with `IIIF_VALIDATOR`, the validated versions with `IIIF_VERSIONS`.
+- `validate-linked-art.py` validates single object documents (files named `linkedart.json`) against the official [JSON schemas](https://linked.art/api/1.0/schema_docs/). Collections (type `Set`) are skipped, as the schemas don't cover them. The schema source defaults to the [linked.art repository](https://github.com/linked-art/linked.art/tree/master/docs/api/1.0/schema) and can be changed with `LA_SCHEMA_BASE` or `--schema-base`, e.g. to pin a specific revision. Downloaded schemas can be cached with `LA_SCHEMA_CACHE` or `--cache`.
+
+Both scripts expect the Python dependencies from the theme's `requirements.txt` (`iiif-validator` needs to be installed via `pip install git+https://github.com/IIIF/presentation-validator`).
+
 ## See also
 
 - [IIIF templates](iiif-templates/) — the other JSON-LD output formats

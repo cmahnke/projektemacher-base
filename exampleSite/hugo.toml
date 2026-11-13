@@ -31,6 +31,10 @@ disablePathToLower = true
   name = 'Christian Mahnke'
   uri = 'http://www.wikidata.org/entity/Q137668638'
 
+[params.iiif]
+  # Default browser for the 'iiif/collection' shortcode: 'kasane' (built-in
+  # default) or 'mango'. The shortcode's 'browser' parameter wins over this.
+  # collectionBrowser = 'mango'
 [params.webmentions]
   # Webmention/pingback collector endpoint (see the theme's
   # 'services/webmentions/README.md'). Enabled only when 'endpoint' is

@@ -1,0 +1,153 @@
+{{- /*
+  Maps the Linked Art record of a page to a schema.org VisualArtwork node.
+  Follows the official Linked Art schema.org mapping:
+  https://linked.art/api/1.0/cookbook/mappings/schema/
+  Expects a page as input, returns the node as JSON string.
+*/ -}}
+
+{{- $linkedArtURISuffix := "#linkedart" -}}
+{{- $descriptionAAT := "http://vocab.getty.edu/aat/300435416" -}}
+{{- $rightsAAT := "http://vocab.getty.edu/aat/300435434" -}}
+{{- $languageURI := printf "http://vocab.getty.edu/language/%s" .Language.Name -}}
+
+{{- $linkedArt := partial "metadata/linked-art/linked-art.json" . -}}
+
+{{- $artwork := dict "@type" "VisualArtwork" -}}
+{{- with .OutputFormats.Get "html" -}}
+  {{- $artwork = merge $artwork (dict "@id" (printf "%s%s" .Permalink $linkedArtURISuffix) "mainEntityOfPage" .Permalink) -}}
+{{- end -}}
+
+{{- with index $linkedArt "_label" -}}
+  {{- $artwork = merge $artwork (dict "name" .) -}}
+{{- end -}}
+
+{{- $producedBy := index $linkedArt "produced_by" -}}
+{{- with $producedBy -}}
+  {{- with index . "carried_out_by" -}}
+    {{- $artist := partial "metadata/schema.org/util/actor.html" (index . 0) -}}
+    {{- with $artist -}}
+      {{- $artwork = merge $artwork (dict "artist" $artist) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with index . "timespan" -}}
+    {{- with index . "begin_of_the_begin" -}}
+      {{- $artwork = merge $artwork (dict "dateCreated" ((time .).Format "2006-01-02")) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* classified_as ids are used as artform, technique and style entries are both part of it */}}
+{{- $artforms := slice -}}
+{{- with index $linkedArt "classified_as" -}}
+  {{- range . -}}
+    {{- with index . "id" -}}
+      {{- $artforms = $artforms | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $artforms = $artforms | uniq -}}
+{{- with $artforms -}}
+  {{- $artwork = merge $artwork (dict "artform" .) -}}
+{{- end -}}
+
+{{/* Description statements are mapped to abstract, the entry matching the page language wins */}}
+{{- $abstract := "" -}}
+{{- with index $linkedArt "referred_to_by" -}}
+  {{- range . -}}
+    {{- $isDescription := false -}}
+    {{- with index . "classified_as" -}}
+      {{- range . -}}
+        {{- if eq (index . "id") $descriptionAAT -}}
+          {{- $isDescription = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $isDescription -}}
+      {{- $entry := . -}}
+      {{- with index $entry "content" -}}
+        {{- if not $abstract -}}
+          {{- $abstract = index $entry "content" -}}
+        {{- end -}}
+        {{- $isPageLanguage := false -}}
+        {{- with index $entry "language" -}}
+          {{- range . -}}
+            {{- if eq (index . "id") $languageURI -}}
+              {{- $isPageLanguage = true -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $isPageLanguage -}}
+          {{- $abstract = index $entry "content" -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $abstract -}}
+  {{- $artwork = merge $artwork (dict "abstract" .) -}}
+{{- end -}}
+
+{{/* Rights statements carry the copyrightNotice, the URL of the digital object carrying them is the license */}}
+{{- with index $linkedArt "subject_of" -}}
+  {{- range . -}}
+    {{- $isRights := false -}}
+    {{- with index . "classified_as" -}}
+      {{- range . -}}
+        {{- if eq (index . "id") $rightsAAT -}}
+          {{- $isRights = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $isRights -}}
+      {{- with index . "identified_by" -}}
+        {{- with index . 0 -}}
+          {{- with index . "content" -}}
+            {{- $artwork = merge $artwork (dict "copyrightNotice" .) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- with index . "digitally_carried_by" -}}
+        {{- with index . 0 -}}
+          {{- with index . "access_point" -}}
+            {{- with index . 0 -}}
+              {{- with index . "id" -}}
+                {{- $artwork = merge $artwork (dict "license" .) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Only image resources are used, IIIF info documents aren't images */}}
+{{- $images := slice -}}
+{{- with index $linkedArt "representation" -}}
+  {{- range . -}}
+    {{- with index . "digitally_shown_by" -}}
+      {{- range . -}}
+        {{- $format := index . "format" -}}
+        {{- if and $format (hasPrefix $format "image/") -}}
+          {{- with index . "id" -}}
+            {{- $images = $images | append . -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $images -}}
+  {{- $artwork = merge $artwork (dict "image" .) -}}
+{{- end -}}
+
+{{/* Reference to the machine readable Linked Art document */}}
+{{- $subjectOf := slice -}}
+{{- with .OutputFormats.Get "linkedart" -}}
+  {{- $subjectOf = $subjectOf | append (dict "@type" "CreativeWork" "@id" .Permalink "url" .Permalink "encodingFormat" "application/ld+json") -}}
+{{- end -}}
+{{- with $subjectOf -}}
+  {{- $artwork = merge $artwork (dict "subjectOf" $subjectOf) -}}
+{{- end -}}
+
+{{- $artwork | jsonify -}}

@@ -1,0 +1,7 @@
+pyvips
+httpx
+toml
+termcolor
+python-frontmatter
+requests
+pillow

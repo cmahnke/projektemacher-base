@@ -42,7 +42,11 @@ academic
 pagefind[bin]
 requests_ratelimiter
 beautifulsoup4
-#git+https://github.com/IIIF/presentation-validator
+# Validators
+# Used by scripts/validate-iiif.sh and scripts/validate-linked-art.py
+git+https://github.com/IIIF/presentation-validator
+jsonschema
+referencing
 # Archive
 #wayback-machine-archiver
 # Indexer

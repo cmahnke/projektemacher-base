@@ -36,3 +36,32 @@
   # fail with a clear error (see 'skills/hugo-upgrade/fixes.md' and 'Upgrade.md').
   [module.hugoVersion]
     min = "0.166.0"
+  # Note: declaring any mount drops ALL implicit default mounts of this
+  # component ('assets', 'content', 'data', 'i18n', 'layouts', 'static'),
+  # so they are re-declared explicitly here - see the example site's
+  # 'hugo.toml' for the same pattern.
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+  [[module.mounts]]
+    source = "content"
+    target = "content"
+  [[module.mounts]]
+    source = "data"
+    target = "data"
+  [[module.mounts]]
+    source = "i18n"
+    target = "i18n"
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+  # The Kasane viewer (<iiif-viewer>) injects its stylesheet at runtime via
+  # 'new URL("style.css", import.meta.url)' relative to its JS bundle, so the
+  # package stylesheet must be reachable as an asset and is published next to
+  # the bundle ('ts/iiif/style.css') by the shortcodes using the element.
+  [[module.mounts]]
+    source = "node_modules/iiif-kasane/dist/style.css"
+    target = "assets/ts/iiif/style.css"

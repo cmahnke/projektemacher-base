@@ -25,6 +25,50 @@ skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
 | Image shortcodes: configurable output format (`format` parameter / `[params.images]`) | opt-in; defaults keep the historical output, non-processable images (SVG, JXL, …) now pass through unchanged instead of failing the build — see ["Image shortcodes: configurable output formats"](#image-shortcodes-configurable-output-formats) | informational |
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
 | Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | consumers work around the gap with a global `@use "ol-iiif"` in their `assets/scss/base.scss`: `blaufusstoelpel`, `kraehenbeisser`, `backsteinexpressionismus`, `kleiderbuegel` (`as *`) and `never-built` (with a `$icon-fill` variable override); `christianmahnke`'s `base.scss` carries a stale comment claiming the metadata covers it. Documented as site responsibility in the example site; long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
+| Collection browser default: `iiif/collection` now renders Kasane | behaviour change: `{{</* iiif/collection */>}}` renders the Kasane viewer (`iiif-kasane`) instead of the Mango tree; `browser="mango"` (or `[params.iiif] collectionBrowser = "mango"`) restores it, `sortMode`/`dateDiscovery` were dropped — the new `iiif/kasane` shortcode ships alongside. Pending consumer adoption: `projektemacher` (`collection-browser` page decides), `christianmahnke` (site-local kasane shortcode + `style.css` mount can be deleted) — see ["Collection browser: Kasane is the new default for `iiif/collection`"](#collection-browser-kasane-is-the-new-default-for-iiifcollection) | done (consumer follow-ups open) |
+
+# IIIF output validation in CI
+
+The `test_hugo_versions` job in `.github/workflows/test.yml` now validates the
+generated IIIF output: after building `exampleSite/` it installs the
+[official Presentation API validator](https://github.com/IIIF/presentation-validator)
+(`iiif-validator`) and runs `scripts/validate-iiif.sh exampleSite/docs`,
+which validates every `manifest.json` and `collection.json` in the build
+output — the API version is detected from the `@context`, versions 2.0, 2.1,
+3.0 and 4.0 (draft) are supported. Locally the same check runs via
+`./scripts/validate-iiif.sh exampleSite/docs` after a tests-environment
+build (the validator installs via `pip install
+git+https://github.com/IIIF/presentation-validator`).
+
+## What sites need to do
+
+IIIF validation is **mandatory** for consuming sites that provide IIIF
+manifests or collections: any build output containing `manifest.json` or
+`collection.json` files (produced by the `iiif/iiif`, `iiif/presentation`
+and `iiif/collection` shortcodes or the `iiif` output formats) must be
+validated against the official Presentation API validator. Run the theme's
+script against the build output after every `hugo` build:
+
+```bash
+./themes/projektemacher-base/scripts/validate-iiif.sh <build-output>
+```
+
+For CI, add the same two steps to the site's workflow after the Hugo build —
+install the validator and run the script, mirroring the theme's
+`test_hugo_versions` job:
+
+```yaml
+- name: Install IIIF validator
+  run: pip install git+https://github.com/IIIF/presentation-validator
+
+- name: Validate IIIF output
+  run: ./themes/projektemacher-base/scripts/validate-iiif.sh <build-output>
+```
+
+The script exits 0 when no manifests are found, so it can run unconditionally
+in any consumer's CI. Script details and the related `validate-linked-art.py`
+(optional, not part of the mandatory gate) are documented in the example site
+under "Metadata formats" → "Validation".
 
 # Run the JS runtime check against the example site
 
@@ -258,6 +302,112 @@ Nothing. Sites wanting WebP output add the configuration, e.g.:
 [params.images]
   format = 'webp'
 ```
+
+# Collection browser: Kasane is the new default for `iiif/collection`
+
+The `iiif/collection` shortcode keeps its name, but the browser it renders is
+now configurable — the [Kasane viewer](https://github.com/nakamura196/iiif-kasane)
+(`iiif-kasane`, `<iiif-viewer>` web component) is the new default, the
+previous Mango tree browser remains available. Kasane's collection browser
+lives in the viewer's structure side panel: items open directly, nested
+collections are navigated, and ordering switches between 'as listed' and 'by
+date' (timeline view); Presentation 2 collections are upgraded on load.
+
+- The browser is selected with the shortcode's new `browser` parameter
+  (`kasane` | `mango`) or site wide via
+  `[params.iiif] collectionBrowser = "mango"` — the shortcode parameter wins,
+  the built-in default stays `kasane`.
+- The `sortMode` and `dateDiscovery` parameters were **removed**: the Mango
+  tree runs with its upstream defaults, while the Kasane browser provides its
+  own ordering UI. Leftover `sortMode`/`dateDiscovery` attributes are no
+  longer read (and no longer passed to `mango-collection-tree`) — they are
+  ignored silently instead of failing the build, so a stale `sortMode="date"`
+  changes the rendered output (volume ordering) without an error.
+
+- The Kasane support ships as new theme parts: the `iiif/kasane` shortcode
+  (manifest **and** collection viewer), the shared partial
+  `layouts/_partials/shortcodes/iiif/kasane-viewer.html`, the assets
+  `assets/ts/iiif/kasane.ts` / `assets/scss/iiif/kasane.scss`, the theme
+  dependency `iiif-kasane` and a theme module mount publishing the package
+  stylesheet as `ts/iiif/style.css`. The Kasane element injects that
+  stylesheet at runtime relative to its bundle URL
+  (`new URL("style.css", import.meta.url)`), which is why the shortcode builds
+  its own ESM bundle instead of following the site's `js` format (the theme's
+  default IIFE + concatenation breaks `import.meta.url`).
+
+## What sites need to do
+
+- Sites using `iiif/collection` and wanting the previous tree browser add
+  `browser="mango"` to the shortcode calls (or set
+  `[params.iiif] collectionBrowser = "mango"` site wide). Affected known
+  consumers: `projektemacher` (its `collection-browser` page renders Kasane
+  after this change unless updated), and this theme's own exampleSite docs
+  page (updated in the same change).
+- Sites carrying a site-local copy of the Kasane shortcode
+  (`christianmahnke`: `layouts/_shortcodes/iiif/kasane.html`,
+  `assets/ts/iiif/kasane.ts`, `assets/scss/iiif/kasane.scss` and the
+  `node_modules/iiif-kasane/dist/style.css` → `static/ts/iiif/style.css`
+  module mount) can delete them — the theme now provides everything. The
+  site-side `style.css` mount should be dropped in particular, otherwise
+  `/ts/iiif/style.css` is published twice (static file and asset output).
+- Sites that never use Kasane: no action, the dependency is only bundled when
+  one of the shortcodes renders.
+
+# IIIF manifest: front-matter annotations and completed page-metadata documentation
+
+The manifest generator now supports annotations via a new strict front-matter
+shorthand `resources[].params.annotations` (Presentation 3 and 4): annotations
+attach to the canvas of their own resource (there is no `page` reference),
+optionally target a canvas region with `xywh`, and carry a `body` — inline
+`TextualBody` (`value`, optionally `format`/`language`, language-map values
+expand to one body per language), a page bundle resource (`id` referencing a
+resource of the same bundle by path or `name`, emitted as an `Image` body with
+format and dimensions), an external resource (`id` starting with `/` or `http`
+plus `type`) or no body at all. Annotation identifiers are
+generated at build time (`annotation/{canvas}/{slug}`), slugs are URL-safe and
+unique per canvas (generated as a running number when omitted), and the
+motivation defaults to `supplementing` for resource bodies, `commenting` for
+text bodies and `highlighting` without a body. Supported motivations are the W3C Web
+Annotation motivations used by IIIF (`assessing`, `bookmarking`, `classifying`,
+`commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`,
+`moderating`, `questioning`, `replying`, `tagging`) plus the IIIF Presentation 3
+motivation `supplementing`. Entries are validated strictly: hand-written `id`s,
+a legacy `page` key, `xywh` fragments outside the canvas dimensions,
+annotations on audio resources without a resource `name` or on 3D models
+(Presentation 4 Scenes), unknown motivations and body/slug
+violations abort the build. Annotations are only expanded on pages — sections
+warn and ignore, leaflet mode ignores them, and pre-made manifests
+(`iiif/existing-manifest.html`) don't inject front-matter annotations.
+
+Supporting changes:
+
+- The canvas reference resolution (resource `name` → `params.iiif` directory
+  → `src` basename, canvas names and ref index) moved from
+  `layouts/partials/iiif/3/structures.html` into the new shared partial
+  `layouts/partials/functions/iiif/canvas-refs.html`, used by
+  `structures.html`. Pure code move — generated structures are unchanged.
+- New fixture page `exampleSite/content/iiif/annotations/` covering every
+  annotation body shape.
+- The [IIIF page metadata documentation](exampleSite/content/iiif/page-metadata.md)
+  is now a complete reference: it gained the `iiif.attribution` and
+  `iiif.baseURL` key rows, the dual purpose of
+  `iiif.manifest`, the object form of `preview`, the `year` fallback for the
+  automatic year-of-publication metadata, the page `description` → manifest
+  `summary` mapping, an `iiif.metadata` example, and new sections for
+  [Annotations](exampleSite/content/iiif/page-metadata.md) and
+  [pre-made manifests](exampleSite/content/iiif/page-metadata.md) (the
+  `iiif.manifest`/`iiif.baseURL` rewriting contract of
+  `iiif/existing-manifest.html` was previously only documented in the
+  partial's header comment).
+
+## What sites need to do
+
+Nothing — the feature is opt-in per resource. Pages that used the interim
+page-level `iiif.annotations` key move each entry into the
+`params.annotations` of the resource its `page` referenced and drop the
+`page` key (the old key and the entry key abort the build now). Pages that
+used `motivation: modifying` switch it to an appropriate supported value —
+that value is not a standard motivation and is no longer accepted.
 
 # Housekeeping
 

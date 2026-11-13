@@ -26,21 +26,32 @@ Pages without an explicit `outputs` entry are collected into collections only if
 | --- | --- | --- |
 | `iiif.presentationVersion` | int | `3` (default) or `4` (draft), see [Presentation 4](presentation-4/) |
 | `iiif.behavior` | string | Manifest `behavior`, e.g. `paged` (default), `continuous`, `individuals` |
-| `iiif.metadata` | list | Descriptive `metadata` labels/values as JSON list |
+| `iiif.metadata` | list | Descriptive `metadata` entries with `label`/`value` (language maps, coerced to strings), see the example below |
 | `iiif.structure` | list | Logical structure (ranges) from `label`/`page`/`end`/`items` entries — range and canvas IDs are generated at build time, see [Structure](#structure) |
 | `iiif.rights` | string | Rights statement URL |
+| `iiif.attribution` | string | Custom attribution text for the manifest `requiredStatement` (default: "Provided by Projektemacher" / "Bereitgestellt von Projektemacher"); the legacy `iiifAttribution` key aborts the build |
 | `iiif.logo.img` | string | Logo image URL |
 | `iiif.logo.url` | string | IIIF Image API service endpoint for the logo |
 | `iiif.context` | string | Marks the page as IIIF content, e.g. `http://iiif.io/api/presentation/3/context.json` — enables the viewer in `<head>` and the page body |
-| `iiif.manifest` | string | Manifest URL used by the embedded viewer (defaults to the page's `manifest.json`) |
+| `iiif.manifest` | string | Two purposes: with a presentation `iiif.context`, the manifest URL used by the embedded viewer (defaults to the page's `manifest.json`); without, a [pre-made manifest](#pre-made-manifests) file looked up in the page bundle |
+| `iiif.baseURL` | string | Base URL a [pre-made manifest](#pre-made-manifests) was generated with (the `--baseURL` of the generating build) — mandatory when that manifest contains absolute URLs |
 | `iiifclass` | string | Additional CSS class for the `iiif` content wrapper |
 | `subtype` | string | Additional CSS class for the `iiif` content wrapper |
-| `preview` | string | Resource `name` used for manifest/collection thumbnails (falls back to resources named `preview`, `cover`, `front`, then the first resource) |
+| `preview` | string or object | Resource `name` — or an object `{image: <resource src>}` matched against `src` — used for manifest/collection thumbnails (falls back to resources named `preview`, `cover`, `front`, then the first resource) |
 | `linkedart` | any | If present, adds a `seeAlso` link to the page's `linkedart` output format |
 
 Legacy keys (`iiifMetadata`, `iiifStructure`) are no longer read and no longer abort the build — migrate to `iiif.metadata` / `iiif.structure`.
 
-Pages with an `issueYear` front matter param get an automatic `Erscheinungsjahr` / `Year of publication` entry appended to the manifest `metadata`; `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
+The page `description` becomes the manifest `summary`. Pages with an `issueYear` or `year` front matter param get an automatic `Erscheinungsjahr` / `Year of publication` entry appended to the manifest `metadata`; `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
+
+`iiif.metadata` entries accept language maps for both `label` and `value` (scalar values are coerced to strings):
+
+```yaml
+iiif:
+  metadata:
+    - label: {en: ["Shelf mark"], de: ["Signatur"]}
+      value: {en: ["Ms. 123"], de: ["Ms. 123"]}
+```
 
 ## Resources
 
@@ -57,6 +68,8 @@ resources:
 ```
 
 Canvas labels are also derived automatically from the image directory name (`page0001`, `cover`, `front`, `back`, `title`, `end`, …).
+
+Resource params can also carry `annotations` — non-painting annotations on the resource's canvas, see [Annotations](#annotations).
 
 For section manifests, `resources` of the section page itself and of all child pages are aggregated into one manifest.
 
@@ -160,6 +173,94 @@ Rules:
 - Hand-written `id`s or legacy IIIF Range entries abort the build
 - `iiif.structure` is only expanded on pages; sections keep the raw value (leaflet mode computes its own ranges and ignores the key, see above)
 - The same structure data drives the PDF bookmarks in `scripts/pdf.py`
+
+## Annotations
+
+Annotations attach to a resource via `params.annotations` — each entry appends an `Annotation` to that resource's canvas painting `AnnotationPage`, with identifiers generated at build time using the same deployment prefix as the rest of the manifest — the front matter carries no IDs or URLs:
+
+```yaml
+---
+title: Example
+outputs: [html, iiif-manifest]
+resources:
+  - src: page012.jpg
+    params:
+      iiif: page012/info.json
+      annotations:
+        # Inline text (TextualBody) on a canvas region, with label and explicit slug
+        - xywh: "120,300,800,600"
+          motivation: supplementing
+          label: {de: ["Transkription"]}
+          slug: transcription-1
+          body:
+            value: "Der Text der Anmerkung"
+            format: text/plain
+            language: de
+  - src: page013.jpg
+    params:
+      iiif: page013/info.json
+      annotations:
+        # Bilingual text: the language map value expands to one TextualBody per language,
+        # the slug and the motivation are generated (commenting)
+        - label: {de: ["Kommentar"]}
+          body:
+            value: {de: ["Deutscher Kommentar."], en: ["English comment."]}
+        # Page bundle resource as image body, the motivation is generated (supplementing)
+        - xywh: "0,0,600,400"
+          body:
+            id: photo.jpg
+        # External resource body
+        - body:
+            id: https://example.org/detail.jpg
+            type: Image
+            format: image/jpeg
+        # Highlighting a region without a body, the motivation is generated (highlighting)
+        - xywh: "0,0,100,100"
+---
+```
+
+A working example covering every body shape is available as [Annotations](annotations/).
+
+Rules:
+
+- Annotations attach to the canvas of their own resource — there is no `page` reference; the legacy page-level `iiif.annotations` key and a `page` entry key abort the build
+- `xywh` (optional) targets a pixel region `x,y,w,h` on the canvas; without it the annotation targets the whole canvas. Fragments are validated against the canvas dimensions — a region outside the canvas aborts the build, and only image canvases have pixel dimensions
+- `motivation` defaults to `supplementing` for resource bodies (`body.id`), `commenting` for text bodies (`body.value`) and `highlighting` without a body; supported values are the W3C Web Annotation motivations used by IIIF: `assessing`, `bookmarking`, `classifying`, `commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`, `moderating`, `questioning`, `replying`, `tagging`, plus the IIIF Presentation 3 motivation `supplementing` (`painting` is reserved for the manifest's own resources)
+- `slug` (optional) is the identifier suffix — the annotation ID becomes `annotation/{canvas}/{slug}`; when omitted a per-canvas running number (`1`, `2`, …) is generated. Slugs must be URL-safe (letters, digits, dash, underscore) and unique per canvas — duplicates, including collisions with generated numbers, abort the build
+- `label` is an optional IIIF label object, coerced to strings
+- `body` is one of:
+  - a text body: `value` as a string or a language map (one `TextualBody` per language), optional `format` (`text/plain` by default, `text/html` allowed) and `language`
+  - a page bundle resource: `id` referencing a resource of the same bundle by path or `name`, emitted as an `Image` body with the media type as `format` plus `width`/`height` — explicit `type`/`format`/`language` on a resource body abort the build
+  - an external resource: `id` starting with `/` or `http` plus `type` (e.g. `Image`, `Text`), optional `format` and `label`
+  - omitted: the motivation defaults to `highlighting`
+- Hand-written `id`s abort the build — identifiers are generated
+- Annotations are appended to the painting `AnnotationPage` of the target canvas, after the painting annotation
+- Annotations are only supported on image and audio resources (audio only with a resource `name`); 3D models become Presentation 4 Scenes and can't be annotation targets — the build aborts
+- Annotations are only expanded on pages: section manifests warn and ignore them, leaflet mode ignores them (its canvases are computed), and pre-made manifests don't inject front-matter annotations
+- Tify renders these annotations via the bundled `@projektemacher/tify-plugin-annotorious` plugin
+
+## Pre-made manifests
+
+A page bundle can carry an externally generated IIIF Presentation 3 manifest — e.g. produced by a digitisation or OCR pipeline — instead of building one from `resources`:
+
+```yaml
+---
+title: Example
+outputs: [html, iiif-manifest]
+iiif:
+  manifest: ./manifest.json                 # pre-made manifest file in the page bundle (file name only)
+  baseURL: https://build.example.org/mysite/ # the --baseURL the manifest was generated with
+---
+```
+
+Rules:
+
+- Only the file name is used; the file must live in the page bundle itself (looked up as a page resource, so this works with any content directory name)
+- The build aborts when the manifest contains absolute URLs without `iiif.baseURL`; manifests with relative URLs only need no param
+- Presentation 3 manifests get every URL-bearing field rewritten for the deployment environment (dev server or `productionIIIFURLPrefix`, like generated manifests): absolute URLs starting with `iiif.baseURL` are cut to the deployment prefix, relative URLs are prepended with it, external URLs are kept. Covered: canvas IDs, thumbnail IDs, annotation IDs and targets, painting body and service IDs, and renderings on canvas and manifest level. The manifest's own `id` is left untouched (it documents the source file; consumers fetch the served URL)
+- Thumbnail IDs are additionally snapped to the guaranteed `full/full/0/default.jpg` rendition — static level0 pipelines don't generate arbitrary widths — and the canvas dimensions are declared on the thumbnail entry
+- `iiif.structure` (if set) replaces the manifest's own `structures`; a warning is logged when replacing. Pre-made manifests without front-matter structures keep their own
+- Any other manifest version passes through unchanged; front-matter annotations are not injected into pre-made manifests
 
 ## Viewers
 

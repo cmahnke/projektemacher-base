@@ -255,6 +255,7 @@ Some shortcodes shipped with the theme require additional NPM packages and modul
 | `model` / `hdr-model` | `three` | – |
 | `hdr-model`, `hdr-canvas`, `hdr-check`, `hdr-canvas-check` | `@projektemacher/hdr-canvas` | – |
 | `chart` / `csv-chart` | `echarts` | – |
+| `iiif/kasane`, `iiif/collection` (kasane browser) | `iiif-kasane` | – (the theme ships the dependency and publishes the package stylesheet as `ts/iiif/style.css` via its own module mounts) |
 
 The shortcode asset pipeline (`partials/shortcodes/shortcode-helper.html`) only includes these on pages actually using the shortcode. Missing mounts produce a `warnf` message, the shortcode markup itself still renders.
 

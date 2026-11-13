@@ -1,0 +1,66 @@
+{{- /*
+  Builds the canvas reference index for a page: the ordered `canvasNames`
+  slice (aligned with the page's media resource indices, empty entries for
+  non-media resources) and a `refIndex` map from reference to resource index.
+  Used by `iiif/3/structures.html`.
+
+  Reference resolution (first non-empty of, per resource, registered for
+  every alias with first-wins semantics across resources):
+  - the resource's `name`
+  - the `params.iiif` directory basename
+  - the `src` basename (without extension)
+
+  A resource is referenced when its media type is image, audio or model —
+  the same chain `iiif/3/manifest.json` uses for canvas naming.
+
+  Expects a dict with the key:
+    page  the page whose front matter `resources` are indexed
+
+  Returns a dict:
+    canvasNames  slice of canvas names ("" for non-media resources)
+    refIndex     map reference -> resource index
+
+  Hugo < 0.166 supports only one `return` statement with a value per partial.
+*/ -}}
+
+{{- $page := .page -}}
+{{- $canvasNames := slice -}}
+{{- $refIndex := dict -}}
+{{- range $i, $res := $page.Params.resources -}}
+  {{- $src := printf "%v" ($res.src | default "") -}}
+  {{- $name := printf "%v" ($res.name | default "") -}}
+  {{- $iiifDir := "" -}}
+  {{- with $res.params -}}
+    {{- with index . "iiif" -}}
+      {{- $iiifDir = path.BaseName (path.Dir (printf "%v" .)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $isMedia := false -}}
+  {{- with $page.Resources.Get $src -}}
+    {{- if in (slice "image" "audio" "model") (index (split (string .MediaType) "/") 0) -}}
+      {{- $isMedia = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $isMedia -}}
+    {{- $canvas := $name -}}
+    {{- if eq $canvas "" -}}
+      {{- if ne $iiifDir "" -}}
+        {{- $canvas = $iiifDir -}}
+      {{- else -}}
+        {{- $canvas = path.BaseName $src -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $canvasNames = $canvasNames | append $canvas -}}
+    {{- range slice (path.BaseName $src) $name $iiifDir -}}
+      {{- if ne . "" -}}
+        {{- if not (isset $refIndex .) -}}
+          {{- $refIndex = merge $refIndex (dict . $i) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $canvasNames = $canvasNames | append "" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return dict "canvasNames" $canvasNames "refIndex" $refIndex -}}

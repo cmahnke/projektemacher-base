@@ -13,11 +13,15 @@
   {{- $class = (.Get "class") -}}
 {{- end -}}
 
-{{- $base := strings.Substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
-{{- $filename = printf "%s%s" $base $filename -}}
+{{/* Resolve relative paths against the page's resources, the URL is language aware then, see https://gohugo.io/configuration/markup/#duplicateresourcefiles */}}
+{{- $link := partial "get-page-resource.html" (dict "path" $filename "page" $.Page) -}}
+{{- if not $link -}}
+	{{- $base := strings.Substr ($.Page.Permalink | replaceRE "\\.html$" "/") (sub (len site.BaseURL) 1) -}}
+	{{- $link = printf "%s%s" $base $filename -}}
+{{- end -}}
 
 <div class="download-link">
   {{ if $content }}
-    <a class="{{ $class }}" href="{{ $filename }}" target="_blank" rel="noopener noreferrer">{{ $content | safeHTML }}</a>
+    <a class="{{ $class }}" href="{{ $link }}" target="_blank" rel="noopener noreferrer">{{ $content | safeHTML }}</a>
   {{ end }}
 </div>

@@ -1,0 +1,49 @@
+{{/*
+Shared partial for rendering the Kasane viewer (<iiif-viewer> web component,
+https://github.com/nakamura196/iiif-kasane). Used by the 'iiif/kasane'
+shortcode and the Kasane mode of the 'iiif/collection' shortcode.
+
+The element injects its stylesheet at runtime via
+'new URL("style.css", import.meta.url)' relative to the bundle URL, so the
+bundle must be built as ESM (the theme's default IIFE + concatenation would
+break 'import.meta.url') and the package stylesheet is published as a sibling
+of the bundle ('ts/iiif/style.css', mounted from the package by the theme's
+module mounts).
+
+Parameters (dict):
+* content - Absolute URL of the IIIF manifest or Collection (required)
+* locale  - Viewer locale, 'ja' or 'en' (optional, default 'en')
+* class   - Additional CSS classes for the wrapper (optional)
+* options - JSON string with viewer options, e.g. '{"panelOpen":false}'
+            (optional, see https://github.com/nakamura196/iiif-kasane README)
+* height  - Optional CSS height of the viewer area (optional)
+*/}}
+
+{{- $content := .content -}}
+{{- $locale := .locale | default "en" -}}
+{{- $class := "iiif-kasane" -}}
+{{- with .class -}}
+  {{- $class = printf "%s %s" $class . -}}
+{{- end -}}
+{{- $height := "" -}}
+{{- with .height -}}
+  {{- $height = printf " style=\"--collection-browser-height:%s\"" . -}}
+{{- end -}}
+
+{{- $jsEntry := resources.Get "ts/iiif/kasane.ts" -}}
+{{- if eq $jsEntry nil -}}
+  {{- errorf "[partials/shortcodes/iiif/kasane-viewer.html] Can't read ts/iiif/kasane.ts - is the theme's module mounts configuration intact?" -}}
+{{- end -}}
+{{- $jsOpts := dict "format" "esm" "splitting" true "minify" true "target" "es2022" "targetPath" "ts/iiif/kasane.js" -}}
+{{- $js := $jsEntry | js.Build $jsOpts | fingerprint -}}
+
+{{- $style := resources.Get "ts/iiif/style.css" -}}
+{{- if eq $style nil -}}
+  {{- errorf "[partials/shortcodes/iiif/kasane-viewer.html] Can't read ts/iiif/style.css - is the theme's module mounts configuration intact?" -}}
+{{- end -}}
+
+<div class="{{ $class }}"{{ $height | safeHTMLAttr }}>
+    <iiif-viewer iiif-content="{{ $content }}" locale="{{ $locale }}"{{ with .options }} options="{{ . }}"{{ end }}></iiif-viewer>
+</div>
+<link rel="preload" as="style" href="{{ $style.RelPermalink }}">
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

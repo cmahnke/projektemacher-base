@@ -9,7 +9,8 @@
                              resolved by the resource's `name`, the
                              `params.iiif` directory, or the `src` basename
                              (without extension) - the same chain
-                             `iiif/3/manifest.json` uses for canvas names
+                             `iiif/3/manifest.json` uses for canvas names,
+                             built by `functions/iiif/canvas-refs.html`
     end:   page015           optional span end (inclusive), expands to the
                              canvas list from `page` to `end`
     items:                   optional nested entries with the same shape;
@@ -77,43 +78,11 @@
       {{- $urlBase = printf "%s%s" site.Params.productionIIIFURLPrefix $localPath -}}
     {{- end -}}
 
-    {{- /* Reference lookup: ordered canvas names + ref -> resource index */ -}}
-    {{- range $i, $res := $page.Params.resources -}}
-      {{- $src := printf "%v" ($res.src | default "") -}}
-      {{- $name := printf "%v" ($res.name | default "") -}}
-      {{- $iiifDir := "" -}}
-      {{- with $res.params -}}
-        {{- with index . "iiif" -}}
-          {{- $iiifDir = path.BaseName (path.Dir (printf "%v" .)) -}}
-        {{- end -}}
-      {{- end -}}
-      {{- $isMedia := false -}}
-      {{- with $page.Resources.Get $src -}}
-        {{- if in (slice "image" "audio" "model") (index (split (string .MediaType) "/") 0) -}}
-          {{- $isMedia = true -}}
-        {{- end -}}
-      {{- end -}}
-      {{- if $isMedia -}}
-        {{- $canvas := $name -}}
-        {{- if eq $canvas "" -}}
-          {{- if ne $iiifDir "" -}}
-            {{- $canvas = $iiifDir -}}
-          {{- else -}}
-            {{- $canvas = path.BaseName $src -}}
-          {{- end -}}
-        {{- end -}}
-        {{- $canvasNames = $canvasNames | append $canvas -}}
-        {{- range slice (path.BaseName $src) $name $iiifDir -}}
-          {{- if ne . "" -}}
-            {{- if not (isset $refIndex .) -}}
-              {{- $refIndex = merge $refIndex (dict . $i) -}}
-            {{- end -}}
-          {{- end -}}
-        {{- end -}}
-      {{- else -}}
-        {{- $canvasNames = $canvasNames | append "" -}}
-      {{- end -}}
-    {{- end -}}
+    {{- /* Reference lookup: ordered canvas names + ref -> resource index,
+          shared with iiif/3/annotations.html */ -}}
+    {{- $refs := partial "functions/iiif/canvas-refs.html" (dict "page" $page) -}}
+    {{- $canvasNames = index $refs "canvasNames" -}}
+    {{- $refIndex = index $refs "refIndex" -}}
   {{- end -}}
 
   {{- range $i, $entry := $entries -}}

@@ -8,9 +8,9 @@
 {{- $styles := slice -}}
 {{- range $uri := $styleURIs -}}
   {{- range $labelLangs -}}
-    {{- $language := dict "_label" . "id" (printf "http://vocab.getty.edu/language/%s" .) "type" "Language" -}}
     {{- $label := partial "metadata/linked-art/getty-label.html" (dict "uri" $uri "lang" .) -}}
-    {{- $styles = $styles | append (dict "type" "Type" "classified_as" $style "_label" $label "language" (slice $language)) -}}
+    {{/* Types are references, so they need an id and can't carry language */}}
+    {{- $styles = $styles | append (dict "id" $uri "type" "Type" "_label" $label "classified_as" $style) -}}
   {{- end -}}
 {{- end -}}
 
