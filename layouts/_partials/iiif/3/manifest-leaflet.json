@@ -48,8 +48,10 @@
   {{- warnf "[iiif/3/manifest-leaflet.json] .Params.iiif.structure is ignored in leaflet mode, computed ranges win: %s" $.RelPermalink -}}
 {{- end -}}
 
-{{- with .Params.iiif.annotations -}}
-  {{- warnf "[iiif/3/manifest-leaflet.json] .Params.iiif.annotations is ignored in leaflet mode: %s" $.RelPermalink -}}
+{{- range $res := .Params.resources -}}
+  {{- with index (index $res "params" | default dict) "annotations" -}}
+    {{- warnf "[iiif/3/manifest-leaflet.json] params.annotations of resource '%v' are ignored in leaflet mode: %s" (index $res "src") $.RelPermalink -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $iiifResources := slice -}}
