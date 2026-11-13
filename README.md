@@ -9,6 +9,40 @@
 git submodule add https://github.com/cmahnke/projektemacher-base.git themes/projektemacher-base
 ```
 
+# AI skills
+
+The theme ships agent skills under `skills/` — markdown instructions for AI
+coding assistants (Claude Code, opencode and other tools reading the
+`SKILL.md` format) that guide them through working with the theme's content
+conventions.
+
+Currently available:
+
+* `add-wikidata` — adds `wikidata` front matter parameters to posts and tags,
+  including searching and verifying Wikidata entities via the Wikidata API
+* `hugo-upgrade` — guides Hugo version upgrades using the per-version
+  deprecation and fix notes from
+  [bep/myhugofixer](https://github.com/bep/myhugofixer), covering deprecated
+  config keys, page/site methods and template functions
+
+Agent tools only discover skills at a project's root, not inside the theme
+directory, so link or copy them into the site (paths relative to the site
+root):
+
+```bash
+# Claude Code
+mkdir -p .claude/skills
+ln -s ../../themes/projektemacher-base/skills/add-wikidata .claude/skills/add-wikidata
+
+# opencode
+mkdir -p .opencode/skill
+ln -s ../../themes/projektemacher-base/skills/add-wikidata .opencode/skill/add-wikidata
+```
+
+Instead of the symlinks, the `skills/` directory can also be copied into
+`.claude/skills/` or `.opencode/skill/` — keep in mind that copies need to be
+updated when the theme changes.
+
 # Site configuration
 
 ## CSS deduplication (PostCSS)
@@ -119,6 +153,25 @@ To generate IIIF JSON manifests you need to add the `JSON` output format to the 
 [outputs]
     page = ["HTML", "JSON"]
 ```
+
+### Place information
+
+Single page manifests carry place information derived from the page front
+matter, all of it optional — entries are only added when the data exists:
+
+* `Place`: names of all tags whose term page carries `params.itemType: place`
+  (bilingual, taken from the term page translations)
+* `Year`: the term page's `params.year`, one entry per matched place term
+* `Address`: the page's `params.address`
+* `Coordinates`: the page's `params.geojson.coordinates` (GeoJSON order,
+  longitude first, `Point` geometries only)
+
+If the page has a `params.geojson` geometry, the manifest also gets the
+[navPlace](https://iiif.io/api/extension/navplace/) extension property (a
+GeoJSON-LD `FeatureCollection`), and the manifest `@context` is switched to
+the array form with the navPlace context included first. The extension is
+Presentation 3 only: version 4 manifests and section manifests never
+receive it, and `params.geojson` without `coordinates` fails the build.
 
 ## Search (Pagefind)
 
