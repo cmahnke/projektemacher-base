@@ -217,7 +217,7 @@ Rules:
 
 - `page` is required and references a resource of the page bundle, resolved like `iiif.structure` (resource `name`, `params.iiif` directory or `src` basename)
 - `xywh` (optional) targets a pixel region `x,y,w,h` on the canvas; without it the annotation targets the whole canvas
-- `motivation` defaults to `commenting`; supported values are the W3C Web Annotation motivations used by IIIF: `assessing`, `bookmarking`, `classifying`, `commenting`, `describing`, `highlighting`, `identifying`, `linking`, `modifying`, `questioning`, `replying`, `tagging` (`painting` is reserved for the manifest's own resources)
+- `motivation` defaults to `commenting`; supported values are the W3C Web Annotation motivations used by IIIF: `assessing`, `bookmarking`, `classifying`, `commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`, `moderating`, `questioning`, `replying`, `tagging`, plus the IIIF Presentation 3 motivation `supplementing` (`painting` is reserved for the manifest's own resources)
 - `slug` (optional) is the identifier suffix — the annotation ID becomes `annotation/{canvas}/{slug}`; when omitted a per-canvas running number (`1`, `2`, …) is generated. Slugs must be URL-safe (letters, digits, dash, underscore) and unique per canvas — duplicates, including collisions with generated numbers, abort the build
 - `label` is an optional IIIF label object, coerced to strings
 - `body` is one of:

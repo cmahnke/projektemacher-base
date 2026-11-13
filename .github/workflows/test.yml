@@ -425,6 +425,12 @@ jobs:
         working-directory: exampleSite
         run: hugo --themesDir ../.. --environment tests ${{ matrix.args }}
 
+      - name: Install IIIF validator
+        run: pip install git+https://github.com/IIIF/presentation-validator
+
+      - name: Validate IIIF output
+        run: ./scripts/validate-iiif.sh exampleSite/public
+
   test_js_errors:
     runs-on: ubuntu-26.04
     steps:

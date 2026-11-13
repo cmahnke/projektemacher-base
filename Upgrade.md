@@ -26,6 +26,19 @@ skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
 | Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | consumers work around the gap with a global `@use "ol-iiif"` in their `assets/scss/base.scss`: `blaufusstoelpel`, `kraehenbeisser`, `backsteinexpressionismus`, `kleiderbuegel` (`as *`) and `never-built` (with a `$icon-fill` variable override); `christianmahnke`'s `base.scss` carries a stale comment claiming the metadata covers it. Documented as site responsibility in the example site; long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
 
+# IIIF output validation in CI
+
+The `test_hugo_versions` job in `.github/workflows/test.yml` now validates the
+generated IIIF output: after building `exampleSite/` it installs the
+[official Presentation API validator](https://github.com/IIIF/presentation-validator)
+(`iiif-validator`) and runs `scripts/validate-iiif.sh exampleSite/public`,
+which validates every `manifest.json` and `collection.json` in the build
+output — the API version is detected from the `@context`, versions 2.0, 2.1,
+3.0 and 4.0 (draft) are supported. Locally the same check runs via
+`./scripts/validate-iiif.sh exampleSite/public` after a tests-environment
+build (the validator installs via `pip install
+git+https://github.com/IIIF/presentation-validator`).
+
 # Run the JS runtime check against the example site
 
 The theme's CI now runs the puppeteer based runtime checker
@@ -270,7 +283,11 @@ expand to one body per language), an external resource (`id` + `type`) or no
 body at all (`motivation: highlighting` only). Annotation identifiers are
 generated at build time (`annotation/{canvas}/{slug}`), slugs are URL-safe and
 unique per canvas (generated as a running number when omitted), and the
-motivation defaults to `commenting`. Entries are validated strictly: unknown
+motivation defaults to `commenting`. Supported motivations are the W3C Web
+Annotation motivations used by IIIF (`assessing`, `bookmarking`, `classifying`,
+`commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`,
+`moderating`, `questioning`, `replying`, `tagging`) plus the IIIF Presentation 3
+motivation `supplementing`. Entries are validated strictly: unknown
 page references, hand-written `id`s, unknown motivations and body/slug
 violations abort the build. The key is only expanded on pages — sections warn
 and ignore, leaflet mode ignores it, and pre-made manifests
@@ -300,8 +317,10 @@ Supporting changes:
 
 ## What sites need to do
 
-Nothing. The feature is opt-in per page via `iiif.annotations`; existing
-front matter behaves exactly as before.
+Nothing, unless a page used `motivation: modifying` — that value is not a
+standard motivation and is no longer accepted, switch it to an appropriate
+supported value. Otherwise the feature is opt-in per page via
+`iiif.annotations`; existing front matter behaves exactly as before.
 
 # Housekeeping
 

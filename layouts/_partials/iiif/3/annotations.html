@@ -67,8 +67,8 @@
 {{- $refs := partial "functions/iiif/canvas-refs.html" (dict "page" $page) -}}
 {{- $refIndex := index $refs "refIndex" -}}
 
-{{- /* W3C Web Annotation motivations used by IIIF, painting is reserved for the manifest's own resources */ -}}
-{{- $motivations := slice "assessing" "bookmarking" "classifying" "commenting" "describing" "highlighting" "identifying" "linking" "modifying" "questioning" "replying" "tagging" -}}
+{{- /* W3C Web Annotation motivations used by IIIF plus the IIIF Presentation 3 motivation 'supplementing', painting is reserved for the manifest's own resources */ -}}
+{{- $motivations := slice "assessing" "bookmarking" "classifying" "commenting" "describing" "editing" "highlighting" "identifying" "linking" "moderating" "questioning" "replying" "supplementing" "tagging" -}}
 
 {{- $out := dict -}}
 {{- /* Slug suffixes seen per canvas, for duplicate detection (given and generated) */ -}}
