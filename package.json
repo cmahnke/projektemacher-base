@@ -20,6 +20,7 @@
     "highlight.js": "^11.12.0",
     "howler": "^2.2.4",
     "i18next": "^27.0.1",
+    "iiif-kasane": "0.4.0",
     "i18next-browser-languagedetector": "^8.3.0",
     "img-comparison-slider": "^8.0.7",
     "js-cookie": "^3.0.8",

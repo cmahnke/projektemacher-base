@@ -1,0 +1,18 @@
+.iiif-kasane {
+    display: block;
+    width: 100%;
+
+    iiif-viewer {
+        display: block;
+        width: 100%;
+        height: var(--collection-browser-height, 36rem);
+        background: var(--background-color, #fff);
+        color: var(--text-color, #000);
+    }
+
+    @media (max-width: 48rem) {
+        iiif-viewer {
+            height: var(--collection-browser-height, 24rem);
+        }
+    }
+}

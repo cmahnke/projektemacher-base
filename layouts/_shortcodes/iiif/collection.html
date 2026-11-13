@@ -1,18 +1,30 @@
 {{/*
-Hugo Shortcode for browsing IIIF Collections using a tree
-(@mango-iiif/collection-navigator). Selected manifests are displayed with the
-Mango viewer (@mango-iiif/iiif-viewer), loaded in-place without reloading the
-page. The Mango bundle is built with esbuild code splitting, keeping the
-lazy-loaded renderers (AV, PDF, 3D) out of the entry chunk.
+Hugo Shortcode for browsing IIIF Collections.
+
+The browser is selected with the 'browser' parameter, defaulting to 'kasane'
+(overridable site-wide via '[params.iiif] collectionBrowser'):
+
+* kasane - the Kasane viewer (@iiif-kasane, <iiif-viewer> web component) with
+  its collection browser in the structure side panel: items can be opened
+  directly, nested collections are navigated, ordering can be switched
+  between 'as listed' and 'by date' (with a timeline view).
+* mango  - a tree navigator (@mango-iiif/collection-navigator) with the Mango
+  viewer (@mango-iiif/iiif-viewer), loaded in-place without reloading the
+  page. The Mango bundle is built with esbuild code splitting, keeping the
+  lazy-loaded renderers (AV, PDF, 3D) out of the entry chunk. Nested
+  collections are expanded lazily, only expanded branches are loaded.
 
 Parameters:
 * collectionUrl - The url to the collection. Relative urls are resolved
                   against the page permalink. Defaults to the collection
                   generated for the site's home page.
-* height        - Optional CSS height of the browser area, defaults to '80vh'
-* sortMode      - Optional tree ordering: 'volume' (default) or 'date'
-* dateDiscovery - Optional date discovery mode: 'collection-only' (default),
-                  'adaptive', 'on-demand' or 'all'
+* browser       - 'kasane' (default) or 'mango'
+* height        - Optional CSS height of the browser area, defaults to
+                  '80vh' (mango) or '36rem' (kasane)
+* locale        - Viewer locale, 'ja' or 'en' (kasane only, default 'en')
+* class         - Additional CSS classes for the wrapper (kasane only)
+* options       - JSON string with viewer options (kasane only, see
+                  https://github.com/nakamura196/iiif-kasane README)
 */}}
 
 {{- $collectionUrl := .Get "collectionUrl" -}}
@@ -30,48 +42,52 @@ Parameters:
   {{- end -}}
 {{- end -}}
 
-{{- $sortMode := "" -}}
-{{- with .Get "sortMode" -}}
-  {{- if in (slice "volume" "date") . -}}
-    {{- $sortMode = printf " sort-mode=\"%s\"" . -}}
-  {{- else -}}
-    {{- errorf "The %q shortcode parameter 'sortMode' must be one of 'volume' or 'date', got %q" .Name . -}}
+{{- $browser := "kasane" -}}
+{{- with site.Params.iiif -}}
+  {{- with .collectionBrowser -}}
+    {{- $browser = . -}}
   {{- end -}}
 {{- end -}}
-
-{{- $dateDiscovery := "" -}}
-{{- with .Get "dateDiscovery" -}}
-  {{- if in (slice "collection-only" "adaptive" "on-demand" "all") . -}}
-    {{- $dateDiscovery = printf " date-discovery=\"%s\"" . -}}
-  {{- else -}}
-    {{- errorf "The %q shortcode parameter 'dateDiscovery' must be one of 'collection-only', 'adaptive', 'on-demand' or 'all', got %q" .Name . -}}
-  {{- end -}}
+{{- with .Get "browser" -}}
+  {{- $browser = . -}}
+{{- end -}}
+{{- if not (in (slice "kasane" "mango") $browser) -}}
+  {{- errorf "The %q shortcode parameter 'browser' must be one of 'kasane' or 'mango', got %q" .Name $browser -}}
 {{- end -}}
 
 {{- $height := "" -}}
 {{- with .Get "height" -}}
-  {{- $height = printf " style=\"--collection-browser-height:%s\"" . -}}
+  {{- $height = . -}}
 {{- end -}}
 
-{{- $id := printf "_iiif-collection-%s" (md5 (printf "%s-%d" $collectionUrl .Ordinal)) -}}
+{{- if eq $browser "kasane" -}}
+  {{- partial "shortcodes/iiif/kasane-viewer.html" (dict "content" $collectionUrl "locale" (.Get "locale") "class" (.Get "class") "options" (.Get "options") "height" $height) -}}
+{{- else -}}
+  {{- $heightAttr := "" -}}
+  {{- with $height -}}
+    {{- $heightAttr = printf " style=\"--collection-browser-height:%s\"" . -}}
+  {{- end -}}
 
-{{- $jsEntry := resources.Get "ts/iiif/collection.ts" -}}
-{{- $jsOpts := dict "format" "esm" "splitting" true "minify" true "target" "es2022" "targetPath" "js/mango-viewer.js" -}}
-{{- $js := $jsEntry | js.Build $jsOpts | fingerprint -}}
+  {{- $id := printf "_iiif-collection-%s" (md5 (printf "%s-%d" $collectionUrl .Ordinal)) -}}
 
-<div class="iiif">
-  <div class="collection-browser"{{ $height | safeHTMLAttr }}>
-    <mango-collection-tree id="{{ $id }}-tree"{{ $sortMode | safeHTMLAttr }}{{ $dateDiscovery | safeHTMLAttr }}></mango-collection-tree>
-    <div id="{{ $id }}-viewer" class="viewer collection-viewer"></div>
+  {{- $jsEntry := resources.Get "ts/iiif/collection.ts" -}}
+  {{- $jsOpts := dict "format" "esm" "splitting" true "minify" true "target" "es2022" "targetPath" "js/mango-viewer.js" -}}
+  {{- $js := $jsEntry | js.Build $jsOpts | fingerprint -}}
+
+  <div class="iiif">
+    <div class="collection-browser"{{ $heightAttr | safeHTMLAttr }}>
+      <mango-collection-tree id="{{ $id }}-tree"></mango-collection-tree>
+      <div id="{{ $id }}-viewer" class="viewer collection-viewer"></div>
+    </div>
+    <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+    <script type="text/javascript">
+      window.addEventListener('DOMContentLoaded', (event) => {
+        var browser = iiifCollectionBrowser('#{{ $id | safeJS }}-tree', '#{{ $id | safeJS }}-viewer', '{{ $collectionUrl }}');
+      });
+    </script>
   </div>
-  <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-  <script type="text/javascript">
-    window.addEventListener('DOMContentLoaded', (event) => {
-      var browser = iiifCollectionBrowser('#{{ $id | safeJS }}-tree', '#{{ $id | safeJS }}-viewer', '{{ $collectionUrl }}');
-    });
-  </script>
-</div>
+{{- end -}}
 
 {{- define "_partials/shortcodes/iiif/collection-metadata.html" -}}
-  {{- (dict "js" (slice) "scss" (slice "scss/iiif/collection-mango.scss")) | jsonify -}}
+  {{- (dict "js" (slice) "scss" (slice "scss/iiif/collection-mango.scss" "scss/iiif/kasane.scss")) | jsonify -}}
 {{- end -}}
