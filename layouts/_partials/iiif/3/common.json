@@ -59,8 +59,10 @@
 {{- $year := or .Params.issueYear .Params.year -}}
 {{- with $year -}}
   {{- $year := printf "%v" . -}}
-  {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year of publication") "de" (slice "Erscheinungsjahr")) "value" (dict "en" (slice $year) "de" (slice $year))) -}}
+  {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifYearOfPublication"))) "value" (dict site.Language.Lang (slice $year))) -}}
 {{- end -}}
+{{- /* Place, address and coordinates derived from the page, empty for section manifests */ -}}
+{{- $metadata = collections.Append $metadata (partial "iiif/3/metadata-place.json" .) -}}
 {{- with $metadata -}}
   {{- $common = $common | merge (dict "metadata" .) -}}
 {{- end -}}
@@ -72,6 +74,14 @@
 {{- end -}}
 {{- with .Params.iiif.rights -}}
   {{- $common = $common | merge (dict "rights" .Params.iiif.rights) -}}
+{{- end -}}
+
+{{- /* navPlace extension (Presentation 3 only), the partial returns nil without geo data */ -}}
+{{- $navPlace := partial "iiif/3/navplace.json" (dict "page" . "id" (index $common "id")) -}}
+{{- with $navPlace -}}
+  {{- /* The navPlace context has to be listed before the Presentation context */ -}}
+  {{- $context = slice "http://iiif.io/api/extension/navplace/context.json" $context -}}
+  {{- $common = $common | merge (dict "@context" $context "navPlace" $navPlace) -}}
 {{- end -}}
 
 {{- return $common -}}

@@ -24,13 +24,20 @@ const ignore404Contains = [
   'https://static.doubleclick.net', 'https://i.ytimg.com', 'https://fonts.gstatic.com',
   'https://play.google.com/', 'livereload.js'
 ];
-// Pagefind loads its index inside a web worker, whose requests aren't covered
-// by the page's request interception. When the tested page navigates away, the
-// worker is terminated and its in-flight index requests fail with ERR_ABORTED.
-// A missing index file would surface as a 404 response instead, so ignoring
-// aborted requests for these assets loses no coverage.
+// Some assets get their in-flight requests aborted legitimately, and a missing
+// file would surface as a 404 response instead, so ignoring aborted requests
+// for these assets loses no coverage:
+// - Pagefind loads its index inside a web worker, whose requests aren't
+//   covered by the page's request interception. When the tested page navigates
+//   away, the worker is terminated and its in-flight index requests fail with
+//   ERR_ABORTED.
+// - MapLibre fetches raster/DEM map tiles on the main thread with a per-tile
+//   AbortController and aborts tiles that are no longer needed (e.g. tiles
+//   culled after camera moves like fitBounds/jumpTo), which fails the fetch
+//   with ERR_ABORTED.
 const ignoreAbortContains = [
-  'pagefind-entry.json', 'pagefind-worker.js', 'pagefind.js', '.pf_meta', 'wasm.'
+  'pagefind-entry.json', 'pagefind-worker.js', 'pagefind.js', '.pf_meta', 'wasm.',
+  '/map/tiles/'
 ];
 // HTTP error responses don't fire 'requestfailed' (from the network's point of
 // view the request completed), so they are audited via the 'response' event
@@ -681,7 +688,7 @@ console.log('Wrote preference file to %s', prefFile);
                 console.log('[requestfailed] Ignoring failed request for PDF file at %s', request.url());
             } else if (request.failure()?.errorText === 'net::ERR_ABORTED'
                        && ignoreAbortContains.some(v => request.url().includes(v))) {
-                console.log('[requestfailed] Ignoring aborted Pagefind asset request for %s (worker teardown during navigation)', request.url());
+                console.log('[requestfailed] Ignoring aborted asset request for %s (worker teardown during navigation or map tile culling)', request.url());
             } else {
               if (headless) {
                 process.exit(124);

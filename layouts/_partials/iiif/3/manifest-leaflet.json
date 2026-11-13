@@ -22,7 +22,7 @@
 
 {{- $seeAlso := dict -}}
 {{- with .Params.linkedart -}}
-  {{- $seeAlso = dict "seeAlso" (slice (dict "id" ($.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata")))) -}}
+  {{- $seeAlso = dict "seeAlso" (slice (dict "id" ($.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict site.Language.Lang (slice (i18n "iiifLinkedArtMetadata"))))) -}}
 {{- end -}}
 {{- $common = $common | merge $seeAlso -}}
 
@@ -101,7 +101,7 @@
 
 {{- $canvases := slice -}}
 {{- $sideRanges := slice -}}
-{{- range $side := slice (dict "key" "front" "label" "Front" "panels" $front) (dict "key" "back" "label" "Back" "panels" $back) -}}
+{{- range $side := slice (dict "key" "front" "labelKey" "iiifLeafletFront" "panels" $front) (dict "key" "back" "labelKey" "iiifLeafletBack" "panels" $back) -}}
   {{- $canvasId := printf "%scanvas/%s" $urlBase $side.key -}}
   {{- $canvasWidth := 0 -}}
   {{- $canvasHeight := 0 -}}
@@ -160,7 +160,7 @@
     {{- $manifestDir := path.Dir $res.params.iiif -}}
     {{- $serviceId := printf "%s%s" $imageUrlBase $manifestDir -}}
     {{- $fragment := printf "%d,0,%d,%d" $x $w $h -}}
-    {{- $pageLabel := dict "en" (slice (printf "Page %d" (add $i 1))) -}}
+    {{- $pageLabel := dict site.Language.Lang (slice (i18n "iiifLeafletPage" (add $i 1))) -}}
     {{- with $res.params.label -}}
       {{- $pageLabel = dict "none" (slice (printf "%v" .)) -}}
     {{- end -}}
@@ -193,9 +193,9 @@
     {{- $firstImg = $.Resources.Get $previewLoc -}}
   {{- end -}}
   {{- $thumbRes := $firstImg.Resize "300x" -}}
-  {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" (dict "en" (slice $side.label)) "width" $canvasWidth "height" $canvasHeight "thumbnail" (slice (dict "id" $thumbRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbRes.Height "width" $thumbRes.Width)) "items" (slice $annotationPage) -}}
+  {{- $canvas := dict "id" $canvasId "type" "Canvas" "label" (dict site.Language.Lang (slice (i18n $side.labelKey))) "width" $canvasWidth "height" $canvasHeight "thumbnail" (slice (dict "id" $thumbRes.Permalink "format" "image/jpeg" "type" "Image" "height" $thumbRes.Height "width" $thumbRes.Width)) "items" (slice $annotationPage) -}}
   {{- $canvases = $canvases | append $canvas -}}
-  {{- $sideRange := dict "id" (printf "%srange/%s" $urlBase $side.key) "type" "Range" "label" (dict "en" (slice $side.label)) "items" $pageRanges -}}
+  {{- $sideRange := dict "id" (printf "%srange/%s" $urlBase $side.key) "type" "Range" "label" (dict site.Language.Lang (slice (i18n $side.labelKey))) "items" $pageRanges -}}
   {{- if $.Params.iiifLeafletContinuous -}}
     {{- $sideRange = merge (dict "behavior" (slice "continuous")) $sideRange -}}
   {{- end -}}

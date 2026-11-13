@@ -22,3 +22,69 @@ other = "Inline PDF display is not supported"
 
 [iiifTableOfContents]
 other = "Table of Contents"
+
+# Manifest metadata labels
+[iiifYearOfPublication]
+other = "Year of publication"
+
+[iiifPlace]
+other = "Place"
+
+[iiifYear]
+other = "Year"
+
+[iiifAddress]
+other = "Address"
+
+[iiifCoordinates]
+other = "Coordinates"
+
+[iiifAttributionLabel]
+other = "Attribution"
+
+# Canvas labels, derived from the resource name/directory
+[iiifCanvasCover]
+other = "Cover"
+
+[iiifCanvasFront]
+other = "Front"
+
+[iiifCanvasBack]
+other = "Back"
+
+[iiifCanvasTop]
+other = "Top"
+
+[iiifCanvasTitle]
+other = "Title"
+
+[iiifCanvasLastPage]
+other = "Last page"
+
+[iiifCanvasFrontEndpaperRecto]
+other = "Front endpaper recto"
+
+[iiifCanvasFrontEndpaperVerso]
+other = "Front endpaper verso"
+
+[iiifCanvasRearEndpaperRecto]
+other = "Rear endpaper recto"
+
+[iiifCanvasRearEndpaperVerso]
+other = "Rear endpaper verso"
+
+[iiifCanvasAudio]
+other = "Audio"
+
+[iiifLinkedArtMetadata]
+other = "Linked Art Metadata"
+
+# Leaflet mode labels
+[iiifLeafletFront]
+other = "Front"
+
+[iiifLeafletBack]
+other = "Back"
+
+[iiifLeafletPage]
+other = "Page {{ . }}"

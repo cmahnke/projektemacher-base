@@ -32,13 +32,118 @@ skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
 The `test_hugo_versions` job in `.github/workflows/test.yml` now validates the
 generated IIIF output: after building `exampleSite/` it installs the
 [official Presentation API validator](https://github.com/IIIF/presentation-validator)
-(`iiif-validator`) and runs `scripts/validate-iiif.sh exampleSite/public`,
+(`iiif-validator`) and runs `scripts/validate-iiif.sh exampleSite/docs`,
 which validates every `manifest.json` and `collection.json` in the build
 output — the API version is detected from the `@context`, versions 2.0, 2.1,
 3.0 and 4.0 (draft) are supported. Locally the same check runs via
-`./scripts/validate-iiif.sh exampleSite/public` after a tests-environment
+`./scripts/validate-iiif.sh exampleSite/docs` after a tests-environment
 build (the validator installs via `pip install
 git+https://github.com/IIIF/presentation-validator`).
+
+## What sites need to do
+
+IIIF validation is **mandatory** for consuming sites that provide IIIF
+manifests or collections: any build output containing `manifest.json` or
+`collection.json` files (produced by the `iiif/iiif`, `iiif/presentation`
+and `iiif/collection` shortcodes or the `iiif` output formats) must be
+validated against the official Presentation API validator. Run the theme's
+script against the build output after every `hugo` build:
+
+```bash
+./themes/projektemacher-base/scripts/validate-iiif.sh <build-output>
+```
+
+For CI, add the same two steps to the site's workflow after the Hugo build —
+install the validator and run the script, mirroring the theme's
+`test_hugo_versions` job:
+
+```yaml
+- name: Install IIIF validator
+  run: pip install git+https://github.com/IIIF/presentation-validator
+
+- name: Validate IIIF output
+  run: ./themes/projektemacher-base/scripts/validate-iiif.sh <build-output>
+```
+
+The script exits 0 when no manifests are found, so it can run unconditionally
+in any consumer's CI. Script details and the related `validate-linked-art.py`
+(optional, not part of the mandatory gate) are documented in the example site
+under "Metadata formats" → "Validation".
+
+# IIIF manifest: place and year metadata from tag terms
+
+Single page manifests gain optional metadata entries derived from the page's
+tags (see the theme README, "Place information"): `Place` names from tags
+whose term page carries `params.itemType: place`, one `Year` entry per
+matched term (the term's `params.year`), plus the page-level `Address` and
+`Coordinates` entries. Entries only appear when the data exists — no
+configuration needed.
+
+## What sites need to do
+
+Nothing, if the site's place-like terms are tagged `params.itemType: place`
+and carry `params.year`. Sites whose terms use different names (e.g.
+`itemType: building` with `yearBuild`) copy
+`layouts/_partials/iiif/3/metadata-place.json` into their own
+`layouts/_partials/iiif/3/` and adapt the match and the year field there —
+a site-local copy overrides the theme's partial. Keep the diff to the theme
+file minimal so future theme changes can be re-synced; the copy is a
+deliberate drift exception under the deduplication guide above.
+
+# IIIF manifest labels are i18n keys
+
+All human readable labels the theme writes into IIIF manifests are read from
+i18n keys now (namespace `iiif*`, defined in `i18n/iiif.de.toml` and
+`i18n/iiif.en.toml`; full table in the example site's
+[IIIF page metadata documentation](exampleSite/content/iiif/page-metadata.md)):
+the automatic year metadata entry (`iiifYearOfPublication`), the place
+metadata labels (`iiifPlace`, `iiifYear`, `iiifAddress`, `iiifCoordinates`),
+the `requiredStatement` label (`iiifAttributionLabel`), the canvas labels
+derived from resource names (`iiifCanvasCover`, `iiifCanvasFront`,
+`iiifCanvasBack`, `iiifCanvasTop`, `iiifCanvasTitle`, `iiifCanvasLastPage`,
+`iiifCanvasFrontEndpaperRecto`, `iiifCanvasFrontEndpaperVerso`,
+`iiifCanvasRearEndpaperRecto`, `iiifCanvasRearEndpaperVerso`,
+`iiifCanvasAudio`), the Linked Art `seeAlso` label (`iiifLinkedArtMetadata`)
+and the leaflet mode labels (`iiifLeafletFront`, `iiifLeafletBack`,
+`iiifLeafletPage` with a `{{ . }}` placeholder for the page number).
+
+Behaviour changes:
+
+- Manifest labels are emitted in the language the manifest is generated with
+  (one entry in the language map) instead of the previous hardcoded
+  English/German dictionaries — multilingual sites get per-language labels in
+  their per-language manifests.
+- Two shipped strings were fixed on the way: the German `end` canvas label is
+  now "Letzte Seite" (was "Letze Seite") and the `front-verso` canvas label's
+  English default is "Front endpaper verso" (was a copy of the recto text).
+- Pre-existing quirk, unchanged: the canvas label chain in
+  `iiif/3/manifest.json` matches `end` and `front` before the endpaper
+  suffixes, so `front-recto`/`front-verso`/`end-recto`/`end-verso` resource
+  directories currently get the plain front/back/end labels — reorder the
+  chain if the endpaper labels should win.
+
+Deliberately not extracted: the `provider.json` brand label (language
+neutral, the partial is cached without language awareness) and the default
+attribution value in `required-statement.json` (kept as a per-translation
+dictionary — `i18n` cannot resolve per translation language; it stays
+overridable per page via `iiif.attribution`).
+
+## What sites need to do
+
+Nothing for the defaults. Sites that want different wording (e.g. a blog
+about unbuilt buildings labeling the year entry "Baujahr(e)") add the key to
+their own `i18n/<lang>.toml`:
+
+```toml
+[iiifYearOfPublication]
+other = "Baujahr(e)"
+```
+
+Site i18n files merge over the theme's, so a single entry is enough. Sites
+with drifted copies of the touched partials (`iiif/3/common.json`,
+`iiif/3/metadata-place.json`, `iiif/3/required-statement.json`,
+`iiif/3/manifest.json`, `iiif/3/manifest-leaflet.json`) re-sync them — see
+the deduplication guide above.
 
 # Run the JS runtime check against the example site
 

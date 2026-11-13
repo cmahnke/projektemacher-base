@@ -42,7 +42,7 @@ Pages without an explicit `outputs` entry are collected into collections only if
 
 Legacy keys (`iiifMetadata`, `iiifStructure`) are no longer read and no longer abort the build — migrate to `iiif.metadata` / `iiif.structure`.
 
-The page `description` becomes the manifest `summary`. Pages with an `issueYear` or `year` front matter param get an automatic `Erscheinungsjahr` / `Year of publication` entry appended to the manifest `metadata`; `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
+The page `description` becomes the manifest `summary`. Pages with an `issueYear` or `year` front matter param get an automatic year entry appended to the manifest `metadata` (labeled `Erscheinungsjahr` / `Year of publication` by default, see [Manifest labels](#manifest-labels-i18n) below); `scripts/pdf.py` writes the same year to the PDF XMP `dc:date`.
 
 `iiif.metadata` entries accept language maps for both `label` and `value` (scalar values are coerced to strings):
 
@@ -52,6 +52,39 @@ iiif:
     - label: {en: ["Shelf mark"], de: ["Signatur"]}
       value: {en: ["Ms. 123"], de: ["Ms. 123"]}
 ```
+
+## Manifest labels (i18n)
+
+All labels the theme generates for manifests are read from i18n keys
+(`i18n/iiif.de.toml`, `i18n/iiif.en.toml`), so a site can reword or translate
+them in its own `i18n/<lang>.toml` — site files merge over the theme's, a
+single entry is enough. Each manifest carries the label in the language it
+was generated with (one entry in the language map; multilingual sites get
+per-language manifests with per-language labels). Example — a blog about
+unbuilt buildings labels the automatic year entry "Baujahr(e)" instead of
+"Erscheinungsjahr":
+
+```toml
+# i18n/de.toml
+[iiifYearOfPublication]
+other = "Baujahr(e)"
+```
+
+| Key | Used for | Defaults (en / de) |
+| --- | --- | --- |
+| `iiifYearOfPublication` | automatic year metadata entry | Year of publication / Erscheinungsjahr |
+| `iiifPlace`, `iiifYear`, `iiifAddress`, `iiifCoordinates` | place metadata entries (see the README, "Place information") | Place/Year/Address/Coordinates — Ort/Jahr/Adresse/Koordinaten |
+| `iiifAttributionLabel` | `requiredStatement` label | Attribution / Namensnennung |
+| `iiifCanvasCover`, `iiifCanvasFront`, `iiifCanvasBack`, `iiifCanvasTop`, `iiifCanvasTitle`, `iiifCanvasLastPage`, `iiifCanvasFrontEndpaperRecto`, `iiifCanvasFrontEndpaperVerso`, `iiifCanvasRearEndpaperRecto`, `iiifCanvasRearEndpaperVerso`, `iiifCanvasAudio` | canvas labels derived from the resource name/directory | Cover, Front, Back, Top, Title, Last page, front/rear endpaper recto/verso, Audio — Deckblatt, Vorderansicht, Rückansicht, Oberseite, Titelseite, Letzte Seite, Vorderes/Hinteres Vorsatzpapier Recto/Verso, Audio |
+| `iiifLinkedArtMetadata` | `seeAlso` label on pages with `linkedart` | Linked Art Metadata / Linked-Art-Metadaten |
+| `iiifLeafletFront`, `iiifLeafletBack` | leaflet side canvas and range labels | Front, Back — Vorderseite, Rückseite |
+| `iiifLeafletPage` | default leaflet panel label, `{{ . }}` is the page number | Page {{ . }} / Seite {{ . }} |
+
+Not i18n-based: the provider label in `provider.json` (language-neutral brand
+name, the partial is cached without language awareness) and the default
+attribution value in `required-statement.json` (kept as a per-translation
+dictionary since `i18n` resolves only the current language — overridable per
+page via `iiif.attribution`).
 
 ## Resources
 
