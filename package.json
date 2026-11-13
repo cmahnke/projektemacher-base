@@ -3,7 +3,7 @@
     "@allmaps/iiif-parser": "^1.0.0-beta.49",
     "@mango-iiif/collection-navigator": "0.0.5",
     "@mango-iiif/iiif-viewer": "0.6.2",
-    "@maplibre/maplibre-gl-style-spec": "^26.5.1",
+    "@maplibre/maplibre-gl-style-spec": "^26.6.0",
     "@pagefind/modular-ui": "1.6.0",
     "@projektemacher/code-citation-lint": "^0.1.1",
     "@projektemacher/hdr-canvas": "^0.4.0",
@@ -19,7 +19,7 @@
     "echarts": "^6.1.0",
     "highlight.js": "^11.12.0",
     "howler": "^2.2.4",
-    "i18next": "^27.0.1",
+    "i18next": "^27.1.1",
     "iiif-kasane": "0.4.0",
     "i18next-browser-languagedetector": "^8.3.0",
     "img-comparison-slider": "^8.0.7",
@@ -96,7 +96,7 @@
     "toml": "^5.0.1",
     "tslib": "^2.9.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.1",
+    "typescript-eslint": "^8.72.2",
     "xslt3": "^2.7.0"
   },
   "scripts": {
