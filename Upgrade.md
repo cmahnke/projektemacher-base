@@ -275,22 +275,27 @@ Nothing. Sites wanting WebP output add the configuration, e.g.:
 # IIIF manifest: front-matter annotations and completed page-metadata documentation
 
 The manifest generator now supports annotations via a new strict front-matter
-shorthand `iiif.annotations` (Presentation 3 and 4): each entry references a
-resource with `page` (same resolution chain as `iiif.structure`), optionally
-targets a canvas region with `xywh`, and carries a `body` — inline
+shorthand `resources[].params.annotations` (Presentation 3 and 4): annotations
+attach to the canvas of their own resource (there is no `page` reference),
+optionally target a canvas region with `xywh`, and carry a `body` — inline
 `TextualBody` (`value`, optionally `format`/`language`, language-map values
-expand to one body per language), an external resource (`id` + `type`) or no
-body at all (`motivation: highlighting` only). Annotation identifiers are
+expand to one body per language), a page bundle resource (`id` referencing a
+resource of the same bundle by path or `name`, emitted as an `Image` body with
+format and dimensions), an external resource (`id` starting with `/` or `http`
+plus `type`) or no body at all. Annotation identifiers are
 generated at build time (`annotation/{canvas}/{slug}`), slugs are URL-safe and
 unique per canvas (generated as a running number when omitted), and the
-motivation defaults to `commenting`. Supported motivations are the W3C Web
+motivation defaults to `supplementing` for resource bodies, `commenting` for
+text bodies and `highlighting` without a body. Supported motivations are the W3C Web
 Annotation motivations used by IIIF (`assessing`, `bookmarking`, `classifying`,
 `commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`,
 `moderating`, `questioning`, `replying`, `tagging`) plus the IIIF Presentation 3
-motivation `supplementing`. Entries are validated strictly: unknown
-page references, hand-written `id`s, unknown motivations and body/slug
-violations abort the build. The key is only expanded on pages — sections warn
-and ignore, leaflet mode ignores it, and pre-made manifests
+motivation `supplementing`. Entries are validated strictly: hand-written `id`s,
+a legacy `page` key, `xywh` fragments outside the canvas dimensions,
+annotations on audio resources without a resource `name` or on 3D models
+(Presentation 4 Scenes), unknown motivations and body/slug
+violations abort the build. Annotations are only expanded on pages — sections
+warn and ignore, leaflet mode ignores them, and pre-made manifests
 (`iiif/existing-manifest.html`) don't inject front-matter annotations.
 
 Supporting changes:
@@ -298,14 +303,13 @@ Supporting changes:
 - The canvas reference resolution (resource `name` → `params.iiif` directory
   → `src` basename, canvas names and ref index) moved from
   `layouts/partials/iiif/3/structures.html` into the new shared partial
-  `layouts/partials/functions/iiif/canvas-refs.html`, used by both
-  `structures.html` and the new `layouts/partials/iiif/3/annotations.html`.
-  Pure code move — generated structures are unchanged.
+  `layouts/partials/functions/iiif/canvas-refs.html`, used by
+  `structures.html`. Pure code move — generated structures are unchanged.
 - New fixture page `exampleSite/content/iiif/annotations/` covering every
   annotation body shape.
 - The [IIIF page metadata documentation](exampleSite/content/iiif/page-metadata.md)
-  is now a complete reference: it gained the `iiif.annotations`,
-  `iiif.attribution` and `iiif.baseURL` key rows, the dual purpose of
+  is now a complete reference: it gained the `iiif.attribution` and
+  `iiif.baseURL` key rows, the dual purpose of
   `iiif.manifest`, the object form of `preview`, the `year` fallback for the
   automatic year-of-publication metadata, the page `description` → manifest
   `summary` mapping, an `iiif.metadata` example, and new sections for
@@ -317,10 +321,12 @@ Supporting changes:
 
 ## What sites need to do
 
-Nothing, unless a page used `motivation: modifying` — that value is not a
-standard motivation and is no longer accepted, switch it to an appropriate
-supported value. Otherwise the feature is opt-in per page via
-`iiif.annotations`; existing front matter behaves exactly as before.
+Nothing — the feature is opt-in per resource. Pages that used the interim
+page-level `iiif.annotations` key move each entry into the
+`params.annotations` of the resource its `page` referenced and drop the
+`page` key (the old key and the entry key abort the build now). Pages that
+used `motivation: modifying` switch it to an appropriate supported value —
+that value is not a standard motivation and is no longer accepted.
 
 # Housekeeping
 

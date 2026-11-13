@@ -28,7 +28,6 @@ Pages without an explicit `outputs` entry are collected into collections only if
 | `iiif.behavior` | string | Manifest `behavior`, e.g. `paged` (default), `continuous`, `individuals` |
 | `iiif.metadata` | list | Descriptive `metadata` entries with `label`/`value` (language maps, coerced to strings), see the example below |
 | `iiif.structure` | list | Logical structure (ranges) from `label`/`page`/`end`/`items` entries — range and canvas IDs are generated at build time, see [Structure](#structure) |
-| `iiif.annotations` | list | Annotation entries appended to the canvases' `AnnotationPage` — annotation IDs are generated at build time, see [Annotations](#annotations) |
 | `iiif.rights` | string | Rights statement URL |
 | `iiif.attribution` | string | Custom attribution text for the manifest `requiredStatement` (default: "Provided by Projektemacher" / "Bereitgestellt von Projektemacher"); the legacy `iiifAttribution` key aborts the build |
 | `iiif.logo.img` | string | Logo image URL |
@@ -69,6 +68,8 @@ resources:
 ```
 
 Canvas labels are also derived automatically from the image directory name (`page0001`, `cover`, `front`, `back`, `title`, `end`, …).
+
+Resource params can also carry `annotations` — non-painting annotations on the resource's canvas, see [Annotations](#annotations).
 
 For section manifests, `resources` of the section page itself and of all child pages are aggregated into one manifest.
 
@@ -175,39 +176,46 @@ Rules:
 
 ## Annotations
 
-The `iiif.annotations` key adds annotations to the manifest's canvases. Each entry appends an `Annotation` to the target canvas's painting `AnnotationPage`, with identifiers generated at build time using the same deployment prefix as the rest of the manifest — the front matter carries no IDs or URLs:
+Annotations attach to a resource via `params.annotations` — each entry appends an `Annotation` to that resource's canvas painting `AnnotationPage`, with identifiers generated at build time using the same deployment prefix as the rest of the manifest — the front matter carries no IDs or URLs:
 
 ```yaml
 ---
 title: Example
 outputs: [html, iiif-manifest]
-iiif:
-  annotations:
-    # Inline text (TextualBody) on a canvas region, with label and explicit slug
-    - page: page004-verso
-      xywh: "120,300,800,600"
-      motivation: supplementing
-      label: {de: ["Transkription"]}
-      slug: transcription-1
-      body:
-        value: "Der Text der Anmerkung"
-        format: text/plain
-        language: de
-    # Bilingual text: the language map value expands to one TextualBody per language,
-    # the slug is generated
-    - page: page012
-      body:
-        value: {de: ["Deutscher Kommentar."], en: ["English comment."]}
-    # External resource body
-    - page: front
-      body:
-        id: https://example.org/detail.jpg
-        type: Image
-        format: image/jpeg
-    # Highlighting a region without a body
-    - page: page001
-      xywh: "0,0,100,100"
-      motivation: highlighting
+resources:
+  - src: page012.jpg
+    params:
+      iiif: page012/info.json
+      annotations:
+        # Inline text (TextualBody) on a canvas region, with label and explicit slug
+        - xywh: "120,300,800,600"
+          motivation: supplementing
+          label: {de: ["Transkription"]}
+          slug: transcription-1
+          body:
+            value: "Der Text der Anmerkung"
+            format: text/plain
+            language: de
+  - src: page013.jpg
+    params:
+      iiif: page013/info.json
+      annotations:
+        # Bilingual text: the language map value expands to one TextualBody per language,
+        # the slug and the motivation are generated (commenting)
+        - label: {de: ["Kommentar"]}
+          body:
+            value: {de: ["Deutscher Kommentar."], en: ["English comment."]}
+        # Page bundle resource as image body, the motivation is generated (supplementing)
+        - xywh: "0,0,600,400"
+          body:
+            id: photo.jpg
+        # External resource body
+        - body:
+            id: https://example.org/detail.jpg
+            type: Image
+            format: image/jpeg
+        # Highlighting a region without a body, the motivation is generated (highlighting)
+        - xywh: "0,0,100,100"
 ---
 ```
 
@@ -215,18 +223,20 @@ A working example covering every body shape is available as [Annotations](annota
 
 Rules:
 
-- `page` is required and references a resource of the page bundle, resolved like `iiif.structure` (resource `name`, `params.iiif` directory or `src` basename)
-- `xywh` (optional) targets a pixel region `x,y,w,h` on the canvas; without it the annotation targets the whole canvas
-- `motivation` defaults to `commenting`; supported values are the W3C Web Annotation motivations used by IIIF: `assessing`, `bookmarking`, `classifying`, `commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`, `moderating`, `questioning`, `replying`, `tagging`, plus the IIIF Presentation 3 motivation `supplementing` (`painting` is reserved for the manifest's own resources)
+- Annotations attach to the canvas of their own resource — there is no `page` reference; the legacy page-level `iiif.annotations` key and a `page` entry key abort the build
+- `xywh` (optional) targets a pixel region `x,y,w,h` on the canvas; without it the annotation targets the whole canvas. Fragments are validated against the canvas dimensions — a region outside the canvas aborts the build, and only image canvases have pixel dimensions
+- `motivation` defaults to `supplementing` for resource bodies (`body.id`), `commenting` for text bodies (`body.value`) and `highlighting` without a body; supported values are the W3C Web Annotation motivations used by IIIF: `assessing`, `bookmarking`, `classifying`, `commenting`, `describing`, `editing`, `highlighting`, `identifying`, `linking`, `moderating`, `questioning`, `replying`, `tagging`, plus the IIIF Presentation 3 motivation `supplementing` (`painting` is reserved for the manifest's own resources)
 - `slug` (optional) is the identifier suffix — the annotation ID becomes `annotation/{canvas}/{slug}`; when omitted a per-canvas running number (`1`, `2`, …) is generated. Slugs must be URL-safe (letters, digits, dash, underscore) and unique per canvas — duplicates, including collisions with generated numbers, abort the build
 - `label` is an optional IIIF label object, coerced to strings
 - `body` is one of:
   - a text body: `value` as a string or a language map (one `TextualBody` per language), optional `format` (`text/plain` by default, `text/html` allowed) and `language`
-  - an external resource: `id` plus `type` (e.g. `Image`, `Text`), optional `format` and `label`
-  - omitted: only valid with `motivation: highlighting`
+  - a page bundle resource: `id` referencing a resource of the same bundle by path or `name`, emitted as an `Image` body with the media type as `format` plus `width`/`height` — explicit `type`/`format`/`language` on a resource body abort the build
+  - an external resource: `id` starting with `/` or `http` plus `type` (e.g. `Image`, `Text`), optional `format` and `label`
+  - omitted: the motivation defaults to `highlighting`
 - Hand-written `id`s abort the build — identifiers are generated
 - Annotations are appended to the painting `AnnotationPage` of the target canvas, after the painting annotation
-- `iiif.annotations` is only expanded on pages: sections ignore the value with a warning, leaflet mode ignores it (its canvases are computed), and pre-made manifests don't inject front-matter annotations
+- Annotations are only supported on image and audio resources (audio only with a resource `name`); 3D models become Presentation 4 Scenes and can't be annotation targets — the build aborts
+- Annotations are only expanded on pages: section manifests warn and ignore them, leaflet mode ignores them (its canvases are computed), and pre-made manifests don't inject front-matter annotations
 - Tify renders these annotations via the bundled `@projektemacher/tify-plugin-annotorious` plugin
 
 ## Pre-made manifests

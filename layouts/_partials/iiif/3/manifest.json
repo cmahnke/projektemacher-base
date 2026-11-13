@@ -76,18 +76,14 @@
   {{- errorf "[iiif/3/manifest.json] Unsupported kind %s for %s" .Kind $localPath -}}
 {{- end -}}
 
-{{- /* Front matter annotations (iiif.annotations), expanded per canvas by
-      iiif/3/annotations.html and appended to the painting AnnotationPage
-      of the matching canvas below. Only pages are expanded, see
-      iiif/3/annotations.html for the contract */ -}}
-{{- $fmAnnotations := dict -}}
+{{- /* Front matter annotations (resources[].params.annotations), expanded per
+      canvas by iiif/3/annotations.html and appended to the painting
+      AnnotationPage of the matching canvas below. The partial warns and
+      skips on sections, see it for the contract */ -}}
 {{- with .Params.iiif.annotations -}}
-  {{- if eq $.Kind "page" -}}
-    {{- $fmAnnotations = partial "iiif/3/annotations.html" (dict "page" $ "entries" . "urlBase" $urlBase "version" $version) -}}
-  {{- else -}}
-    {{- warnf "[iiif/3/manifest.json] iiif.annotations is only supported on pages, ignoring the value for %s" $.RelPermalink -}}
-  {{- end -}}
+  {{- errorf "[iiif/3/manifest.json] The legacy page-level iiif.annotations key is no longer supported, move the entries into the params.annotations of their resources (%s)" $.RelPermalink -}}
 {{- end -}}
+{{- $fmAnnotations := partial "iiif/3/annotations.html" (dict "page" $ "urlBase" $urlBase "version" $version) -}}
 
 {{- $manifestItems := slice -}}
 {{- range $i, $res := $iiifResources -}}
@@ -279,6 +275,34 @@
     {{- $canvasName := replaceRE "^.*/canvas/" "" (printf "%v" (index $canvasItem "id")) -}}
     {{- $canvasAnnotations := index $fmAnnotations $canvasName -}}
     {{- if $canvasAnnotations -}}
+      {{- /* Validate xywh fragments against the canvas dimensions; canvases
+            without dimensions (audio, P4 Scenes) are not checked. The
+            annotations partial guarantees the fragment format */ -}}
+      {{- $canvasWidth := int (index $canvasItem "width" | default 0) -}}
+      {{- $canvasHeight := int (index $canvasItem "height" | default 0) -}}
+      {{- if and (gt $canvasWidth 0) (gt $canvasHeight 0) -}}
+        {{- range $ann := $canvasAnnotations -}}
+          {{- $target := index $ann "target" -}}
+          {{- $fragment := "" -}}
+          {{- if eq (printf "%T" $target) "string" -}}
+            {{- if findRE "#xywh=" $target -}}
+              {{- $fragment = replaceRE "^.*#xywh=" "" $target -}}
+            {{- end -}}
+          {{- else -}}
+            {{- with index $target "id" -}}
+              {{- if findRE "#xywh=" (printf "%v" .) -}}
+                {{- $fragment = replaceRE "^.*#xywh=" "" (printf "%v" .) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+          {{- with $fragment -}}
+            {{- $parts := split . "," -}}
+            {{- if or (gt (add (int (index $parts 0)) (int (index $parts 2))) $canvasWidth) (gt (add (int (index $parts 1)) (int (index $parts 3))) $canvasHeight) -}}
+              {{- errorf "[iiif/3/manifest.json] annotation '%v' targets the fragment '%v' outside the canvas dimensions %dx%d (%s)" (index $ann "id") . $canvasWidth $canvasHeight $.RelPermalink -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
       {{- $newPages := slice -}}
       {{- $appended := false -}}
       {{- range $annotationPage := (index $canvasItem "items" | default slice) -}}

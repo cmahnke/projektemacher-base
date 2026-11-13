@@ -37,6 +37,7 @@ Generation of Presentation API 2 manifests (the former `iiif` output format with
 
 - [Configuration](configuration/) — site level `hugo.toml` settings
 - [Page metadata](page-metadata/) — front matter reference for manifests and viewers
+- [Annotations](annotations/) — working example for the `annotations` resource params
 - [Presentation 3](presentation-3/) — working example generating an API 3 manifest
 - [Presentation 4](presentation-4/) — the version switch, draft caveats and an API 4 manifest example
 - [IIIF shortcodes](/shortcodes/iiif/iiif/) and [iiif/presentation](/shortcodes/iiif/presentation/) — embedding viewers in markdown (part of the [shortcodes section](/shortcodes/))
