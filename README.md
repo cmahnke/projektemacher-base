@@ -127,6 +127,7 @@ matter, all of it optional — entries are only added when the data exists:
 
 * `Place`: names of all tags whose term page carries `params.itemType: place`
   (bilingual, taken from the term page translations)
+* `Year`: the term page's `params.year`, one entry per matched place term
 * `Address`: the page's `params.address`
 * `Coordinates`: the page's `params.geojson.coordinates` (GeoJSON order,
   longitude first, `Point` geometries only)

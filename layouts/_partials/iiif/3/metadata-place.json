@@ -3,6 +3,7 @@
   iiif/3/common.json for page kind manifests:
 
   - "Place": names of tags whose term page carries `params.itemType: place`
+  - "Year": the term's `params.year`, one entry per matched place term
   - "Address": the page's `params.address`
   - "Coordinates": the page's `params.geojson.coordinates` (GeoJSON order,
     longitude first), Point geometries only
@@ -12,6 +13,11 @@
   entry, values are IIIF language maps (see
   functions/iiif/coerce-language-map.html). Kinds other than page return an
   empty slice, so section manifests stay untouched.
+
+  Sites whose place-like terms use a different itemType or year field (e.g.
+  `building`/`yearBuild`) copy this partial into their own `layouts/_partials/`
+  and adapt the match — see "IIIF manifest: place and year metadata from tag
+  terms" in Upgrade.md.
 */ -}}
 
 {{- if ne .Kind "page" -}}
@@ -38,6 +44,9 @@
         {{- $existing = slice -}}
       {{- end -}}
       {{- $placeNames = $placeNames | merge (dict $lang ($existing | append (index $names 0))) -}}
+    {{- end -}}
+    {{- with $term.Params.year -}}
+      {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year") "de" (slice "Jahr")) "value" (dict "none" (slice (printf "%v" .)))) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

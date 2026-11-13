@@ -70,6 +70,26 @@ in any consumer's CI. Script details and the related `validate-linked-art.py`
 (optional, not part of the mandatory gate) are documented in the example site
 under "Metadata formats" → "Validation".
 
+# IIIF manifest: place and year metadata from tag terms
+
+Single page manifests gain optional metadata entries derived from the page's
+tags (see the theme README, "Place information"): `Place` names from tags
+whose term page carries `params.itemType: place`, one `Year` entry per
+matched term (the term's `params.year`), plus the page-level `Address` and
+`Coordinates` entries. Entries only appear when the data exists — no
+configuration needed.
+
+## What sites need to do
+
+Nothing, if the site's place-like terms are tagged `params.itemType: place`
+and carry `params.year`. Sites whose terms use different names (e.g.
+`itemType: building` with `yearBuild`) copy
+`layouts/_partials/iiif/3/metadata-place.json` into their own
+`layouts/_partials/iiif/3/` and adapt the match and the year field there —
+a site-local copy overrides the theme's partial. Keep the diff to the theme
+file minimal so future theme changes can be re-synced; the copy is a
+deliberate drift exception under the deduplication guide above.
+
 # Run the JS runtime check against the example site
 
 The theme's CI now runs the puppeteer based runtime checker
