@@ -20,6 +20,6 @@
   {{ $value = merge $value (dict $lang (slice (printf "%v" $attrValue))) }}
 {{ end }}
 
-{{- $requiredStatement := dict "label" (dict "en" (slice "Attribution") "de" (slice "Namensnennung")) "value" $value -}}
+{{- $requiredStatement := dict "label" (dict site.Language.Lang (slice (i18n "iiifAttributionLabel"))) "value" $value -}}
 
 {{ return $requiredStatement }}

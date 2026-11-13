@@ -16,7 +16,7 @@
 
 {{- $seeAlso := dict -}}
 {{- with .Params.linkedart -}}
-  {{- $seeAlso = dict "seeAlso" (slice (dict "id" ($.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict "en" (slice "Linked Art Metadata")))) -}}
+  {{- $seeAlso = dict "seeAlso" (slice (dict "id" ($.OutputFormats.Get "linkedart").Permalink "type" "Dataset" "format" "application/ld+json" "profile" "https://linked.art/ns/v1/linked-art.json" "label" (dict site.Language.Lang (slice (i18n "iiifLinkedArtMetadata"))))) -}}
 {{- end -}}
 {{- $common = $common | merge $seeAlso -}}
 
@@ -169,27 +169,27 @@
   {{- else if findRE `page-(.+)` $manifestDir -}}
     {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
   {{- else if (hasPrefix $manifestDir "cover") -}}
-    {{- $pageLabel = dict "en" (slice "Cover") "de" (slice "Deckblatt") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasCover")) -}}
   {{- else if (hasPrefix $manifestDir "front") -}}
-    {{- $pageLabel = dict "en" (slice "Front") "de" (slice "Vorderansicht") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasFront")) -}}
   {{- else if (hasPrefix $manifestDir "back") -}}
-    {{- $pageLabel = dict "en" (slice "Back") "de" (slice "Rückansicht") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasBack")) -}}
   {{- else if (hasPrefix $manifestDir "top") -}}
-      {{- $pageLabel = dict "en" (slice "Top") "de" (slice "Oberseite") -}}
+      {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasTop")) -}}
   {{- else if (hasPrefix $manifestDir "title") -}}
-    {{- $pageLabel = dict "en" (slice "Title") "de" (slice "Titelseite") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasTitle")) -}}
   {{- else if (hasPrefix $manifestDir "end") -}}
-    {{- $pageLabel = dict "en" (slice "Last page") "de" (slice "Letze Seite") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasLastPage")) -}}
   {{- else if (hasPrefix $manifestDir "front-recto") -}}
-    {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Recto") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasFrontEndpaperRecto")) -}}
   {{- else if (hasPrefix $manifestDir "front-verso") -}}
-    {{- $pageLabel = dict "en" (slice "Front endpaper recto") "de" (slice "Vorderes Vorsatzpapier Verso") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasFrontEndpaperVerso")) -}}
   {{- else if (hasPrefix $manifestDir "end-recto") -}}
-    {{- $pageLabel = dict "en" (slice "Rear endpaper recto") "de" (slice "Hinteres Vorsatzpapier Recto") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasRearEndpaperRecto")) -}}
   {{- else if (hasPrefix $manifestDir "end-verso") -}}
-    {{- $pageLabel = dict "en" (slice "Rear endpaper verso") "de" (slice "Hinteres Vorsatzpapier Verso") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasRearEndpaperVerso")) -}}
   {{- else if hasPrefix $mediatype "audio" -}}
-    {{- $pageLabel = dict "en" (slice "Audio") "de" (slice "Audio") -}}
+    {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasAudio")) -}}
   {{- else -}}
     {{- /* Fall back to the file name (without extension) as label */ -}}
     {{- $pageLabel = dict "none" (slice (strings.TrimSuffix (path.Ext $manifestDir) (path.Base $manifestDir))) -}}

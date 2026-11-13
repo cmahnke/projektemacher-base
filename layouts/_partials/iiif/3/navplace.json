@@ -1,0 +1,50 @@
+{{- /*
+  navPlace extension property for IIIF Presentation 3 manifests, see
+  https://iiif.io/api/extension/navplace/. The geometry comes from the page's
+  `params.geojson` front matter (same source the geojson output format uses),
+  the extension itself is Presentation 3 only, so for version 4 and without
+  geometry data nil is returned and no property is added.
+
+  The @context switch (navPlace context has to be included before the
+  Presentation context) is handled by the caller iiif/3/common.json whenever
+  a FeatureCollection is returned here.
+
+  Expects a dict with the page ("page") and the manifest id ("id"), the
+  FeatureCollection id and the feature id are derived from it as URIs with
+  fragments as the spec requires.
+*/ -}}
+{{- $page := .page -}}
+{{- if ne $page.Kind "page" -}}
+  {{- return nil -}}
+{{- end -}}
+{{- $version := partial "functions/iiif/presentation-version.html" $page -}}
+{{- if ne $version 3 -}}
+  {{- return nil -}}
+{{- end -}}
+{{- if not (reflect.IsMap $page.Params.geojson) -}}
+  {{- return nil -}}
+{{- end -}}
+{{- $geojson := $page.Params.geojson -}}
+{{- with index $geojson "coordinates" -}}
+{{- else -}}
+  {{- errorf "[iiif/3/navplace.json] params.geojson without coordinates for %s" $page.RelPermalink -}}
+{{- end -}}
+
+{{- $geometry := dict "type" "Point" -}}
+{{- with index $geojson "type" -}}
+  {{- $geometry = $geometry | merge (dict "type" .) -}}
+{{- end -}}
+{{- $geometry = $geometry | merge (dict "coordinates" (index $geojson "coordinates")) -}}
+
+{{- $manifestId := printf "%v" .id -}}
+{{- $featureCollection := dict
+  "id" (printf "%s#navplace" $manifestId)
+  "type" "FeatureCollection"
+  "features" (slice (dict
+    "id" (printf "%s#navplace-feature" $manifestId)
+    "type" "Feature"
+    "properties" (dict)
+    "geometry" $geometry
+  ))
+-}}
+{{- return $featureCollection -}}

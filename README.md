@@ -120,6 +120,25 @@ To generate IIIF JSON manifests you need to add the `JSON` output format to the 
     page = ["HTML", "JSON"]
 ```
 
+### Place information
+
+Single page manifests carry place information derived from the page front
+matter, all of it optional — entries are only added when the data exists:
+
+* `Place`: names of all tags whose term page carries `params.itemType: place`
+  (bilingual, taken from the term page translations)
+* `Year`: the term page's `params.year`, one entry per matched place term
+* `Address`: the page's `params.address`
+* `Coordinates`: the page's `params.geojson.coordinates` (GeoJSON order,
+  longitude first, `Point` geometries only)
+
+If the page has a `params.geojson` geometry, the manifest also gets the
+[navPlace](https://iiif.io/api/extension/navplace/) extension property (a
+GeoJSON-LD `FeatureCollection`), and the manifest `@context` is switched to
+the array form with the navPlace context included first. The extension is
+Presentation 3 only: version 4 manifests and section manifests never
+receive it, and `params.geojson` without `coordinates` fails the build.
+
 ## Search (Pagefind)
 
 The theme's `search` layout (see `exampleSite/content/search/`) is based
