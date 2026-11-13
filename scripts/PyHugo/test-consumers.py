@@ -35,7 +35,7 @@ previewTemplate = """<?xml version="1.0" encoding="UTF-8"?>
     <style>
       @font-face {{
         font-family: 'Nunito';
-        src: url("../../themes/projektemacher-base/static/fonts/nunito-v14-latin-ext_latin-regular.ttf") format('truetype');
+        src: url("../../themes/projektemacher-base/static/fonts/nunito-v14-latin-ext_latin-regular.woff2") format('woff2');
       }}
     </style>
   </defs>
@@ -71,13 +71,17 @@ def testPreview():
         (tmp / "content" / "long-title" / "index.md").write_text(
             "---\ntitle: Dieses ist ein ausgesprochen langer Titel für einen Blogartikel über die Digitalisierung historischer Quellen und Druckwerke\n---\n"
         )
+        (tmp / "content" / "medium-title").mkdir(parents=True)
+        (tmp / "content" / "medium-title" / "index.md").write_text(
+            "---\ntitle: Dieses ist ein deutlich längerer Titel für einen Blogartikel über die Digitalisierung\n---\n"
+        )
         (tmp / "config" / "_default").mkdir(parents=True)
         (tmp / "config" / "_default" / "config.toml").write_text(previewConfig)
         (tmp / "Source Files" / "Other").mkdir(parents=True)
         (tmp / "Source Files" / "Other" / "preview-template.svg").write_text(previewTemplate)
         fontTarget = tmp / "themes" / "projektemacher-base" / "static" / "fonts"
         fontTarget.mkdir(parents=True)
-        font = repoRoot / "static" / "fonts" / "nunito-v14-latin-ext_latin-regular.ttf"
+        font = repoRoot / "static" / "fonts" / "nunito-v14-latin-ext_latin-regular.woff2"
         if font.exists():
             shutil.copy(font, fontTarget)
 
@@ -85,16 +89,22 @@ def testPreview():
         check("preview.py exits successfully", result.returncode == 0)
 
         shortSVG = tmp / "content" / "short-title" / "ogPreview.svg"
+        mediumSVG = tmp / "content" / "medium-title" / "ogPreview.svg"
         longSVG = tmp / "content" / "long-title" / "ogPreview.svg"
         exampleSVG = tmp / "content" / "posts" / "development" / "ogPreview.svg"
         check("preview for the example site content was generated", exampleSVG.exists())
         check("short title preview was generated", shortSVG.exists())
+        check("medium title preview was generated", mediumSVG.exists())
         check("long title preview was generated", longSVG.exists())
 
         if shortSVG.exists():
             content = shortSVG.read_text()
             check("short title keeps its font size", "font-size:80px" in content)
             check("short title has no textLength", "textLength" not in content)
+        if mediumSVG.exists():
+            content = mediumSVG.read_text()
+            check("medium title font size was shrunk", "font-size:80px" not in content and "font-size:" in content)
+            check("medium title is not stretched", "textLength" not in content and "lengthAdjust" not in content)
         if longSVG.exists():
             content = longSVG.read_text()
             check("long title font size was shrunk", "font-size:80px" not in content and "font-size:" in content)

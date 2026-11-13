@@ -62,31 +62,80 @@ def drawTitle(title, file, config):
     img.save(file)
 
 
-def getTemplateFont(svgTree, template):
+def getTemplateFonts(svgTree, template):
     """
-    Try to find a font file referenced by the template's @font-face rules that
-    PIL (FreeType) can read, for measuring text. Prefers TTF, then WOFF.
+    Collect all font files referenced by the template's @font-face rules
+    (TTF, OTF, WOFF and WOFF2) that exist on disk, so titles can be measured
+    with the actual font instead of an estimate.
     """
     templateBase = os.path.dirname(template)
+    fonts = []
     for styleElem in svgTree.findall(".//svg:style", namespaces):
         style = styleElem.text
         if style == "" or style is None:
             continue
-        for extension in ("ttf", "woff"):
-            for urlMatch, url in re.findall(r"(url\s*\(\s*[\'\"]?(.*?)[\'\"]?\s*\))", style, re.S | re.M):
-                if not url.lower().endswith("." + extension):
-                    continue
-                fontPath = os.path.normpath(os.path.join(templateBase, url))
-                if os.path.isfile(fontPath):
-                    return fontPath
+        for urlMatch, url in re.findall(r"(url\s*\(\s*[\'\"]?(.*?)[\'\"]?\s*\))", style, re.S | re.M):
+            if not re.search(r"\.(ttf|otf|woff2?)$", url, re.I):
+                continue
+            fontPath = os.path.normpath(os.path.join(templateBase, url))
+            if os.path.isfile(fontPath) and fontPath not in fonts:
+                fonts.append(fontPath)
+    return fonts
+
+
+def loadFontFile(path):
+    """
+    Return something PIL (FreeType) can load: TTF/OTF paths are passed through,
+    WOFF/WOFF2 is converted to TTF in memory via fontTools (no temp files).
+    """
+    if re.search(r"\.(ttf|otf)$", path, re.I):
+        return path
+    from fontTools.ttLib import TTFont
+    font = TTFont(path)
+    font.flavor = None
+    buffer = io.BytesIO()
+    font.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+
+def getFontWeight(path):
+    """Return the OS/2 usWeightClass of a font file, or None if unavailable."""
+    try:
+        from fontTools.ttLib import TTFont
+        os2 = TTFont(path, lazy=True).get("OS/2")
+        if os2 is not None:
+            return int(os2.usWeightClass)
+    except Exception as e:
+        cprint(f"Can't read the weight of font '{path}': {e}", "yellow")
     return None
+
+
+def pickMeasurementFont(fontPaths, fontWeight):
+    """
+    Pick the font file best matching the text element's font-weight.
+    Falls back to the first candidate when no weight information is available.
+    """
+    if not fontPaths:
+        return None
+    if fontWeight is None:
+        return fontPaths[0]
+    best, bestDelta = None, None
+    for path in fontPaths:
+        weight = getFontWeight(path)
+        if weight is None:
+            continue
+        delta = abs(weight - fontWeight)
+        if bestDelta is None or delta < bestDelta:
+            best, bestDelta = path, delta
+    return best if best is not None else fontPaths[0]
 
 
 def measureTitle(title, fontPath, fontSize):
     if fontPath is None:
         return None
     try:
-        font = ImageFont.truetype(fontPath, int(fontSize))
+        font = ImageFont.truetype(loadFontFile(fontPath), int(fontSize))
         draw = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
         return draw.textlength(title, font=font)
     except Exception as e:
@@ -100,6 +149,9 @@ def fitTitleToBox(textElem, svgTree, template, config, title):
     into the width of the 'textbox' shape (used via shape-inside), so long
     titles don't overflow. Scaling fonts is linear, so a single measurement
     at the template's font size is enough.
+    textLength is only used as a last resort, when the title is still wider
+    than the textbox at the minimum font size: it only ever compresses, so
+    titles narrower than the textbox are never stretched.
     """
     style = textElem.get("style")
     sizeMatch = re.search(r"font-size:\s*([\d.]+)px", style or "")
@@ -113,7 +165,15 @@ def fitTitleToBox(textElem, svgTree, template, config, title):
         return
     maxWidth = float(textboxes[0].get("width"))
 
-    textWidth = measureTitle(title, getTemplateFont(svgTree, template), fontSize)
+    fontWeight = None
+    weightMatch = re.search(r"font-weight:\s*(\d{1,3}|bold|normal)", style)
+    if weightMatch:
+        fontWeight = {"bold": 700, "normal": 400}.get(weightMatch.group(1))
+        if fontWeight is None:
+            fontWeight = int(weightMatch.group(1))
+
+    fontPath = pickMeasurementFont(getTemplateFonts(svgTree, template), fontWeight)
+    textWidth = measureTitle(title, fontPath, fontSize)
     if textWidth is None:
         textWidth = len(title) * fontSize * 0.55
         cprint("Using estimated title width", "yellow")
@@ -126,11 +186,16 @@ def fitTitleToBox(textElem, svgTree, template, config, title):
     if newSize >= fontSize:
         return
     textElem.set("style", re.sub(r"font-size:\s*[\d.]+px", "font-size:{:d}px".format(int(newSize)), style, count=1))
-    # Renderers may fall back to a different (wider) font than measured, so
-    # force the text to fit the textbox with textLength
-    textElem.set("textLength", str(int(maxWidth * 0.99)))
-    textElem.set("lengthAdjust", "spacingAndGlyphs")
     cprint(f"Title '{title}' doesn't fit, shrinking font size to {int(newSize)}px", "yellow")
+
+    # textLength can only shrink a text to the given width, so only use it when
+    # the title is still wider than the textbox at the new font size (e.g. when
+    # the size was clamped to the minimum) - narrower titles keep their natural
+    # width instead of being stretched
+    if textWidth * newSize / fontSize > maxWidth:
+        textElem.set("textLength", str(int(maxWidth * 0.99)))
+        textElem.set("lengthAdjust", "spacingAndGlyphs")
+        cprint("Title is still wider than the textbox, compressing it with textLength", "yellow")
 
 
 def drawSVG(title, post, lang, outFile, config):
