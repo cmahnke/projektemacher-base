@@ -429,7 +429,7 @@ jobs:
         run: pip install git+https://github.com/IIIF/presentation-validator
 
       - name: Validate IIIF output
-        run: ./scripts/validate-iiif.sh exampleSite/public
+        run: ./scripts/validate-iiif.sh exampleSite/docs
 
   test_js_errors:
     runs-on: ubuntu-26.04
