@@ -90,6 +90,61 @@ a site-local copy overrides the theme's partial. Keep the diff to the theme
 file minimal so future theme changes can be re-synced; the copy is a
 deliberate drift exception under the deduplication guide above.
 
+# IIIF manifest labels are i18n keys
+
+All human readable labels the theme writes into IIIF manifests are read from
+i18n keys now (namespace `iiif*`, defined in `i18n/iiif.de.toml` and
+`i18n/iiif.en.toml`; full table in the example site's
+[IIIF page metadata documentation](exampleSite/content/iiif/page-metadata.md)):
+the automatic year metadata entry (`iiifYearOfPublication`), the place
+metadata labels (`iiifPlace`, `iiifYear`, `iiifAddress`, `iiifCoordinates`),
+the `requiredStatement` label (`iiifAttributionLabel`), the canvas labels
+derived from resource names (`iiifCanvasCover`, `iiifCanvasFront`,
+`iiifCanvasBack`, `iiifCanvasTop`, `iiifCanvasTitle`, `iiifCanvasLastPage`,
+`iiifCanvasFrontEndpaperRecto`, `iiifCanvasFrontEndpaperVerso`,
+`iiifCanvasRearEndpaperRecto`, `iiifCanvasRearEndpaperVerso`,
+`iiifCanvasAudio`), the Linked Art `seeAlso` label (`iiifLinkedArtMetadata`)
+and the leaflet mode labels (`iiifLeafletFront`, `iiifLeafletBack`,
+`iiifLeafletPage` with a `{{ . }}` placeholder for the page number).
+
+Behaviour changes:
+
+- Manifest labels are emitted in the language the manifest is generated with
+  (one entry in the language map) instead of the previous hardcoded
+  English/German dictionaries — multilingual sites get per-language labels in
+  their per-language manifests.
+- Two shipped strings were fixed on the way: the German `end` canvas label is
+  now "Letzte Seite" (was "Letze Seite") and the `front-verso` canvas label's
+  English default is "Front endpaper verso" (was a copy of the recto text).
+- Pre-existing quirk, unchanged: the canvas label chain in
+  `iiif/3/manifest.json` matches `end` and `front` before the endpaper
+  suffixes, so `front-recto`/`front-verso`/`end-recto`/`end-verso` resource
+  directories currently get the plain front/back/end labels — reorder the
+  chain if the endpaper labels should win.
+
+Deliberately not extracted: the `provider.json` brand label (language
+neutral, the partial is cached without language awareness) and the default
+attribution value in `required-statement.json` (kept as a per-translation
+dictionary — `i18n` cannot resolve per translation language; it stays
+overridable per page via `iiif.attribution`).
+
+## What sites need to do
+
+Nothing for the defaults. Sites that want different wording (e.g. a blog
+about unbuilt buildings labeling the year entry "Baujahr(e)") add the key to
+their own `i18n/<lang>.toml`:
+
+```toml
+[iiifYearOfPublication]
+other = "Baujahr(e)"
+```
+
+Site i18n files merge over the theme's, so a single entry is enough. Sites
+with drifted copies of the touched partials (`iiif/3/common.json`,
+`iiif/3/metadata-place.json`, `iiif/3/required-statement.json`,
+`iiif/3/manifest.json`, `iiif/3/manifest-leaflet.json`) re-sync them — see
+the deduplication guide above.
+
 # Run the JS runtime check against the example site
 
 The theme's CI now runs the puppeteer based runtime checker

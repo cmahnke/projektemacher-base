@@ -22,3 +22,69 @@ other = "Inline-Darstellung von PDFs wird nicht unterstützt"
 
 [iiifTableOfContents]
 other = "Inhaltsverzeichnis"
+
+# Manifest metadata labels
+[iiifYearOfPublication]
+other = "Erscheinungsjahr"
+
+[iiifPlace]
+other = "Ort"
+
+[iiifYear]
+other = "Jahr"
+
+[iiifAddress]
+other = "Adresse"
+
+[iiifCoordinates]
+other = "Koordinaten"
+
+[iiifAttributionLabel]
+other = "Namensnennung"
+
+# Canvas labels, derived from the resource name/directory
+[iiifCanvasCover]
+other = "Deckblatt"
+
+[iiifCanvasFront]
+other = "Vorderansicht"
+
+[iiifCanvasBack]
+other = "Rückansicht"
+
+[iiifCanvasTop]
+other = "Oberseite"
+
+[iiifCanvasTitle]
+other = "Titelseite"
+
+[iiifCanvasLastPage]
+other = "Letzte Seite"
+
+[iiifCanvasFrontEndpaperRecto]
+other = "Vorderes Vorsatzpapier Recto"
+
+[iiifCanvasFrontEndpaperVerso]
+other = "Vorderes Vorsatzpapier Verso"
+
+[iiifCanvasRearEndpaperRecto]
+other = "Hinteres Vorsatzpapier Recto"
+
+[iiifCanvasRearEndpaperVerso]
+other = "Hinteres Vorsatzpapier Verso"
+
+[iiifCanvasAudio]
+other = "Audio"
+
+[iiifLinkedArtMetadata]
+other = "Linked-Art-Metadaten"
+
+# Leaflet mode labels
+[iiifLeafletFront]
+other = "Vorderseite"
+
+[iiifLeafletBack]
+other = "Rückseite"
+
+[iiifLeafletPage]
+other = "Seite {{ . }}"

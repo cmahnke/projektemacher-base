@@ -59,7 +59,7 @@
 {{- $year := or .Params.issueYear .Params.year -}}
 {{- with $year -}}
   {{- $year := printf "%v" . -}}
-  {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year of publication") "de" (slice "Erscheinungsjahr")) "value" (dict "en" (slice $year) "de" (slice $year))) -}}
+  {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifYearOfPublication"))) "value" (dict site.Language.Lang (slice $year))) -}}
 {{- end -}}
 {{- /* Place, address and coordinates derived from the page, empty for section manifests */ -}}
 {{- $metadata = collections.Append $metadata (partial "iiif/3/metadata-place.json" .) -}}

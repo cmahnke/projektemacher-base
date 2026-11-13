@@ -9,10 +9,10 @@
     longitude first), Point geometries only
 
   Everything is optional: only entries with data are returned. Labels are
-  bilingual ("de"/"en") dictionaries like the built-in "Year of publication"
-  entry, values are IIIF language maps (see
-  functions/iiif/coerce-language-map.html). Kinds other than page return an
-  empty slice, so section manifests stay untouched.
+  single-language dictionaries in the generating site language, read from
+  iiif* i18n keys like the built-in year entry, values are IIIF language maps
+  (see functions/iiif/coerce-language-map.html). Kinds other than page return
+  an empty slice, so section manifests stay untouched.
 
   Sites whose place-like terms use a different itemType or year field (e.g.
   `building`/`yearBuild`) copy this partial into their own `layouts/_partials/`
@@ -46,16 +46,16 @@
       {{- $placeNames = $placeNames | merge (dict $lang ($existing | append (index $names 0))) -}}
     {{- end -}}
     {{- with $term.Params.year -}}
-      {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Year") "de" (slice "Jahr")) "value" (dict "none" (slice (printf "%v" .)))) -}}
+      {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifYear"))) "value" (dict "none" (slice (printf "%v" .)))) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- with $placeNames -}}
-  {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Place") "de" (slice "Ort")) "value" $placeNames) -}}
+  {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifPlace"))) "value" $placeNames) -}}
 {{- end -}}
 
 {{- with .Params.address -}}
-  {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Address") "de" (slice "Adresse")) "value" (dict "none" (slice (printf "%v" .)))) -}}
+  {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifAddress"))) "value" (dict "none" (slice (printf "%v" .)))) -}}
 {{- end -}}
 
 {{- with .Params.geojson -}}
@@ -65,7 +65,7 @@
   {{- end -}}
   {{- if eq $geometryType "Point" -}}
     {{- with index . "coordinates" -}}
-      {{- $metadata = $metadata | append (dict "label" (dict "en" (slice "Coordinates") "de" (slice "Koordinaten")) "value" (dict "none" (slice (printf "%v, %v" (index . 0) (index . 1))))) -}}
+      {{- $metadata = $metadata | append (dict "label" (dict site.Language.Lang (slice (i18n "iiifCoordinates"))) "value" (dict "none" (slice (printf "%v, %v" (index . 0) (index . 1))))) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
