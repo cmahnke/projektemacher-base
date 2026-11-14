@@ -20,7 +20,9 @@ Parameters:
                   generated for the site's home page.
 * browser       - 'kasane' (default) or 'mango'
 * height        - Optional CSS height of the browser area, defaults to
-                  '80vh' (mango) or '36rem' (kasane)
+                  '80vh' (mango); the kasane browser keeps an A4 page aspect
+                  ratio (1 / 1.414) on desktop and a fixed height ('24rem')
+                  on mobile unless a height is given
 * locale        - Viewer locale, 'ja' or 'en' (kasane only, default 'en')
 * class         - Additional CSS classes for the wrapper (kasane only)
 * options       - JSON string with viewer options (kasane only, see

@@ -20,7 +20,7 @@ The default browser can also be set site-wide via `[params.iiif] collectionBrows
 | --- | --- | --- | --- | --- |
 | `collectionUrl` | string | no | — | Collection URL, resolved relative to the page URL. Defaults to the collection generated for the site's home page (`iiif-collection` output) |
 | `browser` | string | no | `kasane` | Browser: `kasane` or `mango` |
-| `height` | string | no | `80vh` (mango) / `36rem` (kasane) | CSS height of the browser area |
+| `height` | string | no | `80vh` (mango) / A4 aspect ratio on desktop, `24rem` on mobile (kasane) | CSS height of the browser area |
 | `locale` | string | no | `en` | Viewer locale, `ja` or `en` (kasane only) |
 | `class` | string | no | — | Additional CSS classes for the wrapper (kasane only) |
 | `options` | string | no | — | JSON string with viewer options (kasane only, see the [iiif-kasane README](https://github.com/nakamura196/iiif-kasane)) |

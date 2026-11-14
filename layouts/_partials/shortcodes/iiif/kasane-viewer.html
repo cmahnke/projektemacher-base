@@ -16,7 +16,9 @@ Parameters (dict):
 * class   - Additional CSS classes for the wrapper (optional)
 * options - JSON string with viewer options, e.g. '{"panelOpen":false}'
             (optional, see https://github.com/nakamura196/iiif-kasane README)
-* height  - Optional CSS height of the viewer area (optional)
+* height  - Optional CSS height of the viewer area (optional - without it
+            the viewer keeps an A4 page aspect ratio (1 / 1.414) on desktop
+            and a fixed height on mobile)
 */}}
 
 {{- $content := .content -}}

@@ -5,7 +5,8 @@
     iiif-viewer {
         display: block;
         width: 100%;
-        height: var(--collection-browser-height, 36rem);
+        height: var(--collection-browser-height, auto);
+        aspect-ratio: 1 / 1.414;
         background: var(--background-color, #fff);
         color: var(--text-color, #000);
     }
@@ -13,6 +14,7 @@
     @media (max-width: 48rem) {
         iiif-viewer {
             height: var(--collection-browser-height, 24rem);
+            aspect-ratio: auto;
         }
     }
 }
