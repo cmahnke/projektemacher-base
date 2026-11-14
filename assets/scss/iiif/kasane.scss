@@ -1,12 +1,18 @@
 .iiif-kasane {
     display: block;
     width: 100%;
+    container-type: inline-size;
 
     iiif-viewer {
         display: block;
         width: 100%;
-        height: var(--collection-browser-height, auto);
-        aspect-ratio: 1 / 1.414;
+
+        /* Desktop: the content area next to the structure side panel
+           (default width 30% of the viewer) gets an A4 page aspect ratio
+           (1 : 1.414), so the viewer height is 70% of the width times
+           297 / 210 = 99cqw. An explicit --collection-browser-height
+           (shortcode 'height' parameter) wins over the calculation. */
+        height: var(--collection-browser-height, calc(70cqw * 297 / 210));
         background: var(--background-color, #fff);
         color: var(--text-color, #000);
     }
@@ -14,7 +20,6 @@
     @media (max-width: 48rem) {
         iiif-viewer {
             height: var(--collection-browser-height, 24rem);
-            aspect-ratio: auto;
         }
     }
 }
