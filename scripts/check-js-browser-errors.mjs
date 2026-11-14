@@ -796,7 +796,14 @@ console.log('Wrote preference file to %s', prefFile);
         // which can lead to infinite hangs if the page never reaches `networkidle0` (e.g. unclosed sockets).
         let timeout = waitMs;
         console.log(`Opening ${checkURL} with time out ${timeout}`);
-        await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
+        try {
+            await page.goto(checkURL, { waitUntil: 'networkidle0', timeout: timeout });
+        } catch (error) {
+            if (error?.name !== 'TimeoutError') {
+                throw error;
+            }
+            console.log('Page %s didn\'t reach network idle within %dms, continuing with checks', checkURL, timeout);
+        }
 
         const refreshSelector = "meta[http-equiv=refresh]";
         if (await page.$(refreshSelector) !== null) {
