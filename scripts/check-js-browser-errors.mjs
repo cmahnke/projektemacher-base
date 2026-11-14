@@ -34,10 +34,11 @@ const ignore404Contains = [
 // - MapLibre fetches raster/DEM map tiles on the main thread with a per-tile
 //   AbortController and aborts tiles that are no longer needed (e.g. tiles
 //   culled after camera moves like fitBounds/jumpTo), which fails the fetch
-//   with ERR_ABORTED.
+//   with ERR_ABORTED. This applies to vector tile sources (e.g. `.pbf`) as
+//   well.
 const ignoreAbortContains = [
   'pagefind-entry.json', 'pagefind-worker.js', 'pagefind.js', '.pf_meta', 'wasm.',
-  '/map/tiles/'
+  '/map/tiles/', '.pbf'
 ];
 // HTTP error responses don't fire 'requestfailed' (from the network's point of
 // view the request completed), so they are audited via the 'response' event
@@ -95,6 +96,10 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('console-ignore', {
     description: 'Comma separated message substrings to exclude from the console error check',
+    type: 'string'
+  })
+  .option('abort-ignore', {
+    description: 'Comma separated URL substrings to exclude from the aborted request check',
     type: 'string'
   })
   .help()
@@ -235,6 +240,14 @@ if (argv.consoleIgnore) {
         const trimmed = entry.trim();
         if (trimmed) {
             consoleIgnore.add(trimmed);
+        }
+    }
+}
+if (argv.abortIgnore) {
+    for (const entry of argv.abortIgnore.split(',')) {
+        const trimmed = entry.trim();
+        if (trimmed) {
+            ignoreAbortContains.push(trimmed);
         }
     }
 }
