@@ -75,14 +75,22 @@ declare module '@pagefind/modular-ui' {
   }
   export interface PagefindFilters {
     available?: Record<string, PagefindFilterValues>;
+    total?: Record<string, PagefindFilterValues>;
     selected?: Record<string, PagefindFilterValues>;
+    [key: string]: unknown;
+  }
+  export interface PagefindResults {
+    results: unknown[];
+    unfilteredResultCount?: number;
     [key: string]: unknown;
   }
   export class Instance {
     constructor(options?: { bundlePath?: string; noWorker?: boolean });
     add(component: Input | ResultList | FilterPills): void;
     on(event: 'filters', listener: (data: PagefindFilters) => void): void;
+    on(event: 'results', listener: (data: PagefindResults) => void): void;
     triggerSearch(query: string): void;
+    triggerFilter(filter: string, values: string[]): void;
     triggerLoad(): void;
   }
   export class Input {
@@ -92,13 +100,22 @@ declare module '@pagefind/modular-ui' {
     constructor(options: { containerElement: string });
   }
   export class FilterPills {
-    total?: boolean;
+    instance?: Instance;
+    filter: string;
+    available: [string, number][];
+    selected: string[];
+    total?: number;
+    alwaysShow?: boolean;
+    wrapper: HTMLElement | null;
+    pillContainer: HTMLElement | null;
     constructor(options: {
       containerElement: string;
       filter: string;
       selectMultiple?: boolean;
       alwaysShow?: boolean;
     });
+    register(instance: Instance): void;
+    update(): void;
     pillInner(val: string, count: number): string;
   }
 }
