@@ -13,7 +13,9 @@
   {{ $bundlePath := .Params.searchBundlePath | default site.Params.searchBundlePath | default "/index/" }}
   <div class="post {{ $class }}">
     <div class="content">
-      <h1 class="post-title">{{ .Title }}</h1>
+      <div class="title">
+        <h1>{{ .Title }}</h1>
+      </div>
       <div class="post search">
         <div class="search-box-container" role="search" data-bundle-path="{{ $bundlePath }}">
           <input id="search-box" class="search-input" type="text" name="search-bar" value="" aria-label="{{ i18n "Search" }}">

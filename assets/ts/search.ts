@@ -36,7 +36,7 @@ const translations: Record<string, Record<string, Record<string, string>>> = {
       "tag": "Tag",
       "type": "Entity type",
       "blog": "Blog",
-      "all": "Alle"
+      "all": "All"
     },
     "search-sections": {
       "collections": "Collections",
@@ -144,6 +144,10 @@ i18next.use(LanguageDetector).init({
   fallbackLng: "de",
   resources: translations,
   supportedLngs: ['de', 'en'],
+  /* Follow the site language from <html lang> instead of the browser
+     locale, otherwise a German browser on an English page sees German
+     UI strings. */
+  detection: { order: ['htmlTag'] },
   /* Filter values contain dots ('labs.projektemacher'), so key splitting
      must be disabled to resolve them. */
   keySeparator: false,
@@ -155,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
      via the emitted 'data-bundle-path' attribute — defaults to '/index/',
      which only works for deployments at a domain root. */
   const bundlePath =
-      document.querySelector(".searchbox")?.getAttribute("data-bundle-path") ?? "/index/"
+      document.querySelector(".search-box-container")?.getAttribute("data-bundle-path") ?? "/index/"
   const urlParams = new URLSearchParams(window.location.search);
   const query = urlParams.get('q');
   const searchInputSelector = "#search-box";
