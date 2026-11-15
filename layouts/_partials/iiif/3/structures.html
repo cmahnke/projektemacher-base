@@ -42,9 +42,6 @@
 
   Only page bundles are expanded; sections keep their raw value (leaflet
   mode computes its own ranges and warns, see `manifest-leaflet.json`).
-
-  Uses a single top-level `return`: Hugo < 0.166 supports only one `return`
-  statement with a value per partial.
 */ -}}
 
 {{- $page := .page -}}
@@ -164,14 +161,10 @@
   {{- /* Cookbook 0024 root: one wrapper range holding the structure tree,
         localized label, no behavior. Recursions (root=false) skip this. */ -}}
   {{- if and $isRoot (gt (len $out) 0) -}}
-    {{- $wrapperLabel := i18n "iiifTableOfContents" -}}
-    {{- if not $wrapperLabel -}}
-      {{- $wrapperLabel = "Table of Contents" -}}
-    {{- end -}}
     {{- $out = slice (dict
       "id" (printf "%srange/toc" $urlBase)
       "type" "Range"
-      "label" (dict ($page.Language.Lang | printf "%v") (slice $wrapperLabel))
+      "label" (partial "functions/iiif/i18n-label.html" (dict "key" "iiifTableOfContents" "fallback" "Table of Contents"))
       "items" $out) -}}
   {{- end -}}
 {{- end -}}

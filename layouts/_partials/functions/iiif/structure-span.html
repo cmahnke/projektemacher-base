@@ -8,9 +8,6 @@
     fallback:  canvas index used when the entry itself has no `page`
                (grouping nodes), -1 when unknown
   Returns a dict with `start` and `end` canvas indexes (ints, inclusive).
-
-  Uses a single top-level `return`: Hugo < 0.166 supports only one `return`
-  statement with a value per partial.
 */ -}}
 {{- $entry := .entry -}}
 {{- $refIndex := .refIndex -}}

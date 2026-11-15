@@ -1,0 +1,30 @@
+{{- /*
+  Builds an IIIF language map from an i18n key, translated in every site
+  language. See https://github.com/gohugoio/hugo/issues/7844, fixed in Hugo
+  0.168.0: Language.Translate resolves the translation table of the language
+  it is called on, so labels can be translated in every language from any
+  language context.
+
+  Input (dict):
+    key:      "iiifYear"   i18n key to translate
+    arg:      optional argument for the i18n key (e.g. a page number)
+    fallback: optional text used when a language has no translation for the
+              key; without it the raw key is used
+
+  Returns the language map {lang: [translation]} covering every configured
+  site language.
+*/ -}}
+
+{{- $key := index . "key" -}}
+{{- $label := dict -}}
+{{- range site.Languages -}}
+  {{- $translated := .Translate $key -}}
+  {{- if isset $ "arg" -}}
+    {{- $translated = .Translate $key (index $ "arg") -}}
+  {{- end -}}
+  {{- if or (eq $translated "") (eq $translated nil) -}}
+    {{- $translated = index $ "fallback" | default $key -}}
+  {{- end -}}
+  {{- $label = merge $label (dict .Lang (slice $translated)) -}}
+{{- end -}}
+{{- return $label -}}

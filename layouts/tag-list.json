@@ -49,23 +49,18 @@
 
       {{- $tagTranslations := dict -}}
       {{- if hugo.IsMultilingual -}}
-        {{- $languages := partial "functions/i18n/site-langs" . -}}
-        {{- range $languages -}}
-          {{- $i18nTag := $tag -}}
-
-          {{- if eq .Lang hugo.Sites.Default.Language.Lang -}}
-            {{- $i18nTag = i18n $tag  -}}
-          {{- end -}}
-          {{/* See https://github.com/gohugoio/hugo/issues/7844#issuecomment-1843854396
-            {{ $i18nTag := index hugo.Data .Lang $tag }}
-          */}}
+        {{- /* See https://github.com/gohugoio/hugo/issues/7844, fixed in Hugo
+              0.168.0: Language.Translate resolves the translation table of the
+              language it is called on, so every tag can be translated in every
+              site language from any language context. Untranslated tags fall
+              back to the raw tag. */ -}}
+        {{- range site.Languages -}}
+          {{- $i18nTag := .Translate $tag -}}
           {{- if or (eq $i18nTag "") (eq $i18nTag nil) -}}
             {{- $i18nTag = $tag -}}
           {{- end -}}
-
-          {{- $tagTranslations =  merge $tagTranslations (dict .Lang $i18nTag) -}}
+          {{- $tagTranslations = merge $tagTranslations (dict .Lang $i18nTag) -}}
         {{- end -}}
-
       {{- end -}}
 
       {{- if isset $tagList $tag -}}

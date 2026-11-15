@@ -25,6 +25,7 @@ Utility partials — most of them return a value and are used like functions. Th
 | `functions/i18n/site-langs` | Returns all configured site languages |
 | `functions/tags/tag2str` | Normalizes tag input (string, `Term` or taxonomy entry) to a string |
 | `functions/iiif/presentation-version.html` | Resolves the [IIIF Presentation version](../iiif-templates/#presentation-api-version) for a page |
+| `functions/iiif/i18n-label.html` | Builds an IIIF language map from an i18n key translated in every site language (input: `key`, optional `arg`, optional `fallback`) — uses [`Language.Translate`](https://gohugo.io/methods/language/translate/) (Hugo >= 0.168.0) |
 | `hugo/site/AllPages` | All pages of all sites, multilingual aware — workaround for Hugo's `.Site.AllPages` behavior |
 
 ## Data lookups {#wikidata}
