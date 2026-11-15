@@ -8,7 +8,6 @@
 
 {{- $fullResImgSuffix := "/full/full/0/default.jpg" -}}
 
-{{- $imageIdSuffix := "" -}}
 {{- $manifest := dict -}}
 {{- $version := partial "functions/iiif/presentation-version.html" . -}}
 
@@ -165,9 +164,10 @@
   {{- if .params.label -}}
     {{- $pageLabel = dict "none" (slice (printf "%v" .params.label)) -}}
   {{- else if findRE `page0*(\d+)` $manifestDir -}}
-    {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)\..*` "$1" $manifestDir)) -}}
+    {{- /* The optional extension has to be stripped, directory names never carry one */ -}}
+    {{- $pageLabel = dict "none" (slice (replaceRE `page0*(\d+)(?:\..*)?$` "$1" $manifestDir)) -}}
   {{- else if findRE `page-(.+)` $manifestDir -}}
-    {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+)\..*` "$1" $manifestDir)) -}}
+    {{- $pageLabel = dict "none" (slice (replaceRE `page-(.+?)(?:\..*)?$` "$1" $manifestDir)) -}}
   {{- else if (hasPrefix $manifestDir "cover") -}}
     {{- $pageLabel = dict site.Language.Lang (slice (i18n "iiifCanvasCover")) -}}
   {{- else if (hasPrefix $manifestDir "front") -}}
@@ -223,10 +223,15 @@
 
 
   {{- $imageId := "" -}}
+  {{- $serviceId := "" -}}
 
   {{- if eq $imageRes.MediaType.MainType "image" -}}
     {{- if .params.iiif -}}
-      {{- $imageId = printf "%s%s%s" $imageUrlBase $manifestDir $imageIdSuffix -}}
+      {{- $serviceId = printf "%s%s" $imageUrlBase $manifestDir -}}
+      {{- /* The body id has to dereference to the actual image, the service
+            stays the Image API base (see the leaflet manifest for the same
+            pattern) */ -}}
+      {{- $imageId = printf "%s%s" $serviceId $fullResImgSuffix -}}
     {{- else -}}
       {{- /* Plain image resource without Image API: reference the file itself */ -}}
       {{- $imageId = $imageRes.Permalink -}}
@@ -241,7 +246,7 @@
   {{- if eq $imageRes.MediaType.MainType "image" -}}
     {{- $body = dict "id" $imageId "type" "Image" "format" (string $imageRes.MediaType) "height" $imageRes.Height "width" $imageRes.Width -}}
     {{- if .params.iiif -}}
-      {{- $service := dict "id" $imageId "type" "ImageService2" "profile" "level0" -}}
+      {{- $service := dict "id" $serviceId "type" "ImageService2" "profile" "level0" -}}
       {{- $body = $body | merge (dict "service" (slice $service)) -}}
     {{- end -}}
   {{- else if eq $imageRes.MediaType.MainType "audio" -}}
