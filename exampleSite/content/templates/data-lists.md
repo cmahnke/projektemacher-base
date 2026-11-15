@@ -36,7 +36,7 @@ A dictionary of all tags used on pages, keyed by tag name. Each entry contains:
 | `url` | Term page URL |
 | `posts` | Rel permalinks of all pages with the tag |
 | `count` | Number of pages |
-| `translations` | Translated tag names per language (via the theme i18n files) |
+| `translations` | Translated tag names per language (via [`Language.Translate`](https://gohugo.io/methods/language/translate/), Hugo >= 0.168.0, see [hugo#7844](https://github.com/gohugoio/hugo/issues/7844); untranslated tags fall back to the raw tag) |
 | `termTitle` | Title of the term page |
 | `sameAs` | First `wikidata` entry of the term page, if set |
 | `definitionMissing` | Present if the term page (`content/tags/<tag>/_index.md`) doesn't exist |

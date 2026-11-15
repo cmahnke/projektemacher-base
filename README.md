@@ -166,6 +166,12 @@ matter, all of it optional — entries are only added when the data exists:
 * `Coordinates`: the page's `params.geojson.coordinates` (GeoJSON order,
   longitude first, `Point` geometries only)
 
+All entry labels are read from the theme's `iiif*` i18n keys and built as
+language maps covering every site language (Hugo >= 0.168.0, see
+[hugo#7844](https://github.com/gohugoio/hugo/issues/7844)) — see the
+[manifest labels documentation](exampleSite/content/iiif/page-metadata.md)
+for the key list.
+
 If the page has a `params.geojson` geometry, the manifest also gets the
 [navPlace](https://iiif.io/api/extension/navplace/) extension property (a
 GeoJSON-LD `FeatureCollection`), and the manifest `@context` is switched to

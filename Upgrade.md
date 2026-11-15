@@ -26,6 +26,7 @@ skill](skills/hugo-upgrade/SKILL.md) in `skills/hugo-upgrade/` — its
 | Automated accessibility checks | theme ships no CI gate, only a ready-to-run reference implementation (`npm run check:a11y` / `npm run check:lighthouse`) — sites copy and adapt the setup to their own tooling — see ["Add accessibility checks"](#add-accessibility-checks) | informational |
 | Shortcode SCSS metadata: OpenLayers base CSS not declared by `iiif/iiif` and `maps/osm-vector-tiles` | consumers work around the gap with a global `@use "ol-iiif"` in their `assets/scss/base.scss`: `blaufusstoelpel`, `kraehenbeisser`, `backsteinexpressionismus`, `kleiderbuegel` (`as *`) and `never-built` (with a `$icon-fill` variable override); `christianmahnke`'s `base.scss` carries a stale comment claiming the metadata covers it. Documented as site responsibility in the example site; long term cleanup open — see ["Shortcode SCSS metadata: OpenLayers CSS not covered (needs cleanup)"](#shortcode-scss-metadata-openlayers-css-not-covered-needs-cleanup) | low |
 | Collection browser default: `iiif/collection` now renders Kasane | behaviour change: `{{</* iiif/collection */>}}` renders the Kasane viewer (`iiif-kasane`) instead of the Mango tree; `browser="mango"` (or `[params.iiif] collectionBrowser = "mango"`) restores it, `sortMode`/`dateDiscovery` were dropped — the new `iiif/kasane` shortcode ships alongside. Pending consumer adoption: `projektemacher` (`collection-browser` page decides), `christianmahnke` (site-local kasane shortcode + `style.css` mount can be deleted) — see ["Collection browser: Kasane is the new default for `iiif/collection`"](#collection-browser-kasane-is-the-new-default-for-iiifcollection) | done (consumer follow-ups open) |
+| IIIF label maps + tag-list translations (Hugo >= 0.168.0) | theme migrated: labels built from i18n keys are language maps covering every site language (`functions/iiif/i18n-label.html`), `tag-list.json` translates tags per language via `Language.Translate` (hugo#7844); min Hugo version raised to 0.168.0. Consumers: raise the submodule; sites with drifted copies of `tag-list.json`, `iiif/3/common.json`, `iiif/3/metadata-place.json`, `iiif/3/required-statement.json`, `iiif/3/manifest.json`, `iiif/3/manifest-leaflet.json` re-sync them — see ["Multilingual IIIF labels and tag translations (Hugo >= 0.168.0)"](#multilingual-iiif-labels-and-tag-translations-hugo--01680) | done (consumer raises pending) |
 
 # IIIF output validation in CI
 
@@ -144,6 +145,46 @@ with drifted copies of the touched partials (`iiif/3/common.json`,
 `iiif/3/metadata-place.json`, `iiif/3/required-statement.json`,
 `iiif/3/manifest.json`, `iiif/3/manifest-leaflet.json`) re-sync them — see
 the deduplication guide above.
+
+# Multilingual IIIF labels and tag translations (Hugo >= 0.168.0)
+
+Hugo 0.168.0 shipped [`Language.Translate`](https://gohugo.io/methods/language/translate/)
+([hugo#7844](https://github.com/gohugoio/hugo/issues/7844)): a `Language`
+object can now translate strings using its own translation table, so every
+language can be translated from any language context. The theme adopted it
+and raised its minimum Hugo version to 0.168.0 (`theme.toml` `min_version`
+and `hugo.toml` `[module.hugoVersion]`).
+
+Changes:
+
+- `tag-list.json` translations: every tag entry carries the tag translated
+  in every site language, falling back to the raw tag. The previous
+  workaround (documented in the code comment) translated only the default
+  language entry — and used the current language's `i18n` result for it,
+  which is wrong on non-default languages (the German site stored the
+  German string under the `"en"` key).
+- IIIF labels: every label the theme emits from an i18n key (year and place
+  metadata, canvas labels, leaflet labels, the table of contents wrapper,
+  the `requiredStatement` label and the Linked Art `seeAlso` label) is now
+  a language map covering every configured site language, built by the new
+  `functions/iiif/i18n-label.html` helper. Multilingual sites get one label
+  entry per language in every manifest; the `iiifTableOfContents` label
+  keeps its literal "Table of Contents" fallback for languages without a
+  translation.
+- The `functions/i18n/site-langs` helper is no longer used by templates
+  (kept as a documented helper); `tag-list.json` iterates `site.Languages`
+  directly.
+
+## What sites need to do
+
+Raise the submodule and rebuild. Sites on Hugo < 0.168.0 fail the build.
+Sites with drifted copies of the touched files (`tag-list.json`,
+`iiif/3/common.json`, `iiif/3/metadata-place.json`,
+`iiif/3/required-statement.json`, `iiif/3/manifest.json`,
+`iiif/3/manifest-leaflet.json`) re-sync them — see the deduplication guide
+above. The tag-list `translations` field and the manifest labels gain one
+entry per language; IIIF consumers re-run the validator (see
+["IIIF output validation in CI"](#iiif-output-validation-in-ci)).
 
 # Run the JS runtime check against the example site
 
@@ -657,8 +698,9 @@ Path B specific:
 
 ## Remove downward compatibility (Hugo < 0.165.0)
 
-The theme declares `min_version = "0.165.0"` in `theme.toml` — that is the
-hard floor. Consuming sites:
+The theme's hard floor is now `min_version = "0.168.0"` in `theme.toml`
+(see ["Multilingual IIIF labels and tag translations (Hugo >= 0.168.0)"](#multilingual-iiif-labels-and-tag-translations-hugo--01680))
+— older Hugo releases are no longer supported. Consuming sites:
 
 1. Pin Hugo ≥ 0.165.0 in CI and deployment scripts (the theme's own
    workflows use `hugo-setup.yml` for this).
@@ -671,13 +713,13 @@ Consumer exception: `schatten` keeps `{{ template "_internal/opengraph.html" }}`
 in `layouts/baseof.html` in compatibility mode until a verified switch to
 `{{ partial "opengraph.html" }}`.
 
-Known remaining compatibility code in the theme: three partials keep a
-single top-level `return` statement, because Hugo < 0.166 supports only
-one value-return per partial — `layouts/partials/iiif/3/structures.html`,
+Known remaining compatibility code in the theme: none. The three partials
+that kept a single top-level `return` statement for Hugo < 0.166
+(`layouts/partials/iiif/3/structures.html`,
 `layouts/partials/functions/iiif/coerce-language-map.html` and
-`layouts/partials/functions/iiif/structure-span.html`. The natural
-multi-`return` code is unblocked for restoration; the theme keeps
-shipping the workarounds until its next release drops them.
+`layouts/partials/functions/iiif/structure-span.html`) use the natural
+single-return structure anyway — their comments no longer carry the
+compatibility note.
 
 ## Deduplicate shortcodes and templates against the theme
 

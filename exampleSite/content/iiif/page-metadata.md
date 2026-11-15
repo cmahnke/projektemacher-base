@@ -58,9 +58,12 @@ iiif:
 All labels the theme generates for manifests are read from i18n keys
 (`i18n/iiif.de.toml`, `i18n/iiif.en.toml`), so a site can reword or translate
 them in its own `i18n/<lang>.toml` — site files merge over the theme's, a
-single entry is enough. Each manifest carries the label in the language it
-was generated with (one entry in the language map; multilingual sites get
-per-language manifests with per-language labels). Example — a blog about
+single entry is enough. Labels are built as IIIF language maps covering
+every configured site language ([`Language.Translate`](https://gohugo.io/methods/language/translate/),
+Hugo >= 0.168.0, see
+[hugo#7844](https://github.com/gohugoio/hugo/issues/7844)): multilingual
+sites get one entry per language in every manifest, so a viewer switches
+label languages with the interface language. Example — a blog about
 unbuilt buildings labels the automatic year entry "Baujahr(e)" instead of
 "Erscheinungsjahr":
 
@@ -83,8 +86,7 @@ other = "Baujahr(e)"
 Not i18n-based: the provider label in `provider.json` (language-neutral brand
 name, the partial is cached without language awareness) and the default
 attribution value in `required-statement.json` (kept as a per-translation
-dictionary since `i18n` resolves only the current language — overridable per
-page via `iiif.attribution`).
+dictionary, overridable per page via `iiif.attribution`).
 
 ## Resources
 

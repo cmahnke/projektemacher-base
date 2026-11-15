@@ -4,7 +4,7 @@ Per-version deprecation and fix notes for Hugo, assembled verbatim from <https:/
 
 This file is the reference document of the `hugo-upgrade` skill in this repository (`skills/hugo-upgrade/`, see [SKILL.md](SKILL.md) for the upgrade workflow). For versions newer than v0.169.0 fetch the upstream notes from the myhugofixer repository.
 
-This theme pins Hugo >= 0.166.0 (`theme.toml` / `[module.hugoVersion]` in `hugo.toml`); the notes for v0.158.0 and newer are the relevant fix items here, see also [Upgrade.md](../../Upgrade.md).
+This theme pins Hugo >= 0.168.0 (`theme.toml` / `[module.hugoVersion]` in `hugo.toml`); the notes for v0.158.0 and newer are the relevant fix items here, see also [Upgrade.md](../../Upgrade.md).
 
 ## Contents
 
@@ -40,6 +40,7 @@ This theme pins Hugo >= 0.166.0 (`theme.toml` / `[module.hugoVersion]` in `hugo.
 - [v0.165.0 Notes](#v01650-notes)
 - [v0.166.0 Notes](#v01660-notes)
 - [v0.167.0 Deprecations](#v01670-deprecations)
+- [v0.168.0 Notes](#v01680-notes)
 - [v0.169.0 Deprecations](#v01690-deprecations)
 
 ---
@@ -546,6 +547,17 @@ A page without an explicit `slug` whose title contains a `/` (e.g. `Watch/listen
 
 - `eq` now compares numbers by value, so `eq 1 1.0` is `true`. `in`, `intersect`, `union`, `uniq`, `symdiff`, `complement` and `where`'s `in`/`not in` also compare numbers exactly and no longer require the Go types to match.
 - A table render hook in the project now takes precedence over the embedded one.
+
+---
+
+## v0.168.0 Notes
+
+Theme-added note (not from myhugofixer, upstream covers v0.167.0 → v0.169.0 without a 0.168.0 entry):
+
+#### Site methods
+
+- `Language.Translate` — Translates a string using the translation tables for this language. See `lang.Translate`. This is the resolution of [hugo#7844](https://github.com/gohugoio/hugo/issues/7844): i18n strings can now be translated in every site language from any language context. Theme note: adopted for `tag-list.json` tag translations and the IIIF `functions/iiif/i18n-label.html` label helper, see ["Multilingual IIIF labels and tag translations (Hugo >= 0.168.0)"](../../Upgrade.md#multilingual-iiif-labels-and-tag-translations-hugo--01680).
+- `Language.FormatNumber` / `Language.FormatPercent` / `Language.FormatCurrency` / `Language.FormatAccounting` — locale aware number formatting bound to the language.
 
 ---
 
