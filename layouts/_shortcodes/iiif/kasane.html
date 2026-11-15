@@ -12,6 +12,9 @@ Parameters:
 * class - Additional CSS classes for the wrapper (optional)
 * options - JSON string with viewer options, e.g. '{"panelOpen":false}'
   (optional, see https://github.com/nakamura196/iiif-kasane README)
+
+The viewer's own 'puzzle' and 'inference' side panel tabs are hidden by
+default (hard-coded in assets/ts/iiif/kasane.ts).
 */}}
 
 {{- $manifest := .Get "manifest" -}}

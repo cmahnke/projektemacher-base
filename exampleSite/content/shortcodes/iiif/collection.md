@@ -9,7 +9,7 @@ params:
 
 Browses a [IIIF Collection](https://iiif.io/api/presentation/3.0/#collection). The browser is selected with the `browser` parameter — [Kasane](https://github.com/nakamura196/iiif-kasane) (default) or [Mango](https://github.com/Mango-IIIF/Mango):
 
-* **kasane** (default): the [`<iiif-viewer>` web component](/shortcodes/iiif/kasane/) opens the collection with its collection browser in the structure side panel: items open directly, nested collections are navigated (with a back button), and ordering can be switched between 'as listed' and 'by date' (with a timeline view). Presentation 2 collections are upgraded on load.
+* **kasane** (default): the [`<iiif-viewer>` web component](/shortcodes/iiif/kasane/) opens the collection with its collection browser in the structure side panel: items open directly, nested collections are navigated (with a back button), and ordering can be switched between 'as listed' and 'by date' (with a timeline view). Presentation 2 collections are upgraded on load. The viewer's own 'puzzle' and 'inference' side panel tabs are hidden by default (see [iiif/kasane](/shortcodes/iiif/kasane/)).
 * **mango**: the framework-free tree navigator [`@mango-iiif/collection-navigator`](https://github.com/Mango-IIIF/collection-navigator) and the [`@mango-iiif/iiif-viewer`](https://www.npmjs.com/package/@mango-iiif/iiif-viewer) viewer, connected through Mango's own adapter: a `div.iiif > div.collection-browser` containing a `mango-collection-tree` and a viewer pane. Selecting a manifest in the tree loads it in the viewer pane without reloading the page. Nested collections are expanded lazily, only expanded branches are loaded. The first manifest of the collection is displayed initially, provided the collection contains manifests on the first level (optionally within loaded child collections).
 
 The default browser can also be set site-wide via `[params.iiif] collectionBrowser = "mango"`; the shortcode parameter wins.
@@ -20,7 +20,7 @@ The default browser can also be set site-wide via `[params.iiif] collectionBrows
 | --- | --- | --- | --- | --- |
 | `collectionUrl` | string | no | — | Collection URL, resolved relative to the page URL. Defaults to the collection generated for the site's home page (`iiif-collection` output) |
 | `browser` | string | no | `kasane` | Browser: `kasane` or `mango` |
-| `height` | string | no | `80vh` (mango) / A4-ratio content area on desktop, `24rem` on mobile (kasane) | CSS height of the browser area |
+| `height` | string | no | `80vh` (mango) / A4-ratio content area on desktop, at least `80vh` on mobile (kasane) | CSS height of the browser area |
 | `locale` | string | no | `en` | Viewer locale, `ja` or `en` (kasane only) |
 | `class` | string | no | — | Additional CSS classes for the wrapper (kasane only) |
 | `options` | string | no | — | JSON string with viewer options (kasane only, see the [iiif-kasane README](https://github.com/nakamura196/iiif-kasane)) |

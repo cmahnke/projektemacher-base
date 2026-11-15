@@ -19,7 +19,10 @@ Parameters (dict):
 * height  - Optional CSS height of the viewer area (optional - without it
             the desktop height is calculated so the content area next to the
             structure side panel keeps an A4 page aspect ratio; mobile gets
-            a fixed height)
+            at least 80vh, an explicit height can only make it taller)
+
+The viewer's own 'puzzle' and 'inference' side panel tabs are hidden by
+default (hard-coded in assets/ts/iiif/kasane.ts).
 */}}
 
 {{- $content := .content -}}

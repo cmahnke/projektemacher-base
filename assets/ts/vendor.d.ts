@@ -59,6 +59,16 @@ declare module 'aframe' {
 
 declare module 'aframe-orbit-controls';
 
+/*
+ * React 19 ships no types and the project doesn't install @types/react -
+ * shorthand ambient declarations keep `tsc --noEmit` happy for the Kasane
+ * element (assets/ts/iiif/kasane.ts). All imports from these modules are
+ * typed as `any`; if @types/react is ever added, these declarations must
+ * be dropped (an ambient shorthand declaration would shadow the real ones).
+ */
+declare module 'react';
+declare module 'react-dom/client';
+
 declare module '@pagefind/modular-ui' {
   export interface PagefindFilterValues {
     [key: string]: number;

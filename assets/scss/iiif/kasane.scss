@@ -19,7 +19,11 @@
 
     @media (max-width: 48rem) {
         iiif-viewer {
-            height: var(--collection-browser-height, 24rem);
+            /* Mobile: at least 80vh, the A4 aspect calculation is ignored.
+               An explicit --collection-browser-height (shortcode 'height'
+               parameter) can only make the viewer taller here. */
+            height: var(--collection-browser-height, 80vh);
+            min-height: 80vh;
         }
     }
 }
