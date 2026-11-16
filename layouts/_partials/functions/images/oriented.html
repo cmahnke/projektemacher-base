@@ -1,0 +1,41 @@
+{{/*
+Returns an image resource without Exif rotation: when the image carries an
+Exif orientation tag other than 1 (horizontal normal), an auto oriented JPEG
+derivative is created and returned, otherwise the original resource is passed
+through untouched.
+
+The derivative keeps the image dimensions (no resize action) and is forced
+to JPEG (q90) regardless of any other format configuration, so it's suitable
+as a drop-in replacement for the original image in generated manifests.
+
+Note that Hugo neither applies the Exif orientation when reading an image,
+nor supports an 'autoorient' token in Process specs (it's silently ignored),
+the images.AutoOrient filter is the only way to normalize the orientation.
+
+Expects a dict with:
+* image  - The image resource (may be nil)
+* origin - Optional, used in debug messages (e.g. partial name and page path)
+
+Resources which can't be processed or lack metadata (e.g. JXL, SVG, HEIC
+images) are returned unchanged, handling those is up to the caller.
+*/}}
+{{- $image := .image -}}
+{{- $origin := .origin | default "" -}}
+{{- $orientation := 1 -}}
+{{- if and (ne $image nil) (reflect.IsImageResourceProcessable $image) (reflect.IsImageResourceWithMeta $image) -}}
+  {{- $orientation = $image.Meta.Orientation -}}
+  {{- if and (ne $orientation 0) (ne $orientation 1) -}}
+    {{- /* AutoOrient first, the format conversion (no resize action, the
+          dimensions are kept) is applied in the same processing pass */ -}}
+    {{- $filters := slice (images.AutoOrient) (images.Process "jpg q90") -}}
+    {{- $image = $image.Filter $filters -}}
+    {{- $debug := false -}}
+    {{- if ne $origin "" -}}
+      {{- $debug = partialCached "functions/debug/enabled.html" $origin -}}
+    {{- end -}}
+    {{- if $debug -}}
+      {{- warnf "[functions/images/oriented.html] Created oriented JPEG derivative for %s (Exif orientation %d)" $origin $orientation -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $image -}}

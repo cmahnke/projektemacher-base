@@ -71,7 +71,16 @@
   {{- if eq (partial "functions/iiif/presentation-version.html" .) 4 -}}
     {{- $thumbWidth = "200x" -}}
   {{- end -}}
-  {{- $thumbnailRes := $previewImg.Resize $thumbWidth -}}
+  {{- /* Plain image resources (no Image API endpoint) need an auto oriented
+        replacement when the source carries an Exif rotation, otherwise the
+        thumbnail doesn't match the displayed image. Images served by an Image
+        API (params.iiif) keep their endpoint, JXL substitutes are already
+        oriented, see functions/images/oriented.html for the contract */ -}}
+  {{- $orientedRes := $previewImg -}}
+  {{- if and (hasPrefix (string $previewImg.MediaType) "image") (not $previewReference.params.iiif) -}}
+    {{- $orientedRes = partial "functions/images/oriented.html" (dict "image" $previewImg "origin" (printf "%s [iiif/3/thumbnail.json]" $.RelPermalink)) -}}
+  {{- end -}}
+  {{- $thumbnailRes := $orientedRes.Resize $thumbWidth -}}
   {{- $thumbnails = slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
   {{- /* Add IIIF Image Service for preview if not section */ -}}
   {{- if and (hasPrefix $previewImg.MediaType "image") (ne $.Kind "section") -}}

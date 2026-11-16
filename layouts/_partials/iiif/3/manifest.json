@@ -211,13 +211,23 @@
     {{- $canvas = $canvas | merge (dict "behavior" (slice .params.hint)) -}}
   {{- end -}}
 
+  {{- /* Resources painted without an Image API endpoint need an auto oriented
+        replacement when the source carries an Exif rotation, otherwise the
+        manifest dimensions and the displayed image don't match. Images served
+        by an Image API (params.iiif) keep their endpoint, JXL substitutes are
+        already oriented, see functions/images/oriented.html for the contract */ -}}
+  {{- $bodyRes := $imageRes -}}
+  {{- if and (eq $imageRes.MediaType.MainType "image") (not .params.iiif) -}}
+    {{- $bodyRes = partial "functions/images/oriented.html" (dict "image" $imageRes "origin" (printf "%s (%s)" $.RelPermalink $manifestDir)) -}}
+  {{- end -}}
+
   {{- if eq $imageRes.MediaType.MainType "image" -}}
-    {{- $thumbnailRes := $imageRes.Resize "300x" -}}
+    {{- $thumbnailRes := $bodyRes.Resize "300x" -}}
     {{- if or (not $thumbnailRes.Height) (not $thumbnailRes.Width) -}}
       {{- errorf "[single.iiii-metadata.json] Can't get thumbnail for %s, image %d" $manifestDir $i -}}
     {{- end -}}
     {{- $thumbnail := slice (dict "id" $thumbnailRes.Permalink "format" (string $thumbnailRes.MediaType) "type" "Image" "height" $thumbnailRes.Height "width" $thumbnailRes.Width) -}}
-    {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $imageRes.Height "width" $imageRes.Width) -}}
+    {{- $canvas = $canvas | merge (dict "thumbnail" $thumbnail "height" $bodyRes.Height "width" $bodyRes.Width) -}}
   {{- end -}}
   {{- $annnotationId := printf "%sannotation/%s" $imageUrlBase $manifestDir -}}
 
@@ -233,8 +243,8 @@
             pattern) */ -}}
       {{- $imageId = printf "%s%s" $serviceId $fullResImgSuffix -}}
     {{- else -}}
-      {{- /* Plain image resource without Image API: reference the file itself */ -}}
-      {{- $imageId = $imageRes.Permalink -}}
+      {{- /* Plain image resource without Image API: reference the (oriented) derivative */ -}}
+      {{- $imageId = $bodyRes.Permalink -}}
     {{- end -}}
   {{ else if eq $imageRes.MediaType.MainType "audio" }}
     {{- $imageId = printf "%s%s" $imageUrlBase .src -}}
@@ -244,7 +254,7 @@
 
   {{- $body := dict -}}
   {{- if eq $imageRes.MediaType.MainType "image" -}}
-    {{- $body = dict "id" $imageId "type" "Image" "format" (string $imageRes.MediaType) "height" $imageRes.Height "width" $imageRes.Width -}}
+    {{- $body = dict "id" $imageId "type" "Image" "format" (string $bodyRes.MediaType) "height" $bodyRes.Height "width" $bodyRes.Width -}}
     {{- if .params.iiif -}}
       {{- $service := dict "id" $serviceId "type" "ImageService2" "profile" "level0" -}}
       {{- $body = $body | merge (dict "service" (slice $service)) -}}
