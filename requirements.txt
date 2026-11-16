@@ -50,5 +50,5 @@ referencing
 # Archive
 #wayback-machine-archiver
 # Indexer
-pagefind-indexer @ git+https://github.com/cmahnke/pagefind-indexer@0.0.4
+pagefind-indexer @ git+https://github.com/cmahnke/pagefind-indexer@0.0.5
 qr-tools @ git+https://github.com/cmahnke/qr-tools@0.1.1

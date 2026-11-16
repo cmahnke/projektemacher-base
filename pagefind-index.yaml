@@ -23,6 +23,10 @@ index:
     - footer.footer: all
     - script: all
     - "div.menu": all
+    # Date and tag links stay available as metadata and filters, but don't
+    # clutter the result excerpts ('data-pagefind-ignore' defaults to 'index')
+    - "div.meta"
+    - "div.tags"
   weight:
     - "h1": 7.0
     - "h2": 6.0
