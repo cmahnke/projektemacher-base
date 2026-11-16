@@ -1,4 +1,5 @@
 import Tify from 'tify';
+import { navPlacePlugin } from '@projektemacher/tify-plugin-navplace';
 
 function addTify(selector: string, uri: string, lang: string = 'en'): unknown {
   if (document.documentElement.lang !== undefined) {
@@ -11,6 +12,7 @@ function addTify(selector: string, uri: string, lang: string = 'en'): unknown {
     language: lang,
     translationsDirUrl: '/tify/translations/',
   });
+  navPlacePlugin(tify, {}).catch((err) => console.error('navPlace plugin failed:', err));
   return tify;
 }
 

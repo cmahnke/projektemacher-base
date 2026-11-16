@@ -96,3 +96,13 @@
   [[module.mounts]]
     source = "node_modules/iiif-kasane/dist/style.css"
     target = "assets/ts/iiif/style.css"
+  # The Tify plugin stylesheets are included via the stylesheet pipeline
+  # (shortcode metadata 'css'), not via JS imports - Hugo's js.Build
+  # replaces the whole bundle with the CSS content when a JS file imports
+  # CSS.
+  [[module.mounts]]
+    source = "node_modules/@projektemacher/tify-plugin-core/style.css"
+    target = "assets/ts/iiif/tify-plugin-core.css"
+  [[module.mounts]]
+    source = "node_modules/@projektemacher/tify-plugin-navplace/dist/index.css"
+    target = "assets/ts/iiif/tify-plugin-navplace.css"
