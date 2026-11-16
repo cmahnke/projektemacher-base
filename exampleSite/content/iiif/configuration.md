@@ -15,6 +15,11 @@ All IIIF related settings live in `[params.iiif]`:
   # Can be overridden per page, see 'Presentation 4'
   presentationVersion = 3
 
+  # Default manifest behavior for sites whose content isn't read like a book:
+  # 'paged' (default, enables facing/double page views) or e.g. 'individuals'
+  # or 'continuous'. Can be overridden per page via 'iiif.behavior' front matter
+  defaultBehavior = "paged"
+
   # JS asset for the Presentation API viewer, default: 'ts/iiif/tify.ts' (TIFY)
   presentationViewer = "ts/iiif/tify.ts"
 

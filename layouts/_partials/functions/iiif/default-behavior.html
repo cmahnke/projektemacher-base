@@ -1,0 +1,32 @@
+{{- /*
+  Resolves the IIIF manifest behavior for a page.
+  Priority: page param `.Params.iiif.behavior` > site param `[params.iiif] defaultBehavior` > default "paged"
+  Expects a page (or any context carrying `.Params`) as input, returns a string.
+  Valid manifest behaviors follow the Presentation 3 spec, plus `individuals` as
+  understood by viewers like Tify.
+*/ -}}
+{{- $behavior := "paged" -}}
+{{- with site.Params.iiif -}}
+  {{- with .defaultBehavior -}}
+    {{- if reflect.IsSlice . -}}
+      {{- errorf "[functions/iiif/default-behavior] [params.iiif] defaultBehavior is a slice, but it should be a string" -}}
+    {{- end -}}
+    {{- $behavior = printf "%v" . -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Params -}}
+  {{- with .iiif -}}
+    {{- with .behavior -}}
+      {{- if reflect.IsSlice . -}}
+        {{- errorf "[functions/iiif/default-behavior] .Params.iiif.behavior is a slice, but it should be a string" -}}
+      {{- end -}}
+      {{- $behavior = printf "%v" . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (in (slice "unordered" "paged" "continuous" "individuals" "auto-advance" "no-auto-advance" "repeat" "no-repeat") $behavior) -}}
+  {{- $path := "" -}}
+  {{- with $.File -}}{{- $path = .Path -}}{{- end -}}
+  {{- errorf "[functions/iiif/default-behavior] Unsupported IIIF behavior '%s' for %s, must be a valid manifest behavior (paged, continuous, individuals, unordered, auto-advance, no-auto-advance, repeat, no-repeat)" $behavior $path -}}
+{{- end -}}
+{{- return $behavior -}}

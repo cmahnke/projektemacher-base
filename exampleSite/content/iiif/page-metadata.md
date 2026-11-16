@@ -25,7 +25,7 @@ Pages without an explicit `outputs` entry are collected into collections only if
 | Key | Type | Purpose |
 | --- | --- | --- |
 | `iiif.presentationVersion` | int | `3` (default) or `4` (draft), see [Presentation 4](presentation-4/) |
-| `iiif.behavior` | string | Manifest `behavior`, e.g. `paged` (default), `continuous`, `individuals` |
+| `iiif.behavior` | string | Manifest `behavior`, e.g. `paged`, `continuous`, `individuals` — page value wins over the site default `defaultBehavior`, see [Configuration](configuration/) |
 | `iiif.metadata` | list | Descriptive `metadata` entries with `label`/`value` (language maps, coerced to strings), see the example below |
 | `iiif.structure` | list | Logical structure (ranges) from `label`/`page`/`end`/`items` entries — range and canvas IDs are generated at build time, see [Structure](#structure) |
 | `iiif.rights` | string | Rights statement URL |
