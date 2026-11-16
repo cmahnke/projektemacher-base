@@ -179,6 +179,11 @@ the array form with the navPlace context included first. The extension is
 Presentation 3 only: version 4 manifests and section manifests never
 receive it, and `params.geojson` without `coordinates` fails the build.
 
+Collections aggregate the same way: a collection carries a `navPlace`
+property with one feature per member manifest page that has geometry (the
+spec allows `navPlace` on Collections), switching its `@context` the same
+way. Collections without geo members are unchanged.
+
 ## Search (Pagefind)
 
 The theme's `search` layout (see `exampleSite/content/search/`) is based

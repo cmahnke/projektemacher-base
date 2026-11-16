@@ -18,6 +18,8 @@ The IIIF related output formats generate [IIIF Presentation API](https://iiif.io
 
 All of them delegate to the `iiif/3/` partials (and `iiif/4/` for the Presentation API 4 draft). Pages with `displayinlist: false` are excluded from collections.
 
+Member pages with a `params.geojson` geometry contribute a feature to the collection's [navPlace](https://iiif.io/api/extension/navplace/) property (one feature per member, aggregating the manifest-level extension) — see the README's [Place information section](https://github.com/cmahnke/projektemacher-base/blob/main/README.md#place-information).
+
 ## Presentation API version
 
 The version (3 or 4) is resolved per page with this priority:

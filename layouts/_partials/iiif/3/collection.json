@@ -44,6 +44,7 @@
   {{- end -}}
   {{- $collection = merge $collection (dict "label" $label) -}}
   {{- $items := slice -}}
+  {{- $navPlaceEntries := slice -}}
   {{- range $i, $iiifPage := $iiifPages -}}
     {{- $manifest = "manifest.json" -}}
     {{- with $iiifPage.Params.iiif.manifest -}}
@@ -66,9 +67,19 @@
       {{- end -}}
     {{- end -}}
     {{- $thumbnails := partial "iiif/3/thumbnail.json" $iiifPage -}}
-    {{- $item := dict "id" (printf "%s%s/%s" site.BaseURL (strings.Substr $iiifPage.Path 1) $manifest) "type" "Manifest" "label" $label "thumbnail" $thumbnails -}}
+    {{- $manifestId := printf "%s%s/%s" site.BaseURL (strings.Substr $iiifPage.Path 1) $manifest -}}
+    {{- if reflect.IsMap $iiifPage.Params.geojson -}}
+      {{- $navPlaceEntries = $navPlaceEntries | append (dict "page" $iiifPage "id" $manifestId) -}}
+    {{- end -}}
+    {{- $item := dict "id" $manifestId "type" "Manifest" "label" $label "thumbnail" $thumbnails -}}
     {{- $items = $items | append $item -}}
   {{- end -}}
   {{- $collection = $collection | merge (dict "items" $items) -}}
+  {{- /* navPlace extension (Presentation 3 only), the partial returns nil without geo members */ -}}
+  {{- $navPlace := partial "iiif/3/navplace-collection.json" (dict "id" (index $collection "id") "entries" $navPlaceEntries) -}}
+  {{- with $navPlace -}}
+    {{- /* The navPlace context has to be listed before the Presentation context */ -}}
+    {{- $collection = $collection | merge (dict "@context" (slice "http://iiif.io/api/extension/navplace/context.json" "http://iiif.io/api/presentation/3/context.json") "navPlace" .) -}}
+  {{- end -}}
   {{- $collection | jsonify -}}
 {{- end -}}

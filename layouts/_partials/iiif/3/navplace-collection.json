@@ -1,0 +1,36 @@
+{{- /*
+  navPlace extension property for IIIF Presentation 3 collections, see
+  https://iiif.io/api/extension/navplace/. The spec allows `navPlace` on
+  Collections: the property aggregates one feature per member manifest page
+  that carries a `params.geojson` geometry (same source the manifest-level
+  extension uses). Tag-derived place metadata has no geometry and doesn't
+  contribute.
+
+  Expects a dict with the collection id ("id") and a slice of entries
+  ("entries"), each a dict with the member page ("page") and its manifest id
+  ("id") — the shape iiif/3/collection.json assembles. Features are built by
+  delegating to iiif/3/navplace.json per entry (site overrides of that
+  partial flow through, e.g. vintagereality's wikidata properties), only the
+  first feature of each returned FeatureCollection is used. The
+  FeatureCollection id is derived from the collection id with a fragment as
+  the spec requires.
+
+  Returns nil when no member qualifies — the caller then adds no property.
+  The @context switch (navPlace context before the Presentation context) is
+  handled by the caller iiif/3/collection.json.
+*/ -}}
+{{- $features := slice -}}
+{{- range $entry := .entries -}}
+  {{- $featureCollection := partial "iiif/3/navplace.json" $entry -}}
+  {{- with $featureCollection -}}
+    {{- $features = $features | append (index . "features" 0) -}}
+  {{- end -}}
+{{- end -}}
+{{- if eq 0 (len $features) -}}
+  {{- return nil -}}
+{{- end -}}
+{{- return dict
+  "id" (printf "%s#navplace" (printf "%v" .id))
+  "type" "FeatureCollection"
+  "features" $features
+-}}
