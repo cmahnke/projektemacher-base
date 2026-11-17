@@ -372,3 +372,177 @@ other = "Wikidata-Einträge"
 
 [WikidataEntry]
 other = "Wikidata-Eintrag"
+
+# Multi-site tags
+
+[Featured]
+other = "Empfohlen"
+
+[featured]
+other = "Empfohlen"
+
+[photo]
+other = "Foto"
+
+[drawing]
+other = "Zeichnung"
+
+[digitalImages]
+other = "Digitale Bilder"
+
+[status]
+other = "Status"
+
+[eBay]
+other = "eBay"
+
+[IIIF]
+other = "IIIF"
+
+[3D]
+other = "3D"
+
+[Hugo]
+other = "Hugo"
+
+[Link]
+other = "Link"
+
+[Hotel]
+other = "Hotel"
+
+["Lost Place"]
+other = "Lost Place"
+
+["Work in progress"]
+other = "In Arbeit"
+
+# Tags for vintagereality
+
+[germany]
+other = "Deutschland"
+
+[Germany]
+other = "Deutschland"
+
+[france]
+other = "Frankreich"
+
+[switzerland]
+other = "Schweiz"
+
+[cologne]
+other = "Köln"
+
+[calcutta]
+other = "Kalkutta"
+
+[damascus]
+other = "Damaskus"
+
+[egypt]
+other = "Ägypten"
+
+[india]
+other = "Indien"
+
+[italy]
+other = "Italien"
+
+[milan]
+other = "Mailand"
+
+[norway]
+other = "Norwegen"
+
+[palestine]
+other = "Palästina"
+
+[giza]
+other = "Gizeh"
+
+[uk]
+other = "Großbritannien"
+
+[usa]
+other = "USA"
+
+[nigara_falls]
+other = "Niagarafälle"
+
+[stereoscopicimage]
+other = "Stereoskopisches Bild"
+
+[japan]
+other = "Japan"
+
+[israel]
+other = "Israel"
+
+[syria]
+other = "Syrien"
+
+# Tags for yaapb
+
+["Expired Film"]
+other = "Abgelaufener Film"
+
+["Found Film"]
+other = "Gefundener Film"
+
+["Found Negative"]
+other = "Gefundenes Negativ"
+
+["Disposable Camera"]
+other = "Einwegkamera"
+
+["Cherry blossom"]
+other = "Kirschblüte"
+
+[Night]
+other = "Nacht"
+
+[Sunset]
+other = "Sonnenuntergang"
+
+[Spring]
+other = "Frühling"
+
+# Tags for never-built
+
+[high-rise]
+other = "Hochhaus"
+
+[residential-area]
+other = "Wohngebiet"
+
+[university]
+other = "Universität"
+
+[infrastructure]
+other = "Infrastruktur"
+
+[transport]
+other = "Verkehr"
+
+[medical-center]
+other = "Klinik"
+
+[commercial]
+other = "Gewerbe"
+
+[frame]
+other = "Rahmen"
+
+# Tags for kinderbuecher
+
+[English]
+other = "Englisch"
+
+[Japan]
+other = "Japan"
+
+# Tags for labs.projektemacher.org
+
+[Themes]
+other = "Themes"

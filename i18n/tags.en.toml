@@ -372,3 +372,177 @@ other = "Wikidata entries"
 
 [WikidataEntry]
 other = "Wikidata entry"
+
+# Multi-site tags
+
+[Featured]
+other = "Featured"
+
+[featured]
+other = "Featured"
+
+[photo]
+other = "Photo"
+
+[drawing]
+other = "Drawing"
+
+[digitalImages]
+other = "Digital images"
+
+[status]
+other = "Status"
+
+[eBay]
+other = "eBay"
+
+[IIIF]
+other = "IIIF"
+
+[3D]
+other = "3D"
+
+[Hugo]
+other = "Hugo"
+
+[Link]
+other = "Link"
+
+[Hotel]
+other = "Hotel"
+
+["Lost Place"]
+other = "Lost Place"
+
+["Work in progress"]
+other = "Work in progress"
+
+# Tags for vintagereality
+
+[germany]
+other = "Germany"
+
+[Germany]
+other = "Germany"
+
+[france]
+other = "France"
+
+[switzerland]
+other = "Switzerland"
+
+[cologne]
+other = "Cologne"
+
+[calcutta]
+other = "Calcutta"
+
+[damascus]
+other = "Damascus"
+
+[egypt]
+other = "Egypt"
+
+[india]
+other = "India"
+
+[italy]
+other = "Italy"
+
+[milan]
+other = "Milan"
+
+[norway]
+other = "Norway"
+
+[palestine]
+other = "Palestine"
+
+[giza]
+other = "Giza"
+
+[uk]
+other = "UK"
+
+[usa]
+other = "USA"
+
+[nigara_falls]
+other = "Niagara Falls"
+
+[stereoscopicimage]
+other = "Stereoscopic image"
+
+[japan]
+other = "Japan"
+
+[israel]
+other = "Israel"
+
+[syria]
+other = "Syria"
+
+# Tags for yaapb
+
+["Expired Film"]
+other = "Expired Film"
+
+["Found Film"]
+other = "Found Film"
+
+["Found Negative"]
+other = "Found Negative"
+
+["Disposable Camera"]
+other = "Disposable Camera"
+
+["Cherry blossom"]
+other = "Cherry blossom"
+
+[Night]
+other = "Night"
+
+[Sunset]
+other = "Sunset"
+
+[Spring]
+other = "Spring"
+
+# Tags for never-built
+
+[high-rise]
+other = "High-rise"
+
+[residential-area]
+other = "Residential area"
+
+[university]
+other = "University"
+
+[infrastructure]
+other = "Infrastructure"
+
+[transport]
+other = "Transport"
+
+[medical-center]
+other = "Medical center"
+
+[commercial]
+other = "Commercial"
+
+[frame]
+other = "Frame"
+
+# Tags for kinderbuecher
+
+[English]
+other = "English"
+
+[Japan]
+other = "Japan"
+
+# Tags for labs.projektemacher.org
+
+[Themes]
+other = "Themes"
