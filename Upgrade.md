@@ -203,7 +203,7 @@ The URL list lives in `exampleSite/test-urls.json` and covers:
   `browser-banner`, `browser-hide-selector`, `chart`, `code`,
   `csv-chart`, `gallery`, `gist`, `html/iframe-consent`, `hdr-canvas`,
   `hdr-canvas-check`, `hdr-check`, `iiif/iiif`, `iiif/presentation`,
-  `lucienne`, `maps/osm`, `maps/osm-vector-tiles`, `mastodon`,
+  `insta`, `lucienne`, `maps/osm`, `maps/osm-vector-tiles`, `mastodon`,
   `mermaid`, `pdf`, `pdf-preview` (`tagcloud` ships no JS — its demo
   page is only checked for styling)
 - other pages with JS functionality: the search page (Pagefind, see
@@ -245,7 +245,7 @@ runtime-checked. To find candidates:
 
 ```bash
 # Pages using shortcodes that ship JS (one page per shortcode is enough)
-grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code|chart|csv-chart|gallery|image-compare|hdr-)' content
+grep -rEl '^{{< ?(maps/|pdf|iiif/|audioplayer|mermaid|lucienne|mastodon|browser-|gist|html/iframe-consent|code|chart|csv-chart|gallery|image-compare|insta|hdr-)' content
 
 # Site defined shortcodes with required includes
 # (check the referenced metadata partial for a 'js' entry)
