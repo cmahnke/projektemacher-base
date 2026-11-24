@@ -92,9 +92,12 @@ export function addConsent(
     const content = overlay.parentNode?.querySelector('.iframe-content');
     if (content) {
       content.innerHTML = iframe;
-      Array.from(overlay.parentNode?.querySelectorAll('.iframe-content script') ?? []).forEach(
-        (el) => eval(el.innerHTML),
-      );
+      Array.from(content.querySelectorAll('script')).forEach((el) => {
+        const script = document.createElement('script');
+        Array.from(el.attributes).forEach((attr) => script.setAttribute(attr.name, attr.value));
+        script.textContent = el.textContent;
+        el.replaceWith(script);
+      });
     }
   };
 
