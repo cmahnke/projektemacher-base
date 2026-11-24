@@ -23,6 +23,15 @@
     .iframe {
     }
 
+    .iframe-content {
+        text-align: center;
+
+        .instagram-media {
+            display: block;
+            margin: 0 auto !important;
+        }
+    }
+
     .switch-wrapper {
         margin: 0 0.4rem;
         padding: 0 1rem;
