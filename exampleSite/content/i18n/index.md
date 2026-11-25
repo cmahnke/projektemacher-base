@@ -16,6 +16,8 @@ This page lists all strings from the theme's `i18n/` directory in a single table
 
 Translations live in the theme's `i18n/` directory. Hugo loads files named `<lang>.toml` as the translation catalog for that language. For larger translation sets the strings can be split into fragments named `<id>.<lang>.toml` (for example `tags.de.toml` or `iiif.en.toml`), which get merged into the main `<lang>.toml` files by the [`scripts/init/i18n.sh`](https://github.com/cmahnke/projektemacher-base/blob/main/scripts/init/i18n.sh) script. Note that the merged files are generated (gitignored), while the fragments are tracked in git.
 
+The language of a catalog file is the last dot-separated segment of its file name without `.toml`: `en.toml` → `en`, `theme.en.toml` → `en`, `3d.de.toml` → `de`. This rule applies to both merged files and fragments; it is used by the [`i18n-strings` shortcode](https://github.com/cmahnke/projektemacher-base/blob/main/exampleSite/layouts/_shortcodes/i18n-strings.html) that renders the table below and by the PyHugo content helper in [`scripts/PyHugo/content.py`](https://github.com/cmahnke/projektemacher-base/blob/main/scripts/PyHugo/content.py) when it loads translations for generated pages.
+
 The data for the table below comes from the same files: the example site mounts the theme's `i18n/` directory as a [data directory](https://gohugo.io/configuration/module/) in its `hugo.toml`
 
 ```toml

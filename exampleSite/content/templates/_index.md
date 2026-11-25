@@ -8,7 +8,7 @@ params:
 
 # Templates
 
-This theme ships a set of Hugo templates in `layouts/`. This section documents the page templates and the templates for custom [output formats](https://gohugo.io/configuration/output-formats/) — JSON metadata, IIIF, QR codes, GeoJSON and more.
+This theme ships a set of Hugo templates in `layouts/`. This section documents the page templates and the templates for custom [output formats](https://gohugo.io/configuration/output-formats/) — JSON metadata, IIIF, QR codes, GeoJSON, JSON Feed and more.
 
 Not covered here:
 
@@ -34,6 +34,7 @@ These templates are selected via the `outputs` front matter or the site `outputs
 | Output format | Template | Purpose |
 | --- | --- | --- |
 | HTML (default) | `single.html`, `list.html`, … | Regular pages |
+| [`jsonfeed`](jsonfeed/) | `home.jsonfeed.json` | JSON Feed 1.1 homepage feed (`feed.json`) |
 | [`qrcode`](qrcode/) | `single.qrcode.json`, `section.qrcode.json` | QR code generation data |
 | [`iiif-manifest`](iiif-templates/) | `single.iiif-manifest.json`, `section.iiif-manifest.json` | IIIF Presentation manifests |
 | [`iiif-collection`](iiif-templates/) | `home.iiif-collection.json`, `term.iiif-collection.json` | IIIF Presentation collections |
