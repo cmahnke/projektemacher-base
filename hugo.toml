@@ -21,6 +21,9 @@
 [mediaTypes."application/ld+json"]
   suffixes = ["json", "jsonld"]
 
+[mediaTypes."application/feed+json"]
+  suffixes = ["json"]
+
 [outputFormats]
   # Note: when the format is enabled but no template exists, Hugo warns
   # ("found no layout file") and skips rendering, while the head still
@@ -31,6 +34,12 @@
     isPlainText = true
     isHTML = false
     rel = "linkset"
+
+  [outputFormats.jsonfeed]
+    mediaType = "application/feed+json"
+    baseName = "feed"
+    isPlainText = true
+    isHTML = false
 
   [outputFormats.iiif-manifest]
     mediaType = "application/ld+json"

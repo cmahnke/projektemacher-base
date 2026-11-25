@@ -1,0 +1,73 @@
+{{- $authorEmail := "" }}
+{{- with site.Params.author }}
+  {{- if reflect.IsMap . }}
+    {{- with .email }}
+      {{- $authorEmail = . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $authorName := "" }}
+{{- with site.Params.author }}
+  {{- if reflect.IsMap . }}
+    {{- with .name }}
+      {{- $authorName = . }}
+    {{- end }}
+  {{- else }}
+    {{- $authorName = . }}
+  {{- end }}
+{{- end }}
+
+{{- $pages := (where site.RegularPages "Section" "post").ByDate.Reverse }}
+
+{{- $limit := site.Config.Services.RSS.Limit }}
+{{- if ge $limit 1 }}
+  {{- $pages = $pages | first $limit }}
+{{- end }}
+
+{{- $feedURL := "" }}
+{{- with .OutputFormats.Get "jsonfeed" }}
+  {{- $feedURL = .Permalink }}
+{{- end }}
+
+{{- $authors := slice }}
+{{- if or $authorName $authorEmail }}
+  {{- $author := dict }}
+  {{- with $authorName }}{{ $author = $author | merge (dict "name" .) }}{{ end }}
+  {{- with site.BaseURL }}{{ $author = $author | merge (dict "url" .) }}{{ end }}
+  {{- $authors = $authors | append $author }}
+{{- end }}
+
+{{- $items := slice }}
+{{- range $pages }}
+  {{- $itemAuthors := slice }}
+  {{- with $authorEmail }}
+    {{- $itemAuthors = $itemAuthors | append (dict "name" (default $authorEmail $authorName) "url" (printf "mailto:%s" .)) }}
+  {{- end }}
+  {{- $item := dict
+      "id" .Permalink
+      "url" .Permalink
+      "title" .Title
+      "content_html" .Summary
+      "date_published" (.PublishDate.Format "2006-01-02T15:04:05Z07:00")
+  }}
+  {{- with .Summary | plainify }}{{ $item = $item | merge (dict "summary" .) }}{{ end }}
+  {{- with .Params.tags }}{{ $item = $item | merge (dict "tags" .) }}{{ end }}
+  {{- with $itemAuthors }}{{ $item = $item | merge (dict "authors" $itemAuthors) }}{{ end }}
+  {{- $items = $items | append $item }}
+{{- end }}
+
+{{- $feed := dict
+    "version" "https://jsonfeed.org/version/1.1"
+    "title" (printf "%s %s" site.Title (i18n "Feed"))
+    "home_page_url" .Permalink
+    "feed_url" $feedURL
+    "description" (printf "%s %s %s" (i18n "LatestPosts") (i18n "By") site.Title)
+    "language" site.Language.Locale
+    "items" $items
+}}
+{{- with $authors }}{{ $feed = $feed | merge (dict "authors" $authors) }}{{ end }}
+{{- $favicon := site.Params.favicon_32 | default "/images/favicon-32.png" }}
+{{- $feed = $feed | merge (dict "favicon" (absURL $favicon)) }}
+{{- with site.Params.favicon_svg }}{{ $feed = $feed | merge (dict "icon" (absURL .)) }}{{ end }}
+{{- $feed | jsonify }}

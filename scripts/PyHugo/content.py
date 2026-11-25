@@ -195,8 +195,10 @@ class Site:
             for file in os.listdir(path):
                 if not file.endswith(".toml"):
                     continue
-                # Language is the last dotted segment of the file name (theme.en.toml -> en, en.toml -> en)
-                lang = os.path.splitext(os.path.splitext(file)[0])[1].lstrip(".")
+                # Language is the last dotted segment of the stem (theme.en.toml -> en, en.toml -> en)
+                stem = os.path.splitext(file)[0]
+                parts = stem.split(".")
+                lang = parts[-1] if len(parts) > 1 else parts[0]
                 if not lang:
                     logging.debug(f"Skipping i18n file '{file}' without language suffix")
                     continue

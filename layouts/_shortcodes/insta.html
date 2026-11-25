@@ -4,8 +4,15 @@
   {{- $url = printf "https://www.instagram.com/p/%s/" $id -}}
 {{- end -}}
 {{- $embedURL := printf "%s?utm_source=ig_embed&amp;utm_campaign=loading" $url -}}
-{{- $caption := .Get "caption" | default "A post shared on Instagram" -}}
-{{- $embed := printf `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="%s" data-instgrm-version="14"><p style="text-align:center"><a href="%s" target="_blank">%s</a></p></blockquote><script async src="//www.instagram.com/embed.js" onload="window.instgrm&amp;&amp;window.instgrm.Embeds.process()"></script>` $embedURL $embedURL $caption -}}
+{{- $caption := .Get "caption" -}}
+{{- $captionAttr := "" -}}
+{{- $captionHTML := "" -}}
+{{- if $caption -}}
+  {{- $captionHTML = printf `<p class="instagram-caption">%s</p>` ($caption | htmlEscape) -}}
+{{- else -}}
+  {{- $captionAttr = ` data-instgrm-captioned` -}}
+{{- end -}}
+{{- $embed := printf `<blockquote class="instagram-media"%s data-instgrm-permalink="%s" data-instgrm-version="14"><p style="text-align:center"><a href="%s" target="_blank">A post shared on Instagram</a></p></blockquote><script async src="//www.instagram.com/embed.js" onload="window.instgrm&amp;&amp;window.instgrm.Embeds.process()"></script>%s` $captionAttr $embedURL $embedURL $captionHTML -}}
 {{- partial "html/iframe-consent.html" (dict "iframe" $embed "preview" "") -}}
 {{- define "_partials/shortcodes/insta-metadata.html" -}}
   {{- (dict "css" slice "js" (slice "ts/iframe-consent.ts") "scss" (slice "scss/iframe-consent.scss")) | jsonify -}}
