@@ -343,6 +343,9 @@ other = "Inneneinrichtung"
 [OCR]
 other = "OCR"
 
+[ArtHistory]
+other = "Kunstgeschichte"
+
 # Tags for Ric
 [EBay]
 other = "eBay"
