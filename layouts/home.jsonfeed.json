@@ -44,15 +44,27 @@
   {{- with $authorEmail }}
     {{- $itemAuthors = $itemAuthors | append (dict "name" (default $authorEmail $authorName) "url" (printf "mailto:%s" .)) }}
   {{- end }}
+  {{- $permalink := .Permalink }}
+  {{- with .OutputFormats.Get "html" }}{{ $permalink = .Permalink }}{{ end }}
+  {{- $tags := slice }}
+  {{- range .Params.tags }}
+    {{- $tag := . }}
+    {{- if or (hasPrefix $tag "hidden_") (hasPrefix $tag "_") }}{{ continue }}{{ end }}
+    {{- if ne $tag "" }}
+      {{- $translatedTag := $tag }}
+      {{- with i18n $tag }}{{ $translatedTag = . }}{{ end }}
+      {{- $tags = $tags | append $translatedTag }}
+    {{- end }}
+  {{- end }}
   {{- $item := dict
-      "id" .Permalink
-      "url" .Permalink
+      "id" $permalink
+      "url" $permalink
       "title" .Title
       "content_html" .Summary
       "date_published" (.PublishDate.Format "2006-01-02T15:04:05Z07:00")
   }}
   {{- with .Summary | plainify }}{{ $item = $item | merge (dict "summary" .) }}{{ end }}
-  {{- with .Params.tags }}{{ $item = $item | merge (dict "tags" .) }}{{ end }}
+  {{- with $tags }}{{ $item = $item | merge (dict "tags" $tags) }}{{ end }}
   {{- with $itemAuthors }}{{ $item = $item | merge (dict "authors" $itemAuthors) }}{{ end }}
   {{- $items = $items | append $item }}
 {{- end }}

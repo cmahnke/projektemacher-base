@@ -44,7 +44,7 @@ Other page kinds are not wired up by default: the theme only provides `home.json
 `layouts/home.jsonfeed.json` generates a JSON Feed 1.1 document:
 
 - **Items** come from the `post` section, newest first (`.ByDate.Reverse`), limited by `site.Config.Services.RSS.Limit` when that value is at least 1.
-- Each item carries `id` and `url` (the permalink), `title`, `content_html` (the summary), and optionally `summary` (plain text), `tags` and `authors`. An author entry is added from `site.Params.author.email` when set.
+- Each item carries `id` and `url` (the HTML output permalink, falling back to the page permalink), `title`, `content_html` (the summary), and optionally `summary` (plain text), `tags` and `authors`. An author entry is added from `site.Params.author.email` when set. Tags are translated with the i18n table for the feed language, falling back to the raw tag; tags beginning with `hidden_` or `_` are omitted.
 - The feed envelope has `version`, `title`, `home_page_url` (the home page permalink), `feed_url` (the format's permalink), `description`, `language` (the site locale), `items`, and optionally top-level `authors`.
 - `favicon` falls back to `/images/favicon-32.png` and can be set via `site.Params.favicon_32`; `icon` uses `site.Params.favicon_svg` when configured. Both are made absolute with `absURL`.
 - A map-valued `site.Params.author` supplies `name` and `email`; a plain string value is used as the name.
